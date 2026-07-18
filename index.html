@@ -306,8 +306,16 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.2.4";
+const APP_VERSION="0.2.5";
 const CHANGELOG=[
+  {v:"0.2.5",date:"18 juillet 2026",notes:{
+    "Modifié":[
+      "Tout le réseau s'affiche partout par défaut ; le filtrage se fait localement dans chaque onglet (fini le bouton global Ma zone / Tout le réseau)."
+    ],
+    "Ajouté":[
+      "Filtres par ville sur l'onglet Lieux."
+    ]
+  }},
   {v:"0.2.4",date:"18 juillet 2026",notes:{
     "Corrigé":[
       "Barre du bas : trop d'espace vide sous les icônes sur mobile (marge d'encoche plafonnée)."
@@ -438,17 +446,9 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
 
 /* ---- périmètre selon rôle ---- */
 function readOnly(){return SESSION.role==="visiteur"}
-function national(){return(SESSION.role==="superadmin"&&SESSION._nat)||SESSION.role==="visiteur"}
-function scopedClubIds(){
-  // Superadmin en mode "Ma zone" : limité à sa zone. Sinon tout le monde voit tout le réseau.
-  if(SESSION.role==="superadmin"&&!SESSION._nat)
-    return DB.clubs.filter(c=>zone(SESSION.zoneId).villes.includes(c.ville)).map(c=>c.id);
-  return DB.clubs.map(c=>c.id);
-}
-function scopedVilles(){
-  if(SESSION.role==="superadmin"&&!SESSION._nat)return zone(SESSION.zoneId).villes;
-  return null; // toutes
-}
+function national(){return true} // tout le monde voit tout le réseau ; le filtrage est local à chaque onglet
+function scopedClubIds(){return DB.clubs.map(c=>c.id)}
+function scopedVilles(){return null}
 function isNationalEditor(){return SESSION.role==="superadmin"||SESSION.role==="directeur_national"}
 function canEditReunion(m){
   if(isNationalEditor())return true;
@@ -552,8 +552,6 @@ function viewAgenda(){
   if(q)list=list.filter(m=>(club(m.clubId).nom+" "+lieuNom(m.lieuId)+" "+animNom(m.animId)).toLowerCase().includes(q));
 
   const villeChips=[...new Set(all.map(m=>club(m.clubId).ville))].sort().map(vl=>chip(vl,"v:"+vl)).join("");
-  const scopeToggle=SESSION.role==="superadmin"?`
-    <div class="seg"><button class="${!SESSION._nat?"on":""}" onclick="setScope(false)">Ma zone</button><button class="${SESSION._nat?"on":""}" onclick="setScope(true)">Tout le réseau</button></div>`:"";
 
   let cards="";
   if(!list.length)cards=emptyState("Aucune réunion","Ajuste les filtres ou planifie une nouvelle date avec le bouton +.");
@@ -561,9 +559,8 @@ function viewAgenda(){
     if(mk!==cm){cm=mk;cards+=`<div class="month-label">${MOIS_LONG[dt.getMonth()]} ${dt.getFullYear()}</div>`}cards+=meetingCard(m);});}
 
   return `<div class="page">
-    <div class="page-head"><div><div class="eyebrow">${SESSION.role==="superadmin"&&!SESSION._nat?"Zone "+zone(SESSION.zoneId).nom:"Tout le réseau"}</div><h2>Agenda</h2></div>
+    <div class="page-head"><div><div class="eyebrow">Tout le réseau</div><h2>Agenda</h2></div>
       ${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div>
-    ${scopeToggle?`<div style="margin-bottom:14px">${scopeToggle}</div>`:""}
     <div class="stats">
       <div class="stat link ${filter==="up"?"on":""}" onclick="filter='up';render()"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
       <div class="stat link ${filter==="all"?"on":""}" onclick="filter='all';render()"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
@@ -574,7 +571,6 @@ function viewAgenda(){
     <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Réunions de lancement","RL")}${villeChips}</div>
     ${cards}<div style="height:8px"></div></div>`;
 }
-function setScope(nat){SESSION._nat=nat;updateRegionLabel();render();}
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
 
 function meetingCard(m){
@@ -623,7 +619,6 @@ function viewClubs(){
   const villeChips=`<div class="filters">${clubVilleChip("Toutes villes","")}${villesDispo.map(vl=>clubVilleChip(vl,vl)).join("")}</div>`;
   if(window._clubVille)clubs=clubs.filter(c=>c.ville===window._clubVille);
   const sansAnim=clubs.filter(c=>!c.animId).length;
-  const scopeToggle=SESSION.role==="superadmin"?`<div style="margin-bottom:14px"><div class="seg"><button class="${!SESSION._nat?"on":""}" onclick="setScope(false)">Ma zone</button><button class="${SESSION._nat?"on":""}" onclick="setScope(true)">Tout le réseau</button></div></div>`:"";
   // regroupement par zone
   const groups={};
   clubs.forEach(c=>{const zn=zoneNomForVille(c.ville);(groups[zn]=groups[zn]||[]).push(c)});
@@ -636,7 +631,6 @@ function viewClubs(){
         <div class="grid two">${list.map(clubTile).join("")}</div>`;
     }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} clubs${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
-    ${scopeToggle}
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un club…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
     ${villeChips}
@@ -646,11 +640,15 @@ function viewClubs(){
 /* ============================================================
    LIEUX
    ============================================================ */
+function lieuVilleChip(l,v){return `<button class="chip ${(window._lieuVille||"")===v?"on":""}" onclick="window._lieuVille='${v}';render()">${esc(l)}</button>`}
 function viewLieux(){
-  let lieux=[...DB.lieux];const v=scopedVilles();
-  if(v)lieux=lieux.filter(l=>v.includes(l.ville));
+  let lieux=[...DB.lieux];
   lieux.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
   const q=(window._q3||"").toLowerCase();if(q)lieux=lieux.filter(l=>(l.nom+" "+l.ville+" "+l.adresse).toLowerCase().includes(q));
+  const villesDispo=[...new Set(lieux.map(l=>l.ville).filter(Boolean))].sort();
+  if(window._lieuVille&&!villesDispo.includes(window._lieuVille))window._lieuVille="";
+  const villeChips=`<div class="filters">${lieuVilleChip("Toutes villes","")}${villesDispo.map(vl=>lieuVilleChip(vl,vl)).join("")}</div>`;
+  if(window._lieuVille)lieux=lieux.filter(l=>l.ville===window._lieuVille);
   const cards=lieux.map(l=>{
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     return `<div class="lieu-card" onclick="openLieu('${l.id}')">
@@ -666,6 +664,7 @@ function viewLieux(){
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un lieu…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
+    ${villeChips}
     ${cards||emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
 }
 
@@ -769,8 +768,8 @@ function dashRelancer(clubs){
     <div class="rank">${rows}</div>`;
 }
 function viewDashboard(){
-  const seeAll=!(SESSION.role==="superadmin"&&!SESSION._nat);
-  const scope=seeAll?DB.clubs:DB.clubs.filter(c=>scopedClubIds().includes(c.id));
+  const seeAll=true; // tout le monde voit le national + régional ; filtrage local par onglet
+  const scope=DB.clubs;
   let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
     <button class="btn ghost mini" onclick="exportMembres()">Export membres</button></div>`;
   if(seeAll){

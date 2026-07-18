@@ -165,7 +165,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .empty p{font-size:13.5px;margin:0}
 
 /* nav */
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;box-shadow:0 -2px 12px rgba(27,20,22,.05)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + min(env(safe-area-inset-bottom), 8px));max-width:760px;margin:0 auto;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;box-shadow:0 -2px 12px rgba(27,20,22,.05)}
 .nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:10px;font-weight:600;border-radius:12px;transition:color .15s}
 .nav button.on{color:var(--crimson)}
 .nav button svg{width:22px;height:22px}
@@ -306,8 +306,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.2.3";
+const APP_VERSION="0.2.4";
 const CHANGELOG=[
+  {v:"0.2.4",date:"18 juillet 2026",notes:{
+    "Corrigé":[
+      "Barre du bas : trop d'espace vide sous les icônes sur mobile (marge d'encoche plafonnée)."
+    ]
+  }},
   {v:"0.2.3",date:"18 juillet 2026",notes:{
     "Modifié":[
       "En-tête réorganisé sur mobile : nom + zone sur la première ligne, rôle et boutons sur la seconde (plus lisible, moins encombrant)."

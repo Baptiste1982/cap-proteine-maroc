@@ -140,14 +140,16 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .avatar{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-family:"Bricolage Grotesque";font-weight:700;font-size:16px;color:#fff;background:linear-gradient(160deg,var(--crimson),var(--crimson-deep))}
 
 /* lieu card */
-.lieu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:11px}
-.lieu-photo{height:120px;background:linear-gradient(160deg,var(--crimson-deep),var(--crimson-darker));background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:12px}
-.lieu-photo .lieu-name{color:#fff;font-family:"Bricolage Grotesque";font-weight:700;font-size:17px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-.lieu-photo.noimg{align-items:center;justify-content:center}
-.lieu-photo.noimg .ph{font-family:"Bricolage Grotesque";font-weight:800;font-size:34px;color:rgba(255,255,255,.5)}
+.lieu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;transition:transform .1s,box-shadow .15s}
+.lieu-card:active{transform:scale(.99)}
+.lieu-photo{position:relative;height:132px;background:linear-gradient(150deg,var(--crimson),var(--crimson-deep) 60%,var(--crimson-darker));background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:13px}
+.lieu-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(27,20,22,.62),rgba(27,20,22,.05) 55%,transparent)}
+.lieu-photo .lieu-name{position:relative;z-index:1;color:#fff;font-family:"Bricolage Grotesque";font-weight:800;font-size:18px;line-height:1.15;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.lieu-photo .cap-badge{position:absolute;top:11px;right:11px;z-index:1;background:rgba(255,255,255,.92);color:var(--crimson);font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.lieu-photo .pin-wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);color:rgba(255,255,255,.28);z-index:0}
 .lieu-info{padding:12px 15px 14px}
 .lieu-info .sub{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.lieu-info .foot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.lieu-info .foot{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;align-items:center}
 .map-embed{width:100%;height:150px;border:0;border-radius:12px;margin-top:12px;background:#eee}
 
 /* empty */
@@ -203,6 +205,34 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media(min-width:560px){.grid.two{grid-template-columns:1fr 1fr}}
+
+/* version + maj */
+.verpill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--paper);border:1px solid var(--line);color:var(--muted);cursor:pointer;white-space:nowrap;flex:0 0 auto}
+.update-bar{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom));max-width:736px;margin:0 auto;z-index:40;background:var(--crimson);color:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-lg);animation:slideup .3s cubic-bezier(.16,1,.3,1)}
+.update-bar .ub-t{font-size:13.5px;font-weight:600;flex:1;line-height:1.3}
+.update-bar button{background:#fff;color:var(--crimson);font-weight:700;font-size:13px;padding:9px 14px;border-radius:10px;flex:0 0 auto}
+/* changelog */
+.cl-ver{margin:18px 0 10px;display:flex;align-items:baseline;gap:10px}
+.cl-ver b{font-family:"Bricolage Grotesque";font-weight:800;font-size:17px}
+.cl-ver span{font-size:12px;color:var(--muted)}
+.cl-grp{margin:0 0 12px}
+.cl-grp .h{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.cl-grp.add .h{color:var(--ok)}.cl-grp.mod .h{color:var(--info)}.cl-grp.fix .h{color:var(--warn)}
+.cl-grp ul{margin:0;padding-left:18px}
+.cl-grp li{font-size:13.5px;margin-bottom:4px;line-height:1.4}
+/* dashboard */
+.dash-band{font-family:"Bricolage Grotesque";font-weight:800;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--crimson);margin:20px 0 12px;display:flex;align-items:center;gap:10px}
+.dash-band:first-child{margin-top:2px}
+.dash-band::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--crimson-tint),transparent)}
+.dash-band.reg{color:var(--gold)}.dash-band.reg::after{background:linear-gradient(90deg,#F6EED9,transparent)}
+.rank{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-top:2px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.rank-row:last-child{border-bottom:none}
+.rank-row .rn{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-row .rn small{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+.rank-row .rv{font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;color:var(--crimson);flex:0 0 auto}
+.bar{height:6px;border-radius:6px;background:var(--crimson-tint);overflow:hidden;flex:0 0 90px;max-width:90px}
+.bar i{display:block;height:100%;background:var(--crimson)}
 </style>
 </head>
 <body>
@@ -232,6 +262,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
     <div class="mono">P</div>
     <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     <span id="tb-role" class="role-pill">—</span>
+    <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
     <button id="admin-btn" class="icon-btn hidden" onclick="openAccounts()" aria-label="Comptes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
     <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
   </div>
@@ -239,7 +270,8 @@ input,select,textarea{font-family:inherit;font-size:16px}
 </div>
 
 <nav id="nav" class="nav hidden">
-  <button data-tab="agenda" class="on" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
+  <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
+  <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
   <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
@@ -259,6 +291,28 @@ const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"A
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
+
+/* ---- Version & notes de mise à jour ---- */
+const APP_VERSION="0.1.0";
+const CHANGELOG=[
+  {v:"0.1.0",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Application connectée à Supabase : authentification réelle, données en base, cloisonnement par rôle (RLS).",
+      "Rôle Visiteur (lecture seule) à donner aux décideurs — voit tout, ne modifie rien.",
+      "Module Membres par club : suivi d'intégration (spécialité, formulaire, contrat, facture, paiement, réorientation, commentaires).",
+      "Écran Comptes (superadmin) : créer un accès, réinitialiser un mot de passe, changer un rôle, supprimer.",
+      "Tableau de bord National + Régional (Rabat · Salé · Kénitra) avec statistiques.",
+      "Notes de mise à jour et alerte automatique quand une nouvelle version est disponible."
+    ],
+    "Modifié":[
+      "Clubs de Rabat clarifiés : Prévilège (JB) et Premium (Chrystel Escariot-Chiotti) ; Salé Déclic.",
+      "JB rattaché comme animateur de ses 3 clubs, tout en restant superadmin (cumul de rôles)."
+    ],
+    "Corrigé":[
+      "Mots de passe de démonstration retirés du code de l'application."
+    ]
+  }}
+];
 
 /* ============================================================
    STORE — Supabase (base + auth + RLS)
@@ -387,7 +441,8 @@ function enterApp(){
   document.getElementById("tb-name").textContent=SESSION.name;
   const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
   document.getElementById("admin-btn").classList.toggle("hidden",SESSION.role!=="superadmin");
-  updateRegionLabel();go("agenda");
+  document.getElementById("ver-pill").textContent="v"+APP_VERSION;
+  updateRegionLabel();go("dash");
 }
 function updateRegionLabel(){
   let t;
@@ -402,12 +457,12 @@ function updateRegionLabel(){
    ============================================================ */
 function go(t){tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();}
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();}
 function fabAction(){
-  if(readOnly())return;
+  if(readOnly()||tab==="dash")return;
   if(tab==="agenda")openMeeting();
   else if(tab==="lieux")openLieu();
   else if(tab==="clubs"&&canManageStructure())clubForm(null);
@@ -455,7 +510,7 @@ function viewAgenda(){
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
-    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("SI","SI")}${chip("RL","RL")}${villeChips}</div>
+    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Réunions de lancement","RL")}${villeChips}</div>
     ${cards}<div style="height:8px"></div></div>`;
 }
 function setScope(nat){SESSION._nat=nat;updateRegionLabel();render();}
@@ -466,7 +521,7 @@ function meetingCard(m){
   return `<div class="mtg ${m.type==="RL"?"rl":""} ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" onclick="openMeeting('${m.id}')">
     <div class="mtg-date"><div class="d">${dt.getDate()}</div><div class="m">${MOIS[dt.getMonth()]}</div><div class="wd">${JOURS[dt.getDay()]}${m.heure?" · "+m.heure:""}</div></div>
     <div class="mtg-body">
-      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.type==="SI"?"si":"rl"}">${m.type}</span></div></div>
+      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.type==="SI"?"si":"rl"}">${m.type==="SI"?"Session d'info":"Lancement"}</span></div></div>
       <div class="mtg-meta">
         <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville||"")}</span>
         <span class="${tbd?"tbd":""}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${esc(lieuNom(m.lieuId))}</span>
@@ -482,24 +537,47 @@ function meetingCard(m){
 /* ============================================================
    CLUBS
    ============================================================ */
+function zoneNomForVille(ville){
+  const z=DB.zones.find(z=>(z.villes||[]).includes(ville));
+  return z?z.nom:"Autres régions";
+}
+function clubTile(c){
+  const nbUp=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+  const nbR=DB.reunions.filter(m=>m.clubId===c.id).length;const a=anim(c.animId);
+  const nbM=DB.membres.filter(m=>m.clubId===c.id).length;
+  return `<div class="tile" onclick="openClub('${c.id}')">
+    <div class="tile-top"><div><h3>${esc(c.nom)}</h3>
+      <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}</div></div></div>
+    <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:`<span class="tag empty">Animateur à pourvoir</span>`}<span class="tag">${nbM} membre${nbM>1?"s":""}</span><span class="tag">${nbUp} à venir</span></div></div>`;
+}
+function clubVilleChip(l,v){return `<button class="chip ${(window._clubVille||"")===v?"on":""}" onclick="window._clubVille='${v}';render()">${esc(l)}</button>`}
 function viewClubs(){
   const ids=scopedClubIds();
   let clubs=DB.clubs.filter(c=>ids.includes(c.id));
-  clubs.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
   const q=(window._q2||"").toLowerCase();if(q)clubs=clubs.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
+  const villesDispo=[...new Set(clubs.map(c=>c.ville))].sort();
+  if(window._clubVille&&!villesDispo.includes(window._clubVille))window._clubVille="";
+  const villeChips=`<div class="filters">${clubVilleChip("Toutes villes","")}${villesDispo.map(vl=>clubVilleChip(vl,vl)).join("")}</div>`;
+  if(window._clubVille)clubs=clubs.filter(c=>c.ville===window._clubVille);
   const sansAnim=clubs.filter(c=>!c.animId).length;
-  const tiles=clubs.map(c=>{
-    const nbUp=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").length;
-    const nbR=DB.reunions.filter(m=>m.clubId===c.id).length;const a=anim(c.animId);
-    return `<div class="tile" onclick="openClub('${c.id}')">
-      <div class="tile-top"><div><h3>${esc(c.nom)}</h3>
-        <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}</div></div></div>
-      <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:`<span class="tag empty">Animateur à pourvoir</span>`}<span class="tag">${nbUp} à venir · ${nbR} total</span></div></div>`;
-  }).join("");
+  const scopeToggle=SESSION.role==="superadmin"?`<div style="margin-bottom:14px"><div class="seg"><button class="${!SESSION._nat?"on":""}" onclick="setScope(false)">Ma zone</button><button class="${SESSION._nat?"on":""}" onclick="setScope(true)">Tout le réseau</button></div></div>`:"";
+  // regroupement par zone
+  const groups={};
+  clubs.forEach(c=>{const zn=zoneNomForVille(c.ville);(groups[zn]=groups[zn]||[]).push(c)});
+  const zoneOrder=DB.zones.map(z=>z.nom).concat("Autres régions");
+  const sections=Object.keys(groups)
+    .sort((a,b)=>{const ia=zoneOrder.indexOf(a),ib=zoneOrder.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b)})
+    .map(zn=>{
+      const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+      return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
+        <div class="grid two">${list.map(clubTile).join("")}</div>`;
+    }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} clubs${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
+    ${scopeToggle}
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un club…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
-    <div class="grid two">${tiles||emptyState("Aucun club","")}</div><div style="height:8px"></div></div>`;
+    ${villeChips}
+    ${sections||emptyState("Aucun club","")}<div style="height:8px"></div></div>`;
 }
 
 /* ============================================================
@@ -514,10 +592,11 @@ function viewLieux(){
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     return `<div class="lieu-card" onclick="openLieu('${l.id}')">
       <div class="lieu-photo ${l.photo?"":"noimg"}" style="${l.photo?`background-image:url('${l.photo}')`:""}">
-        ${l.photo?`<div class="lieu-name">${esc(l.nom)}</div>`:`<div class="ph">${esc(initiales(l.nom))}</div>`}</div>
+        ${l.photo?"":`<svg class="pin-wm" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`}
+        ${l.capacite?`<span class="cap-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${l.capacite}</span>`:""}
+        <div class="lieu-name">${esc(l.nom)}</div></div>
       <div class="lieu-info">
-        ${l.photo?"":`<h3 style="font-size:16px;margin-bottom:4px">${esc(l.nom)}</h3>`}
-        <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.capacite?` <span class="dot"></span> ${l.capacite} pers.`:""}</div>
+        <div class="sub"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.adresse?` <span class="dot"></span> ${esc(l.adresse.length>32?l.adresse.slice(0,32)+"…":l.adresse)}`:""}</div>
         <div class="foot"><span class="tag ${nbR?"crim":""}">${nbR} réunion${nbR>1?"s":""} à venir</span>${l.lat?`<span class="tag ok">📍 Géolocalisé</span>`:`<span class="tag empty">Géoloc manquante</span>`}</div>
       </div></div>`;
   }).join("");
@@ -547,6 +626,61 @@ function viewTeam(){
 }
 
 function emptyState(t,p){return `<div class="empty"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>${t}</b><p>${p}</p></div>`}
+
+/* ============================================================
+   TABLEAU DE BORD — National + Régional
+   ============================================================ */
+const REGION_RSK=["Rabat","Salé","Kenitra"];
+function dashStats(clubs){
+  const ids=clubs.map(c=>c.id);
+  const membres=DB.membres.filter(m=>ids.includes(m.clubId));
+  const reunions=DB.reunions.filter(r=>ids.includes(r.clubId));
+  const invites=reunions.flatMap(r=>r.guests||[]);
+  return{
+    clubs:clubs.length,
+    actifs:clubs.filter(c=>c.statut==="actif").length,
+    creation:clubs.filter(c=>c.statut==="creation").length,
+    sansAnim:clubs.filter(c=>!c.animId).length,
+    membres:membres.length,
+    payes:membres.filter(m=>m.paiement).length,
+    reunionsAvenir:reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee").length,
+    reunionsRealisees:reunions.filter(r=>r.statut==="realisee").length,
+    invites:invites.length,
+    invitesMembre:invites.filter(g=>g.statut==="Membre").length,
+    perClub:clubs.map(c=>({nom:c.nom,ville:c.ville,n:DB.membres.filter(m=>m.clubId===c.id).length})).sort((a,b)=>b.n-a.n||a.nom.localeCompare(b.nom))
+  };
+}
+function dashBlock(s){
+  const maxN=Math.max(1,...s.perClub.map(c=>c.n));
+  const ranks=s.perClub.map(c=>`<div class="rank-row"><div class="rn">${esc(c.nom.replace("CAP ",""))}<small>${esc(c.ville)}</small></div>
+    <div class="bar"><i style="width:${Math.round(c.n/maxN*100)}%"></i></div><div class="rv">${c.n}</div></div>`).join("");
+  return `
+    <div class="stats">
+      <div class="stat"><div class="n">${s.clubs}</div><div class="l">Clubs · ${s.actifs} actifs</div></div>
+      <div class="stat"><div class="n">${s.membres}</div><div class="l">Membres</div></div>
+      <div class="stat"><div class="n">${s.reunionsAvenir}</div><div class="l">Réunions à venir</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">${s.payes}</div><div class="l">Membres à jour (payé)</div></div>
+      <div class="stat"><div class="n">${s.invites}</div><div class="l">Invités suivis</div></div>
+      <div class="stat"><div class="n">${s.sansAnim}</div><div class="l">Clubs sans animateur</div></div>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
+    <div class="rank">${ranks||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div>`;
+}
+function viewDashboard(){
+  const seeAll=SESSION.role==="superadmin"||SESSION.role==="visiteur";
+  let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div></div>`;
+  if(seeAll){
+    html+=`<div class="dash-band">National · tout le réseau</div>`+dashBlock(dashStats(DB.clubs));
+    const reg=DB.clubs.filter(c=>REGION_RSK.includes(c.ville));
+    html+=`<div class="dash-band reg">Régional · Rabat · Salé · Kénitra</div>`+dashBlock(dashStats(reg));
+  }else{
+    const mine=DB.clubs.filter(c=>scopedClubIds().includes(c.id));
+    html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(mine));
+  }
+  return html+`<div style="height:8px"></div></div>`;
+}
 
 /* ============================================================
    SHEET — RÉUNION (détail + invités + édition)
@@ -1009,6 +1143,39 @@ async function acDelete(id){
   toast("Compte supprimé");openAccounts();
 }
 
+/* ============================================================
+   VERSION — notes de mise à jour + alerte nouvelle version
+   ============================================================ */
+function openChangelog(){
+  const body=CHANGELOG.map(rel=>{
+    const grp=(cls,title,arr)=>arr&&arr.length?`<div class="cl-grp ${cls}"><div class="h">${title}</div><ul>${arr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:"";
+    return `<div class="cl-ver"><b>v${rel.v}</b><span>${esc(rel.date)}</span></div>
+      ${grp("add","Ajouté",rel.notes["Ajouté"])}${grp("mod","Modifié",rel.notes["Modifié"])}${grp("fix","Corrigé",rel.notes["Corrigé"])}`;
+  }).join(`<div class="divider"></div>`);
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Notes de mise à jour</h3><div class="sheet-sub">Version actuelle : v${APP_VERSION}</div>
+    ${body}
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+let _updateSeen=null;
+function cmpVer(a,b){const pa=a.split(".").map(Number),pb=b.split(".").map(Number);for(let i=0;i<3;i++){if((pa[i]||0)>(pb[i]||0))return 1;if((pa[i]||0)<(pb[i]||0))return -1}return 0}
+async function checkUpdate(){
+  try{
+    const r=await fetch("/version.json?_="+Date.now(),{cache:"no-store"});
+    if(!r.ok)return;const v=await r.json();
+    if(v&&v.version&&cmpVer(v.version,APP_VERSION)>0&&v.version!==_updateSeen){_updateSeen=v.version;showUpdateBar(v.version)}
+  }catch(e){}
+}
+function showUpdateBar(v){
+  if(document.getElementById("update-bar"))return;
+  const bar=document.createElement("div");bar.id="update-bar";bar.className="update-bar";
+  bar.innerHTML=`<div class="ub-t">Nouvelle version <b>v${esc(v)}</b> disponible</div>
+    <button onclick="location.reload(true)">Mettre à jour</button>
+    <button onclick="this.parentElement.remove()" style="background:transparent;color:#fff;padding:9px 6px">✕</button>`;
+  document.body.appendChild(bar);
+}
+
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
 function openSheet(){document.getElementById("sheet").classList.add("open")}
 function closeSheet(){document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
@@ -1021,6 +1188,7 @@ function closeSheet(){document.getElementById("sheet").classList.remove("open");
   document.getElementById("lg-user").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("lg-pass").focus()});
   const {data:{session}}=await sb.auth.getSession();
   if(session)await bootIntoApp();
+  checkUpdate();setInterval(checkUpdate,180000);
 })();
 </script>
 </body>

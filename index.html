@@ -82,6 +82,9 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 12px}
 .stat .n{font-family:"Bricolage Grotesque";font-weight:800;font-size:24px;line-height:1;color:var(--crimson)}
 .stat .l{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500}
+.stat.link{cursor:pointer;transition:border-color .12s,transform .06s}
+.stat.link:active{transform:scale(.97)}
+.stat.on{border-color:var(--crimson);box-shadow:inset 0 0 0 1px var(--crimson)}
 
 .filters{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin:0 -2px;scrollbar-width:none}
 .filters::-webkit-scrollbar{display:none}
@@ -294,8 +297,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.2.1";
+const APP_VERSION="0.2.2";
 const CHANGELOG=[
+  {v:"0.2.2",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Agenda : les tuiles « À venir », « Villes actives » et « Lieux à définir » sont cliquables pour filtrer directement."
+    ]
+  }},
   {v:"0.2.1",date:"18 juillet 2026",notes:{
     "Corrigé":[
       "Barre de navigation du bas qui bougeait au défilement sur mobile (fond solide, positionnement stabilisé)."
@@ -518,6 +526,7 @@ function viewAgenda(){
 
   let list=all;
   if(filter==="up")list=all.filter(m=>!isPast(m.date));
+  else if(filter==="tbd")list=all.filter(m=>!m.lieuId&&!isPast(m.date));
   else if(["SI","RL"].includes(filter))list=all.filter(m=>m.type===filter);
   else if(filter.startsWith("v:"))list=all.filter(m=>club(m.clubId).ville===filter.slice(2));
   const q=(window._q||"").toLowerCase();
@@ -537,9 +546,9 @@ function viewAgenda(){
       ${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div>
     ${scopeToggle?`<div style="margin-bottom:14px">${scopeToggle}</div>`:""}
     <div class="stats">
-      <div class="stat"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
-      <div class="stat"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
-      <div class="stat"><div class="n">${tbd}</div><div class="l">Lieux à définir</div></div>
+      <div class="stat link ${filter==="up"?"on":""}" onclick="filter='up';render()"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
+      <div class="stat link ${filter==="all"?"on":""}" onclick="filter='all';render()"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
+      <div class="stat link ${filter==="tbd"?"on":""}" onclick="filter='tbd';render()"><div class="n">${tbd}</div><div class="l">Lieux à définir</div></div>
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>

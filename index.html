@@ -239,6 +239,35 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .rank-row .rv{font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;color:var(--crimson);flex:0 0 auto}
 .bar{height:6px;border-radius:6px;background:var(--crimson-tint);overflow:hidden;flex:0 0 90px;max-width:90px}
 .bar i{display:block;height:100%;background:var(--crimson)}
+
+/* ===== DESKTOP / PC (≥ 900px) : barre latérale + contenu large + fiches en panneau droit ===== */
+@media(min-width:900px){
+  .nav{top:0;bottom:0;left:0;right:auto;width:216px;max-width:none;height:100dvh;margin:0;
+    flex-direction:column;justify-content:flex-start;align-items:stretch;gap:5px;
+    padding:22px 12px;border-top:none;border-right:1px solid var(--line);box-shadow:none}
+  .nav::before{content:"CAP · Protéine Maroc";display:block;font-family:"Bricolage Grotesque";font-weight:800;font-size:15px;color:var(--crimson);padding:6px 14px 16px}
+  .nav button{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:13px;padding:11px 14px;border-radius:11px;font-size:14px;font-weight:600;color:var(--ink)}
+  .nav button svg{width:20px;height:20px;color:var(--muted)}
+  .nav button.on{background:var(--crimson-tint);color:var(--crimson)}
+  .nav button.on svg{color:var(--crimson)}
+  .app{margin:0 auto 0 216px;max-width:1180px;min-height:100dvh;padding-bottom:24px}
+  .topbar{flex-direction:row;align-items:center;gap:16px;padding:14px 26px}
+  .tb-row2{margin-left:auto}
+  .fab{right:34px;bottom:34px;left:auto}
+  .page{padding:22px 26px 10px}
+  .grid.two{grid-template-columns:repeat(3,1fr)}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  /* fiches = panneau latéral droit */
+  .sheet{top:0;bottom:0;right:0;left:auto;margin:0;width:460px;max-width:90vw;height:100dvh;max-height:none;border-radius:0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));animation:slidein .28s cubic-bezier(.16,1,.3,1)}
+  .sheet-grip{display:none}
+  .divider{margin-left:-24px;margin-right:-24px}
+  /* login centré */
+  .auth{align-items:center;justify-content:center}
+  .auth-brand,.auth-hero,.auth-card,.demo-note{max-width:440px;margin-left:auto;margin-right:auto;width:100%}
+  .auth-brand{margin-bottom:22px}
+  .auth-hero{padding:22px 0}
+}
+@keyframes slidein{from{transform:translateX(100%)}to{transform:none}}
 </style>
 </head>
 <body>
@@ -306,8 +335,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.2.5";
+const APP_VERSION="0.3.0";
 const CHANGELOG=[
+  {v:"0.3.0",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Affichage PC/grand écran : barre latérale gauche, en-tête sur une ligne, grilles sur 3 colonnes, et fiches en panneau latéral droit. L'appli s'adapte automatiquement à la taille de l'écran."
+    ]
+  }},
   {v:"0.2.5",date:"18 juillet 2026",notes:{
     "Modifié":[
       "Tout le réseau s'affiche partout par défaut ; le filtrage se fait localement dans chaque onglet (fini le bouton global Ma zone / Tout le réseau)."

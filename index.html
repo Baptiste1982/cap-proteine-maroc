@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>CAP · Protéine Maroc — CRM Animation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson:#B0122E;--crimson-deep:#5C0A18;--crimson-darker:#3E0710;--crimson-tint:#F8E9EC;
+  --gold:#C8A24C;--ink:#1B1416;--muted:#8C8085;--paper:#FAF6F4;--card:#FFFFFF;--line:#ECE3E1;
+  --ok:#2E7D5B;--ok-tint:#E5F1EB;--info:#3A5DA8;--info-tint:#E7ECF6;--warn:#B8862A;--warn-tint:#FBF0DA;
+  --shadow:0 1px 2px rgba(27,20,22,.04),0 6px 18px rgba(92,10,24,.06);
+  --shadow-lg:0 12px 40px rgba(92,10,24,.16);--r:16px;--r-sm:11px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45}
+h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.01em;margin:0}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:16px}
+.hidden{display:none !important}
+
+/* LOGIN */
+.auth{min-height:100dvh;display:flex;flex-direction:column;
+  background:radial-gradient(120% 80% at 85% -10%,rgba(200,162,76,.16),transparent 55%),linear-gradient(155deg,var(--crimson-deep),var(--crimson-darker));
+  color:#fff;padding:calc(env(safe-area-inset-top) + 34px) 26px 30px}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:auto}
+.mono{width:44px;height:44px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;
+  font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;color:var(--crimson-deep);
+  background:linear-gradient(160deg,#fff,#F3E7C9);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.auth-brand small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600}
+.auth-brand b{font-family:"Bricolage Grotesque";font-weight:700;font-size:16px}
+.auth-hero{padding:38px 0 26px}
+.auth-hero .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:14px}
+.auth-hero h1{font-size:clamp(32px,9vw,44px);font-weight:800;line-height:1.02}
+.auth-hero p{color:rgba(255,255,255,.72);font-size:15px;max-width:34ch;margin:14px 0 0}
+.auth-card{background:var(--card);color:var(--ink);border-radius:22px;padding:22px 20px;box-shadow:var(--shadow-lg)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 7px 2px}
+.field input,.field select,.field textarea{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:#fff;transition:border-color .15s}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--crimson)}
+.field.half{display:inline-block;width:calc(50% - 5px)}
+.field.half:first-of-type{margin-right:8px}
+.btn{width:100%;padding:15px;border-radius:var(--r-sm);font-weight:700;font-size:15.5px;background:var(--crimson);color:#fff;transition:transform .06s,filter .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.985)}.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:var(--crimson);border:1.5px solid var(--line)}
+.btn.mini{width:auto;padding:10px 14px;font-size:13px}
+.auth-err{color:#FFD5DA;font-size:13px;font-weight:600;margin:0 0 12px;min-height:0}
+.demo-note{margin-top:16px;font-size:12px;color:rgba(255,255,255,.66);text-align:center;line-height:1.7}
+.demo-note b{color:#fff}
+.demo-chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);padding:3px 9px;border-radius:20px;margin:3px;font-size:11.5px;font-weight:500}
+
+/* SHELL */
+.app{max-width:760px;margin:0 auto;min-height:100dvh;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(250,246,244,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 12px) 18px 12px;display:flex;align-items:center;gap:12px}
+.topbar .mono{width:38px;height:38px;font-size:19px;box-shadow:none;border:1px solid var(--line)}
+.topbar .who{flex:1;min-width:0}
+.topbar .who b{font-family:"Bricolage Grotesque";font-weight:700;font-size:15px;display:block;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .who span{font-size:11.5px;color:var(--muted)}
+.role-pill{font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:4px 9px;border-radius:20px;background:var(--crimson-tint);color:var(--crimson);white-space:nowrap}
+.role-pill.sa{background:var(--crimson);color:#fff}
+.icon-btn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);background:#fff}
+.icon-btn:active{background:var(--crimson-tint)}
+
+.page{padding:18px 18px 8px;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-head{margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.page-head .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson);font-weight:700}
+.page-head h2{font-size:27px;font-weight:800;margin-top:3px}
+.page-head p{color:var(--muted);font-size:13.5px;margin:4px 0 0}
+
+/* segmented (scope toggle) */
+.seg{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{padding:7px 12px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--crimson);color:#fff}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 12px}
+.stat .n{font-family:"Bricolage Grotesque";font-weight:800;font-size:24px;line-height:1;color:var(--crimson)}
+.stat .l{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500}
+
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin:0 -2px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:#fff;border:1.5px solid var(--line);color:var(--muted);flex:0 0 auto;transition:all .12s}
+.chip.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+
+.searchbar{display:flex;align-items:center;gap:9px;background:#fff;border:1.5px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;margin-bottom:14px}
+.searchbar input{border:none;flex:1;padding:0;background:none}.searchbar input:focus{outline:none}
+.searchbar svg{color:var(--muted);flex:0 0 auto}
+
+.month-label{font-family:"Bricolage Grotesque";font-weight:700;font-size:13px;letter-spacing:.02em;color:var(--muted);text-transform:uppercase;margin:22px 0 12px;display:flex;align-items:center;gap:10px}
+.month-label:first-child{margin-top:4px}
+.month-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* meeting card */
+.mtg{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 15px 15px 16px;margin-bottom:11px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;overflow:hidden}
+.mtg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--crimson)}
+.mtg.rl::before{background:var(--gold)}
+.mtg.annulee{opacity:.5}
+.mtg.annulee .club{text-decoration:line-through}
+.mtg.past{opacity:.66}
+.mtg-date{flex:0 0 auto;text-align:center;min-width:46px}
+.mtg-date .d{font-family:"Bricolage Grotesque";font-weight:800;font-size:24px;line-height:1}
+.mtg-date .m{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.mtg-date .wd{font-size:10px;color:var(--muted);margin-top:4px}
+.mtg-body{flex:1;min-width:0}
+.mtg-body .club{font-family:"Bricolage Grotesque";font-weight:700;font-size:15.5px;line-height:1.2}
+.mtg-meta{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:7px;font-size:12.5px;color:var(--muted)}
+.mtg-meta span{display:inline-flex;align-items:center;gap:5px}
+.mtg-meta svg{opacity:.7}
+.mtg-meta .tbd{color:var(--crimson);font-weight:600}
+.mtg-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.badges{display:flex;gap:5px;flex:0 0 auto}
+.badge{font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.badge.si{background:var(--crimson-tint);color:var(--crimson)}
+.badge.rl{background:#F6EED9;color:#8A6A1C}
+.st{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.st.planifiee{background:#F0ECEC;color:var(--muted)}
+.st.confirmee{background:var(--ok-tint);color:var(--ok)}
+.st.realisee{background:var(--info-tint);color:var(--info)}
+.st.annulee{background:var(--crimson-tint);color:var(--crimson)}
+.guest-count{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--crimson);font-weight:600;margin-top:8px;background:var(--crimson-tint);padding:3px 9px;border-radius:20px}
+
+/* tiles */
+.grid{display:grid;gap:11px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow)}
+.tile-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tile h3{font-size:16px;font-weight:700}
+.tile .sub{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--muted);display:inline-block}
+.tile-foot{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tag{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:8px;background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+.tag.crim{background:var(--crimson-tint);color:var(--crimson);border-color:transparent}
+.tag.empty{background:var(--warn-tint);color:var(--warn);border-color:transparent}
+.tag.ok{background:var(--ok-tint);color:var(--ok);border-color:transparent}
+.avatar{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-family:"Bricolage Grotesque";font-weight:700;font-size:16px;color:#fff;background:linear-gradient(160deg,var(--crimson),var(--crimson-deep))}
+
+/* lieu card */
+.lieu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:11px}
+.lieu-photo{height:120px;background:linear-gradient(160deg,var(--crimson-deep),var(--crimson-darker));background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:12px}
+.lieu-photo .lieu-name{color:#fff;font-family:"Bricolage Grotesque";font-weight:700;font-size:17px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.lieu-photo.noimg{align-items:center;justify-content:center}
+.lieu-photo.noimg .ph{font-family:"Bricolage Grotesque";font-weight:800;font-size:34px;color:rgba(255,255,255,.5)}
+.lieu-info{padding:12px 15px 14px}
+.lieu-info .sub{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lieu-info .foot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.map-embed{width:100%;height:150px;border:0;border-radius:12px;margin-top:12px;background:#eee}
+
+/* empty */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty svg{opacity:.32;margin-bottom:12px}
+.empty b{display:block;color:var(--ink);font-family:"Bricolage Grotesque";font-weight:700;font-size:16px;margin-bottom:5px}
+.empty p{font-size:13.5px;margin:0}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:10px;font-weight:600;border-radius:12px;transition:color .15s}
+.nav button.on{color:var(--crimson)}
+.nav button svg{width:22px;height:22px}
+
+.fab{position:fixed;right:18px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:31;width:56px;height:56px;border-radius:18px;background:var(--crimson);color:#fff;display:grid;place-items:center;box-shadow:0 8px 24px rgba(176,18,46,.4);transition:transform .08s}
+.fab:active{transform:scale(.92)}
+
+/* sheet */
+.sheet-wrap{position:fixed;inset:0;z-index:50;display:none}
+.sheet-wrap.open{display:block}
+.sheet-bg{position:absolute;inset:0;background:rgba(27,20,22,.42);animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-width:760px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;padding:8px 20px calc(24px + env(safe-area-inset-bottom));max-height:93dvh;overflow-y:auto;animation:slideup .28s cubic-bezier(.16,1,.3,1)}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grip{width:40px;height:4px;border-radius:4px;background:var(--line);margin:8px auto 16px}
+.sheet h3{font-size:20px;font-weight:800;margin-bottom:4px}
+.sheet .sheet-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.sheet-actions{display:flex;gap:10px;margin-top:10px}
+.sheet-actions .btn{flex:1}
+.del-link{text-align:center;color:var(--crimson);font-weight:600;font-size:13.5px;padding:14px;margin-top:2px}
+.divider{height:1px;background:var(--line);margin:18px -20px}
+
+/* detail rows */
+.drow{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.drow:last-child{border-bottom:none}
+.drow .ic{width:34px;height:34px;border-radius:9px;background:var(--crimson-tint);color:var(--crimson);display:grid;place-items:center;flex:0 0 auto}
+.drow .tx{flex:1;min-width:0}
+.drow .tx .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.drow .tx .v{font-size:14.5px;font-weight:500;margin-top:1px}
+.drow a{color:var(--crimson);font-weight:600;text-decoration:none;font-size:13px}
+
+/* guests */
+.guest{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.guest:last-child{border-bottom:none}
+.guest .gav{width:34px;height:34px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--muted);flex:0 0 auto}
+.guest .gi{flex:1;min-width:0}
+.guest .gi b{font-size:14px;font-weight:600;display:block}
+.guest .gi small{font-size:11.5px;color:var(--muted)}
+.gstat{border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;font-weight:600;background:#fff;flex:0 0 auto}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:1.5px dashed var(--line);border-radius:var(--r-sm);color:var(--muted);font-weight:600;font-size:13.5px;margin-bottom:14px}
+.photo-prev{width:100%;height:150px;object-fit:cover;border-radius:var(--r-sm);margin-bottom:12px}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:60;opacity:0;transition:all .3s;pointer-events:none;box-shadow:var(--shadow-lg);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(min-width:560px){.grid.two{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="auth" class="auth">
+  <div class="auth-brand"><div class="mono">P</div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
+  <div class="auth-hero">
+    <div class="eyebrow">CRM Animation · Saison 2026</div>
+    <h1>Le réseau,<br>piloté au&nbsp;cordeau.</h1>
+    <p>Planning, clubs, lieux et invités des régions du Maroc, réunis dans un seul espace.</p>
+  </div>
+  <div class="auth-card">
+    <div class="field"><label>Identifiant</label><input id="lg-user" type="text" autocomplete="username" placeholder="prénom" autocapitalize="none" /></div>
+    <div class="field"><label>Mot de passe</label><input id="lg-pass" type="password" autocomplete="current-password" placeholder="••••••••" /></div>
+    <p id="lg-err" class="auth-err"></p>
+    <button class="btn" onclick="doLogin()">Se connecter</button>
+  </div>
+  <div class="demo-note"><b>Comptes de démonstration</b> — mot de passe <b>cap2026</b><br>
+    <span class="demo-chip">jb · super admin</span><span class="demo-chip">zoubida · Rabat</span><span class="demo-chip">anas · Casa</span><span class="demo-chip">leyla · Marrakech</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+  <div class="topbar">
+    <div class="mono">P</div>
+    <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
+    <span id="tb-role" class="role-pill">—</span>
+    <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<nav id="nav" class="nav hidden">
+  <button data-tab="agenda" class="on" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
+  <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
+  <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
+  <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
+</nav>
+
+<button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+
+<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ============================================================
+   DONNÉES INITIALES — injectées depuis le planning CAP MA 2026
+   (géoloc = valeurs de départ éditables, à affiner sur le terrain)
+   ============================================================ */
+const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"Animateur"};
+const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
+const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
+const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
+
+const SEED={
+  zones:[
+    {id:"zN",nom:"Rabat · Salé · Kénitra",villes:["Rabat","Salé","Kenitra"]},
+    {id:"zC",nom:"Casablanca",villes:["Casablanca","Dar Bouazza","Bouskoura"]},
+    {id:"zM",nom:"Marrakech",villes:["Marrakech"]}
+  ],
+  users:[
+    {id:"u_jb",  login:"jb",     pass:"cap2026",name:"Jean-Baptiste C.",role:"superadmin",zoneId:"zN",animId:null,clubIds:[]},
+    {id:"u_zoub",login:"zoubida",pass:"cap2026",name:"Zoubida Labdi",   role:"animateur", zoneId:"zN",animId:"a1",clubIds:["c1"]},
+    {id:"u_leyla",login:"leyla", pass:"cap2026",name:"Leyla Chaousari", role:"animateur", zoneId:"zM",animId:"a2",clubIds:["c2"]},
+    {id:"u_mouna",login:"mouna", pass:"cap2026",name:"Mouna Siteri B.", role:"animateur", zoneId:"zC",animId:"a3",clubIds:["c3"]},
+    {id:"u_yous",login:"youssef",pass:"cap2026",name:"Youssef Bennani", role:"animateur", zoneId:"zC",animId:"a4",clubIds:["c4"]},
+    {id:"u_anas",login:"anas",   pass:"cap2026",name:"Anas Benmoussa",  role:"animateur", zoneId:"zC",animId:"a5",clubIds:["c5"]},
+    {id:"u_jih", login:"jihane", pass:"cap2026",name:"Jihane Benslimane",role:"animateur",zoneId:"zN",animId:"a6",clubIds:["c6"]},
+    {id:"u_sih", login:"siham",  pass:"cap2026",name:"Siham Alaoui",    role:"animateur", zoneId:"zC",animId:"a7",clubIds:["c7"]}
+  ],
+  animateurs:[
+    {id:"a1",nom:"Zoubida Labdi",ville:"Rabat",tel:"",email:""},
+    {id:"a2",nom:"Leyla Chaousari",ville:"Marrakech",tel:"",email:""},
+    {id:"a3",nom:"Mouna Siteri Bennani",ville:"Casablanca",tel:"",email:""},
+    {id:"a4",nom:"Youssef Bennani",ville:"Casablanca",tel:"",email:""},
+    {id:"a5",nom:"Anas Benmoussa",ville:"Casablanca",tel:"",email:""},
+    {id:"a6",nom:"Jihane Benslimane",ville:"Rabat",tel:"",email:""},
+    {id:"a7",nom:"Siham Alaoui",ville:"Casablanca",tel:"",email:""}
+  ],
+  clubs:[
+    {id:"c1",nom:"CAP Rabat Signature",ville:"Rabat",animId:"a1",statut:"actif"},
+    {id:"c2",nom:"CAP Marrakech Synergie",ville:"Marrakech",animId:"a2",statut:"actif"},
+    {id:"c3",nom:"CAP Casablanca Premium",ville:"Casablanca",animId:"a3",statut:"actif"},
+    {id:"c4",nom:"CAP Casablanca Leaders",ville:"Casablanca",animId:"a4",statut:"actif"},
+    {id:"c5",nom:"CAP Casablanca Excellence",ville:"Casablanca",animId:"a5",statut:"actif"},
+    {id:"c6",nom:"CAP Rabat Capital Circle",ville:"Rabat",animId:"a6",statut:"actif"},
+    {id:"c7",nom:"CAP Casablanca Doyen",ville:"Casablanca",animId:"a7",statut:"actif"},
+    {id:"c8",nom:"CAP Rabat Premium",ville:"Rabat",animId:null,statut:"creation"},
+    {id:"c9",nom:"CAP Salé Declic",ville:"Salé",animId:null,statut:"creation"},
+    {id:"c10",nom:"CAP Kenitra Trajectoire",ville:"Kenitra",animId:null,statut:"creation"},
+    {id:"c11",nom:"CAP DarB",ville:"Dar Bouazza",animId:null,statut:"creation"},
+    {id:"c12",nom:"CAP Bouskoura",ville:"Bouskoura",animId:null,statut:"creation"}
+  ],
+  lieux:[
+    {id:"l1",nom:"Royal Golf Dar Essalam",ville:"Rabat",adresse:"Km 9, Route de Zaërs, Rabat",lat:33.9716,lng:-6.8498,capacite:120,contactNom:"",contactTel:"",notes:"",photo:""},
+    {id:"l2",nom:"Le Méridien N'Fis",ville:"Marrakech",adresse:"Avenue Mohammed VI, Marrakech",lat:31.6295,lng:-8.0086,capacite:100,contactNom:"",contactTel:"",notes:"",photo:""},
+    {id:"l3",nom:"Hotel Villa Blanca",ville:"Casablanca",adresse:"Bd de la Corniche, Casablanca",lat:33.6066,lng:-7.6793,capacite:90,contactNom:"",contactTel:"",notes:"",photo:""},
+    {id:"l4",nom:"M Avenue (Mtech)",ville:"Marrakech",adresse:"Avenue Mohammed VI, Marrakech",lat:31.6270,lng:-8.0100,capacite:80,contactNom:"",contactTel:"",notes:"",photo:""},
+    {id:"l5",nom:"Palais Zaïtunay",ville:"Marrakech",adresse:"Marrakech",lat:31.6295,lng:-7.9811,capacite:100,contactNom:"",contactTel:"",notes:"",photo:""}
+  ],
+  reunions:[
+    {id:"m1", type:"SI",clubId:"c1",date:"2026-04-23",heure:"19:00",lieuId:"l1",animId:"a1",statut:"realisee",guests:[]},
+    {id:"m2", type:"SI",clubId:"c2",date:"2026-05-14",heure:"19:00",lieuId:"l2",animId:"a2",statut:"confirmee",guests:[]},
+    {id:"m3", type:"SI",clubId:"c3",date:"2026-05-20",heure:"19:00",lieuId:"l3",animId:"a3",statut:"confirmee",guests:[]},
+    {id:"m4", type:"SI",clubId:"c1",date:"2026-06-02",heure:"19:00",lieuId:"l1",animId:"a1",statut:"confirmee",guests:[]},
+    {id:"m5", type:"SI",clubId:"c5",date:"2026-06-03",heure:"19:00",lieuId:"l3",animId:"a5",statut:"planifiee",guests:[]},
+    {id:"m6", type:"SI",clubId:"c6",date:"2026-06-04",heure:"19:00",lieuId:"l1",animId:"a6",statut:"planifiee",guests:[]},
+    {id:"m7", type:"SI",clubId:"c2",date:"2026-06-18",heure:"19:00",lieuId:"l4",animId:"a2",statut:"planifiee",guests:[]},
+    {id:"m8", type:"SI",clubId:"c7",date:"2026-06-25",heure:"19:00",lieuId:"l3",animId:"a7",statut:"planifiee",guests:[]},
+    {id:"m9", type:"RL",clubId:"c1",date:"2026-07-20",heure:"19:00",lieuId:null,animId:"a1",statut:"planifiee",guests:[]},
+    {id:"m10",type:"RL",clubId:"c4",date:"2026-07-21",heure:"19:00",lieuId:"l3",animId:"a4",statut:"planifiee",guests:[]},
+    {id:"m11",type:"RL",clubId:"c3",date:"2026-07-22",heure:"19:00",lieuId:"l3",animId:"a3",statut:"planifiee",guests:[]},
+    {id:"m12",type:"RL",clubId:"c2",date:"2026-07-23",heure:"19:00",lieuId:"l5",animId:"a2",statut:"planifiee",guests:[]},
+    {id:"m13",type:"RL",clubId:"c5",date:"2026-07-23",heure:"19:00",lieuId:"l3",animId:"a5",statut:"planifiee",guests:[]}
+  ]
+};
+
+/* ============================================================
+   STORE
+   ============================================================ */
+const KEY="cap-crm-db-v2",SKEY="cap-crm-session-v2";
+let DB=null,SESSION=null,tab="agenda",filter="all";
+async function sget(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch(e){return null}}
+async function sset(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch(e){}}
+async function loadDB(){DB=await sget(KEY);if(!DB){DB=structuredClone(SEED);await sset(KEY,DB)}}
+async function saveDB(){await sset(KEY,DB)}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const MOIS=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const MOIS_LONG=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const JOURS=["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+function club(id){return DB.clubs.find(c=>c.id===id)||{}}
+function anim(id){return DB.animateurs.find(a=>a.id===id)}
+function animNom(id){const a=anim(id);return a?a.nom:"Non attribué"}
+function lieu(id){return DB.lieux.find(l=>l.id===id)}
+function lieuNom(id){const l=lieu(id);return l?l.nom:"À définir"}
+function zone(id){return DB.zones.find(z=>z.id===id)}
+function initiales(n){return(n||"?").split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+function dObj(iso){const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d)}
+function isPast(iso){return dObj(iso)<TODAY}
+function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1900)}
+
+/* ---- périmètre selon rôle ---- */
+function national(){return SESSION.role==="superadmin"&&SESSION._nat}
+function scopedClubIds(){
+  if(national())return DB.clubs.map(c=>c.id);
+  if(SESSION.role==="superadmin"||SESSION.role==="directeur"){
+    const z=zone(SESSION.zoneId);return DB.clubs.filter(c=>z.villes.includes(c.ville)).map(c=>c.id);
+  }
+  return SESSION.clubIds||[];
+}
+function scopedVilles(){
+  if(national())return null; // toutes
+  if(SESSION.role==="animateur")return[...new Set(SESSION.clubIds.map(id=>club(id).ville))];
+  return zone(SESSION.zoneId).villes;
+}
+function canEditReunion(m){
+  if(SESSION.role==="superadmin")return true;
+  if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(m.clubId).ville);
+  return SESSION.clubIds.includes(m.clubId);
+}
+function canManageStructure(){return SESSION.role!=="animateur"} // clubs & animateurs
+function canDeleteLieu(){return SESSION.role!=="animateur"}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+async function doLogin(){
+  const u=document.getElementById("lg-user").value.trim().toLowerCase();
+  const p=document.getElementById("lg-pass").value;const err=document.getElementById("lg-err");
+  const user=DB.users.find(x=>x.login===u);
+  if(!user||user.pass!==p){err.textContent="Identifiant ou mot de passe incorrect.";return}
+  err.textContent="";
+  SESSION={...user,_nat:false};delete SESSION.pass;
+  await sset(SKEY,SESSION);document.getElementById("lg-pass").value="";enterApp();
+}
+async function logout(){SESSION=null;await sset(SKEY,null);
+  document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
+  document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);}
+function enterApp(){
+  document.getElementById("auth").classList.add("hidden");document.getElementById("app").classList.remove("hidden");
+  document.getElementById("nav").classList.remove("hidden");
+  document.getElementById("tb-name").textContent=SESSION.name;
+  const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
+  updateRegionLabel();go("agenda");
+}
+function updateRegionLabel(){
+  let t;
+  if(SESSION.role==="animateur")t="Animateur · "+[...new Set(SESSION.clubIds.map(id=>club(id).ville))].join(", ");
+  else t=national()?"Vue nationale · tout le réseau":"Zone "+zone(SESSION.zoneId).nom;
+  document.getElementById("tb-region").textContent=t;
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+function go(t){tab=t;filter="all";
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  document.getElementById("fab").classList.toggle("hidden",tab==="team"&&!canManageStructure());
+  render();window.scrollTo({top:0,behavior:"instant"});}
+function render(){const v=document.getElementById("view");
+  v.innerHTML=tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();}
+function fabAction(){
+  if(tab==="agenda")openMeeting();
+  else if(tab==="lieux")openLieu();
+  else if(tab==="clubs"&&canManageStructure())clubForm(null);
+  else if(tab==="team"&&canManageStructure())openAnim();
+  else openMeeting();
+}
+
+/* ============================================================
+   AGENDA
+   ============================================================ */
+function visibleReunions(){
+  const ids=scopedClubIds();
+  return DB.reunions.filter(m=>ids.includes(m.clubId)).sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||""));
+}
+function viewAgenda(){
+  const all=visibleReunions();
+  const upcoming=all.filter(m=>!isPast(m.date)&&m.statut!=="annulee");
+  const villesActives=new Set(all.map(m=>club(m.clubId).ville));
+  const tbd=all.filter(m=>!m.lieuId&&!isPast(m.date)).length;
+
+  let list=all;
+  if(filter==="up")list=all.filter(m=>!isPast(m.date));
+  else if(["SI","RL"].includes(filter))list=all.filter(m=>m.type===filter);
+  else if(filter.startsWith("v:"))list=all.filter(m=>club(m.clubId).ville===filter.slice(2));
+  const q=(window._q||"").toLowerCase();
+  if(q)list=list.filter(m=>(club(m.clubId).nom+" "+lieuNom(m.lieuId)+" "+animNom(m.animId)).toLowerCase().includes(q));
+
+  const villeChips=[...new Set(all.map(m=>club(m.clubId).ville))].sort().map(vl=>chip(vl,"v:"+vl)).join("");
+  const scopeToggle=SESSION.role==="superadmin"?`
+    <div class="seg"><button class="${!SESSION._nat?"on":""}" onclick="setScope(false)">Ma zone</button><button class="${SESSION._nat?"on":""}" onclick="setScope(true)">Tout le réseau</button></div>`:"";
+
+  let cards="";
+  if(!list.length)cards=emptyState("Aucune réunion","Ajuste les filtres ou planifie une nouvelle date avec le bouton +.");
+  else{let cm="";list.forEach(m=>{const dt=dObj(m.date),mk=dt.getFullYear()+"-"+dt.getMonth();
+    if(mk!==cm){cm=mk;cards+=`<div class="month-label">${MOIS_LONG[dt.getMonth()]} ${dt.getFullYear()}</div>`}cards+=meetingCard(m);});}
+
+  return `<div class="page">
+    <div class="page-head"><div><div class="eyebrow">${national()?"Toutes les régions":SESSION.role==="animateur"?"Mes clubs":"Zone "+zone(SESSION.zoneId).nom}</div><h2>Agenda</h2></div>
+      ${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div>
+    ${scopeToggle?`<div style="margin-bottom:14px">${scopeToggle}</div>`:""}
+    <div class="stats">
+      <div class="stat"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
+      <div class="stat"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
+      <div class="stat"><div class="n">${tbd}</div><div class="l">Lieux à définir</div></div>
+    </div>
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
+    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("SI","SI")}${chip("RL","RL")}${villeChips}</div>
+    ${cards}<div style="height:8px"></div></div>`;
+}
+function setScope(nat){SESSION._nat=nat;sset(SKEY,SESSION);updateRegionLabel();render();}
+function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
+
+function meetingCard(m){
+  const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),tbd=!m.lieuId,ng=(m.guests||[]).length;
+  return `<div class="mtg ${m.type==="RL"?"rl":""} ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" onclick="openMeeting('${m.id}')">
+    <div class="mtg-date"><div class="d">${dt.getDate()}</div><div class="m">${MOIS[dt.getMonth()]}</div><div class="wd">${JOURS[dt.getDay()]}${m.heure?" · "+m.heure:""}</div></div>
+    <div class="mtg-body">
+      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.type==="SI"?"si":"rl"}">${m.type}</span></div></div>
+      <div class="mtg-meta">
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville||"")}</span>
+        <span class="${tbd?"tbd":""}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${esc(lieuNom(m.lieuId))}</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>${esc(animNom(m.animId))}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:9px">
+        <span class="st ${m.statut}">${STATUTS[m.statut]}</span>
+        ${ng?`<span class="guest-count"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${ng} invité${ng>1?"s":""}</span>`:""}
+      </div>
+    </div></div>`;
+}
+
+/* ============================================================
+   CLUBS
+   ============================================================ */
+function viewClubs(){
+  const ids=scopedClubIds();
+  let clubs=DB.clubs.filter(c=>ids.includes(c.id));
+  clubs.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  const q=(window._q2||"").toLowerCase();if(q)clubs=clubs.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
+  const sansAnim=clubs.filter(c=>!c.animId).length;
+  const tiles=clubs.map(c=>{
+    const nbUp=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+    const nbR=DB.reunions.filter(m=>m.clubId===c.id).length;const a=anim(c.animId);
+    return `<div class="tile" onclick="openClub('${c.id}')">
+      <div class="tile-top"><div><h3>${esc(c.nom)}</h3>
+        <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}</div></div></div>
+      <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:`<span class="tag empty">Animateur à pourvoir</span>`}<span class="tag">${nbUp} à venir · ${nbR} total</span></div></div>`;
+  }).join("");
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} clubs${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input placeholder="Rechercher un club…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
+    <div class="grid two">${tiles||emptyState("Aucun club","")}</div><div style="height:8px"></div></div>`;
+}
+
+/* ============================================================
+   LIEUX
+   ============================================================ */
+function viewLieux(){
+  let lieux=[...DB.lieux];const v=scopedVilles();
+  if(v)lieux=lieux.filter(l=>v.includes(l.ville));
+  lieux.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  const q=(window._q3||"").toLowerCase();if(q)lieux=lieux.filter(l=>(l.nom+" "+l.ville+" "+l.adresse).toLowerCase().includes(q));
+  const cards=lieux.map(l=>{
+    const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
+    return `<div class="lieu-card" onclick="openLieu('${l.id}')">
+      <div class="lieu-photo ${l.photo?"":"noimg"}" style="${l.photo?`background-image:url('${l.photo}')`:""}">
+        ${l.photo?`<div class="lieu-name">${esc(l.nom)}</div>`:`<div class="ph">${esc(initiales(l.nom))}</div>`}</div>
+      <div class="lieu-info">
+        ${l.photo?"":`<h3 style="font-size:16px;margin-bottom:4px">${esc(l.nom)}</h3>`}
+        <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.capacite?` <span class="dot"></span> ${l.capacite} pers.`:""}</div>
+        <div class="foot"><span class="tag ${nbR?"crim":""}">${nbR} réunion${nbR>1?"s":""} à venir</span>${l.lat?`<span class="tag ok">📍 Géolocalisé</span>`:`<span class="tag empty">Géoloc manquante</span>`}</div>
+      </div></div>`;
+  }).join("");
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""}</p></div></div>
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input placeholder="Rechercher un lieu…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
+    ${cards||emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
+}
+
+/* ============================================================
+   ÉQUIPE
+   ============================================================ */
+function viewTeam(){
+  let anims=[...DB.animateurs];const v=scopedVilles();
+  if(v)anims=anims.filter(a=>v.includes(a.ville));
+  anims.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  const tiles=anims.map(a=>{
+    const clubs=DB.clubs.filter(c=>c.animId===a.id);
+    const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+    return `<div class="tile" onclick="openAnim('${a.id}')">
+      <div class="tile-top"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">${initiales(a.nom)}</div>
+        <div><h3>${esc(a.nom)}</h3><div class="sub">${esc(a.ville)} <span class="dot"></span> ${clubs.length} club${clubs.length>1?"s":""}${a.tel?` <span class="dot"></span> ${esc(a.tel)}`:""}</div></div></div></div>
+      <div class="tile-foot">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}<span class="tag crim">${nbUp} à venir</span></div></div>`;
+  }).join("");
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Équipe</div><h2>Animateurs</h2><p>${anims.length} animateur${anims.length>1?"s":""}</p></div></div>
+    <div class="grid">${tiles||emptyState("Aucun animateur","")}</div><div style="height:8px"></div></div>`;
+}
+
+function emptyState(t,p){return `<div class="empty"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>${t}</b><p>${p}</p></div>`}
+
+/* ============================================================
+   SHEET — RÉUNION (détail + invités + édition)
+   ============================================================ */
+function openMeeting(id){
+  const editing=!!id;
+  const m=editing?DB.reunions.find(x=>x.id===id):null;
+  if(editing&&!canEditReunion(m)){meetingDetail(m,false);return}
+  if(editing){meetingDetail(m,true);return}
+  meetingForm(null);
+}
+function meetingDetail(m,editable){
+  const c=club(m.clubId),l=lieu(m.lieuId),dt=dObj(m.date);
+  const guests=m.guests||[];
+  const guestsHtml=guests.length?guests.map((g,i)=>`
+    <div class="guest"><div class="gav">${initiales(g.nom)}</div>
+      <div class="gi"><b>${esc(g.nom)}</b><small>${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small></div>
+      <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
+    </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
+  document.getElementById("sheet-content").innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <div><h3>${esc(c.nom)}</h3><div class="sheet-sub">${TYPES[m.type]} · ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]} ${dt.getFullYear()}${m.heure?" · "+m.heure:""}</div></div>
+      <span class="st ${m.statut}" style="margin-top:4px">${STATUTS[m.statut]}</span></div>
+    <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="tx"><div class="k">Lieu</div><div class="v">${esc(lieuNom(m.lieuId))}</div></div>${l?`<a href="#" onclick="event.stopPropagation();openLieu('${l.id}');return false">Fiche</a>`:""}</div>
+    <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div>
+      <div class="tx"><div class="k">Animateur</div><div class="v">${esc(animNom(m.animId))}</div></div></div>
+    ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
+      <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>
+      ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
+    ${guestsHtml}
+    <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function meetingForm(id){
+  const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:"",date:"",heure:"19:00",lieuId:"",animId:"",statut:"planifiee",guests:[]};
+  const scopedC=DB.clubs.filter(c=>SESSION.role==="superadmin"?true:scopedClubIds().includes(c.id));
+  const clubsOpt=scopedC.map(c=>`<option value="${c.id}" ${c.id===m.clubId?"selected":""}>${esc(c.nom)}</option>`).join("");
+  const animOpt=DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===m.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
+  const lieuOpt=`<option value="">À définir</option>`+DB.lieux.map(l=>`<option value="${l.id}" ${l.id===m.lieuId?"selected":""}>${esc(l.nom)} — ${esc(l.ville)}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${editing?"Modifier la réunion":"Nouvelle réunion"}</h3><div class="sheet-sub">Planifie une session pour un club de ton périmètre.</div>
+    <div class="field"><label>Type</label><select id="f-type">${Object.keys(TYPES).map(t=>`<option value="${t}" ${m.type===t?"selected":""}>${t} — ${TYPES[t]}</option>`).join("")}</select></div>
+    <div class="field"><label>Club d'affaires</label><select id="f-club"><option value="">— choisir —</option>${clubsOpt}</select></div>
+    <div><div class="field half"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field half"><label>Heure</label><input id="f-heure" type="time" value="${m.heure||"19:00"}"></div></div>
+    <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
+    <div class="field"><label>Animateur</label><select id="f-anim"><option value="">— choisir —</option>${animOpt}</select></div>
+    <div class="field"><label>Statut</label><select id="f-statut">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`meetingDetail(DB.reunions.find(x=>x.id==='${id}'),true)`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveMeeting('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
+    ${editing?`<div class="del-link" onclick="delMeeting('${id}')">Supprimer cette réunion</div>`:""}`;
+  openSheet();
+}
+async function saveMeeting(id){
+  const g=x=>document.getElementById(x).value;
+  const clubId=g("f-club"),date=g("f-date");if(!clubId||!date){toast("Club et date obligatoires");return}
+  const data={type:g("f-type"),clubId,date,heure:g("f-heure"),lieuId:g("f-lieu")||null,animId:g("f-anim"),statut:g("f-statut")};
+  if(id){Object.assign(DB.reunions.find(x=>x.id===id),data);toast("Réunion mise à jour")}
+  else{DB.reunions.push({id:"m"+Date.now(),guests:[],...data});toast("Réunion créée")}
+  await saveDB();closeSheet();render();
+}
+async function delMeeting(id){DB.reunions=DB.reunions.filter(x=>x.id!==id);await saveDB();closeSheet();render();toast("Réunion supprimée")}
+async function setReunionStatut(id,s){DB.reunions.find(x=>x.id===id).statut=s;await saveDB();render();toast("Statut : "+STATUTS[s])}
+
+/* ---- invités ---- */
+function addGuest(mid){
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Nouvel invité</h3><div class="sheet-sub">Ajoute un visiteur à cette réunion.</div>
+    <div class="field"><label>Nom complet</label><input id="g-nom" placeholder="Prénom Nom"></div>
+    <div class="field"><label>Téléphone</label><input id="g-tel" type="tel" placeholder="06 …"></div>
+    <div class="field"><label>Invité par</label><input id="g-par" placeholder="Membre référent"></div>
+    <div class="field"><label>Statut</label><select id="g-statut">${GUEST_STATUTS.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openMeeting('${mid}')">Retour</button><button class="btn" onclick="saveGuest('${mid}')">Ajouter</button></div>`;
+}
+async function saveGuest(mid){
+  const nom=document.getElementById("g-nom").value.trim();if(!nom){toast("Nom requis");return}
+  const m=DB.reunions.find(x=>x.id===mid);m.guests=m.guests||[];
+  m.guests.push({nom,tel:document.getElementById("g-tel").value.trim(),par:document.getElementById("g-par").value.trim(),statut:document.getElementById("g-statut").value});
+  await saveDB();toast("Invité ajouté");meetingDetail(m,true);
+}
+async function setGuestStatut(mid,i,s){DB.reunions.find(x=>x.id===mid).guests[i].statut=s;await saveDB();toast("Statut : "+s)}
+
+/* ============================================================
+   SHEET — LIEU
+   ============================================================ */
+let _photoBuffer=null;
+function openLieu(id){
+  const editing=!!id;const l=editing?lieu(id):null;
+  if(editing){lieuDetail(l);return}
+  lieuForm(null);
+}
+function lieuDetail(l){
+  const nbUp=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
+  const mapUrl=l.lat?`https://www.openstreetmap.org/export/embed.html?bbox=${l.lng-0.008}%2C${l.lat-0.006}%2C${l.lng+0.008}%2C${l.lat+0.006}&layer=mapnik&marker=${l.lat}%2C${l.lng}`:"";
+  const navUrl=l.lat?`https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.adresse||l.nom)}`;
+  document.getElementById("sheet-content").innerHTML=`
+    ${l.photo?`<img class="photo-prev" src="${l.photo}" alt="">`:""}
+    <h3>${esc(l.nom)}</h3><div class="sheet-sub">${esc(l.ville)}${l.capacite?` · capacité ${l.capacite} pers.`:""}</div>
+    ${l.adresse?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="tx"><div class="k">Adresse</div><div class="v">${esc(l.adresse)}</div></div><a href="${navUrl}" target="_blank">Y aller</a></div>`:""}
+    ${l.contactNom||l.contactTel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Contact sur place</div><div class="v">${esc(l.contactNom||"—")}${l.contactTel?" · "+esc(l.contactTel):""}</div></div>${l.contactTel?`<a href="tel:${esc(l.contactTel)}">Appeler</a>`:""}</div>`:""}
+    <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="tx"><div class="k">Réunions à venir</div><div class="v">${nbUp}</div></div></div>
+    ${l.notes?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="tx"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(l.notes)}</div></div></div>`:""}
+    ${mapUrl?`<iframe class="map-embed" src="${mapUrl}" loading="lazy"></iframe>`:`<p style="color:var(--muted);font-size:12.5px;text-align:center;padding:10px 0">Ajoute des coordonnées GPS pour afficher la carte.</p>`}
+    <div class="sheet-actions"><button class="btn ghost" onclick="lieuForm('${l.id}')">Modifier</button><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function lieuForm(id){
+  _photoBuffer=null;const editing=!!id;const l=editing?lieu(id):{nom:"",ville:VILLES[0],adresse:"",lat:"",lng:"",capacite:"",contactNom:"",contactTel:"",notes:"",photo:""};
+  const villeOpt=VILLES.map(v=>`<option ${l.ville===v?"selected":""}>${v}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${editing?"Modifier le lieu":"Nouveau lieu"}</h3><div class="sheet-sub">Fiche partagée avec toutes les régions.</div>
+    <label class="photo-btn" for="l-photo-input"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>${l.photo?"Changer la photo":"Ajouter une photo"}</label>
+    <input id="l-photo-input" type="file" accept="image/*" class="hidden" onchange="handlePhoto(event)">
+    <img id="l-photo-prev" class="photo-prev ${l.photo?"":"hidden"}" src="${l.photo||""}" alt="">
+    <div class="field"><label>Nom du lieu</label><input id="l-nom" value="${esc(l.nom)}" placeholder="Ex. Royal Golf Dar Essalam"></div>
+    <div class="field"><label>Ville</label><select id="l-ville">${villeOpt}</select></div>
+    <div class="field"><label>Adresse</label><input id="l-adresse" value="${esc(l.adresse)}" placeholder="Rue, quartier, ville"></div>
+    <div><div class="field half"><label>Latitude</label><input id="l-lat" type="number" step="any" value="${l.lat}" placeholder="33.97"></div><div class="field half"><label>Longitude</label><input id="l-lng" type="number" step="any" value="${l.lng}" placeholder="-6.85"></div></div>
+    <div><div class="field half"><label>Capacité</label><input id="l-cap" type="number" value="${l.capacite}" placeholder="120"></div><div class="field half"><label>Contact tél.</label><input id="l-ctel" value="${esc(l.contactTel)}" placeholder="05 …"></div></div>
+    <div class="field"><label>Contact sur place</label><input id="l-cnom" value="${esc(l.contactNom)}" placeholder="Nom du référent"></div>
+    <div class="field"><label>Notes</label><textarea id="l-notes" placeholder="Parking, capacité salle, tarif, accès…">${esc(l.notes)}</textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`lieuDetail(lieu('${id}'))`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveLieu('${editing?id:""}')">${editing?"Enregistrer":"Créer le lieu"}</button></div>
+    ${editing&&canDeleteLieu()?`<div class="del-link" onclick="delLieu('${id}')">Supprimer ce lieu</div>`:""}`;
+  openSheet();
+}
+function handlePhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  const img=new Image();const rd=new FileReader();
+  rd.onload=()=>{img.onload=()=>{
+    const max=1000;let{width:w,height:h}=img;if(w>max||h>max){if(w>h){h=h*max/w;w=max}else{w=w*max/h;h=max}}
+    const cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
+    _photoBuffer=cv.toDataURL("image/jpeg",0.72);
+    const p=document.getElementById("l-photo-prev");p.src=_photoBuffer;p.classList.remove("hidden");
+  };img.src=rd.result;};rd.readAsDataURL(file);
+}
+async function saveLieu(id){
+  const g=x=>document.getElementById(x).value;const nom=g("l-nom").trim();if(!nom){toast("Nom requis");return}
+  const existing=id?lieu(id):null;
+  const data={nom,ville:g("l-ville"),adresse:g("l-adresse").trim(),lat:parseFloat(g("l-lat"))||"",lng:parseFloat(g("l-lng"))||"",
+    capacite:parseInt(g("l-cap"))||"",contactNom:g("l-cnom").trim(),contactTel:g("l-ctel").trim(),notes:g("l-notes").trim(),
+    photo:_photoBuffer!==null?_photoBuffer:(existing?existing.photo:"")};
+  if(id){Object.assign(existing,data);toast("Lieu mis à jour")}else{DB.lieux.push({id:"l"+Date.now(),...data});toast("Lieu créé")}
+  _photoBuffer=null;await saveDB();closeSheet();render();
+}
+async function delLieu(id){
+  const used=DB.reunions.some(m=>m.lieuId===id&&!isPast(m.date));
+  if(used){toast("Lieu utilisé par une réunion à venir");return}
+  DB.lieux=DB.lieux.filter(l=>l.id!==id);
+  DB.reunions.forEach(m=>{if(m.lieuId===id)m.lieuId=null});
+  await saveDB();closeSheet();render();toast("Lieu supprimé");
+}
+
+/* ============================================================
+   SHEET — CLUB
+   ============================================================ */
+function openClub(id){
+  const c=club(id);const reunions=DB.reunions.filter(m=>m.clubId===id).sort((a,b)=>a.date.localeCompare(b.date));
+  const a=anim(c.animId);
+  const rlist=reunions.length?reunions.map(m=>`<div class="drow"><div class="ic">${m.type}</div><div class="tx"><div class="k">${STATUTS[m.statut]}</div><div class="v">${dObj(m.date).getDate()} ${MOIS[dObj(m.date).getMonth()]} · ${esc(lieuNom(m.lieuId))}</div></div></div>`).join(""):`<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune réunion planifiée.</p>`;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${esc(c.nom)}</h3><div class="sheet-sub">${esc(c.ville)} · ${c.statut==="actif"?"Club actif":"En création"}</div>
+    <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div></div>
+    <div class="divider"></div><h3 style="font-size:16px;margin-bottom:6px">Réunions</h3>${rlist}
+    <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function clubForm(id){
+  const editing=!!id;const c=editing?club(id):{nom:"",ville:VILLES[0],animId:"",statut:"creation"};
+  const villeOpt=VILLES.map(v=>`<option ${c.ville===v?"selected":""}>${v}</option>`).join("");
+  const animOpt=`<option value="">— aucun —</option>`+DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===c.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${editing?"Modifier le club":"Nouveau club"}</h3><div class="sheet-sub">Un groupe d'affaires rattaché à une ville.</div>
+    <div class="field"><label>Nom du club</label><input id="c-nom" value="${esc(c.nom)}" placeholder="CAP Ville Nom"></div>
+    <div class="field"><label>Ville</label><select id="c-ville">${villeOpt}</select></div>
+    <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
+    <div class="field"><label>Statut</label><select id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
+    ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce club</div>`:""}`;
+  openSheet();
+}
+async function saveClub(id){
+  const g=x=>document.getElementById(x).value;const nom=g("c-nom").trim();if(!nom){toast("Nom requis");return}
+  const data={nom,ville:g("c-ville"),animId:g("c-anim")||null,statut:g("c-statut")};
+  if(id)Object.assign(club(id),data);else DB.clubs.push({id:"c"+Date.now(),...data});
+  await saveDB();closeSheet();render();toast(id?"Club mis à jour":"Club créé");
+}
+async function delClub(id){
+  if(DB.reunions.some(m=>m.clubId===id&&!isPast(m.date))){toast("Des réunions à venir sont rattachées");return}
+  DB.clubs=DB.clubs.filter(c=>c.id!==id);await saveDB();closeSheet();render();toast("Club supprimé");
+}
+
+/* ============================================================
+   SHEET — ANIMATEUR
+   ============================================================ */
+function openAnim(id){
+  const editing=!!id;const a=editing?anim(id):{nom:"",ville:VILLES[0],tel:"",email:""};
+  const clubs=editing?DB.clubs.filter(c=>c.animId===id):[];
+  const villeOpt=VILLES.map(v=>`<option ${a.ville===v?"selected":""}>${v}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${editing?esc(a.nom):"Nouvel animateur"}</h3><div class="sheet-sub">${editing?a.ville+" · "+clubs.length+" club(s)":"Ajoute un animateur à l'équipe."}</div>
+    <div class="field"><label>Nom complet</label><input id="an-nom" value="${esc(a.nom)}" placeholder="Prénom Nom"></div>
+    <div class="field"><label>Ville de rattachement</label><select id="an-ville">${villeOpt}</select></div>
+    <div class="field half"><label>Téléphone</label><input id="an-tel" value="${esc(a.tel)}" placeholder="06 …"></div>
+    <div class="field half"><label>Email</label><input id="an-email" value="${esc(a.email)}" placeholder="nom@…"></div>
+    ${editing&&clubs.length?`<div class="tile-foot" style="margin-top:6px">${clubs.map(c=>`<span class="tag crim">${esc(c.nom.replace("CAP ",""))}</span>`).join("")}</div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="saveAnim('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
+    ${editing?`<div class="del-link" onclick="delAnim('${id}')">Retirer cet animateur</div>`:""}`;
+  openSheet();
+}
+async function saveAnim(id){
+  const g=x=>document.getElementById(x).value;const nom=g("an-nom").trim();if(!nom){toast("Nom requis");return}
+  const data={nom,ville:g("an-ville"),tel:g("an-tel").trim(),email:g("an-email").trim()};
+  if(id)Object.assign(anim(id),data);else DB.animateurs.push({id:"a"+Date.now(),...data});
+  await saveDB();closeSheet();render();toast(id?"Animateur mis à jour":"Animateur créé");
+}
+async function delAnim(id){
+  DB.clubs.forEach(c=>{if(c.animId===id)c.animId=null});
+  DB.animateurs=DB.animateurs.filter(a=>a.id!==id);await saveDB();closeSheet();render();toast("Animateur retiré");
+}
+
+/* ============================================================
+   EXPORT CSV
+   ============================================================ */
+function exportCSV(){
+  const rows=[["Type","Club","Ville","Date","Heure","Lieu","Animateur","Statut","Invités"]];
+  visibleReunions().forEach(m=>{const c=club(m.clubId);
+    rows.push([TYPES[m.type],c.nom,c.ville,m.date,m.heure||"",lieuNom(m.lieuId),animNom(m.animId),STATUTS[m.statut],(m.guests||[]).length]);});
+  const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="agenda-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Agenda exporté");
+}
+
+const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
+function openSheet(){document.getElementById("sheet").classList.add("open")}
+function closeSheet(){document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function(){
+  await loadDB();SESSION=await sget(SKEY);
+  if(SESSION)enterApp();
+  document.getElementById("lg-pass").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+  document.getElementById("lg-user").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("lg-pass").focus()});
+})();
+</script>
+</body>
+</html>

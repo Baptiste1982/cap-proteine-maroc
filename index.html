@@ -263,6 +263,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
     <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     <span id="tb-role" class="role-pill">—</span>
     <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
+    <button id="pwd-btn" class="icon-btn hidden" onclick="openMyPassword()" aria-label="Mon mot de passe"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"/></svg></button>
     <button id="admin-btn" class="icon-btn hidden" onclick="openAccounts()" aria-label="Comptes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
     <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
   </div>
@@ -287,14 +288,28 @@ input,select,textarea{font-family:inherit;font-size:16px}
 /* ============================================================
    RÉFÉRENTIELS D'AFFICHAGE
    ============================================================ */
-const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
+const ROLES={superadmin:"Super admin",directeur_national:"Directeur national",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.1.1";
+const APP_VERSION="0.2.0";
 const CHANGELOG=[
+  {v:"0.2.0",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Rôle Directeur national (édite tout le réseau, hors gestion des comptes et des zones) — compte de Hassan.",
+      "Convertir un invité en membre du club en un clic depuis la réunion.",
+      "Tableau de bord enrichi : entonnoir des invités, statistiques par animateur, et liste « À relancer » (membres au suivi incomplet).",
+      "Export CSV du suivi des membres.",
+      "Chaque utilisateur peut changer son propre mot de passe (icône clé).",
+      "Alerte quand une spécialité est déjà présente dans un club."
+    ],
+    "Corrigé":[
+      "Suppression d'un animateur rattaché à des réunions (ne bloque plus).",
+      "Suppression d'un club avec des réunions (message clair au lieu d'une erreur)."
+    ]
+  }},
   {v:"0.1.1",date:"18 juillet 2026",notes:{
     "Ajouté":[
       "Compte pour Chrystel Escariot-Chiotti (animatrice de CAP Rabat Premium).",
@@ -402,13 +417,14 @@ function scopedVilles(){
   if(SESSION.role==="superadmin"&&!SESSION._nat)return zone(SESSION.zoneId).villes;
   return null; // toutes
 }
+function isNationalEditor(){return SESSION.role==="superadmin"||SESSION.role==="directeur_national"}
 function canEditReunion(m){
-  if(SESSION.role==="superadmin")return true;
+  if(isNationalEditor())return true;
   if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(m.clubId).ville);
   return SESSION.clubIds.includes(m.clubId);
 }
-function canManageStructure(){return SESSION.role==="superadmin"||SESSION.role==="directeur"} // clubs & animateurs
-function canDeleteLieu(){return SESSION.role==="superadmin"||SESSION.role==="directeur"}
+function canManageStructure(){return isNationalEditor()||SESSION.role==="directeur"} // clubs & animateurs
+function canDeleteLieu(){return isNationalEditor()||SESSION.role==="directeur"}
 
 /* ============================================================
    AUTH
@@ -451,12 +467,14 @@ function enterApp(){
   document.getElementById("tb-name").textContent=SESSION.name;
   const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
   document.getElementById("admin-btn").classList.toggle("hidden",SESSION.role!=="superadmin");
+  document.getElementById("pwd-btn").classList.toggle("hidden",SESSION.role==="visiteur");
   document.getElementById("ver-pill").textContent="v"+APP_VERSION;
   updateRegionLabel();go("dash");
 }
 function updateRegionLabel(){
   let t;
   if(SESSION.role==="visiteur")t="Consultation · tout le réseau";
+  else if(SESSION.role==="directeur_national")t="Direction nationale · tout le réseau";
   else if(SESSION.role==="animateur")t="Animateur · "+[...new Set(SESSION.clubIds.map(id=>club(id).ville))].join(", ");
   else t=national()?"Vue nationale · tout le réseau":"Zone "+zone(SESSION.zoneId).nom;
   document.getElementById("tb-region").textContent=t;
@@ -680,17 +698,56 @@ function dashBlock(s){
     <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
     <div class="rank">${ranks||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div>`;
 }
+function dashFunnel(clubs){
+  const ids=clubs.map(c=>c.id);
+  const invites=DB.reunions.filter(r=>ids.includes(r.clubId)).flatMap(r=>r.guests||[]);
+  if(!invites.length)return"";
+  const cells=GUEST_STATUTS.map(s=>`<div class="stat"><div class="n">${invites.filter(g=>g.statut===s).length}</div><div class="l">${esc(s)}</div></div>`).join("");
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Entonnoir des invités</div>
+    <div class="stats" style="grid-template-columns:repeat(5,1fr)">${cells}</div>`;
+}
+function dashByAnim(clubs){
+  const ids=new Set(clubs.map(c=>c.id));
+  const anims=DB.animateurs.filter(a=>DB.clubs.some(c=>c.animId===a.id&&ids.has(c.id)));
+  if(!anims.length)return"";
+  const rows=anims.map(a=>{
+    const acl=DB.clubs.filter(c=>c.animId===a.id&&ids.has(c.id));
+    const nbM=DB.membres.filter(m=>acl.some(c=>c.id===m.clubId)).length;
+    const nbUp=DB.reunions.filter(r=>acl.some(c=>c.id===r.clubId)&&!isPast(r.date)&&r.statut!=="annulee").length;
+    return{nom:a.nom,c:acl.length,m:nbM,r:nbUp};
+  }).sort((x,y)=>y.m-x.m);
+  const maxM=Math.max(1,...rows.map(r=>r.m));
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Par animateur</div>
+    <div class="rank">${rows.map(r=>`<div class="rank-row"><div class="rn">${esc(r.nom)}<small>${r.c} club${r.c>1?"s":""} · ${r.r} réunion${r.r>1?"s":""} à venir</small></div>
+      <div class="bar"><i style="width:${Math.round(r.m/maxM*100)}%"></i></div><div class="rv">${r.m}</div></div>`).join("")}</div>`;
+}
+function dashRelancer(clubs){
+  const ids=new Set(clubs.map(c=>c.id));
+  const flag=[["formulaire","Formulaire"],["contrat","Contrat"],["facture","Facture"],["paiement","Paiement"]];
+  const list=DB.membres.filter(m=>ids.has(m.clubId)&&flag.some(f=>!m[f[0]]));
+  if(!list.length)return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">À relancer</div>
+    <div class="rank"><div class="rank-row"><div class="rn" style="color:var(--ok);font-weight:600">✓ Tous les membres sont à jour.</div></div></div>`;
+  const rows=list.sort((a,b)=>flag.filter(f=>!a[f[0]]).length-flag.filter(f=>!b[f[0]]).length===0?0:flag.filter(f=>!b[f[0]]).length-flag.filter(f=>!a[f[0]]).length).map(m=>{
+    const manque=flag.filter(f=>!m[f[0]]).map(f=>f[1]).join(", ");
+    return `<div class="rank-row" onclick="openClub('${m.clubId}')" style="cursor:pointer"><div class="rn">${esc(m.nom)}<small>${esc(club(m.clubId).nom.replace("CAP ",""))} · manque : ${esc(manque)}</small></div>
+      <span class="gstat" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${4-flag.filter(f=>!m[f[0]]).length}/4</span></div>`;
+  }).join("");
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">À relancer <span style="color:var(--warn);font-weight:700">${list.length}</span></div>
+    <div class="rank">${rows}</div>`;
+}
 function viewDashboard(){
   const seeAll=!(SESSION.role==="superadmin"&&!SESSION._nat);
-  let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div></div>`;
+  const scope=seeAll?DB.clubs:DB.clubs.filter(c=>scopedClubIds().includes(c.id));
+  let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
+    <button class="btn ghost mini" onclick="exportMembres()">Export membres</button></div>`;
   if(seeAll){
     html+=`<div class="dash-band">National · tout le réseau</div>`+dashBlock(dashStats(DB.clubs));
     const reg=DB.clubs.filter(c=>REGION_RSK.includes(c.ville));
     html+=`<div class="dash-band reg">Régional · Rabat · Salé · Kénitra</div>`+dashBlock(dashStats(reg));
   }else{
-    const mine=DB.clubs.filter(c=>scopedClubIds().includes(c.id));
-    html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(mine));
+    html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(scope));
   }
+  html+=dashFunnel(scope)+dashByAnim(scope)+dashRelancer(scope);
   return html+`<div style="height:8px"></div></div>`;
 }
 
@@ -711,6 +768,7 @@ function meetingDetail(m,editable){
     <div class="guest"><div class="gav">${initiales(g.nom)}</div>
       <div class="gi"><b>${esc(g.nom)}</b><small>${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small></div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
+      ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson);font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
     </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
@@ -800,6 +858,17 @@ async function setGuestStatut(mid,i,s){
   if(error){toast(rlsMsg(error));return}
   gg.statut=s;toast("Statut : "+s);
 }
+async function convertGuest(mid,i){
+  const m=DB.reunions.find(x=>x.id===mid);const g=m.guests[i];
+  const already=DB.membres.some(x=>x.clubId===m.clubId&&x.nom.toLowerCase()===g.nom.toLowerCase());
+  if(already){toast(g.nom+" est déjà membre de ce club");return}
+  const nextNum=(DB.membres.filter(x=>x.clubId===m.clubId).reduce((a,b)=>Math.max(a,b.num||0),0))+1;
+  const {data,error}=await sb.from("membres").insert({club_id:m.clubId,num:nextNum,nom:g.nom,commentaires:"Ancien invité"+(g.par?" (invité par "+g.par+")":"")}).select().single();
+  if(error){toast(rlsMsg(error));return}
+  DB.membres.push(mapMembre(data));
+  await sb.from("invites").update({statut:"Membre"}).eq("id",g._id);g.statut="Membre";
+  toast(g.nom+" ajouté aux membres du club");meetingDetail(m,true);
+}
 
 /* ============================================================
    SHEET — LIEU
@@ -887,7 +956,7 @@ async function delLieu(id){
    ============================================================ */
 function canEditClubId(cid){
   if(readOnly())return false;
-  if(SESSION.role==="superadmin")return true;
+  if(isNationalEditor())return true;
   if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(cid).ville);
   return (SESSION.clubIds||[]).includes(cid);
 }
@@ -948,6 +1017,8 @@ function memberSheet(clubId,id){
 async function saveMembre(clubId,id){
   const nom=document.getElementById("m-nom").value.trim();if(!nom){toast("Nom requis");return}
   const chk=k=>document.getElementById("m-"+k).checked;
+  const spec=document.getElementById("m-specialite").value.trim();
+  const dupSpec=spec&&DB.membres.some(m=>m.clubId===clubId&&m.id!==id&&(m.specialite||"").toLowerCase()===spec.toLowerCase());
   const row={club_id:clubId,nom,specialite:document.getElementById("m-specialite").value.trim(),
     formulaire:chk("formulaire"),contrat:chk("contrat"),facture:chk("facture"),paiement:chk("paiement"),
     reorientation:document.getElementById("m-reorientation").value.trim(),commentaires:document.getElementById("m-commentaires").value.trim()};
@@ -962,6 +1033,7 @@ async function saveMembre(clubId,id){
     DB.membres.push(mapMembre(data));toast("Membre ajouté");
   }
   openClub(clubId);
+  if(dupSpec)setTimeout(()=>toast("⚠️ Spécialité « "+spec+" » déjà présente dans ce club"),1400);
 }
 async function delMembre(clubId,id){
   const {error}=await sb.from("membres").delete().eq("id",id);
@@ -997,10 +1069,12 @@ async function saveClub(id){
   closeSheet();render();toast(id?"Club mis à jour":"Club créé");
 }
 async function delClub(id){
-  if(DB.reunions.some(m=>m.clubId===id&&!isPast(m.date))){toast("Des réunions à venir sont rattachées");return}
+  if(DB.reunions.some(m=>m.clubId===id)){toast("Des réunions sont rattachées — supprime-les d'abord");return}
   const {error}=await sb.from("clubs").delete().eq("id",id);
   if(error){toast(rlsMsg(error));return}
-  DB.clubs=DB.clubs.filter(c=>c.id!==id);closeSheet();render();toast("Club supprimé");
+  DB.clubs=DB.clubs.filter(c=>c.id!==id);
+  DB.membres=DB.membres.filter(m=>m.clubId!==id);
+  closeSheet();render();toast("Club supprimé");
 }
 
 /* ============================================================
@@ -1045,10 +1119,14 @@ async function saveAnim(id){
   closeSheet();render();toast(id?"Animateur mis à jour":"Animateur créé");
 }
 async function delAnim(id){
+  // délier partout avant suppression (sinon violation de clé étrangère)
   await sb.from("clubs").update({animateur_id:null}).eq("animateur_id",id);
+  await sb.from("reunions").update({animateur_id:null}).eq("animateur_id",id);
+  await sb.from("profiles").update({animateur_id:null}).eq("animateur_id",id);
   const {error}=await sb.from("animateurs").delete().eq("id",id);
   if(error){toast(rlsMsg(error));return}
   DB.clubs.forEach(c=>{if(c.animId===id)c.animId=null});
+  DB.reunions.forEach(m=>{if(m.animId===id)m.animId=null});
   DB.animateurs=DB.animateurs.filter(a=>a.id!==id);closeSheet();render();toast("Animateur retiré");
 }
 
@@ -1062,6 +1140,33 @@ function exportCSV(){
   const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download="agenda-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Agenda exporté");
+}
+function exportMembres(){
+  const oui=b=>b?"Oui":"Non";
+  const rows=[["Club","Ville","N°","Membre","Spécialité","Formulaire","Contrat","Facture","Paiement","Réorientation","Commentaires"]];
+  const seen=new Set(scopedClubIds());
+  DB.membres.filter(m=>seen.has(m.clubId)).sort((a,b)=>{const ca=club(a.clubId),cb=club(b.clubId);return (ca.nom||"").localeCompare(cb.nom||"")||(a.num||0)-(b.num||0)}).forEach(m=>{
+    const c=club(m.clubId);
+    rows.push([c.nom,c.ville,m.num||"",m.nom,m.specialite,oui(m.formulaire),oui(m.contrat),oui(m.facture),oui(m.paiement),m.reorientation,m.commentaires]);});
+  const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="membres-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Membres exportés");
+}
+async function changePassword(){
+  const p1=document.getElementById("cp-1").value,p2=document.getElementById("cp-2").value;
+  if(!p1||p1.length<6){toast("Mot de passe trop court (6 min.)");return}
+  if(p1!==p2){toast("Les deux mots de passe diffèrent");return}
+  const {error}=await sb.auth.updateUser({password:p1});
+  if(error){toast("Erreur : "+error.message);return}
+  toast("Mot de passe modifié");closeSheet();
+}
+function openMyPassword(){
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Mon mot de passe</h3><div class="sheet-sub">Change ton mot de passe de connexion.</div>
+    <div class="field"><label>Nouveau mot de passe</label><input id="cp-1" type="password" placeholder="••••••••"></div>
+    <div class="field"><label>Confirmer</label><input id="cp-2" type="password" placeholder="••••••••"></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="changePassword()">Enregistrer</button></div>`;
+  openSheet();
 }
 
 /* ============================================================

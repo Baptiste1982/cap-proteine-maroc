@@ -221,8 +221,8 @@ input,select,textarea{font-family:inherit;font-size:16px}
     <p id="lg-err" class="auth-err"></p>
     <button class="btn" onclick="doLogin()">Se connecter</button>
   </div>
-  <div class="demo-note"><b>Comptes de démonstration</b> — mot de passe <b>cap2026</b><br>
-    <span class="demo-chip">jb · super admin</span><span class="demo-chip">zoubida · Rabat</span><span class="demo-chip">anas · Casa</span><span class="demo-chip">leyla · Marrakech</span>
+  <div class="demo-note"><b>Accès réservé au réseau CAP MA</b><br>
+    Identifie-toi avec ton prénom et ton mot de passe.
   </div>
 </div>
 
@@ -249,88 +249,56 @@ input,select,textarea{font-family:inherit;font-size:16px}
 <div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
-   DONNÉES INITIALES — injectées depuis le planning CAP MA 2026
-   (géoloc = valeurs de départ éditables, à affiner sur le terrain)
+   RÉFÉRENTIELS D'AFFICHAGE
    ============================================================ */
 const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"Animateur"};
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
-const SEED={
-  zones:[
-    {id:"zN",nom:"Rabat · Salé · Kénitra",villes:["Rabat","Salé","Kenitra"]},
-    {id:"zC",nom:"Casablanca",villes:["Casablanca","Dar Bouazza","Bouskoura"]},
-    {id:"zM",nom:"Marrakech",villes:["Marrakech"]}
-  ],
-  users:[
-    {id:"u_jb",  login:"jb",     pass:"cap2026",name:"Jean-Baptiste C.",role:"superadmin",zoneId:"zN",animId:null,clubIds:[]},
-    {id:"u_zoub",login:"zoubida",pass:"cap2026",name:"Zoubida Labdi",   role:"animateur", zoneId:"zN",animId:"a1",clubIds:["c1"]},
-    {id:"u_leyla",login:"leyla", pass:"cap2026",name:"Leyla Chaousari", role:"animateur", zoneId:"zM",animId:"a2",clubIds:["c2"]},
-    {id:"u_mouna",login:"mouna", pass:"cap2026",name:"Mouna Siteri B.", role:"animateur", zoneId:"zC",animId:"a3",clubIds:["c3"]},
-    {id:"u_yous",login:"youssef",pass:"cap2026",name:"Youssef Bennani", role:"animateur", zoneId:"zC",animId:"a4",clubIds:["c4"]},
-    {id:"u_anas",login:"anas",   pass:"cap2026",name:"Anas Benmoussa",  role:"animateur", zoneId:"zC",animId:"a5",clubIds:["c5"]},
-    {id:"u_jih", login:"jihane", pass:"cap2026",name:"Jihane Benslimane",role:"animateur",zoneId:"zN",animId:"a6",clubIds:["c6"]},
-    {id:"u_sih", login:"siham",  pass:"cap2026",name:"Siham Alaoui",    role:"animateur", zoneId:"zC",animId:"a7",clubIds:["c7"]}
-  ],
-  animateurs:[
-    {id:"a1",nom:"Zoubida Labdi",ville:"Rabat",tel:"",email:""},
-    {id:"a2",nom:"Leyla Chaousari",ville:"Marrakech",tel:"",email:""},
-    {id:"a3",nom:"Mouna Siteri Bennani",ville:"Casablanca",tel:"",email:""},
-    {id:"a4",nom:"Youssef Bennani",ville:"Casablanca",tel:"",email:""},
-    {id:"a5",nom:"Anas Benmoussa",ville:"Casablanca",tel:"",email:""},
-    {id:"a6",nom:"Jihane Benslimane",ville:"Rabat",tel:"",email:""},
-    {id:"a7",nom:"Siham Alaoui",ville:"Casablanca",tel:"",email:""}
-  ],
-  clubs:[
-    {id:"c1",nom:"CAP Rabat Signature",ville:"Rabat",animId:"a1",statut:"actif"},
-    {id:"c2",nom:"CAP Marrakech Synergie",ville:"Marrakech",animId:"a2",statut:"actif"},
-    {id:"c3",nom:"CAP Casablanca Premium",ville:"Casablanca",animId:"a3",statut:"actif"},
-    {id:"c4",nom:"CAP Casablanca Leaders",ville:"Casablanca",animId:"a4",statut:"actif"},
-    {id:"c5",nom:"CAP Casablanca Excellence",ville:"Casablanca",animId:"a5",statut:"actif"},
-    {id:"c6",nom:"CAP Rabat Capital Circle",ville:"Rabat",animId:"a6",statut:"actif"},
-    {id:"c7",nom:"CAP Casablanca Doyen",ville:"Casablanca",animId:"a7",statut:"actif"},
-    {id:"c8",nom:"CAP Rabat Premium",ville:"Rabat",animId:null,statut:"creation"},
-    {id:"c9",nom:"CAP Salé Declic",ville:"Salé",animId:null,statut:"creation"},
-    {id:"c10",nom:"CAP Kenitra Trajectoire",ville:"Kenitra",animId:null,statut:"creation"},
-    {id:"c11",nom:"CAP DarB",ville:"Dar Bouazza",animId:null,statut:"creation"},
-    {id:"c12",nom:"CAP Bouskoura",ville:"Bouskoura",animId:null,statut:"creation"}
-  ],
-  lieux:[
-    {id:"l1",nom:"Royal Golf Dar Essalam",ville:"Rabat",adresse:"Km 9, Route de Zaërs, Rabat",lat:33.9716,lng:-6.8498,capacite:120,contactNom:"",contactTel:"",notes:"",photo:""},
-    {id:"l2",nom:"Le Méridien N'Fis",ville:"Marrakech",adresse:"Avenue Mohammed VI, Marrakech",lat:31.6295,lng:-8.0086,capacite:100,contactNom:"",contactTel:"",notes:"",photo:""},
-    {id:"l3",nom:"Hotel Villa Blanca",ville:"Casablanca",adresse:"Bd de la Corniche, Casablanca",lat:33.6066,lng:-7.6793,capacite:90,contactNom:"",contactTel:"",notes:"",photo:""},
-    {id:"l4",nom:"M Avenue (Mtech)",ville:"Marrakech",adresse:"Avenue Mohammed VI, Marrakech",lat:31.6270,lng:-8.0100,capacite:80,contactNom:"",contactTel:"",notes:"",photo:""},
-    {id:"l5",nom:"Palais Zaïtunay",ville:"Marrakech",adresse:"Marrakech",lat:31.6295,lng:-7.9811,capacite:100,contactNom:"",contactTel:"",notes:"",photo:""}
-  ],
-  reunions:[
-    {id:"m1", type:"SI",clubId:"c1",date:"2026-04-23",heure:"19:00",lieuId:"l1",animId:"a1",statut:"realisee",guests:[]},
-    {id:"m2", type:"SI",clubId:"c2",date:"2026-05-14",heure:"19:00",lieuId:"l2",animId:"a2",statut:"confirmee",guests:[]},
-    {id:"m3", type:"SI",clubId:"c3",date:"2026-05-20",heure:"19:00",lieuId:"l3",animId:"a3",statut:"confirmee",guests:[]},
-    {id:"m4", type:"SI",clubId:"c1",date:"2026-06-02",heure:"19:00",lieuId:"l1",animId:"a1",statut:"confirmee",guests:[]},
-    {id:"m5", type:"SI",clubId:"c5",date:"2026-06-03",heure:"19:00",lieuId:"l3",animId:"a5",statut:"planifiee",guests:[]},
-    {id:"m6", type:"SI",clubId:"c6",date:"2026-06-04",heure:"19:00",lieuId:"l1",animId:"a6",statut:"planifiee",guests:[]},
-    {id:"m7", type:"SI",clubId:"c2",date:"2026-06-18",heure:"19:00",lieuId:"l4",animId:"a2",statut:"planifiee",guests:[]},
-    {id:"m8", type:"SI",clubId:"c7",date:"2026-06-25",heure:"19:00",lieuId:"l3",animId:"a7",statut:"planifiee",guests:[]},
-    {id:"m9", type:"RL",clubId:"c1",date:"2026-07-20",heure:"19:00",lieuId:null,animId:"a1",statut:"planifiee",guests:[]},
-    {id:"m10",type:"RL",clubId:"c4",date:"2026-07-21",heure:"19:00",lieuId:"l3",animId:"a4",statut:"planifiee",guests:[]},
-    {id:"m11",type:"RL",clubId:"c3",date:"2026-07-22",heure:"19:00",lieuId:"l3",animId:"a3",statut:"planifiee",guests:[]},
-    {id:"m12",type:"RL",clubId:"c2",date:"2026-07-23",heure:"19:00",lieuId:"l5",animId:"a2",statut:"planifiee",guests:[]},
-    {id:"m13",type:"RL",clubId:"c5",date:"2026-07-23",heure:"19:00",lieuId:"l3",animId:"a5",statut:"planifiee",guests:[]}
-  ]
-};
-
 /* ============================================================
-   STORE
+   STORE — Supabase (base + auth + RLS)
    ============================================================ */
-const KEY="cap-crm-db-v2",SKEY="cap-crm-session-v2";
+const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co";
+const SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
+const EMAIL_DOMAIN="cap-proteine.ma";
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let DB=null,SESSION=null,tab="agenda",filter="all";
-async function sget(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch(e){return null}}
-async function sset(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch(e){}}
-async function loadDB(){DB=await sget(KEY);if(!DB){DB=structuredClone(SEED);await sset(KEY,DB)}}
-async function saveDB(){await sset(KEY,DB)}
+
+/* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
+function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
+function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut}}
+function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[]}}
+function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
+function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
+
+/* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
+async function loadDB(){
+  const [zc,ac,cc,lc,rc,ic]=await Promise.all([
+    sb.from("zones").select("*"),
+    sb.from("animateurs").select("*"),
+    sb.from("clubs").select("*"),
+    sb.from("lieux").select("*"),
+    sb.from("reunions").select("*"),
+    sb.from("invites").select("*")
+  ]);
+  const bad=[zc,ac,cc,lc,rc,ic].find(x=>x.error);
+  if(bad){console.error(bad.error);toast("Erreur de chargement des données")}
+  DB={
+    zones:(zc.data||[]).map(mapZone),
+    animateurs:(ac.data||[]).map(mapAnim),
+    clubs:(cc.data||[]).map(mapClub),
+    lieux:(lc.data||[]).map(mapLieu),
+    reunions:(rc.data||[]).map(mapReunion)
+  };
+  const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
+  (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
+}
 
 /* ============================================================
    HELPERS
@@ -379,13 +347,33 @@ function canDeleteLieu(){return SESSION.role!=="animateur"}
 async function doLogin(){
   const u=document.getElementById("lg-user").value.trim().toLowerCase();
   const p=document.getElementById("lg-pass").value;const err=document.getElementById("lg-err");
-  const user=DB.users.find(x=>x.login===u);
-  if(!user||user.pass!==p){err.textContent="Identifiant ou mot de passe incorrect.";return}
+  if(!u||!p){err.textContent="Identifiant et mot de passe requis.";return}
+  err.textContent="Connexion…";
+  const email=u.includes("@")?u:u+"@"+EMAIL_DOMAIN;
+  const {error}=await sb.auth.signInWithPassword({email,password:p});
+  if(error){err.textContent="Identifiant ou mot de passe incorrect.";return}
   err.textContent="";
-  SESSION={...user,_nat:false};delete SESSION.pass;
-  await sset(SKEY,SESSION);document.getElementById("lg-pass").value="";enterApp();
+  const ok=await bootIntoApp();
+  if(ok)document.getElementById("lg-pass").value="";
 }
-async function logout(){SESSION=null;await sset(SKEY,null);
+async function loadSessionProfile(){
+  const {data:{user}}=await sb.auth.getUser();
+  if(!user)return false;
+  const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
+  if(error||!prof){console.error(error);toast("Profil introuvable");return false}
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false};
+  return true;
+}
+async function bootIntoApp(){
+  const ok=await loadSessionProfile();
+  if(!ok){await sb.auth.signOut();return false}
+  await loadDB();
+  if(SESSION.role==="animateur"&&SESSION.animId)
+    SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
+  enterApp();
+  return true;
+}
+async function logout(){await sb.auth.signOut();SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
   document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);}
 function enterApp(){
@@ -462,7 +450,7 @@ function viewAgenda(){
     <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("SI","SI")}${chip("RL","RL")}${villeChips}</div>
     ${cards}<div style="height:8px"></div></div>`;
 }
-function setScope(nat){SESSION._nat=nat;sset(SKEY,SESSION);updateRegionLabel();render();}
+function setScope(nat){SESSION._nat=nat;updateRegionLabel();render();}
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
 
 function meetingCard(m){
@@ -609,13 +597,30 @@ function meetingForm(id){
 async function saveMeeting(id){
   const g=x=>document.getElementById(x).value;
   const clubId=g("f-club"),date=g("f-date");if(!clubId||!date){toast("Club et date obligatoires");return}
-  const data={type:g("f-type"),clubId,date,heure:g("f-heure"),lieuId:g("f-lieu")||null,animId:g("f-anim"),statut:g("f-statut")};
-  if(id){Object.assign(DB.reunions.find(x=>x.id===id),data);toast("Réunion mise à jour")}
-  else{DB.reunions.push({id:"m"+Date.now(),guests:[],...data});toast("Réunion créée")}
-  await saveDB();closeSheet();render();
+  const row={type:g("f-type"),club_id:clubId,date,heure:g("f-heure")||null,lieu_id:g("f-lieu")||null,animateur_id:g("f-anim")||null,statut:g("f-statut")};
+  if(id){
+    const {error}=await sb.from("reunions").update(row).eq("id",id);
+    if(error){toast(rlsMsg(error));return}
+    const m=DB.reunions.find(x=>x.id===id);
+    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:row.statut});
+    toast("Réunion mise à jour");
+  }else{
+    const {data,error}=await sb.from("reunions").insert(row).select().single();
+    if(error){toast(rlsMsg(error));return}
+    DB.reunions.push(mapReunion(data));toast("Réunion créée");
+  }
+  closeSheet();render();
 }
-async function delMeeting(id){DB.reunions=DB.reunions.filter(x=>x.id!==id);await saveDB();closeSheet();render();toast("Réunion supprimée")}
-async function setReunionStatut(id,s){DB.reunions.find(x=>x.id===id).statut=s;await saveDB();render();toast("Statut : "+STATUTS[s])}
+async function delMeeting(id){
+  const {error}=await sb.from("reunions").delete().eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  DB.reunions=DB.reunions.filter(x=>x.id!==id);closeSheet();render();toast("Réunion supprimée");
+}
+async function setReunionStatut(id,s){
+  const {error}=await sb.from("reunions").update({statut:s}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  DB.reunions.find(x=>x.id===id).statut=s;render();toast("Statut : "+STATUTS[s]);
+}
 
 /* ---- invités ---- */
 function addGuest(mid){
@@ -629,11 +634,18 @@ function addGuest(mid){
 }
 async function saveGuest(mid){
   const nom=document.getElementById("g-nom").value.trim();if(!nom){toast("Nom requis");return}
-  const m=DB.reunions.find(x=>x.id===mid);m.guests=m.guests||[];
-  m.guests.push({nom,tel:document.getElementById("g-tel").value.trim(),par:document.getElementById("g-par").value.trim(),statut:document.getElementById("g-statut").value});
-  await saveDB();toast("Invité ajouté");meetingDetail(m,true);
+  const row={reunion_id:mid,nom,tel:document.getElementById("g-tel").value.trim(),invite_par:document.getElementById("g-par").value.trim(),statut:document.getElementById("g-statut").value};
+  const {data,error}=await sb.from("invites").insert(row).select().single();
+  if(error){toast(rlsMsg(error));return}
+  const m=DB.reunions.find(x=>x.id===mid);m.guests=m.guests||[];m.guests.push(mapGuest(data));
+  toast("Invité ajouté");meetingDetail(m,true);
 }
-async function setGuestStatut(mid,i,s){DB.reunions.find(x=>x.id===mid).guests[i].statut=s;await saveDB();toast("Statut : "+s)}
+async function setGuestStatut(mid,i,s){
+  const gg=DB.reunions.find(x=>x.id===mid).guests[i];
+  const {error}=await sb.from("invites").update({statut:s}).eq("id",gg._id);
+  if(error){toast(rlsMsg(error));return}
+  gg.statut=s;toast("Statut : "+s);
+}
 
 /* ============================================================
    SHEET — LIEU
@@ -691,18 +703,29 @@ function handlePhoto(e){
 async function saveLieu(id){
   const g=x=>document.getElementById(x).value;const nom=g("l-nom").trim();if(!nom){toast("Nom requis");return}
   const existing=id?lieu(id):null;
-  const data={nom,ville:g("l-ville"),adresse:g("l-adresse").trim(),lat:parseFloat(g("l-lat"))||"",lng:parseFloat(g("l-lng"))||"",
-    capacite:parseInt(g("l-cap"))||"",contactNom:g("l-cnom").trim(),contactTel:g("l-ctel").trim(),notes:g("l-notes").trim(),
-    photo:_photoBuffer!==null?_photoBuffer:(existing?existing.photo:"")};
-  if(id){Object.assign(existing,data);toast("Lieu mis à jour")}else{DB.lieux.push({id:"l"+Date.now(),...data});toast("Lieu créé")}
-  _photoBuffer=null;await saveDB();closeSheet();render();
+  const row={nom,ville:g("l-ville"),adresse:g("l-adresse").trim(),lat:parseFloat(g("l-lat"))||null,lng:parseFloat(g("l-lng"))||null,
+    capacite:parseInt(g("l-cap"))||null,contact_nom:g("l-cnom").trim(),contact_tel:g("l-ctel").trim(),notes:g("l-notes").trim(),
+    photo_url:_photoBuffer!==null?_photoBuffer:(existing?existing.photo:"")};
+  if(id){
+    const {error}=await sb.from("lieux").update(row).eq("id",id);
+    if(error){toast(rlsMsg(error));return}
+    Object.assign(existing,mapLieu({id,...row}));toast("Lieu mis à jour");
+  }else{
+    const {data,error}=await sb.from("lieux").insert(row).select().single();
+    if(error){toast(rlsMsg(error));return}
+    DB.lieux.push(mapLieu(data));toast("Lieu créé");
+  }
+  _photoBuffer=null;closeSheet();render();
 }
 async function delLieu(id){
   const used=DB.reunions.some(m=>m.lieuId===id&&!isPast(m.date));
   if(used){toast("Lieu utilisé par une réunion à venir");return}
+  await sb.from("reunions").update({lieu_id:null}).eq("lieu_id",id);
+  const {error}=await sb.from("lieux").delete().eq("id",id);
+  if(error){toast(rlsMsg(error));return}
   DB.lieux=DB.lieux.filter(l=>l.id!==id);
   DB.reunions.forEach(m=>{if(m.lieuId===id)m.lieuId=null});
-  await saveDB();closeSheet();render();toast("Lieu supprimé");
+  closeSheet();render();toast("Lieu supprimé");
 }
 
 /* ============================================================
@@ -735,13 +758,23 @@ function clubForm(id){
 }
 async function saveClub(id){
   const g=x=>document.getElementById(x).value;const nom=g("c-nom").trim();if(!nom){toast("Nom requis");return}
-  const data={nom,ville:g("c-ville"),animId:g("c-anim")||null,statut:g("c-statut")};
-  if(id)Object.assign(club(id),data);else DB.clubs.push({id:"c"+Date.now(),...data});
-  await saveDB();closeSheet();render();toast(id?"Club mis à jour":"Club créé");
+  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut:g("c-statut")};
+  if(id){
+    const {error}=await sb.from("clubs").update(row).eq("id",id);
+    if(error){toast(rlsMsg(error));return}
+    Object.assign(club(id),mapClub({id,...row}));
+  }else{
+    const {data,error}=await sb.from("clubs").insert(row).select().single();
+    if(error){toast(rlsMsg(error));return}
+    DB.clubs.push(mapClub(data));
+  }
+  closeSheet();render();toast(id?"Club mis à jour":"Club créé");
 }
 async function delClub(id){
   if(DB.reunions.some(m=>m.clubId===id&&!isPast(m.date))){toast("Des réunions à venir sont rattachées");return}
-  DB.clubs=DB.clubs.filter(c=>c.id!==id);await saveDB();closeSheet();render();toast("Club supprimé");
+  const {error}=await sb.from("clubs").delete().eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  DB.clubs=DB.clubs.filter(c=>c.id!==id);closeSheet();render();toast("Club supprimé");
 }
 
 /* ============================================================
@@ -764,13 +797,24 @@ function openAnim(id){
 }
 async function saveAnim(id){
   const g=x=>document.getElementById(x).value;const nom=g("an-nom").trim();if(!nom){toast("Nom requis");return}
-  const data={nom,ville:g("an-ville"),tel:g("an-tel").trim(),email:g("an-email").trim()};
-  if(id)Object.assign(anim(id),data);else DB.animateurs.push({id:"a"+Date.now(),...data});
-  await saveDB();closeSheet();render();toast(id?"Animateur mis à jour":"Animateur créé");
+  const row={nom,ville:g("an-ville"),tel:g("an-tel").trim(),email:g("an-email").trim()};
+  if(id){
+    const {error}=await sb.from("animateurs").update(row).eq("id",id);
+    if(error){toast(rlsMsg(error));return}
+    Object.assign(anim(id),mapAnim({id,...row}));
+  }else{
+    const {data,error}=await sb.from("animateurs").insert(row).select().single();
+    if(error){toast(rlsMsg(error));return}
+    DB.animateurs.push(mapAnim(data));
+  }
+  closeSheet();render();toast(id?"Animateur mis à jour":"Animateur créé");
 }
 async function delAnim(id){
+  await sb.from("clubs").update({animateur_id:null}).eq("animateur_id",id);
+  const {error}=await sb.from("animateurs").delete().eq("id",id);
+  if(error){toast(rlsMsg(error));return}
   DB.clubs.forEach(c=>{if(c.animId===id)c.animId=null});
-  DB.animateurs=DB.animateurs.filter(a=>a.id!==id);await saveDB();closeSheet();render();toast("Animateur retiré");
+  DB.animateurs=DB.animateurs.filter(a=>a.id!==id);closeSheet();render();toast("Animateur retiré");
 }
 
 /* ============================================================
@@ -793,10 +837,10 @@ function closeSheet(){document.getElementById("sheet").classList.remove("open");
    INIT
    ============================================================ */
 (async function(){
-  await loadDB();SESSION=await sget(SKEY);
-  if(SESSION)enterApp();
   document.getElementById("lg-pass").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
   document.getElementById("lg-user").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("lg-pass").focus()});
+  const {data:{session}}=await sb.auth.getSession();
+  if(session)await bootIntoApp();
 })();
 </script>
 </body>

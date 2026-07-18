@@ -72,10 +72,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 ## État actuel & TODO
 
-**✅ Fait** : schéma complet, 8 comptes Auth, rôles + RLS, design crimson/or mobile-first, appli déployée sur Vercel (en direct, sans repo à ce jour).
+**✅ Fait** : schéma complet, 8 comptes Auth, rôles + RLS, design crimson/or mobile-first. HTML rapatrié dans le repo (`index.html`) et **câblé sur Supabase** (auth réelle `signInWithPassword`, CRUD via les tables, RLS natif). `SEED` en dur + mots de passe `cap2026` en clair **supprimés** du front. RLS animateur audité (helpers `SECURITY DEFINER search_path=public`, cloisonnement `animateur_id = cap_animateur_id()`) : conforme.
 
 **⚠️ À traiter** :
-1. Purger le mot de passe `cap2026` (reset forcé).
-2. Confirmer que les données réelles (clubs, lieux, invités) sont saisies vs. seed.
-3. Re-tester le cloisonnement RLS animateur (chaque animateur ne voit QUE ses clubs).
-4. Rapatrier le HTML déployé dans ce repo comme source de vérité.
+1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
+2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.
+3. Confirmer données réelles vs. seed (`invites` encore vide → aucune saisie terrain à ce jour).
+4. Redéployer sur Vercel depuis le repo (après GO explicite de JB). **Photos lieux** : stockées en base64 dans `lieux.photo_url` pour l'instant — migrer vers le bucket Storage `lieux` si le poids des lignes gêne.

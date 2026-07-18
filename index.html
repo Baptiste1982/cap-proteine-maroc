@@ -232,6 +232,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
     <div class="mono">P</div>
     <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     <span id="tb-role" class="role-pill">—</span>
+    <button id="admin-btn" class="icon-btn hidden" onclick="openAccounts()" aria-label="Comptes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
     <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
   </div>
   <div id="view"></div>
@@ -254,7 +255,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 /* ============================================================
    RÉFÉRENTIELS D'AFFICHAGE
    ============================================================ */
-const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"Animateur"};
+const ROLES={superadmin:"Super admin",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
@@ -275,26 +276,29 @@ function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[]}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
 async function loadDB(){
-  const [zc,ac,cc,lc,rc,ic]=await Promise.all([
+  const [zc,ac,cc,lc,rc,ic,mc]=await Promise.all([
     sb.from("zones").select("*"),
     sb.from("animateurs").select("*"),
     sb.from("clubs").select("*"),
     sb.from("lieux").select("*"),
     sb.from("reunions").select("*"),
-    sb.from("invites").select("*")
+    sb.from("invites").select("*"),
+    sb.from("membres").select("*")
   ]);
-  const bad=[zc,ac,cc,lc,rc,ic].find(x=>x.error);
+  const bad=[zc,ac,cc,lc,rc,ic,mc].find(x=>x.error);
   if(bad){console.error(bad.error);toast("Erreur de chargement des données")}
   DB={
     zones:(zc.data||[]).map(mapZone),
     animateurs:(ac.data||[]).map(mapAnim),
     clubs:(cc.data||[]).map(mapClub),
     lieux:(lc.data||[]).map(mapLieu),
-    reunions:(rc.data||[]).map(mapReunion)
+    reunions:(rc.data||[]).map(mapReunion),
+    membres:(mc.data||[]).map(mapMembre)
   };
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
   (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
@@ -320,7 +324,8 @@ function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1900)}
 
 /* ---- périmètre selon rôle ---- */
-function national(){return SESSION.role==="superadmin"&&SESSION._nat}
+function readOnly(){return SESSION.role==="visiteur"}
+function national(){return(SESSION.role==="superadmin"&&SESSION._nat)||SESSION.role==="visiteur"}
 function scopedClubIds(){
   if(national())return DB.clubs.map(c=>c.id);
   if(SESSION.role==="superadmin"||SESSION.role==="directeur"){
@@ -338,8 +343,8 @@ function canEditReunion(m){
   if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(m.clubId).ville);
   return SESSION.clubIds.includes(m.clubId);
 }
-function canManageStructure(){return SESSION.role!=="animateur"} // clubs & animateurs
-function canDeleteLieu(){return SESSION.role!=="animateur"}
+function canManageStructure(){return SESSION.role==="superadmin"||SESSION.role==="directeur"} // clubs & animateurs
+function canDeleteLieu(){return SESSION.role==="superadmin"||SESSION.role==="directeur"}
 
 /* ============================================================
    AUTH
@@ -381,11 +386,13 @@ function enterApp(){
   document.getElementById("nav").classList.remove("hidden");
   document.getElementById("tb-name").textContent=SESSION.name;
   const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
+  document.getElementById("admin-btn").classList.toggle("hidden",SESSION.role!=="superadmin");
   updateRegionLabel();go("agenda");
 }
 function updateRegionLabel(){
   let t;
-  if(SESSION.role==="animateur")t="Animateur · "+[...new Set(SESSION.clubIds.map(id=>club(id).ville))].join(", ");
+  if(SESSION.role==="visiteur")t="Consultation · tout le réseau";
+  else if(SESSION.role==="animateur")t="Animateur · "+[...new Set(SESSION.clubIds.map(id=>club(id).ville))].join(", ");
   else t=national()?"Vue nationale · tout le réseau":"Zone "+zone(SESSION.zoneId).nom;
   document.getElementById("tb-region").textContent=t;
 }
@@ -395,11 +402,12 @@ function updateRegionLabel(){
    ============================================================ */
 function go(t){tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",tab==="team"&&!canManageStructure());
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
   v.innerHTML=tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();}
 function fabAction(){
+  if(readOnly())return;
   if(tab==="agenda")openMeeting();
   else if(tab==="lieux")openLieu();
   else if(tab==="clubs"&&canManageStructure())clubForm(null);
@@ -668,7 +676,7 @@ function lieuDetail(l){
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="tx"><div class="k">Réunions à venir</div><div class="v">${nbUp}</div></div></div>
     ${l.notes?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="tx"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(l.notes)}</div></div></div>`:""}
     ${mapUrl?`<iframe class="map-embed" src="${mapUrl}" loading="lazy"></iframe>`:`<p style="color:var(--muted);font-size:12.5px;text-align:center;padding:10px 0">Ajoute des coordonnées GPS pour afficher la carte.</p>`}
-    <div class="sheet-actions"><button class="btn ghost" onclick="lieuForm('${l.id}')">Modifier</button><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    <div class="sheet-actions">${!readOnly()?`<button class="btn ghost" onclick="lieuForm('${l.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
 }
 function lieuForm(id){
@@ -731,16 +739,88 @@ async function delLieu(id){
 /* ============================================================
    SHEET — CLUB
    ============================================================ */
+function canEditClubId(cid){
+  if(readOnly())return false;
+  if(SESSION.role==="superadmin")return true;
+  if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(cid).ville);
+  return (SESSION.clubIds||[]).includes(cid);
+}
+function memberChecklist(m){
+  const steps=[["Formulaire",m.formulaire],["Contrat",m.contrat],["Facture",m.facture],["Paiement",m.paiement]];
+  const done=steps.filter(s=>s[1]).length;
+  return{done,total:steps.length,steps};
+}
 function openClub(id){
   const c=club(id);const reunions=DB.reunions.filter(m=>m.clubId===id).sort((a,b)=>a.date.localeCompare(b.date));
-  const a=anim(c.animId);
+  const a=anim(c.animId);const canEd=canEditClubId(id);
   const rlist=reunions.length?reunions.map(m=>`<div class="drow"><div class="ic">${m.type}</div><div class="tx"><div class="k">${STATUTS[m.statut]}</div><div class="v">${dObj(m.date).getDate()} ${MOIS[dObj(m.date).getMonth()]} · ${esc(lieuNom(m.lieuId))}</div></div></div>`).join(""):`<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune réunion planifiée.</p>`;
+  const membres=DB.membres.filter(x=>x.clubId===id).sort((x,y)=>(x.num||99)-(y.num||99)||x.nom.localeCompare(y.nom));
+  const mlist=membres.length?membres.map((m,i)=>{
+    const cl=memberChecklist(m);
+    return `<div class="guest" onclick="memberSheet('${id}','${m.id}')"><div class="gav">${initiales(m.nom)}</div>
+      <div class="gi"><b>${esc(m.nom)}</b><small>${esc(m.specialite||"—")}</small></div>
+      <span class="gstat" style="${m.paiement?"background:var(--ok-tint);color:var(--ok);border-color:transparent":""}">${cl.done}/${cl.total}${m.paiement?" · payé":""}</span></div>`;
+  }).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Aucun membre pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
     <h3>${esc(c.nom)}</h3><div class="sheet-sub">${esc(c.ville)} · ${c.statut==="actif"?"Club actif":"En création"}</div>
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div></div>
     <div class="divider"></div><h3 style="font-size:16px;margin-bottom:6px">Réunions</h3>${rlist}
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:16px">Membres <span style="color:var(--muted);font-weight:500">(${membres.length})</span></h3>
+      ${canEd?`<button class="btn ghost mini" onclick="memberSheet('${id}')">+ Ajouter</button>`:""}</div>
+    ${mlist}
     <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
+}
+function memberSheet(clubId,id){
+  const editing=!!id;const m=editing?DB.membres.find(x=>x.id===id):{nom:"",specialite:"",formulaire:false,contrat:false,facture:false,paiement:false,reorientation:"",commentaires:""};
+  const canEd=canEditClubId(clubId);
+  const chk=(k,l)=>`<label style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;font-weight:500"><input type="checkbox" id="m-${k}" ${m[k]?"checked":""} ${canEd?"":"disabled"} style="width:20px;height:20px;accent-color:var(--crimson)">${l}</label>`;
+  if(!canEd){
+    const cl=memberChecklist(m);
+    document.getElementById("sheet-content").innerHTML=`
+      <h3>${esc(m.nom)}</h3><div class="sheet-sub">${esc(m.specialite||"Spécialité non renseignée")} · ${cl.done}/${cl.total} étapes</div>
+      ${cl.steps.map(s=>`<div class="drow"><div class="ic" style="${s[1]?"background:var(--ok-tint);color:var(--ok)":""}">${s[1]?"✓":"—"}</div><div class="tx"><div class="v">${s[0]}</div></div></div>`).join("")}
+      ${m.reorientation?`<div class="drow"><div class="tx"><div class="k">Réorientation</div><div class="v">${esc(m.reorientation)}</div></div></div>`:""}
+      ${m.commentaires?`<div class="drow"><div class="tx"><div class="k">Commentaires</div><div class="v" style="font-weight:400">${esc(m.commentaires)}</div></div></div>`:""}
+      <div class="sheet-actions"><button class="btn" onclick="openClub('${clubId}')">Retour</button></div>`;
+    openSheet();return;
+  }
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${editing?"Membre":"Nouveau membre"}</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>
+    <div class="field"><label>Nom complet</label><input id="m-nom" value="${esc(m.nom)}" placeholder="Prénom Nom"></div>
+    <div class="field"><label>Spécialité</label><input id="m-specialite" value="${esc(m.specialite)}" placeholder="Métier / secteur"></div>
+    <div style="margin:6px 0 4px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--crimson)">Étapes d'intégration</div>
+    ${chk("formulaire","Formulaire rempli")}${chk("contrat","Contrat membre signé")}${chk("facture","Facture émise")}${chk("paiement","Paiement reçu")}
+    <div class="field" style="margin-top:14px"><label>Réorientation</label><input id="m-reorientation" value="${esc(m.reorientation)}" placeholder="Réorienté vers…"></div>
+    <div class="field"><label>Commentaires</label><textarea id="m-commentaires" placeholder="Notes libres">${esc(m.commentaires)}</textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openClub('${clubId}')">Annuler</button><button class="btn" onclick="saveMembre('${clubId}','${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
+    ${editing?`<div class="del-link" onclick="delMembre('${clubId}','${id}')">Retirer ce membre</div>`:""}`;
+  openSheet();
+}
+async function saveMembre(clubId,id){
+  const nom=document.getElementById("m-nom").value.trim();if(!nom){toast("Nom requis");return}
+  const chk=k=>document.getElementById("m-"+k).checked;
+  const row={club_id:clubId,nom,specialite:document.getElementById("m-specialite").value.trim(),
+    formulaire:chk("formulaire"),contrat:chk("contrat"),facture:chk("facture"),paiement:chk("paiement"),
+    reorientation:document.getElementById("m-reorientation").value.trim(),commentaires:document.getElementById("m-commentaires").value.trim()};
+  if(id){
+    const {error}=await sb.from("membres").update(row).eq("id",id);
+    if(error){toast(rlsMsg(error));return}
+    Object.assign(DB.membres.find(x=>x.id===id),mapMembre({id,...row}));toast("Membre mis à jour");
+  }else{
+    const nextNum=(DB.membres.filter(x=>x.clubId===clubId).reduce((a,b)=>Math.max(a,b.num||0),0))+1;
+    const {data,error}=await sb.from("membres").insert({...row,num:nextNum}).select().single();
+    if(error){toast(rlsMsg(error));return}
+    DB.membres.push(mapMembre(data));toast("Membre ajouté");
+  }
+  openClub(clubId);
+}
+async function delMembre(clubId,id){
+  const {error}=await sb.from("membres").delete().eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  DB.membres=DB.membres.filter(x=>x.id!==id);openClub(clubId);toast("Membre retiré");
 }
 function clubForm(id){
   const editing=!!id;const c=editing?club(id):{nom:"",ville:VILLES[0],animId:"",statut:"creation"};
@@ -783,6 +863,15 @@ async function delClub(id){
 function openAnim(id){
   const editing=!!id;const a=editing?anim(id):{nom:"",ville:VILLES[0],tel:"",email:""};
   const clubs=editing?DB.clubs.filter(c=>c.animId===id):[];
+  if(readOnly()&&editing){
+    document.getElementById("sheet-content").innerHTML=`
+      <h3>${esc(a.nom)}</h3><div class="sheet-sub">${esc(a.ville)} · ${clubs.length} club(s)</div>
+      ${a.tel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="tx"><div class="k">Téléphone</div><div class="v">${esc(a.tel)}</div></div><a href="tel:${esc(a.tel)}">Appeler</a></div>`:""}
+      ${a.email?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div><div class="tx"><div class="k">Email</div><div class="v">${esc(a.email)}</div></div></div>`:""}
+      ${clubs.length?`<div class="tile-foot" style="margin-top:12px">${clubs.map(c=>`<span class="tag crim">${esc(c.nom.replace("CAP ",""))}</span>`).join("")}</div>`:""}
+      <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    openSheet();return;
+  }
   const villeOpt=VILLES.map(v=>`<option ${a.ville===v?"selected":""}>${v}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     <h3>${editing?esc(a.nom):"Nouvel animateur"}</h3><div class="sheet-sub">${editing?a.ville+" · "+clubs.length+" club(s)":"Ajoute un animateur à l'équipe."}</div>
@@ -827,6 +916,97 @@ function exportCSV(){
   const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download="agenda-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Agenda exporté");
+}
+
+/* ============================================================
+   COMPTES — gestion des accès (superadmin, via Edge Function sécurisée)
+   ============================================================ */
+let _accounts=[],_editingAccount=null;
+async function adminCall(body){
+  const {data,error}=await sb.functions.invoke("admin-users",{body});
+  if(error){let msg=error.message||"Erreur";try{const j=await error.context.json();if(j&&j.error)msg=j.error}catch(e){}return{error:msg}}
+  if(data&&data.error)return{error:data.error};
+  return{data};
+}
+async function openAccounts(){
+  document.getElementById("sheet-content").innerHTML=`<h3>Comptes</h3><div class="sheet-sub">Chargement…</div>`;openSheet();
+  const {data,error}=await adminCall({action:"list"});
+  if(error){document.getElementById("sheet-content").innerHTML=`<h3>Comptes</h3><p style="color:var(--crimson);font-size:13.5px;padding:8px 0">${esc(error)}</p><div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;return}
+  _accounts=data.users||[];
+  _accounts.sort((a,b)=>(a.role||"z").localeCompare(b.role||"z")||(a.login||a.email||"").localeCompare(b.login||b.email||""));
+  const rows=_accounts.map(u=>`<div class="guest" onclick="accountEdit('${u.id}')"><div class="gav">${initiales(u.nom||u.login||u.email)}</div>
+    <div class="gi"><b>${esc(u.login||u.email)}</b><small>${esc(u.nom||"—")} · ${ROLES[u.role]||u.role||"sans profil"}</small></div>
+    <span class="gstat">Gérer</span></div>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Comptes <span style="color:var(--muted);font-weight:500">(${_accounts.length})</span></h3>
+    <div class="sheet-sub">Gestion des accès — réservé au superadmin.</div>
+    <button class="btn" style="margin-bottom:14px" onclick="accountForm()">+ Nouveau compte</button>
+    ${rows}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+}
+function acExtraFields(){
+  const role=document.getElementById("ac-role").value;const u=_editingAccount||{};
+  let h="";
+  if(role==="directeur"||role==="animateur")
+    h+=`<div class="field"><label>Zone</label><select id="ac-zone"><option value="">— aucune —</option>${DB.zones.map(z=>`<option value="${z.id}" ${u.zone_id===z.id?"selected":""}>${esc(z.nom)}</option>`).join("")}</select></div>`;
+  if(role!=="visiteur")
+    h+=`<div class="field"><label>Lien animateur <span style="font-weight:400;color:var(--muted)">(optionnel — permet le cumul)</span></label><select id="ac-anim"><option value="">— aucun —</option>${DB.animateurs.map(a=>`<option value="${a.id}" ${u.animateur_id===a.id?"selected":""}>${esc(a.nom)}</option>`).join("")}</select></div>`;
+  document.getElementById("ac-extra").innerHTML=h;
+}
+function acRoleOptions(sel){return Object.keys(ROLES).map(r=>`<option value="${r}" ${sel===r?"selected":""}>${ROLES[r]}</option>`).join("")}
+function accountForm(){
+  _editingAccount=null;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Nouveau compte</h3><div class="sheet-sub">Crée un accès à l'appli. Le mot de passe est à communiquer en main propre.</div>
+    <div class="field"><label>Identifiant (prénom)</label><input id="ac-login" placeholder="prenom" autocapitalize="none"></div>
+    <div class="field"><label>Nom affiché</label><input id="ac-nom" placeholder="Prénom Nom"></div>
+    <div class="field"><label>Mot de passe</label><input id="ac-pwd" type="text" placeholder="Mot de passe"></div>
+    <div class="field"><label>Rôle</label><select id="ac-role" onchange="acExtraFields()">${acRoleOptions("animateur")}</select></div>
+    <div id="ac-extra"></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openAccounts()">Annuler</button><button class="btn" onclick="acCreate()">Créer le compte</button></div>`;
+  acExtraFields();
+}
+function accountEdit(id){
+  const u=_accounts.find(x=>x.id===id);if(!u)return;_editingAccount=u;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${esc(u.login||u.email)}</h3><div class="sheet-sub">${esc(u.nom||"—")} · ${ROLES[u.role]||u.role||"sans profil"}</div>
+    <div class="field"><label>Réinitialiser le mot de passe</label><input id="ac-pwd" type="text" placeholder="Nouveau mot de passe"></div>
+    <button class="btn" onclick="acSetPassword('${id}')">Réinitialiser</button>
+    <div class="divider"></div>
+    <div class="field"><label>Rôle</label><select id="ac-role" onchange="acExtraFields()">${acRoleOptions(u.role)}</select></div>
+    <div id="ac-extra"></div>
+    <button class="btn ghost" onclick="acSetRole('${id}')">Enregistrer le rôle</button>
+    <div class="del-link" onclick="acDelete('${id}')">Supprimer ce compte</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openAccounts()">Retour</button></div>`;
+  acExtraFields();
+}
+function acFields(){const z=document.getElementById("ac-zone"),a=document.getElementById("ac-anim");return{zone_id:z?z.value||null:null,animateur_id:a?a.value||null:null}}
+async function acCreate(){
+  const login=document.getElementById("ac-login").value.trim().toLowerCase();
+  const nom=document.getElementById("ac-nom").value.trim();
+  const password=document.getElementById("ac-pwd").value;
+  const role=document.getElementById("ac-role").value;
+  if(!login||!password){toast("Identifiant et mot de passe requis");return}
+  const {error}=await adminCall({action:"create",login,nom,password,role,...acFields()});
+  if(error){toast(error);return}
+  toast("Compte créé");openAccounts();
+}
+async function acSetPassword(id){
+  const pwd=document.getElementById("ac-pwd").value;if(!pwd){toast("Saisis un mot de passe");return}
+  const {error}=await adminCall({action:"set_password",id,password:pwd});
+  if(error){toast(error);return}
+  toast("Mot de passe réinitialisé");document.getElementById("ac-pwd").value="";
+}
+async function acSetRole(id){
+  const role=document.getElementById("ac-role").value;
+  const {error}=await adminCall({action:"set_role",id,role,...acFields()});
+  if(error){toast(error);return}
+  toast("Rôle mis à jour");openAccounts();
+}
+async function acDelete(id){
+  const {error}=await adminCall({action:"delete",id});
+  if(error){toast(error);return}
+  toast("Compte supprimé");openAccounts();
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];

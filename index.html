@@ -348,8 +348,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.0";
+const APP_VERSION="0.4.1";
 const CHANGELOG=[
+  {v:"0.4.1",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Onglet Équipe regroupé par zone (séparateur par région) avec liseré et avatar aux couleurs de la ville."
+    ]
+  }},
   {v:"0.4.0",date:"18 juillet 2026",notes:{
     "Ajouté":[
       "Score de santé par club (pastille vert / orange / rouge + pourcentage) calculé sur l'animateur, les réunions, l'intégration des membres et l'objectif.",
@@ -765,20 +770,28 @@ function viewLieux(){
 /* ============================================================
    ÉQUIPE
    ============================================================ */
+function animTile(a){
+  const clubs=DB.clubs.filter(c=>c.animId===a.id);
+  const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+  return `<div class="tile" style="border-left:5px solid ${villeColor(a.ville)}" onclick="openAnim('${a.id}')">
+    <div class="tile-top"><div style="display:flex;gap:12px;align-items:center;min-width:0"><div class="avatar" style="background:linear-gradient(160deg,${villeColor(a.ville)},var(--crimson-deep))">${initiales(a.nom)}</div>
+      <div style="min-width:0"><h3>${esc(a.nom)}</h3><div class="sub">${esc(a.ville)} <span class="dot"></span> ${clubs.length} club${clubs.length>1?"s":""}${a.tel?` <span class="dot"></span> ${esc(a.tel)}`:""}</div></div></div></div>
+    <div class="tile-foot">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}<span class="tag crim">${nbUp} à venir</span></div></div>`;
+}
 function viewTeam(){
-  let anims=[...DB.animateurs];const v=scopedVilles();
-  if(v)anims=anims.filter(a=>v.includes(a.ville));
-  anims.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
-  const tiles=anims.map(a=>{
-    const clubs=DB.clubs.filter(c=>c.animId===a.id);
-    const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
-    return `<div class="tile" onclick="openAnim('${a.id}')">
-      <div class="tile-top"><div style="display:flex;gap:12px;align-items:center"><div class="avatar">${initiales(a.nom)}</div>
-        <div><h3>${esc(a.nom)}</h3><div class="sub">${esc(a.ville)} <span class="dot"></span> ${clubs.length} club${clubs.length>1?"s":""}${a.tel?` <span class="dot"></span> ${esc(a.tel)}`:""}</div></div></div></div>
-      <div class="tile-foot">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}<span class="tag crim">${nbUp} à venir</span></div></div>`;
-  }).join("");
+  let anims=[...DB.animateurs];
+  const groups={};
+  anims.forEach(a=>{const zn=zoneNomForVille(a.ville);(groups[zn]=groups[zn]||[]).push(a)});
+  const zoneOrder=DB.zones.map(z=>z.nom).concat("Autres régions");
+  const sections=Object.keys(groups)
+    .sort((x,y)=>{const ix=zoneOrder.indexOf(x),iy=zoneOrder.indexOf(y);return (ix<0?99:ix)-(iy<0?99:iy)||x.localeCompare(y)})
+    .map(zn=>{
+      const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+      return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
+        <div class="grid">${list.map(animTile).join("")}</div>`;
+    }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Équipe</div><h2>Animateurs</h2><p>${anims.length} animateur${anims.length>1?"s":""}</p></div></div>
-    <div class="grid">${tiles||emptyState("Aucun animateur","")}</div><div style="height:8px"></div></div>`;
+    ${sections||emptyState("Aucun animateur","")}<div style="height:8px"></div></div>`;
 }
 
 function emptyState(t,p){return `<div class="empty"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>${t}</b><p>${p}</p></div>`}

@@ -375,8 +375,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.7";
+const APP_VERSION="0.4.8";
 const CHANGELOG=[
+  {v:"0.4.8",date:"19 juillet 2026",notes:{
+    "Modifié":[
+      "Module Rendement enrichi : suivi réel de la région (clubs, membres, revenu réalisé), projection basée sur une hypothèse 10–15 membres/groupe (paramétrable), simulateur « membres par groupe » et calcul du nombre de membres/groupe nécessaire pour l'objectif."
+    ]
+  }},
   {v:"0.4.7",date:"19 juillet 2026",notes:{
     "Ajouté":[
       "Module privé « Mon rendement » (superadmin) : estimation des commissions sur les adhésions (20% direct / 10% réseau, adhésion 9 000 MAD), objectif annuel, simulateur de remplissage, détail par club et paramètres éditables."
@@ -974,20 +979,22 @@ function viewDashboard(){
 const RD_KEY="cap-rendement-params";
 let _rdData=[];
 function fmtMAD(n){return Math.round(n||0).toLocaleString("fr-FR").replace(/ /g," ")+" MAD"}
-function rdParams(){const def={membership:9000,tauxDirect:20,tauxReseau:10,objectif:500000};try{return{...def,...JSON.parse(localStorage.getItem(RD_KEY)||"{}")}}catch(e){return def}}
+function rdParams(){const def={membership:9000,tauxDirect:20,tauxReseau:10,objectif:500000,membresMin:10,membresMax:15};try{return{...def,...JSON.parse(localStorage.getItem(RD_KEY)||"{}")}}catch(e){return def}}
 function rdSave(p){try{localStorage.setItem(RD_KEY,JSON.stringify(p))}catch(e){}}
 function rdRate(c){if(c.animId&&c.animId===SESSION.animId)return"direct";if(REGION_RSK.includes(c.ville))return"reseau";return null}
-function rdSim(fill){
-  const p=rdParams();let rev=0;_rdData.forEach(x=>rev+=x.cible*(fill/100)*p.membership*x.rate/100);
+function rdRevAt(g){const p=rdParams();let rev=0;_rdData.forEach(x=>rev+=g*p.membership*x.rate/100);return rev}
+function rdSim(g){
+  const p=rdParams();const rev=rdRevAt(g);
   const pct=Math.min(100,Math.round(rev/(p.objectif||1)*100));
-  document.getElementById("rd-sim-fill").textContent=fill+"%";
+  document.getElementById("rd-sim-g").textContent=g;
+  document.getElementById("rd-sim-tot").textContent=(g*_rdData.length);
   document.getElementById("rd-sim-rev").textContent=fmtMAD(rev);
   document.getElementById("rd-sim-pct").textContent=pct+"% de l'objectif";
   document.getElementById("rd-sim-bar").style.width=pct+"%";
 }
 function rdEdit(){
   const g=x=>parseFloat(document.getElementById(x).value)||0;
-  rdSave({membership:g("rd-membership"),objectif:g("rd-objectif"),tauxDirect:g("rd-td"),tauxReseau:g("rd-tr")});
+  rdSave({membership:g("rd-membership"),objectif:g("rd-objectif"),tauxDirect:g("rd-td"),tauxReseau:g("rd-tr"),membresMin:g("rd-mmin"),membresMax:g("rd-mmax")});
   toast("Paramètres enregistrés");openRendement();
 }
 function openRendement(){
@@ -996,39 +1003,57 @@ function openRendement(){
   _rdData=DB.clubs.map(c=>{
     const type=rdRate(c);if(!type)return null;
     const rate=type==="direct"?p.tauxDirect:p.tauxReseau;
-    const membres=DB.membres.filter(m=>m.clubId===c.id).length;const cible=c.objectif||0;
-    return{nom:c.nom,ville:c.ville,type,rate,membres,cible,revActuel:membres*p.membership*rate/100,revCible:cible*p.membership*rate/100};
-  }).filter(Boolean).sort((a,b)=>b.revCible-a.revCible);
+    const membres=DB.membres.filter(m=>m.clubId===c.id).length;
+    return{nom:c.nom,ville:c.ville,type,rate,membres,revActuel:membres*p.membership*rate/100};
+  }).filter(Boolean).sort((a,b)=>(b.type==="direct")-(a.type==="direct")||b.rate-a.rate||a.nom.localeCompare(b.nom));
+  const nbClubs=_rdData.length;
+  const nbDirect=_rdData.filter(x=>x.type==="direct").length;
+  const nbReseau=nbClubs-nbDirect;
+  const membresReels=_rdData.reduce((s,x)=>s+x.membres,0);
   const totActuel=_rdData.reduce((s,x)=>s+x.revActuel,0);
-  const totCible=_rdData.reduce((s,x)=>s+x.revCible,0);
-  const totCibleM=_rdData.reduce((s,x)=>s+x.cible,0);
-  const avgPerM=totCibleM?totCible/totCibleM:0;
-  const membresObj=avgPerM?Math.ceil(p.objectif/avgPerM):0;
   const pctA=Math.min(100,Math.round(totActuel/(p.objectif||1)*100));
-  const pctC=Math.min(100,Math.round(totCible/(p.objectif||1)*100));
-  const rows=_rdData.map(x=>`<div class="rank-row"><div class="rn">${esc(x.nom.replace("CAP ",""))}<small>${esc(x.ville)} · ${x.type==="direct"?"Direct "+x.rate+"%":"Réseau "+x.rate+"%"} · ${x.membres}/${x.cible||"—"} membres</small></div><div class="rv" style="font-size:12.5px">${fmtMAD(x.revCible)}</div></div>`).join("");
+  const unitPerG=_rdData.reduce((s,x)=>s+p.membership*x.rate/100,0); // revenu par +1 membre/groupe
+  const revMin=unitPerG*p.membresMin, revMax=unitPerG*p.membresMax;
+  const gObj=unitPerG?Math.ceil(p.objectif/unitPerG):0; // membres/groupe pour l'objectif
+  const gStart=Math.round((p.membresMin+p.membresMax)/2);
+  const revStart=unitPerG*gStart, pctStart=Math.min(100,Math.round(revStart/(p.objectif||1)*100));
+  const rows=_rdData.map(x=>`<div class="rank-row"><span class="hdot ${x.type==="direct"?"bad":"warn"}"></span><div class="rn">${esc(x.nom.replace("CAP ",""))}<small>${esc(x.ville)} · ${x.type==="direct"?"Direct "+x.rate+"%":"Réseau "+x.rate+"%"} · ${x.membres} membre${x.membres>1?"s":""}</small></div><div class="rv" style="font-size:12.5px">${fmtMAD(p.membership*p.membresMax*x.rate/100)}</div></div>`).join("");
   document.getElementById("sheet-content").innerHTML=`
-    <h3>Mon rendement</h3><div class="sheet-sub">Estimation privée de tes commissions sur les adhésions.</div>
-    <div class="health-banner ${pctA>=100?"ok":pctA>=50?"warn":"bad"}"><div class="hbig">${pctA}%</div><div class="hna"><b>Objectif annuel · ${fmtMAD(p.objectif)}</b>Réalisé aujourd'hui : ${fmtMAD(totActuel)}</div></div>
+    <h3>Mon rendement</h3><div class="sheet-sub">Commissions sur les adhésions · zone Rabat·Salé·Kénitra.</div>
+
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Suivi réel de la région</div>
     <div class="stats">
-      <div class="stat"><div class="n" style="font-size:17px">${fmtMAD(totActuel)}</div><div class="l">Revenu actuel</div></div>
-      <div class="stat"><div class="n" style="font-size:17px">${fmtMAD(totCible)}</div><div class="l">Si objectifs atteints</div></div>
-      <div class="stat"><div class="n">${membresObj||"—"}</div><div class="l">Membres pour l'objectif</div></div>
+      <div class="stat"><div class="n">${nbClubs}</div><div class="l">Clubs · ${nbDirect} direct${nbDirect>1?"s":""} / ${nbReseau} réseau</div></div>
+      <div class="stat"><div class="n">${membresReels}</div><div class="l">Membres réels</div></div>
+      <div class="stat"><div class="n" style="font-size:16px">${fmtMAD(totActuel)}</div><div class="l">Revenu réalisé</div></div>
     </div>
+    <div class="health-banner ${pctA>=100?"ok":pctA>=50?"warn":"bad"}"><div class="hbig">${pctA}%</div><div class="hna"><b>Objectif annuel · ${fmtMAD(p.objectif)}</b>Réalisé à ce jour : ${fmtMAD(totActuel)}</div></div>
+
     <div class="divider"></div>
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:6px">Simulateur de remplissage</div>
-    <label style="font-size:12.5px;color:var(--muted);font-weight:600">Taux de remplissage moyen des clubs : <b id="rd-sim-fill" style="color:var(--ink)">100%</b></label>
-    <input type="range" min="0" max="100" value="100" oninput="rdSim(this.value)" style="width:100%;accent-color:var(--crimson);margin:10px 0">
-    <div class="health-banner warn"><div class="hbig" id="rd-sim-rev">${fmtMAD(totCible)}</div><div class="hna" style="width:100%"><b>Projection</b><span id="rd-sim-pct">${pctC}% de l'objectif</span><div class="cc-prog" style="margin-top:6px"><i id="rd-sim-bar" style="width:${pctC}%;background:var(--warn)"></i></div></div></div>
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:6px">Projection — hypothèse ${p.membresMin} à ${p.membresMax} membres / groupe</div>
+    <div class="stats" style="grid-template-columns:1fr 1fr">
+      <div class="stat"><div class="n" style="font-size:15px">${fmtMAD(revMin)}</div><div class="l">Bas (${p.membresMin}/groupe) · ${Math.round(revMin/(p.objectif||1)*100)}% obj.</div></div>
+      <div class="stat"><div class="n" style="font-size:15px">${fmtMAD(revMax)}</div><div class="l">Haut (${p.membresMax}/groupe) · ${Math.round(revMax/(p.objectif||1)*100)}% obj.</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink);margin:4px 2px 0;font-weight:500">🎯 Pour atteindre <b>${fmtMAD(p.objectif)}</b>, il te faut <b>~${gObj} membres par groupe</b> (soit ${gObj*nbClubs} membres sur ${nbClubs} clubs).</p>
+
     <div class="divider"></div>
-    <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">Détail par club — revenu si objectif atteint</div>
-    <div class="rank">${rows||`<div class="rank-row"><div class="rn" style="color:var(--muted)">Aucun club dans ton périmètre. Renseigne un animateur (toi) et des objectifs de membres.</div></div>`}</div>
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:6px">Simulateur</div>
+    <label style="font-size:12.5px;color:var(--muted);font-weight:600">Membres par groupe : <b id="rd-sim-g" style="color:var(--ink)">${gStart}</b> · total <b id="rd-sim-tot" style="color:var(--ink)">${gStart*nbClubs}</b> membres</label>
+    <input type="range" min="0" max="30" value="${gStart}" oninput="rdSim(this.value)" style="width:100%;accent-color:var(--crimson);margin:10px 0">
+    <div class="health-banner warn"><div class="hbig" id="rd-sim-rev">${fmtMAD(revStart)}</div><div class="hna" style="width:100%"><b>Projection</b><span id="rd-sim-pct">${pctStart}% de l'objectif</span><div class="cc-prog" style="margin-top:6px"><i id="rd-sim-bar" style="width:${pctStart}%;background:var(--warn)"></i></div></div></div>
+
+    <div class="divider"></div>
+    <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">Détail par club — potentiel à ${p.membresMax} membres</div>
+    <div class="rank">${rows||`<div class="rank-row"><div class="rn" style="color:var(--muted)">Aucun club dans ton périmètre.</div></div>`}</div>
+
     <div class="divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Paramètres</div>
     <div class="frow"><div class="field"><label>Adhésion HT (MAD)</label><input id="rd-membership" type="number" value="${p.membership}"></div><div class="field"><label>Objectif annuel (MAD)</label><input id="rd-objectif" type="number" value="${p.objectif}"></div></div>
     <div class="frow"><div class="field"><label>Taux direct (%)</label><input id="rd-td" type="number" value="${p.tauxDirect}"></div><div class="field"><label>Taux réseau (%)</label><input id="rd-tr" type="number" value="${p.tauxReseau}"></div></div>
+    <div class="frow"><div class="field"><label>Membres/groupe (bas)</label><input id="rd-mmin" type="number" value="${p.membresMin}"></div><div class="field"><label>Membres/groupe (haut)</label><input id="rd-mmax" type="number" value="${p.membresMax}"></div></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="rdEdit()">Enregistrer</button><button class="btn" onclick="closeSheet()">Fermer</button></div>
-    <p style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55"><b>Base de calcul :</b> Direct = clubs que tu animes (${p.tauxDirect}%). Réseau = autres clubs de ta zone Rabat·Salé·Kénitra (${p.tauxReseau}%). Revenu = membres × ${fmtMAD(p.membership)} × taux. « Membres pour l'objectif » = objectif ÷ revenu moyen par membre. Paramètres enregistrés sur cet appareil.</p>`;
+    <p style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55"><b>Bases :</b> Direct = clubs que tu animes (${p.tauxDirect}%). Réseau = autres clubs de ta zone (${p.tauxReseau}%). Revenu = membres × ${fmtMAD(p.membership)} × taux. Le « suivi réel » utilise les membres réellement saisis ; la « projection » applique l'hypothèse membres/groupe à tous tes clubs. Paramètres enregistrés sur cet appareil.</p>`;
   openSheet();
 }
 

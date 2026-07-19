@@ -138,6 +138,18 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .tile h3{font-size:16px;font-weight:700}
 .tile .sub{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .dot{width:4px;height:4px;border-radius:50%;background:var(--muted);display:inline-block}
+.hdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;flex:0 0 auto}
+.hpct{font-family:"Bricolage Grotesque";font-weight:800;font-size:13px;flex:0 0 auto}
+.hdot.ok,.hpct.ok{color:var(--ok)}.hdot.ok{background:var(--ok)}
+.hdot.warn,.hpct.warn{color:var(--warn)}.hdot.warn{background:var(--warn)}
+.hdot.bad,.hpct.bad{color:var(--crimson)}.hdot.bad{background:var(--crimson)}
+.health-banner{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);margin-bottom:14px}
+.health-banner .hbig{font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;flex:0 0 auto}
+.health-banner .hna{flex:1;min-width:0;font-size:13px}
+.health-banner .hna b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;opacity:.75}
+.health-banner.ok{background:var(--ok-tint)}.health-banner.ok .hbig,.health-banner.ok b{color:var(--ok)}
+.health-banner.warn{background:var(--warn-tint)}.health-banner.warn .hbig,.health-banner.warn b{color:var(--warn)}
+.health-banner.bad{background:var(--crimson-tint)}.health-banner.bad .hbig,.health-banner.bad b{color:var(--crimson)}
 .tile-foot{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .tag{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:8px;background:var(--paper);color:var(--muted);border:1px solid var(--line)}
 .tag.crim{background:var(--crimson-tint);color:var(--crimson);border-color:transparent}
@@ -336,8 +348,17 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.3.1";
+const APP_VERSION="0.4.0";
 const CHANGELOG=[
+  {v:"0.4.0",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "Score de santé par club (pastille vert / orange / rouge + pourcentage) calculé sur l'animateur, les réunions, l'intégration des membres et l'objectif.",
+      "Objectif de membres par club (avec suivi du remplissage).",
+      "Prochaine action recommandée affichée sur chaque fiche club.",
+      "Badges d'alerte sur les cartes club (sans animateur, sans réunion, membres à relancer).",
+      "Indicateur de santé aussi sur le classement du tableau de bord."
+    ]
+  }},
   {v:"0.3.1",date:"18 juillet 2026",notes:{
     "Ajouté":[
       "Aperçu carte automatique sur les lieux géolocalisés (visuel de la carte, sans photo à uploader). L'upload d'une vraie photo reste possible et prend le dessus."
@@ -433,7 +454,7 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??""}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[]}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
@@ -640,14 +661,45 @@ function zoneNomForVille(ville){
 }
 const VILLE_COLORS={"Rabat":"#B0122E","Salé":"#B8862A","Kenitra":"#2E7D5B","Casablanca":"#3A5DA8","Dar Bouazza":"#5AA0C8","Bouskoura":"#7A4DA8","Marrakech":"#C8A24C","Tanger":"#1FA0A0"};
 function villeColor(v){return VILLE_COLORS[v]||"#8C8085"}
+function clubHealth(c){
+  const membres=DB.membres.filter(m=>m.clubId===c.id);
+  const upcoming=DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee");
+  let score=0,max=0;
+  max+=25; if(c.animId)score+=25;
+  max+=25; if(upcoming)score+=25;
+  max+=25; if(membres.length){const avg=membres.reduce((a,m)=>a+[m.formulaire,m.contrat,m.facture,m.paiement].filter(Boolean).length,0)/(membres.length*4);score+=Math.round(avg*25);}
+  if(c.objectif){max+=25;score+=Math.round(Math.min(1,membres.length/c.objectif)*25);}
+  const pct=max?Math.round(score/max*100):0;
+  const level=pct>=70?"ok":pct>=40?"warn":"bad";
+  return{pct,level,nbM:membres.length,upcoming};
+}
+function clubNextAction(c){
+  const membres=DB.membres.filter(m=>m.clubId===c.id);
+  if(!c.animId)return"Nommer un animateur";
+  if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"Planifier une réunion";
+  const relance=membres.filter(m=>!m.formulaire||!m.contrat||!m.facture||!m.paiement).length;
+  if(relance)return relance+" membre"+(relance>1?"s":"")+" à relancer (suivi incomplet)";
+  const aInt=DB.reunions.filter(r=>r.clubId===c.id).flatMap(r=>r.guests||[]).filter(g=>g.statut==="À intégrer").length;
+  if(aInt)return aInt+" invité"+(aInt>1?"s":"")+" à intégrer";
+  if(c.objectif&&membres.length<c.objectif)return"Recruter "+(c.objectif-membres.length)+" membre(s) pour l'objectif";
+  return"Rien à signaler ✓";
+}
+function clubBadges(c){
+  const b=[];
+  if(!c.animId)b.push(`<span class="tag empty">Sans animateur</span>`);
+  if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))b.push(`<span class="tag empty">Sans réunion</span>`);
+  const relance=DB.membres.filter(m=>m.clubId===c.id&&(!m.formulaire||!m.contrat||!m.facture||!m.paiement)).length;
+  if(relance)b.push(`<span class="tag" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${relance} à relancer</span>`);
+  return b.join("");
+}
 function clubTile(c){
   const nbUp=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").length;
-  const nbR=DB.reunions.filter(m=>m.clubId===c.id).length;const a=anim(c.animId);
-  const nbM=DB.membres.filter(m=>m.clubId===c.id).length;
+  const a=anim(c.animId);const nbM=DB.membres.filter(m=>m.clubId===c.id).length;const h=clubHealth(c);
+  const badges=clubBadges(c);
   return `<div class="tile" style="border-left:5px solid ${villeColor(c.ville)}" onclick="openClub('${c.id}')">
-    <div class="tile-top"><div><h3>${esc(c.nom)}</h3>
-      <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}</div></div></div>
-    <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:`<span class="tag empty">Animateur à pourvoir</span>`}<span class="tag">${nbM} membre${nbM>1?"s":""}</span><span class="tag">${nbUp} à venir</span></div></div>`;
+    <div class="tile-top"><div style="min-width:0"><h3><span class="hdot ${h.level}"></span>${esc(c.nom)}</h3>
+      <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}${c.objectif?` <span class="dot"></span> ${nbM}/${c.objectif}`:""}</div></div><span class="hpct ${h.level}">${h.pct}%</span></div>
+    <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:""}<span class="tag">${nbM} membre${nbM>1?"s":""}</span><span class="tag">${nbUp} à venir</span>${badges}</div></div>`;
 }
 function clubVilleChip(l,v){return `<button class="chip ${(window._clubVille||"")===v?"on":""}" onclick="window._clubVille='${v}';render()">${esc(l)}</button>`}
 function viewClubs(){
@@ -751,12 +803,12 @@ function dashStats(clubs){
     reunionsRealisees:reunions.filter(r=>r.statut==="realisee").length,
     invites:invites.length,
     invitesMembre:invites.filter(g=>g.statut==="Membre").length,
-    perClub:clubs.map(c=>({nom:c.nom,ville:c.ville,n:DB.membres.filter(m=>m.clubId===c.id).length})).sort((a,b)=>b.n-a.n||a.nom.localeCompare(b.nom))
+    perClub:clubs.map(c=>({nom:c.nom,ville:c.ville,n:DB.membres.filter(m=>m.clubId===c.id).length,lvl:clubHealth(c).level})).sort((a,b)=>b.n-a.n||a.nom.localeCompare(b.nom))
   };
 }
 function dashBlock(s){
   const maxN=Math.max(1,...s.perClub.map(c=>c.n));
-  const ranks=s.perClub.map(c=>`<div class="rank-row"><div class="rn">${esc(c.nom.replace("CAP ",""))}<small>${esc(c.ville)}</small></div>
+  const ranks=s.perClub.map(c=>`<div class="rank-row"><span class="hdot ${c.lvl}"></span><div class="rn">${esc(c.nom.replace("CAP ",""))}<small>${esc(c.ville)}</small></div>
     <div class="bar"><i style="width:${Math.round(c.n/maxN*100)}%"></i></div><div class="rv">${c.n}</div></div>`).join("");
   return `
     <div class="stats">
@@ -1050,8 +1102,10 @@ function openClub(id){
       <div class="gi"><b>${esc(m.nom)}</b><small>${esc(m.specialite||"—")}</small></div>
       <span class="gstat" style="${m.paiement?"background:var(--ok-tint);color:var(--ok);border-color:transparent":""}">${cl.done}/${cl.total}${m.paiement?" · payé":""}</span></div>`;
   }).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Aucun membre pour l'instant.</p>`;
+  const h=clubHealth(c);const na=clubNextAction(c);
   document.getElementById("sheet-content").innerHTML=`
-    <h3>${esc(c.nom)}</h3><div class="sheet-sub">${esc(c.ville)} · ${c.statut==="actif"?"Club actif":"En création"}</div>
+    <h3>${esc(c.nom)}</h3><div class="sheet-sub">${esc(c.ville)} · ${c.statut==="actif"?"Club actif":"En création"}${c.objectif?` · objectif ${c.objectif} membres`:""}</div>
+    <div class="health-banner ${h.level}"><div class="hbig">${h.pct}%</div><div class="hna"><b>Santé du club · prochaine action</b>${esc(na)}</div></div>
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div></div>
     <div class="divider"></div><h3 style="font-size:16px;margin-bottom:6px">Réunions</h3>${rlist}
     <div class="divider"></div>
@@ -1123,14 +1177,14 @@ function clubForm(id){
     <div class="field"><label>Nom du club</label><input id="c-nom" value="${esc(c.nom)}" placeholder="CAP Ville Nom"></div>
     <div class="field"><label>Ville</label><select id="c-ville">${villeOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
-    <div class="field"><label>Statut</label><select id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div>
+    <div><div class="field half"><label>Statut</label><select id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div><div class="field half"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce club</div>`:""}`;
   openSheet();
 }
 async function saveClub(id){
   const g=x=>document.getElementById(x).value;const nom=g("c-nom").trim();if(!nom){toast("Nom requis");return}
-  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut:g("c-statut")};
+  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut:g("c-statut"),objectif:parseInt(g("c-objectif"))||null};
   if(id){
     const {error}=await sb.from("clubs").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}

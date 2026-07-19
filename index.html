@@ -348,8 +348,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.1";
+const APP_VERSION="0.4.2";
 const CHANGELOG=[
+  {v:"0.4.2",date:"18 juillet 2026",notes:{
+    "Ajouté":[
+      "La « prochaine action » d'un club est cliquable et mène directement à l'écran pour l'accomplir (planifier une réunion avec le club pré-rempli, nommer un animateur, relancer un membre, recruter…)."
+    ]
+  }},
   {v:"0.4.1",date:"18 juillet 2026",notes:{
     "Ajouté":[
       "Onglet Équipe regroupé par zone (séparateur par région) avec liseré et avatar aux couleurs de la ville."
@@ -680,14 +685,15 @@ function clubHealth(c){
 }
 function clubNextAction(c){
   const membres=DB.membres.filter(m=>m.clubId===c.id);
-  if(!c.animId)return"Nommer un animateur";
-  if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"Planifier une réunion";
+  if(!c.animId)return{label:"Nommer un animateur",act:`clubForm('${c.id}')`};
+  if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return{label:"Planifier une réunion",act:`meetingForm('','${c.id}')`};
+  const relanceM=membres.find(m=>!m.formulaire||!m.contrat||!m.facture||!m.paiement);
   const relance=membres.filter(m=>!m.formulaire||!m.contrat||!m.facture||!m.paiement).length;
-  if(relance)return relance+" membre"+(relance>1?"s":"")+" à relancer (suivi incomplet)";
+  if(relance)return{label:relance+" membre"+(relance>1?"s":"")+" à relancer",act:`memberSheet('${c.id}','${relanceM.id}')`};
   const aInt=DB.reunions.filter(r=>r.clubId===c.id).flatMap(r=>r.guests||[]).filter(g=>g.statut==="À intégrer").length;
-  if(aInt)return aInt+" invité"+(aInt>1?"s":"")+" à intégrer";
-  if(c.objectif&&membres.length<c.objectif)return"Recruter "+(c.objectif-membres.length)+" membre(s) pour l'objectif";
-  return"Rien à signaler ✓";
+  if(aInt)return{label:aInt+" invité"+(aInt>1?"s":"")+" à intégrer",act:`closeSheet();go('agenda')`};
+  if(c.objectif&&membres.length<c.objectif)return{label:"Recruter "+(c.objectif-membres.length)+" membre(s)",act:`memberSheet('${c.id}')`};
+  return{label:"Rien à signaler ✓",act:""};
 }
 function clubBadges(c){
   const b=[];
@@ -927,8 +933,8 @@ function meetingDetail(m,editable){
     <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
 }
-function meetingForm(id){
-  const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:"",date:"",heure:"19:00",lieuId:"",animId:"",statut:"planifiee",guests:[]};
+function meetingForm(id,presetClub){
+  const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:presetClub||"",date:"",heure:"19:00",lieuId:"",animId:(presetClub?club(presetClub).animId:"")||"",statut:"planifiee",guests:[]};
   const scopedC=DB.clubs.filter(c=>SESSION.role==="superadmin"?true:scopedClubIds().includes(c.id));
   const clubsOpt=scopedC.map(c=>`<option value="${c.id}" ${c.id===m.clubId?"selected":""}>${esc(c.nom)}</option>`).join("");
   const animOpt=DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===m.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
@@ -1118,7 +1124,7 @@ function openClub(id){
   const h=clubHealth(c);const na=clubNextAction(c);
   document.getElementById("sheet-content").innerHTML=`
     <h3>${esc(c.nom)}</h3><div class="sheet-sub">${esc(c.ville)} · ${c.statut==="actif"?"Club actif":"En création"}${c.objectif?` · objectif ${c.objectif} membres`:""}</div>
-    <div class="health-banner ${h.level}"><div class="hbig">${h.pct}%</div><div class="hna"><b>Santé du club · prochaine action</b>${esc(na)}</div></div>
+    <div class="health-banner ${h.level}" ${na.act?`onclick="${na.act}" style="cursor:pointer"`:""}><div class="hbig">${h.pct}%</div><div class="hna"><b>Santé du club · prochaine action</b>${esc(na.label)}${na.act?' <span style="font-weight:700">→</span>':""}</div></div>
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div></div>
     <div class="divider"></div><h3 style="font-size:16px;margin-bottom:6px">Réunions</h3>${rlist}
     <div class="divider"></div>

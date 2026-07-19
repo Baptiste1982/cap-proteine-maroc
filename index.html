@@ -93,6 +93,8 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .filters::-webkit-scrollbar{display:none}
 .chip{white-space:nowrap;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:#fff;border:1.5px solid var(--line);color:var(--muted);flex:0 0 auto;transition:all .12s}
 .chip.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.filter-select{appearance:none;-webkit-appearance:none;width:100%;padding:12px 38px 12px 14px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238C8085' stroke-width='2' stroke-linecap='round'><path d='M4 6l4 4 4-4'/></svg>") no-repeat right 13px center;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;cursor:pointer}
+.filter-select:focus{outline:none;border-color:var(--crimson)}
 
 .searchbar{display:flex;align-items:center;gap:9px;background:#fff;border:1.5px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;margin-bottom:14px}
 .searchbar input{border:none;flex:1;padding:0;background:none}.searchbar input:focus{outline:none}
@@ -348,8 +350,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.2";
+const APP_VERSION="0.4.3";
 const CHANGELOG=[
+  {v:"0.4.3",date:"18 juillet 2026",notes:{
+    "Modifié":[
+      "Filtre par ville en menu déroulant propre (Agenda, Clubs, Lieux) au lieu des pastilles qui défilaient."
+    ]
+  }},
   {v:"0.4.2",date:"18 juillet 2026",notes:{
     "Ajouté":[
       "La « prochaine action » d'un club est cliquable et mène directement à l'écran pour l'accomplir (planifier une réunion avec le club pré-rempli, nommer un animateur, relancer un membre, recruter…)."
@@ -622,7 +629,8 @@ function viewAgenda(){
   const q=(window._q||"").toLowerCase();
   if(q)list=list.filter(m=>(club(m.clubId).nom+" "+lieuNom(m.lieuId)+" "+animNom(m.animId)).toLowerCase().includes(q));
 
-  const villeChips=[...new Set(all.map(m=>club(m.clubId).ville))].sort().map(vl=>chip(vl,"v:"+vl)).join("");
+  const villesAg=[...new Set(all.map(m=>club(m.clubId).ville))].sort();
+  const villeSelect=`<select class="filter-select" onchange="filter=this.value?('v:'+this.value):'all';render()"><option value="">Toutes les villes</option>${villesAg.map(vl=>`<option value="${esc(vl)}" ${filter==="v:"+vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
 
   let cards="";
   if(!list.length)cards=emptyState("Aucune réunion","Ajuste les filtres ou planifie une nouvelle date avec le bouton +.");
@@ -639,7 +647,8 @@ function viewAgenda(){
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
-    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Réunions de lancement","RL")}${villeChips}</div>
+    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Réunions de lancement","RL")}</div>
+    ${villeSelect}
     ${cards}<div style="height:8px"></div></div>`;
 }
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
@@ -719,7 +728,7 @@ function viewClubs(){
   const q=(window._q2||"").toLowerCase();if(q)clubs=clubs.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
   const villesDispo=[...new Set(clubs.map(c=>c.ville))].sort();
   if(window._clubVille&&!villesDispo.includes(window._clubVille))window._clubVille="";
-  const villeChips=`<div class="filters">${clubVilleChip("Toutes villes","")}${villesDispo.map(vl=>clubVilleChip(vl,vl)).join("")}</div>`;
+  const villeChips=`<select class="filter-select" onchange="window._clubVille=this.value;render()"><option value="">Toutes les villes</option>${villesDispo.map(vl=>`<option value="${esc(vl)}" ${window._clubVille===vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
   if(window._clubVille)clubs=clubs.filter(c=>c.ville===window._clubVille);
   const sansAnim=clubs.filter(c=>!c.animId).length;
   // regroupement par zone
@@ -750,7 +759,7 @@ function viewLieux(){
   const q=(window._q3||"").toLowerCase();if(q)lieux=lieux.filter(l=>(l.nom+" "+l.ville+" "+l.adresse).toLowerCase().includes(q));
   const villesDispo=[...new Set(lieux.map(l=>l.ville).filter(Boolean))].sort();
   if(window._lieuVille&&!villesDispo.includes(window._lieuVille))window._lieuVille="";
-  const villeChips=`<div class="filters">${lieuVilleChip("Toutes villes","")}${villesDispo.map(vl=>lieuVilleChip(vl,vl)).join("")}</div>`;
+  const villeChips=`<select class="filter-select" onchange="window._lieuVille=this.value;render()"><option value="">Toutes les villes</option>${villesDispo.map(vl=>`<option value="${esc(vl)}" ${window._lieuVille===vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
   if(window._lieuVille)lieux=lieux.filter(l=>l.ville===window._lieuVille);
   const cards=lieux.map(l=>{
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;

@@ -161,6 +161,29 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .tag.ok{background:var(--ok-tint);color:var(--ok);border-color:transparent}
 .avatar{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-family:"Bricolage Grotesque";font-weight:700;font-size:16px;color:#fff;background:linear-gradient(160deg,var(--crimson),var(--crimson-deep))}
 
+/* club card premium */
+.club-card{position:relative;overflow:hidden;padding:15px 15px 14px;border-left:4px solid var(--vc)}
+.club-card::before{content:"";position:absolute;top:0;left:0;right:0;height:52px;background:linear-gradient(180deg,var(--vc),transparent);opacity:.07;pointer-events:none}
+.cc-head{display:flex;align-items:center;gap:11px;position:relative}
+.cc-emblem{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-family:"Bricolage Grotesque";font-weight:800;font-size:14px;color:#fff;background:var(--vc);box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.cc-title{flex:1;min-width:0}
+.cc-title h3{font-size:15.5px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-sub{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-health{flex:0 0 auto;font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;padding:3px 9px;border-radius:20px;line-height:1.2}
+.cc-health small{font-size:10px;font-weight:700}
+.cc-health.ok{background:var(--ok-tint);color:var(--ok)}
+.cc-health.warn{background:var(--warn-tint);color:var(--warn)}
+.cc-health.bad{background:var(--crimson-tint);color:var(--crimson)}
+.cc-progwrap{margin-top:13px}
+.cc-prog{height:7px;border-radius:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.cc-prog i{display:block;height:100%;border-radius:6px;background:var(--vc);transition:width .3s}
+.cc-proglbl{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-top:5px}
+.cc-stats{display:flex;align-items:center;gap:14px;margin-top:13px;font-size:12.5px;color:var(--muted);font-weight:500;flex-wrap:wrap}
+.cc-stats span{display:inline-flex;align-items:center;gap:5px;min-width:0}
+.cc-stats svg{opacity:.7;flex:0 0 auto}
+.cc-anim{color:var(--crimson);font-weight:600;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+
 /* lieu card */
 .lieu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;transition:transform .1s,box-shadow .15s}
 .lieu-card:active{transform:scale(.99)}
@@ -352,8 +375,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.4";
+const APP_VERSION="0.4.5";
 const CHANGELOG=[
+  {v:"0.4.5",date:"18 juillet 2026",notes:{
+    "Modifié":[
+      "Cartes des clubs redessinées : emblème aux couleurs de la ville, score de santé en pastille, barre de progression vers l'objectif, stats avec icônes et léger voile de couleur."
+    ]
+  }},
   {v:"0.4.4",date:"18 juillet 2026",notes:{
     "Corrigé":[
       "Alignement des champs côte à côte dans les formulaires (Date/Heure, Latitude/Longitude, Capacité/Contact, Statut/Objectif, Téléphone/Email) — passage en flex, rendu propre."
@@ -722,11 +750,20 @@ function clubBadges(c){
 function clubTile(c){
   const nbUp=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").length;
   const a=anim(c.animId);const nbM=DB.membres.filter(m=>m.clubId===c.id).length;const h=clubHealth(c);
-  const badges=clubBadges(c);
-  return `<div class="tile" style="border-left:5px solid ${villeColor(c.ville)}" onclick="openClub('${c.id}')">
-    <div class="tile-top"><div style="min-width:0"><h3><span class="hdot ${h.level}"></span>${esc(c.nom)}</h3>
-      <div class="sub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville)} <span class="dot"></span> ${c.statut==="actif"?"Actif":"En création"}${c.objectif?` <span class="dot"></span> ${nbM}/${c.objectif}`:""}</div></div><span class="hpct ${h.level}">${h.pct}%</span></div>
-    <div class="tile-foot">${a?`<span class="tag crim">${esc(a.nom)}</span>`:""}<span class="tag">${nbM} membre${nbM>1?"s":""}</span><span class="tag">${nbUp} à venir</span>${badges}</div></div>`;
+  const badges=clubBadges(c);const fill=c.objectif?Math.min(100,Math.round(nbM/c.objectif*100)):0;
+  return `<div class="tile club-card" style="--vc:${villeColor(c.ville)}" onclick="openClub('${c.id}')">
+    <div class="cc-head">
+      <div class="cc-emblem">${esc(initiales(c.nom.replace("CAP ","")))}</div>
+      <div class="cc-title"><h3>${esc(c.nom)}</h3><div class="cc-sub">${esc(c.ville)} · ${c.statut==="actif"?"Actif":"En création"}</div></div>
+      <div class="cc-health ${h.level}">${h.pct}<small>%</small></div>
+    </div>
+    ${c.objectif?`<div class="cc-progwrap"><div class="cc-prog"><i style="width:${fill}%"></i></div><span class="cc-proglbl">${nbM}/${c.objectif} membres · objectif ${fill}%</span></div>`:""}
+    <div class="cc-stats">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${nbM} membre${nbM>1?"s":""}</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${nbUp} à venir</span>
+      <span class="cc-anim">${a?esc(a.nom):"À pourvoir"}</span>
+    </div>
+    ${badges?`<div class="cc-badges">${badges}</div>`:""}</div>`;
 }
 function clubVilleChip(l,v){return `<button class="chip ${(window._clubVille||"")===v?"on":""}" onclick="window._clubVille='${v}';render()">${esc(l)}</button>`}
 function viewClubs(){

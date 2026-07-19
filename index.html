@@ -375,8 +375,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.5";
+const APP_VERSION="0.4.6";
 const CHANGELOG=[
+  {v:"0.4.6",date:"18 juillet 2026",notes:{
+    "Modifié":[
+      "Cartes Équipe harmonisées au style premium (emblème, stats à icônes, voile de couleur) et liseré aux couleurs de la ville sur les cartes Lieux."
+    ]
+  }},
   {v:"0.4.5",date:"18 juillet 2026",notes:{
     "Modifié":[
       "Cartes des clubs redessinées : emblème aux couleurs de la ville, score de santé en pastille, barre de progression vers l'objectif, stats avec icônes et léger voile de couleur."
@@ -808,7 +813,7 @@ function viewLieux(){
   const cards=lieux.map(l=>{
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     const hasMap=!l.photo&&l.lat&&l.lng;
-    return `<div class="lieu-card" onclick="openLieu('${l.id}')">
+    return `<div class="lieu-card" style="border-left:4px solid ${villeColor(l.ville)}" onclick="openLieu('${l.id}')">
       <div class="lieu-photo ${l.photo||hasMap?"":"noimg"}" style="${l.photo?`background-image:url('${l.photo}')`:""}">
         ${hasMap?`<iframe class="lieu-map" loading="lazy" title="" src="https://www.openstreetmap.org/export/embed.html?bbox=${l.lng-0.005}%2C${l.lat-0.0035}%2C${l.lng+0.005}%2C${l.lat+0.0035}&layer=mapnik&marker=${l.lat}%2C${l.lng}"></iframe>`:""}
         ${l.photo||hasMap?"":`<svg class="pin-wm" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`}
@@ -832,10 +837,19 @@ function viewLieux(){
 function animTile(a){
   const clubs=DB.clubs.filter(c=>c.animId===a.id);
   const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
-  return `<div class="tile" style="border-left:5px solid ${villeColor(a.ville)}" onclick="openAnim('${a.id}')">
-    <div class="tile-top"><div style="display:flex;gap:12px;align-items:center;min-width:0"><div class="avatar" style="background:linear-gradient(160deg,${villeColor(a.ville)},var(--crimson-deep))">${initiales(a.nom)}</div>
-      <div style="min-width:0"><h3>${esc(a.nom)}</h3><div class="sub">${esc(a.ville)} <span class="dot"></span> ${clubs.length} club${clubs.length>1?"s":""}${a.tel?` <span class="dot"></span> ${esc(a.tel)}`:""}</div></div></div></div>
-    <div class="tile-foot">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}<span class="tag crim">${nbUp} à venir</span></div></div>`;
+  const nbM=DB.membres.filter(m=>clubs.some(c=>c.id===m.clubId)).length;
+  return `<div class="tile club-card" style="--vc:${villeColor(a.ville)}" onclick="openAnim('${a.id}')">
+    <div class="cc-head">
+      <div class="cc-emblem">${esc(initiales(a.nom))}</div>
+      <div class="cc-title"><h3>${esc(a.nom)}</h3><div class="cc-sub">${esc(a.ville)} · ${clubs.length} club${clubs.length>1?"s":""}</div></div>
+      ${nbUp?`<div class="cc-health ok">${nbUp}<small> à venir</small></div>`:""}
+    </div>
+    <div class="cc-stats">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>${clubs.length} club${clubs.length>1?"s":""}</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${nbM} membre${nbM>1?"s":""}</span>
+      ${a.tel?`<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(a.tel)}</span>`:""}
+    </div>
+    <div class="cc-badges">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}</div></div>`;
 }
 function viewTeam(){
   let anims=[...DB.animateurs];

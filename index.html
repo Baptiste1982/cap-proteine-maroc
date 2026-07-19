@@ -43,8 +43,10 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .field input,.field select,.field textarea{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:#fff;transition:border-color .15s}
 .field textarea{resize:vertical;min-height:70px;line-height:1.5}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--crimson)}
-.field.half{display:inline-block;width:calc(50% - 5px)}
+.field.half{display:inline-block;width:calc(50% - 5px);vertical-align:top}
 .field.half:first-of-type{margin-right:8px}
+.frow{display:flex;gap:10px}
+.frow>.field{flex:1 1 0;min-width:0}
 .btn{width:100%;padding:15px;border-radius:var(--r-sm);font-weight:700;font-size:15.5px;background:var(--crimson);color:#fff;transition:transform .06s,filter .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.985)}.btn:hover{filter:brightness(1.06)}
 .btn.ghost{background:transparent;color:var(--crimson);border:1.5px solid var(--line)}
@@ -350,8 +352,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.3";
+const APP_VERSION="0.4.4";
 const CHANGELOG=[
+  {v:"0.4.4",date:"18 juillet 2026",notes:{
+    "Corrigé":[
+      "Alignement des champs côte à côte dans les formulaires (Date/Heure, Latitude/Longitude, Capacité/Contact, Statut/Objectif, Téléphone/Email) — passage en flex, rendu propre."
+    ]
+  }},
   {v:"0.4.3",date:"18 juillet 2026",notes:{
     "Modifié":[
       "Filtre par ville en menu déroulant propre (Agenda, Clubs, Lieux) au lieu des pastilles qui défilaient."
@@ -952,7 +959,7 @@ function meetingForm(id,presetClub){
     <h3>${editing?"Modifier la réunion":"Nouvelle réunion"}</h3><div class="sheet-sub">Planifie une session pour un club de ton périmètre.</div>
     <div class="field"><label>Type</label><select id="f-type">${Object.keys(TYPES).map(t=>`<option value="${t}" ${m.type===t?"selected":""}>${t} — ${TYPES[t]}</option>`).join("")}</select></div>
     <div class="field"><label>Club d'affaires</label><select id="f-club"><option value="">— choisir —</option>${clubsOpt}</select></div>
-    <div><div class="field half"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field half"><label>Heure</label><input id="f-heure" type="time" value="${m.heure||"19:00"}"></div></div>
+    <div class="frow"><div class="field"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field"><label>Heure</label><input id="f-heure" type="time" value="${m.heure||"19:00"}"></div></div>
     <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="f-anim"><option value="">— choisir —</option>${animOpt}</select></div>
     <div class="field"><label>Statut</label><select id="f-statut">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
@@ -1059,8 +1066,8 @@ function lieuForm(id){
     <div class="field"><label>Nom du lieu</label><input id="l-nom" value="${esc(l.nom)}" placeholder="Ex. Royal Golf Dar Essalam"></div>
     <div class="field"><label>Ville</label><select id="l-ville">${villeOpt}</select></div>
     <div class="field"><label>Adresse</label><input id="l-adresse" value="${esc(l.adresse)}" placeholder="Rue, quartier, ville"></div>
-    <div><div class="field half"><label>Latitude</label><input id="l-lat" type="number" step="any" value="${l.lat}" placeholder="33.97"></div><div class="field half"><label>Longitude</label><input id="l-lng" type="number" step="any" value="${l.lng}" placeholder="-6.85"></div></div>
-    <div><div class="field half"><label>Capacité</label><input id="l-cap" type="number" value="${l.capacite}" placeholder="120"></div><div class="field half"><label>Contact tél.</label><input id="l-ctel" value="${esc(l.contactTel)}" placeholder="05 …"></div></div>
+    <div class="frow"><div class="field"><label>Latitude</label><input id="l-lat" type="number" step="any" value="${l.lat}" placeholder="33.97"></div><div class="field"><label>Longitude</label><input id="l-lng" type="number" step="any" value="${l.lng}" placeholder="-6.85"></div></div>
+    <div class="frow"><div class="field"><label>Capacité</label><input id="l-cap" type="number" value="${l.capacite}" placeholder="120"></div><div class="field"><label>Contact tél.</label><input id="l-ctel" value="${esc(l.contactTel)}" placeholder="05 …"></div></div>
     <div class="field"><label>Contact sur place</label><input id="l-cnom" value="${esc(l.contactNom)}" placeholder="Nom du référent"></div>
     <div class="field"><label>Notes</label><textarea id="l-notes" placeholder="Parking, capacité salle, tarif, accès…">${esc(l.notes)}</textarea></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`lieuDetail(lieu('${id}'))`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveLieu('${editing?id:""}')">${editing?"Enregistrer":"Créer le lieu"}</button></div>
@@ -1205,7 +1212,7 @@ function clubForm(id){
     <div class="field"><label>Nom du club</label><input id="c-nom" value="${esc(c.nom)}" placeholder="CAP Ville Nom"></div>
     <div class="field"><label>Ville</label><select id="c-ville">${villeOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
-    <div><div class="field half"><label>Statut</label><select id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div><div class="field half"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div></div>
+    <div class="frow"><div class="field"><label>Statut</label><select id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div><div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce club</div>`:""}`;
   openSheet();
@@ -1253,8 +1260,8 @@ function openAnim(id){
     <h3>${editing?esc(a.nom):"Nouvel animateur"}</h3><div class="sheet-sub">${editing?a.ville+" · "+clubs.length+" club(s)":"Ajoute un animateur à l'équipe."}</div>
     <div class="field"><label>Nom complet</label><input id="an-nom" value="${esc(a.nom)}" placeholder="Prénom Nom"></div>
     <div class="field"><label>Ville de rattachement</label><select id="an-ville">${villeOpt}</select></div>
-    <div class="field half"><label>Téléphone</label><input id="an-tel" value="${esc(a.tel)}" placeholder="06 …"></div>
-    <div class="field half"><label>Email</label><input id="an-email" value="${esc(a.email)}" placeholder="nom@…"></div>
+    <div class="frow"><div class="field"><label>Téléphone</label><input id="an-tel" value="${esc(a.tel)}" placeholder="06 …"></div>
+    <div class="field"><label>Email</label><input id="an-email" value="${esc(a.email)}" placeholder="nom@…"></div></div>
     ${editing&&clubs.length?`<div class="tile-foot" style="margin-top:6px">${clubs.map(c=>`<span class="tag crim">${esc(c.nom.replace("CAP ",""))}</span>`).join("")}</div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="saveAnim('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delAnim('${id}')">Retirer cet animateur</div>`:""}`;

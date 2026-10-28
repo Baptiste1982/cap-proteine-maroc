@@ -375,8 +375,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.5.0";
+const APP_VERSION="0.6.0";
 const CHANGELOG=[
+  {v:"0.6.0",date:"28 octobre 2026",notes:{
+    "Ajouté":[
+      "Classeur des PDF d'adhésion (Adhésions → 📁 Classeur) : rangés par mois de réception puis par groupe, chaque fichier nommé « NOM Prénom - date - groupe ». Téléchargement d'un PDF ou d'un mois entier en ZIP, avec un dossier par groupe."
+    ]
+  }},
   {v:"0.5.0",date:"28 octobre 2026",notes:{
     "Ajouté":[
       "Formulaire d'adhésion en ligne : le futur membre reçoit un lien, remplit le formulaire sur son téléphone et le PDF officiel « Formulaire Adhésion Membre » est rempli automatiquement.",
@@ -1479,6 +1484,7 @@ async function openAdhesions(){
   const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     <h3>Adhésions</h3><div class="sheet-sub">Formulaires remplis par les futurs membres depuis leur téléphone.</div>
+    <button class="btn ghost" style="margin-bottom:14px" onclick="openClasseur()">📁 Classeur des PDF · par mois et par groupe</button>
     <div style="border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden;margin-bottom:18px">${rows}</div>
     ${readOnly()?"":`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Envoyer le lien</div>
     <div class="field"><label>Club concerné (facultatif)</label><select id="adh-club"><option value="">— Sans club —</option>${clubOpts}</select></div>
@@ -1523,6 +1529,73 @@ function adhDetail(id){
       ${peut&&a.statut==="recue"?`<button class="btn ghost" onclick="adhStatut('${a.id}','traitee')">Marquer traitée</button>`:""}
       ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhStatut('${a.id}','rejetee')">Rejeter</button>`:""}
     </div>`;
+}
+/* ---- Classeur des PDF : par mois de réception, puis par groupe, fichiers nommés
+   « NOM Prénom - JJ-MM-AAAA - Groupe.pdf ». Les fichiers restent stockés sous leur id
+   (le groupe n'est souvent connu qu'à l'intégration) : le nom lisible est appliqué à
+   l'affichage et au téléchargement, il est donc toujours à jour. ---- */
+const MOIS_FR=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+function adhGroupe(a){
+  const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);
+  const c=mb?club(mb.clubId):(a.ref?club(a.ref):{});
+  return c&&c.nom?c.nom:"Sans groupe";
+}
+function adhDateFr(iso){const d=new Date(iso);return String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+d.getFullYear()}
+function adhMoisCle(iso){const d=new Date(iso);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+function adhNomFichierPropre(t){return String(t||"").replace(/[\\/:*?"<>|]+/g,"-").replace(/\s+/g," ").trim()}
+function adhNomFichier(a){
+  const nomPers=((a.data.m_nom||"").toUpperCase()+" "+(a.data.m_prenom||"")).trim()||"Sans nom";
+  return adhNomFichierPropre(nomPers+" - "+adhDateFr(a.created_at)+" - "+adhGroupe(a))+".pdf";
+}
+function adhClasseurListe(){return(DB.adhesions||[]).filter(a=>a.pdf_path&&a.statut!=="rejetee")}
+async function openClasseur(){
+  if(!DB.adhesions){await openAdhesions();}
+  const parMois={};
+  adhClasseurListe().forEach(a=>{(parMois[adhMoisCle(a.created_at)]=parMois[adhMoisCle(a.created_at)]||[]).push(a)});
+  const mois=Object.keys(parMois).sort().reverse();
+  const html=mois.length?mois.map(m=>{
+    const [y,mm]=m.split("-");const liste=parMois[m];
+    const parGroupe={};liste.forEach(a=>{(parGroupe[adhGroupe(a)]=parGroupe[adhGroupe(a)]||[]).push(a)});
+    const groupes=Object.keys(parGroupe).sort((x,y)=>(x==="Sans groupe")-(y==="Sans groupe")||x.localeCompare(y));
+    return `<div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
+        <div style="font:800 17px 'Bricolage Grotesque',sans-serif;color:var(--crimson-deep)">${MOIS_FR[+mm-1]} ${y} <span style="font:500 13px Inter;color:var(--muted)">· ${liste.length} PDF</span></div>
+        <button class="btn ghost mini" onclick="adhZipMois('${m}')">⬇ Tout le mois (.zip)</button></div>
+      ${groupes.map(g=>`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:10px 0 4px">📂 ${esc(g)} <span style="color:var(--muted);font-weight:500">(${parGroupe[g].length})</span></div>
+        <div style="border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden">${parGroupe[g].sort((x,y)=>x.created_at.localeCompare(y.created_at)).map(a=>`<div class="rank-row"><span style="font-size:18px">📄</span><div class="rn" style="cursor:pointer" onclick="adhPdf('${a.id}')" title="${esc(adhNomFichier(a))}">${esc(((a.data.m_nom||"").toUpperCase()+" "+(a.data.m_prenom||"")).trim())}<small>${adhDateFr(a.created_at).replace(/-/g,"/")} · ${esc(a.data.ent_nom||"")} · ${ADH_STATUTS[a.statut]}</small></div><button class="btn ghost mini" onclick="adhTelecharger('${a.id}')" aria-label="Télécharger">⬇</button></div>`).join("")}</div>`).join("")}
+    </div>`}).join(""):`<div class="empty"><b>Aucun PDF pour l'instant</b>Les formulaires reçus apparaîtront ici, rangés par mois.</div>`;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Classeur des PDF</h3><div class="sheet-sub">Formulaires d'adhésion rangés par mois de réception, puis par groupe. Nom des fichiers : NOM Prénom - date - groupe.</div>
+    ${html}
+    <div class="sheet-actions"><button class="btn ghost" onclick="openAdhesions()">Retour</button></div>`;
+  openSheet();
+}
+async function adhBlob(a){
+  const {data,error}=await sb.storage.from("adhesions").createSignedUrl(a.pdf_path,600);
+  if(error||!data)throw new Error("PDF introuvable");
+  const r=await fetch(data.signedUrl);if(!r.ok)throw new Error("PDF introuvable");
+  return await r.blob();
+}
+function adhSauver(blob,nom){const u=URL.createObjectURL(blob);const l=Object.assign(document.createElement("a"),{href:u,download:nom});document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+async function adhTelecharger(id){
+  const a=DB.adhesions.find(x=>x.id===id);
+  try{adhSauver(await adhBlob(a),adhNomFichier(a))}catch(e){toast(e.message)}
+}
+async function adhZipMois(m){
+  const liste=adhClasseurListe().filter(a=>adhMoisCle(a.created_at)===m);if(!liste.length)return;
+  toast("Préparation du ZIP ("+liste.length+" PDF)…");
+  try{
+    if(!window.JSZip)await new Promise((ok,ko)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";sc.onload=ok;sc.onerror=()=>ko(new Error("Module ZIP indisponible"));document.head.appendChild(sc)});
+    const [y,mm]=m.split("-");const racine="Adhesions "+y+"-"+mm+" ("+MOIS_FR[+mm-1]+")";
+    const zip=new JSZip();const vus=new Set();let manquants=0;
+    for(const a of liste){
+      let nom=adhNomFichier(a),chemin=racine+"/"+adhNomFichierPropre(adhGroupe(a))+"/"+nom,k=2;
+      while(vus.has(chemin)){chemin=chemin.replace(/( \(\d+\))?\.pdf$/," ("+(k++)+").pdf")}vus.add(chemin);
+      try{zip.file(chemin,await adhBlob(a))}catch(e){manquants++}
+    }
+    adhSauver(await zip.generateAsync({type:"blob"}),racine+".zip");
+    toast(manquants?(liste.length-manquants)+" PDF dans le ZIP, "+manquants+" introuvable(s)":"ZIP prêt : "+liste.length+" PDF");
+  }catch(e){toast(e.message)}
 }
 async function adhPdf(id){
   const a=DB.adhesions.find(x=>x.id===id);

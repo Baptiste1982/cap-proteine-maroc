@@ -1,0 +1,5 @@
+.session/
+journal-saisie-*.csv
+adhesions-a-saisir-*.json
+adhesions-a-saisir-*.csv
+node_modules/

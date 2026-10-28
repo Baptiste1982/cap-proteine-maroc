@@ -969,7 +969,7 @@ function viewDashboard(){
   const seeAll=true; // tout le monde voit le national + régional ; filtrage local par onglet
   const scope=DB.clubs;
   let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
-    <div style="display:flex;gap:8px">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
   if(seeAll){
     html+=`<div class="dash-band">National · tout le réseau</div>`+dashBlock(dashStats(DB.clubs));
     const reg=DB.clubs.filter(c=>REGION_RSK.includes(c.ville));
@@ -1474,7 +1474,7 @@ async function openAdhesions(){
   DB.adhesions=data||[];
   const ordre={recue:0,traitee:1,integree:2,rejetee:3};
   const list=[...DB.adhesions].sort((a,b)=>ordre[a.statut]-ordre[b.statut]||b.created_at.localeCompare(a.created_at));
-  const rows=list.length?list.map(a=>`<div class="rank-row" style="cursor:pointer" onclick="adhDetail('${a.id}')"><span class="hdot ${ADH_DOT[a.statut]}"></span><div class="rn">${esc(a.data.ent_nom||"—")}<small>${esc(adhNom(a))} · ${esc(a.data.metier||"")} · ${adhDate(a.created_at)}${a.ref&&club(a.ref).nom?" · "+esc(club(a.ref).nom):""}</small></div><div class="rv" style="font-size:12px;color:var(--muted)">${ADH_STATUTS[a.statut]}</div></div>`).join("")
+  const rows=list.length?list.map(a=>`<div class="rank-row" style="cursor:pointer" onclick="adhDetail('${a.id}')"><span class="hdot ${ADH_DOT[a.statut]}"></span><div class="rn">${esc(a.data.ent_nom||"—")}<small>${esc(adhNom(a))} · ${esc(a.data.metier||"")} · ${adhDate(a.created_at)}${a.ref&&club(a.ref).nom?" · "+esc(club(a.ref).nom):""}</small></div><div class="rv" style="font-size:12px;color:var(--muted);text-align:right">${ADH_STATUTS[a.statut]}${a.saisie_proteine_le?"<br>✓ saisie":""}</div></div>`).join("")
     :`<div class="empty"><b>Aucune adhésion reçue</b>Envoie le lien ci-dessous aux futurs membres.</div>`;
   const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
@@ -1483,7 +1483,8 @@ async function openAdhesions(){
     ${readOnly()?"":`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Envoyer le lien</div>
     <div class="field"><label>Club concerné (facultatif)</label><select id="adh-club"><option value="">— Sans club —</option>${clubOpts}</select></div>
     <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>`}
-    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+    ${readOnly()?"":`<div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="adhExportSaisie('csv')">Exporter pour saisie (${adhASaisir().length})</button><button class="btn ghost" style="flex:0 0 auto;width:auto" onclick="adhExportSaisie('json')" title="Fichier lu par le robot de saisie">JSON robot</button></div>`}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
 }
 function adhSelLink(){return adhLink(document.getElementById("adh-club").value)}
@@ -1512,6 +1513,7 @@ function adhDetail(id){
   document.getElementById("sheet-content").innerHTML=`
     <h3>${esc(a.data.ent_nom||"Adhésion")}</h3><div class="sheet-sub">${esc(adhNom(a))} · reçue le ${adhDate(a.created_at)} · <b>${ADH_STATUTS[a.statut]}</b>${mb?" · membre n°"+mb.num+" de "+esc(club(mb.clubId).nom||""):""}</div>
     ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
+    <div class="drow" style="margin-top:10px"><div class="tx"><div class="k">CRM national Protéine</div><div class="v">${a.saisie_proteine_le?"Saisie faite le "+adhDate(a.saisie_proteine_le):"Pas encore saisie"}</div></div>${peut?`<a href="#" onclick="adhSaisie('${a.id}',${!a.saisie_proteine_le});return false">${a.saisie_proteine_le?"Annuler":"Marquer saisie"}</a>`:""}</div>
     ${blocs}
     ${peut&&a.statut!=="integree"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
@@ -1529,6 +1531,35 @@ async function adhPdf(id){
   if(error||!data){if(w)w.close();toast("PDF introuvable");return}
   if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
 }
+function adhASaisir(){return(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee")}
+async function adhSaisie(id,faite){
+  const {error}=await sb.from("adhesions").update(faite?{saisie_proteine_le:new Date().toISOString(),saisie_proteine_par:SESSION.id}:{saisie_proteine_le:null,saisie_proteine_par:null}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  const a=DB.adhesions.find(x=>x.id===id);a.saisie_proteine_le=faite?new Date().toISOString():null;toast(faite?"Marquée saisie dans le CRM Protéine":"Saisie annulée");adhDetail(id);
+}
+/* Export « prêt à saisir » : une ligne par adhésion pas encore saisie dans le CRM national,
+   colonnes dans l'ordre du formulaire officiel. Sert à la saisie en série (voir
+   docs/saisie-en-serie-crm-proteine.md) ; le format JSON est lu par l'outil de saisie. */
+const ADH_EXPORT_COLS=[["id","Réf. adhésion"],["created_at","Reçue le"],["metier","Métier représenté"],["ent_nom","Nom de l'entreprise"],["ent_ice","ICE"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital social"],["ent_adresse","Adresse"],["ent_tel","Téléphone"],["ent_web","Site web"],["m_nom","Nom"],["m_prenom","Prénom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Téléphone mobile"],["m_naissance","Date de naissance"],["m_hobbies","Hobbies"],["s_nom","Signataire nom"],["s_prenom","Signataire prénom"],["s_fonction","Signataire fonction"],["s_email","Signataire email"],["s_tel","Signataire mobile"],["reg_mode","Mode de règlement"],["reg_fois","Nombre de versements"],["commentaires","Commentaires"],["f_entreprise","Facturation entreprise"],["f_adresse","Facturation adresse"],["f_cpville","Facturation CP / ville"],["club","Club"]];
+function adhLigneExport(a){
+  const d={...a.data};
+  if(d.sig_same){d.s_nom=d.m_nom;d.s_prenom=d.m_prenom;d.s_fonction=d.m_fonction;d.s_email=d.m_email;d.s_tel=d.m_tel}
+  if(d.fac_same){d.f_entreprise=d.ent_nom_legal||d.ent_nom;d.f_adresse=d.ent_adresse;d.f_cpville=""}
+  d.reg_mode={cheque:"Chèque",virement:"Virement bancaire"}[d.reg_mode]||d.reg_mode||"";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
+  d.id=a.id;d.created_at=a.created_at.slice(0,10);d.club=a.ref&&club(a.ref).nom||"";
+  return Object.fromEntries(ADH_EXPORT_COLS.map(([k])=>[k,d[k]??""]));
+}
+function adhExportSaisie(format){
+  const list=adhASaisir();if(!list.length){toast("Rien à saisir : tout est déjà dans le CRM Protéine");return}
+  const lignes=list.map(adhLigneExport),jour=new Date().toISOString().slice(0,10);
+  const dl=(blob,nom)=>{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nom;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000)};
+  const csv="\ufeff"+[ADH_EXPORT_COLS.map(c=>c[1]),...lignes.map(l=>ADH_EXPORT_COLS.map(([k])=>l[k]))].map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(";")).join("\n");
+  // un seul fichier par clic : un second téléchargement simultané est bloqué par les navigateurs
+  if(format==="json")dl(new Blob([JSON.stringify(lignes,null,2)],{type:"application/json"}),"adhesions-a-saisir-"+jour+".json");
+  else dl(new Blob([csv],{type:"text/csv"}),"adhesions-a-saisir-"+jour+".csv");
+  toast(list.length+" adhésion"+(list.length>1?"s":"")+" exportée"+(list.length>1?"s":""));
+}
 async function adhStatut(id,statut){
   const {error}=await sb.from("adhesions").update({statut,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
   if(error){toast(rlsMsg(error));return}
@@ -1537,7 +1568,7 @@ async function adhStatut(id,statut){
 async function adhIntegrer(id){
   const a=DB.adhesions.find(x=>x.id===id),d=a.data;
   const clubId=document.getElementById("adh-int-club").value;if(!clubId){toast("Choisis un club");return}
-  const nom=((d.m_nom||"").toUpperCase()+" "+(d.m_prenom||"")).trim();
+  const nom=((d.m_prenom||"")+" "+(d.m_nom||"")).trim(); // format des membres existants : « Prénom Nom »
   if(DB.membres.some(x=>x.clubId===clubId&&x.nom.toLowerCase()===nom.toLowerCase())){toast(nom+" est déjà membre de ce club");return}
   const num=DB.membres.filter(x=>x.clubId===clubId).reduce((m,b)=>Math.max(m,b.num||0),0)+1;
   const com=[d.ent_nom,d.m_fonction,d.m_tel,d.m_email].filter(Boolean).join(" · ")+" — formulaire d'adhésion en ligne";

@@ -74,6 +74,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **✅ Fait** : schéma complet, 8 comptes Auth, rôles + RLS, design crimson/or mobile-first. HTML rapatrié dans le repo (`index.html`) et **câblé sur Supabase** (auth réelle `signInWithPassword`, CRUD via les tables, RLS natif). `SEED` en dur + mots de passe `cap2026` en clair **supprimés** du front. RLS animateur audité (helpers `SECURITY DEFINER search_path=public`, cloisonnement `animateur_id = cap_animateur_id()`) : conforme.
 
+**📝 Adhésions en ligne (v0.5.0, 28/10/2026)** :
+- `adhesion.html` (page publique, lien envoyé aux futurs membres) : formulaire mobile en 5 étapes qui remplit **dans le téléphone** le PDF officiel `formulaire-adhesion-membre.pdf` (pdf-lib, texte posé aux coordonnées des 34 champs puis champs retirés — l'aplatissement natif de pdf-lib perdait les cases cochées et abîmait le fichier). Envoi : PDF dans le bucket **privé** `adhesions` (anon = dépôt seul) + fiche par la RPC `soumettre_adhesion` (anon n'a aucun accès direct à la table). Échec d'envoi → le membre télécharge/partage son PDF. `?ref=<club_id>` présélectionne le club ; `#demo` = mode démonstration (rien n'est envoyé).
+- Maquette publiée (même page en mode démo) : https://claude.ai/artifact/4sy13VXfaZaRq6RWFjC8Ax
+- CRM : Synthèse → **📝 Adhésions** (liste, PDF par lien signé, envoi du lien WhatsApp, intégration dans `membres` au format « Prénom Nom » avec `formulaire=true`, suivi « saisie faite dans le CRM national », export CSV / JSON).
+- Migration `supabase/migrations/20261028120000_adhesions_formulaire_membre.sql` (table `adhesions`, RPC, bucket). Accès : tous les rôles sauf `visiteur` (`cap_role()`).
+- **Saisie en série dans le CRM national Protéine** (pas d'API, login/mot de passe) : `docs/saisie-en-serie-crm-proteine.md` + robot `outils/saisie-proteine/saisir.mjs` (Playwright sur le PC de JB, JB se connecte lui-même, mode prudent par défaut). La correspondance des champs `correspondance.json` est **vide** : à remplir pendant la séance où JB montre les écrans.
+- ⚠️ Supabase gratuit : le projet se met en pause après ~7 jours sans activité → les adhésions envoyées pendant une pause échouent (le membre garde son PDF). Il était en pause le 28/10.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

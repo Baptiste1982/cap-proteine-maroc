@@ -24,6 +24,8 @@ create table if not exists public.adhesions (
   telephone     text generated always as (data->>'m_tel') stored,
   metier        text generated always as (data->>'metier') stored,
   membre_id     uuid references public.membres(id) on delete set null, -- membre créé à l'intégration
+  saisie_proteine_le  timestamptz,  -- saisie faite dans le CRM national Protéine (saisie en série)
+  saisie_proteine_par uuid references auth.users(id),
   traitee_par   uuid references auth.users(id),
   traitee_le    timestamptz,
   notes         text
@@ -33,12 +35,15 @@ create index if not exists adhesions_statut_idx  on public.adhesions (statut);
 
 alter table public.adhesions enable row level security;
 
--- Lecture / traitement : comptes connectés du CRM. À resserrer par zone si besoin
--- (patron des helpers cap_* existants), comme les autres tables du CRM.
+-- Lecture / traitement : tous les comptes du CRM sauf « visiteur » (données personnelles
+-- des futurs membres). cap_role() est le helper existant du CRM.
 drop policy if exists adhesions_select_auth on public.adhesions;
-create policy adhesions_select_auth on public.adhesions for select to authenticated using (true);
+create policy adhesions_select_auth on public.adhesions for select to authenticated
+  using (coalesce(public.cap_role(), 'visiteur') <> 'visiteur');
 drop policy if exists adhesions_update_auth on public.adhesions;
-create policy adhesions_update_auth on public.adhesions for update to authenticated using (true) with check (true);
+create policy adhesions_update_auth on public.adhesions for update to authenticated
+  using (coalesce(public.cap_role(), 'visiteur') <> 'visiteur')
+  with check (coalesce(public.cap_role(), 'visiteur') <> 'visiteur');
 -- Aucune policy pour anon : la page publique passe UNIQUEMENT par la fonction ci-dessous.
 
 -- ─── Fonction d'envoi appelée par la page publique ───────────────────────
@@ -79,4 +84,4 @@ create policy adhesions_pdf_insert_anon on storage.objects for insert to anon
 -- Le CRM relit les PDF (lien signé depuis la fiche d'adhésion).
 drop policy if exists adhesions_pdf_select_auth on storage.objects;
 create policy adhesions_pdf_select_auth on storage.objects for select to authenticated
-  using (bucket_id = 'adhesions');
+  using (bucket_id = 'adhesions' and coalesce(public.cap_role(), 'visiteur') <> 'visiteur');

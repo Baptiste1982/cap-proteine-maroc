@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#B0122E">
+<title>Adhésion Protéine Maroc</title>
+<meta name="description" content="Formulaire d'adhésion membre — Club d'affaires Protéine Maroc">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Charte Protéine (reprise de index.html du CRM CAP) */
+:root{
+  --crimson:#B0122E;--crimson-deep:#5C0A18;--crimson-tint:#F8E9EC;--or:#C8A24C;
+  --ink:#1B1416;--muted:#6E6266;--paper:#FAF6F4;--card:#FFFFFF;--line:#E7DCDD;--ok:#2E7D4F;--err:#B0122E;
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 Inter,system-ui,sans-serif}
+h1,h2{font-family:"Bricolage Grotesque",sans-serif;margin:0;letter-spacing:-.01em}
+.wrap{max-width:560px;margin:0 auto;padding:calc(12px + var(--safe-t)) 16px calc(110px + var(--safe-b))}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 10px}
+header.top img{height:46px;width:auto}
+header.top .tag{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:var(--crimson);text-align:right;line-height:1.05;font-size:15px}
+.progress{display:flex;gap:6px;margin:8px 0 4px}
+.progress i{flex:1;height:5px;border-radius:99px;background:var(--line);transition:background .25s}
+.progress i.on{background:var(--crimson)}
+.stepinfo{font-size:13px;color:var(--muted);margin:4px 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin-bottom:14px}
+.card h2{font-size:21px;color:var(--crimson-deep);margin-bottom:4px}
+.card p.lead{margin:0 0 14px;color:var(--muted);font-size:14px}
+.field{margin:0 0 14px}
+.field label{display:block;font-weight:600;font-size:14px;margin:0 0 6px}
+.field label .opt{font-weight:400;color:var(--muted)}
+.field input,.field textarea,.field select{
+  width:100%;font:inherit;font-size:16px;/* 16px : pas de zoom auto sur iPhone */
+  padding:12px 13px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);
+  min-height:48px;transition:border-color .15s,box-shadow .15s;
+}
+.field textarea{min-height:96px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px var(--crimson-tint)}
+.field.bad input,.field.bad textarea{border-color:var(--err)}
+.field .msg{display:none;color:var(--err);font-size:13px;margin-top:5px}
+.field.bad .msg{display:block}
+.hint{font-size:12.5px;color:var(--muted);margin-top:5px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.switch{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--crimson-tint);border-radius:12px;margin:0 0 14px;cursor:pointer;font-weight:600;font-size:15px}
+.switch input{width:22px;height:22px;accent-color:var(--crimson);flex:none}
+.choices{display:grid;gap:8px;margin:0 0 14px}
+.choices.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.choice{position:relative}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice span{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-weight:600;text-align:center;cursor:pointer;transition:all .15s}
+.choice input:checked + span{border-color:var(--crimson);background:var(--crimson-tint);color:var(--crimson-deep)}
+.choice input:focus-visible + span{box-shadow:0 0 0 3px var(--crimson-tint)}
+.group-label{font-weight:600;font-size:14px;margin:4px 0 8px}
+.hidden{display:none !important}
+.recap dl{margin:0;display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);gap:6px 10px;font-size:14px}
+.recap dt{color:var(--muted)}
+.recap dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.recap h3{font:600 13px Inter;text-transform:uppercase;letter-spacing:.06em;color:var(--crimson);margin:16px 0 8px}
+.recap h3:first-child{margin-top:0}
+.recap .edit{float:right;font:500 13px Inter;color:var(--crimson);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:6px 0 0}
+.consent input{width:22px;height:22px;accent-color:var(--crimson);flex:none;margin-top:1px}
+nav.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(250,246,244,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 16px calc(10px + var(--safe-b))}
+nav.bar .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.btn{font:600 16px Inter;min-height:52px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:0 18px;cursor:pointer}
+.btn.primary{flex:1;background:var(--crimson);border-color:var(--crimson);color:#fff}
+.btn.primary:disabled{opacity:.6}
+.btn.ghost{flex:none}
+.done{text-align:center;padding:26px 16px}
+.done .ok{width:64px;height:64px;border-radius:50%;background:var(--crimson-tint);color:var(--crimson);display:grid;place-items:center;margin:0 auto 14px;font-size:32px}
+.done h2{font-size:24px;color:var(--crimson-deep);margin-bottom:8px}
+.done p{color:var(--muted);margin:0 0 18px}
+.done .btn{width:100%;margin-bottom:10px}
+.warn{background:#FFF6E3;border:1px solid #EBD39A;color:#6B4E0A;border-radius:12px;padding:12px 14px;font-size:14px;margin:0 0 14px;text-align:left}
+footer.legal{font-size:11.5px;color:var(--muted);text-align:center;margin-top:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+
+/* ─── Mode démonstration (#demo ou maquette publiée) : rien n'est envoyé ─── */
+.demo-intro,.demo-banner,.demo-out{display:none}
+body.demo .demo-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--crimson-deep);color:#fff;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:13px}
+body.demo .demo-banner button{font:600 13px Inter;background:var(--or);color:var(--crimson-deep);border:0;border-radius:99px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+body.demo .demo-out{display:block;text-align:left}
+.demo-out h3{font:700 16px "Bricolage Grotesque",sans-serif;color:var(--crimson-deep);margin:22px 0 8px}
+.pdf-pages{display:grid;gap:10px}
+.pdf-pages canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(60,10,20,.08)}
+.crm-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.crm-card .hd{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--crimson-tint);font-weight:600;font-size:13px;color:var(--crimson-deep)}
+.crm-card .hd i{width:9px;height:9px;border-radius:50%;background:var(--crimson);flex:none}
+.crm-card .bd{padding:12px;font-size:14px}
+.crm-card .bd b{font-family:"Bricolage Grotesque",sans-serif;font-size:17px;display:block}
+.crm-card .bd small{color:var(--muted);display:block;margin-top:2px}
+.crm-card .ft{display:flex;gap:8px;padding:0 12px 12px}
+.crm-card .ft span{flex:1;text-align:center;font:600 13px Inter;padding:10px;border-radius:10px;border:1.5px solid var(--line);color:var(--crimson)}
+.crm-card .ft span.pri{background:var(--crimson);border-color:var(--crimson);color:#fff}
+body.demo .wa-preview{display:block}
+@media (min-width:900px){
+  body.demo{background:linear-gradient(135deg,#F3E7E3,#FAF6F4 55%)}
+  body.demo .stage{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;max-width:1080px;margin:0 auto;padding:40px 32px;align-items:start}
+  body.demo .demo-intro{display:block;position:sticky;top:40px}
+  body.demo .phone{height:820px;max-height:calc(100vh - 80px);overflow:auto;position:relative;border:10px solid var(--ink);border-radius:44px;background:var(--paper);box-shadow:0 30px 60px -20px rgba(62,7,16,.35);scrollbar-width:none}
+  body.demo .phone::-webkit-scrollbar{display:none}
+  body.demo .phone .wrap{padding:18px 14px 20px}
+  body.demo nav.bar{position:sticky;bottom:0}
+}
+.demo-intro .eyebrow{font:600 12px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--crimson)}
+.demo-intro h1{font-size:42px;line-height:1.05;color:var(--crimson-deep);margin:10px 0 14px;text-wrap:balance}
+.demo-intro p{color:var(--muted);max-width:52ch;margin:0 0 22px}
+.demo-intro ol{list-style:none;margin:0 0 26px;padding:0;display:grid;gap:14px;max-width:52ch}
+.demo-intro li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start}
+.demo-intro li span{width:34px;height:34px;border-radius:50%;background:var(--crimson);color:#fff;display:grid;place-items:center;font:800 15px "Bricolage Grotesque",sans-serif}
+.demo-intro li b{display:block}
+.demo-intro li small{color:var(--muted);font-size:14px}
+.demo-intro .note{font-size:13px;border-left:3px solid var(--or);padding:6px 0 6px 12px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="stage">
+<aside class="demo-intro">
+  <div class="eyebrow">Club d'affaires Protéine Maroc</div>
+  <h1>L'adhésion se remplit sur le téléphone du membre</h1>
+  <p>Plus de PDF à imprimer, remplir à la main et ressaisir. Le futur membre reçoit un lien, répond en trois minutes, et le formulaire officiel arrive rempli dans le CRM.</p>
+  <ol>
+    <li><span>1</span><div><b>L'animateur envoie le lien</b><small>Par WhatsApp, depuis le CRM, avec le club déjà indiqué.</small></div></li>
+    <li><span>2</span><div><b>Le membre remplit sur son téléphone</b><small>5 étapes courtes, contrôles intégrés (ICE à 15 chiffres, email, mobile), brouillon gardé s'il ferme la page.</small></div></li>
+    <li><span>3</span><div><b>Le PDF officiel est rempli automatiquement</b><small>Le « Formulaire Adhésion Membre » sort identique à la version papier, cases cochées comprises. Le membre en garde une copie.</small></div></li>
+    <li><span>4</span><div><b>Le club le reçoit dans le CRM</b><small>Fiche + PDF, puis intégration en un clic dans les membres du club.</small></div></li>
+  </ol>
+  <p class="note">Démonstration : essayez le formulaire à droite (« Remplir un exemple » pour aller vite). Rien n'est envoyé.</p>
+</aside>
+<div class="phone" id="phone">
+<div class="wrap">
+  <header class="top">
+    <img src="logo-proteine.png" alt="Club d'affaires Protéine Maroc">
+    <div class="tag">Adhésion<br>membre</div>
+  </header>
+
+  <div class="demo-banner"><span>Démonstration · rien n'est envoyé</span><button type="button" id="btn-exemple">Remplir un exemple</button></div>
+  <div id="steps-ui">
+    <div class="progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="stepinfo" id="stepinfo" aria-live="polite"></div>
+  </div>
+
+  <form id="f" novalidate autocomplete="on">
+
+    <!-- 1 · Entreprise -->
+    <section class="card step" data-step="1" data-title="Votre entreprise">
+      <h2>Votre entreprise</h2>
+      <p class="lead">Ces informations servent à éditer votre contrat d'abonnement au service Protéine.</p>
+      <div class="field"><label for="metier">Métier représenté</label><input id="metier" name="metier" required placeholder="Ex. Expert-comptable, Architecte…"><div class="msg">Indiquez votre métier.</div></div>
+      <div class="field"><label for="ent_nom">Nom de l'entreprise (nom usuel)</label><input id="ent_nom" name="ent_nom" required autocomplete="organization"><div class="msg">Indiquez le nom de l'entreprise.</div></div>
+      <div class="field"><label for="ent_nom_legal">Nom légal <span class="opt">(si différent)</span></label><input id="ent_nom_legal" name="ent_nom_legal"></div>
+      <div class="field"><label for="ent_activite">Activité</label><input id="ent_activite" name="ent_activite"></div>
+      <div class="field"><label for="ent_categorie">Catégorie juridique</label><input id="ent_categorie" name="ent_categorie" list="formes" placeholder="SARL, SARL AU, SA, auto-entrepreneur…">
+        <datalist id="formes"><option>SARL</option><option>SARL AU</option><option>SA</option><option>SAS</option><option>SNC</option><option>Auto-entrepreneur</option><option>Personne physique</option></datalist></div>
+      <div class="row2">
+        <div class="field"><label for="ent_ice">N° ICE</label><input id="ent_ice" name="ent_ice" inputmode="numeric" maxlength="15" placeholder="15 chiffres"><div class="msg">L'ICE compte 15 chiffres.</div></div>
+        <div class="field"><label for="ent_patente">N° Patente</label><input id="ent_patente" name="ent_patente" inputmode="numeric"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="ent_ville_rcs">Ville RCS</label><input id="ent_ville_rcs" name="ent_ville_rcs"></div>
+        <div class="field"><label for="ent_capital">Capital social</label><input id="ent_capital" name="ent_capital" inputmode="decimal" placeholder="Ex. 100 000 DH"></div>
+      </div>
+      <div class="field"><label for="ent_adresse">Adresse</label><input id="ent_adresse" name="ent_adresse" autocomplete="street-address"></div>
+      <div class="field"><label for="ent_tel">Téléphone</label><input id="ent_tel" name="ent_tel" type="tel" autocomplete="tel" inputmode="tel"></div>
+      <div class="field"><label for="ent_web">Site web <span class="opt">(facultatif)</span></label><input id="ent_web" name="ent_web" type="url" inputmode="url" placeholder="www.…"></div>
+    </section>
+
+    <!-- 2 · Membre -->
+    <section class="card step" data-step="2" data-title="Vous, membre">
+      <h2>Vous, membre</h2>
+      <p class="lead">La personne qui représentera l'entreprise au club.</p>
+      <div class="row2">
+        <div class="field"><label for="m_prenom">Prénom</label><input id="m_prenom" name="m_prenom" required autocomplete="given-name"><div class="msg">Requis.</div></div>
+        <div class="field"><label for="m_nom">Nom</label><input id="m_nom" name="m_nom" required autocomplete="family-name"><div class="msg">Requis.</div></div>
+      </div>
+      <div class="field"><label for="m_fonction">Fonction occupée</label><input id="m_fonction" name="m_fonction" autocomplete="organization-title"></div>
+      <div class="field"><label for="m_email">Email</label><input id="m_email" name="m_email" type="email" required autocomplete="email" inputmode="email"><div class="msg">Adresse email invalide.</div></div>
+      <div class="field"><label for="m_tel">Téléphone mobile</label><input id="m_tel" name="m_tel" type="tel" required autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78"><div class="msg">Numéro de mobile requis.</div></div>
+      <div class="field"><label for="m_naissance">Date de naissance</label><input id="m_naissance" name="m_naissance" type="date" autocomplete="bday"></div>
+      <div class="field"><label for="m_hobbies">Hobbies <span class="opt">(facultatif)</span></label><input id="m_hobbies" name="m_hobbies"><div class="hint">Utile pour faire connaissance au club.</div></div>
+    </section>
+
+    <!-- 3 · Signataire -->
+    <section class="card step" data-step="3" data-title="Signataire du contrat">
+      <h2>Signataire du contrat</h2>
+      <p class="lead">Qui signera le contrat d'abonnement ?</p>
+      <label class="switch"><input type="checkbox" id="sig_same" name="sig_same" checked> C'est moi, le membre</label>
+      <div id="sig_block" class="hidden">
+        <div class="row2">
+          <div class="field"><label for="s_prenom">Prénom</label><input id="s_prenom" name="s_prenom"><div class="msg">Requis.</div></div>
+          <div class="field"><label for="s_nom">Nom</label><input id="s_nom" name="s_nom"><div class="msg">Requis.</div></div>
+        </div>
+        <div class="field"><label for="s_fonction">Fonction</label><input id="s_fonction" name="s_fonction"></div>
+        <div class="field"><label for="s_email">Email</label><input id="s_email" name="s_email" type="email" inputmode="email"><div class="msg">Adresse email invalide.</div></div>
+        <div class="field"><label for="s_tel">Téléphone mobile</label><input id="s_tel" name="s_tel" type="tel" inputmode="tel"></div>
+      </div>
+    </section>
+
+    <!-- 4 · Règlement + facturation -->
+    <section class="card step" data-step="4" data-title="Règlement et facturation">
+      <h2>Règlement</h2>
+      <div class="group-label" id="lbl-mode">Mode de règlement</div>
+      <div class="choices two" role="radiogroup" aria-labelledby="lbl-mode">
+        <label class="choice"><input type="radio" name="reg_mode" value="cheque"><span>Chèque</span></label>
+        <label class="choice"><input type="radio" name="reg_mode" value="virement"><span>Virement</span></label>
+      </div>
+      <div class="group-label" id="lbl-fois">En combien de fois ?</div>
+      <div class="choices two" role="radiogroup" aria-labelledby="lbl-fois">
+        <label class="choice"><input type="radio" name="reg_fois" value="1"><span>En 1 fois</span></label>
+        <label class="choice"><input type="radio" name="reg_fois" value="2"><span>En 2 fois</span></label>
+      </div>
+      <div class="field" id="reg_field"><div class="msg" style="margin-top:-6px">Choisissez un mode et un nombre de versements.</div></div>
+      <div class="field"><label for="commentaires">Commentaires <span class="opt">(facultatif)</span></label><textarea id="commentaires" name="commentaires" maxlength="400"></textarea></div>
+
+      <h2 style="margin-top:8px">Facturation</h2>
+      <label class="switch"><input type="checkbox" id="fac_same" name="fac_same" checked> Facturer l'entreprise ci-dessus</label>
+      <div id="fac_block" class="hidden">
+        <div class="field"><label for="f_entreprise">Entreprise</label><input id="f_entreprise" name="f_entreprise"><div class="msg">Requis.</div></div>
+        <div class="field"><label for="f_adresse">Adresse</label><input id="f_adresse" name="f_adresse"></div>
+        <div class="field"><label for="f_cpville">Code postal / Ville</label><input id="f_cpville" name="f_cpville"></div>
+      </div>
+    </section>
+
+    <!-- 5 · Récapitulatif -->
+    <section class="card step recap" data-step="5" data-title="Vérification et envoi">
+      <h2>Vérifiez et envoyez</h2>
+      <p class="lead">Votre formulaire est rempli automatiquement à partir de ces informations.</p>
+      <div id="recap"></div>
+      <label class="consent"><input type="checkbox" id="consent" name="consent"> <span>J'atteste l'exactitude de ces informations et j'accepte qu'elles soient utilisées par le Club d'affaires Protéine Maroc pour éditer mon contrat et gérer mon adhésion.</span></label>
+      <div class="field" id="consent_field"><div class="msg">Merci de cocher cette case pour envoyer.</div></div>
+    </section>
+  </form>
+
+  <section class="card done hidden" id="done" aria-live="polite">
+    <div class="ok">✓</div>
+    <h2>Merci, c'est envoyé !</h2>
+    <p id="done-msg">Votre formulaire d'adhésion a bien été transmis au club. Vous pouvez en garder une copie.</p>
+    <div class="warn hidden" id="done-warn"></div>
+    <button class="btn primary" type="button" id="btn-dl">Télécharger mon formulaire (PDF)</button>
+    <button class="btn" type="button" id="btn-share">Partager le PDF</button>
+    <div class="demo-out">
+      <h3>Ce que reçoit le club dans le CRM</h3>
+      <div class="crm-card"><div class="hd"><i></i>Nouvelle adhésion reçue · à l'instant</div>
+        <div class="bd" id="crm-bd"></div>
+        <div class="ft"><span>📄 Ouvrir le PDF</span><span class="pri">Intégrer dans le club</span></div></div>
+      <h3>Le formulaire officiel, rempli</h3>
+      <div class="pdf-pages" id="pdf-pages"><p class="hint">Préparation de l'aperçu…</p></div>
+      <button class="btn" type="button" id="btn-restart" style="width:100%;margin-top:14px">Recommencer la démonstration</button>
+    </div>
+  </section>
+
+  <footer class="legal">Club d'affaires Protéine Maroc · SARL au capital de 85 000 DH · RC N° 487971<br>49 rue Jean Jaurès, quartier Gauthier, Casablanca</footer>
+</div>
+
+<nav class="bar" id="bar">
+  <div class="in">
+    <button class="btn ghost" type="button" id="btn-prev">Retour</button>
+    <button class="btn primary" type="button" id="btn-next">Continuer</button>
+  </div>
+</nav>
+</div><!-- .phone -->
+</div><!-- .stage -->
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+'use strict';
+/* ─── Réglages ─────────────────────────────────────────────────────────── */
+const CFG = {
+  // Projet Supabase du CRM CAP (cf. CLAUDE.md du dépôt cap-proteine-maroc). Clé publishable : publique par nature.
+  SB_URL: 'https://xsppsqjigdgaybmowzaq.supabase.co',
+  SB_KEY: 'sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7',
+  PDF_TEMPLATE: 'formulaire-adhesion-membre.pdf',
+  BUCKET: 'adhesions',
+};
+
+/* ─── Correspondance données → champs du PDF (relevée par position) ───── */
+const PDF_TEXT = {
+  metier:'text_1wjnu', ent_nom:'text_5jeif', ent_ice:'text_2tlaq', ent_nom_legal:'text_6aesh',
+  ent_categorie:'text_7yfqi', ent_activite:'text_3rciu', ent_patente:'text_8szia', ent_ville_rcs:'text_9lizi',
+  ent_capital:'text_10svfk', ent_adresse:'text_4dcgc', ent_tel:'text_11dunh', ent_web:'text_12bvzr',
+  m_nom:'text_13ccck', m_prenom:'text_14xhmg', m_fonction:'text_15plxh', m_email:'text_16cbxu',
+  m_tel:'text_17zzp', m_naissance:'text_18zluf', m_hobbies:'text_19xprl',
+  s_nom:'text_20hrxi', s_prenom:'text_21rmwv', s_fonction:'text_22suza', s_email:'text_23rlme', s_tel:'text_24vfzf',
+  commentaires:'textarea_31yhgi', f_entreprise:'text_32vdvp', f_adresse:'text_33mzfq', f_cpville:'text_34rgnd',
+};
+// Ligne Chèque : [case mode, en 1 fois, en 2 fois] ; ligne Virement idem.
+const PDF_CHECK = {
+  cheque:   { mode:'checkbox_25sdmo', 1:'checkbox_27mogd', 2:'checkbox_29pmof' },
+  virement: { mode:'checkbox_26rdkx', 1:'checkbox_28kmou', 2:'checkbox_30onps' },
+};
+
+// Démonstration : #demo dans l'adresse, ou window.ADH_DEMO posé par la maquette publiée.
+const DEMO = window.ADH_DEMO === true || location.hash === '#demo';
+if (DEMO) document.body.classList.add('demo');
+
+/* ─── Petits outils ───────────────────────────────────────────────────── */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const f = $('#f');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const val = n => { const el = f.elements[n]; if (!el) return ''; if (el instanceof RadioNodeList) return el.value || ''; if (el.type === 'checkbox') return el.checked; return (el.value || '').trim(); };
+const frDate = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : (iso || ''); };
+const STORE = DEMO ? 'adhesion-proteine-demo' : 'adhesion-proteine-brouillon';
+
+function collect() {
+  const d = {};
+  for (const el of f.elements) {
+    if (!el.name || el.name === 'consent') continue;
+    if (el.type === 'radio') { if (el.checked) d[el.name] = el.value; else if (!(el.name in d)) d[el.name] = ''; continue; }
+    d[el.name] = el.type === 'checkbox' ? el.checked : (el.value || '').trim();
+  }
+  return d;
+}
+/** Données « telles qu'elles vont au PDF ». Les blocs signataire et facturation portent
+ *  « (si différent) » sur le formulaire : identiques au membre / à l'entreprise → laissés vides. */
+function pdfData(d) {
+  const o = { ...d };
+  if (d.sig_same) { o.s_nom = o.s_prenom = o.s_fonction = o.s_email = o.s_tel = ''; }
+  if (d.fac_same) { o.f_entreprise = o.f_adresse = o.f_cpville = ''; }
+  o.m_naissance = frDate(d.m_naissance);
+  return o;
+}
+
+/* ─── Brouillon local (on peut fermer et reprendre) ───────────────────── */
+function saveDraft(){ try { localStorage.setItem(STORE, JSON.stringify({ d: collect(), step })); } catch(_){} }
+function loadDraft(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE) || 'null'); if (!raw) return;
+    for (const [k,v] of Object.entries(raw.d || {})) {
+      const el = f.elements[k]; if (!el) continue;
+      if (el instanceof RadioNodeList) { for (const r of el) r.checked = r.value === v; }
+      else if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
+    }
+    if (raw.step >= 1 && raw.step <= 5) step = raw.step;
+  } catch(_){}
+}
+/* Pré-remplissage par le lien : ?prenom=&nom=&email=&tel=&entreprise=&metier=&ref= */
+const params = new URLSearchParams(location.search);
+const REF = (params.get('ref') || params.get('club') || '').slice(0, 80);
+function prefillFromLink(){
+  const map = { prenom:'m_prenom', nom:'m_nom', email:'m_email', tel:'m_tel', entreprise:'ent_nom', metier:'metier' };
+  for (const [p, n] of Object.entries(map)) { const v = params.get(p); if (v && !f.elements[n].value) f.elements[n].value = v.slice(0, 120); }
+}
+
+/* ─── Étapes ──────────────────────────────────────────────────────────── */
+let step = 1;
+const steps = $$('.step');
+function show(n){
+  step = n;
+  steps.forEach(s => s.classList.toggle('hidden', +s.dataset.step !== n));
+  $$('.progress i').forEach((i, k) => i.classList.toggle('on', k < n));
+  $('#stepinfo').textContent = `Étape ${n} sur 5 — ${steps[n-1].dataset.title}`;
+  $('#btn-prev').classList.toggle('hidden', n === 1);
+  $('#btn-next').textContent = n === 5 ? 'Envoyer mon adhésion' : 'Continuer';
+  if (n === 5) renderRecap();
+  toTop();
+  saveDraft();
+}
+function toTop(){ const ph = $('#phone'); if (ph && ph.scrollHeight > ph.clientHeight + 4) ph.scrollTo({ top: 0, behavior: 'smooth' }); else window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function toggleBlocks(){
+  $('#sig_block').classList.toggle('hidden', f.elements.sig_same.checked);
+  $('#fac_block').classList.toggle('hidden', f.elements.fac_same.checked);
+}
+f.elements.sig_same.addEventListener('change', () => { toggleBlocks(); saveDraft(); });
+f.elements.fac_same.addEventListener('change', () => { toggleBlocks(); saveDraft(); });
+f.addEventListener('input', e => { e.target.closest('.field')?.classList.remove('bad'); saveDraft(); });
+f.addEventListener('change', e => { if (e.target.name === 'reg_mode' || e.target.name === 'reg_fois') $('#reg_field').classList.remove('bad'); if (e.target.id === 'consent') $('#consent_field').classList.remove('bad'); saveDraft(); });
+
+/* ─── Contrôles ───────────────────────────────────────────────────────── */
+const reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+function bad(name, cond){ const fl = f.elements[name]?.closest?.('.field'); if (fl) fl.classList.toggle('bad', !!cond); return !cond; }
+function validate(n){
+  let ok = true;
+  const req = name => { ok = bad(name, !val(name)) && ok; };
+  if (n === 1) {
+    req('metier'); req('ent_nom');
+    const ice = val('ent_ice').replace(/\s/g, '');
+    ok = bad('ent_ice', ice && !/^\d{15}$/.test(ice)) && ok;
+  }
+  if (n === 2) {
+    req('m_prenom'); req('m_nom');
+    ok = bad('m_email', !reEmail.test(val('m_email'))) && ok;
+    ok = bad('m_tel', val('m_tel').replace(/\D/g, '').length < 9) && ok;
+  }
+  if (n === 3 && !val('sig_same')) {
+    req('s_prenom'); req('s_nom');
+    ok = bad('s_email', val('s_email') && !reEmail.test(val('s_email'))) && ok;
+  }
+  if (n === 4) {
+    const r = !!(val('reg_mode') && val('reg_fois'));
+    $('#reg_field').classList.toggle('bad', !r); ok = r && ok;
+    if (!val('fac_same')) req('f_entreprise');
+  }
+  if (n === 5) { const c = $('#consent').checked; $('#consent_field').classList.toggle('bad', !c); ok = c && ok; }
+  if (!ok) { const first = document.querySelector('.step:not(.hidden) .field.bad input, .step:not(.hidden) .field.bad textarea'); first?.focus({ preventScroll:false }); }
+  return ok;
+}
+
+/* ─── Récapitulatif ───────────────────────────────────────────────────── */
+function renderRecap(){
+  const d = collect();
+  const L = (lbl, v) => v ? `<dt>${esc(lbl)}</dt><dd>${esc(v)}</dd>` : '';
+  const sec = (title, goto, rows) => `<h3>${esc(title)} <button type="button" class="edit" data-goto="${goto}">Modifier</button></h3><dl>${rows}</dl>`;
+  const mode = { cheque:'Chèque', virement:'Virement bancaire' }[d.reg_mode] || '';
+  $('#recap').innerHTML =
+    sec('Entreprise', 1, L('Métier', d.metier) + L('Nom usuel', d.ent_nom) + L('Nom légal', d.ent_nom_legal) + L('Catégorie', d.ent_categorie) + L('Activité', d.ent_activite) + L('ICE', d.ent_ice) + L('Patente', d.ent_patente) + L('Ville RCS', d.ent_ville_rcs) + L('Capital', d.ent_capital) + L('Adresse', d.ent_adresse) + L('Téléphone', d.ent_tel) + L('Site web', d.ent_web)) +
+    sec('Membre', 2, L('Nom', `${d.m_prenom} ${d.m_nom}`) + L('Fonction', d.m_fonction) + L('Email', d.m_email) + L('Mobile', d.m_tel) + L('Naissance', frDate(d.m_naissance)) + L('Hobbies', d.m_hobbies)) +
+    sec('Signataire', 3, d.sig_same ? L('Signataire', 'Le membre') : (L('Nom', `${d.s_prenom} ${d.s_nom}`) + L('Fonction', d.s_fonction) + L('Email', d.s_email) + L('Mobile', d.s_tel))) +
+    sec('Règlement et facturation', 4, L('Règlement', mode && `${mode} · en ${d.reg_fois} fois`) + L('Commentaires', d.commentaires) + (d.fac_same ? L('Facturation', 'Entreprise ci-dessus') : (L('Facturer à', d.f_entreprise) + L('Adresse', d.f_adresse) + L('CP / Ville', d.f_cpville))));
+}
+$('#recap').addEventListener('click', e => { const b = e.target.closest('[data-goto]'); if (b) show(+b.dataset.goto); });
+
+/* ─── Remplissage du PDF (pdf-lib, dans le téléphone) ─────────────────── */
+// Helvetica standard ne connaît que l'alphabet latin : un caractère hors de sa table
+// (arabe, emoji…) ferait échouer tout le PDF. On le remplace plutôt que d'échouer ;
+// la donnée exacte reste, elle, intacte dans ce qui part au CRM.
+function pdfSafe(s){ return String(s ?? '').replace(/[’‘]/g, "'").replace(/[“”«»]/g, '"').replace(/[–—]/g, '-').replace(/[^\x20-\x7E\xA0-\xFFŒœŠšŸŽž€\n]/g, '?'); }
+// On n'utilise PAS le remplissage de formulaire de pdf-lib : sur ce PDF (sorti de PowerPoint,
+// champs sans apparence par défaut) l'aplatissement perdait les cases cochées et cassait la
+// structure du fichier. On écrit donc le texte nous-mêmes, à l'emplacement exact de chaque
+// champ, puis on retire les champs : le document final est figé et identique partout.
+let _tpl = null;
+const INK = () => PDFLib.rgb(0.106, 0.078, 0.086);   // encre de la charte #1B1416
+function fitSize(font, text, maxW, size, min){ while (size > min && font.widthOfTextAtSize(text, size) > maxW) size -= 0.5; return size; }
+function wrap(font, text, size, maxW){
+  const out = [];
+  for (const para of text.split('\n')) {
+    let line = '';
+    for (const w of para.split(/\s+/)) {
+      const t = line ? line + ' ' + w : w;
+      if (font.widthOfTextAtSize(t, size) <= maxW || !line) line = t; else { out.push(line); line = w; }
+    }
+    out.push(line);
+  }
+  return out;
+}
+async function fillPdf(d){
+  const { PDFDocument, StandardFonts } = PDFLib;
+  if (!_tpl) { const r = await fetch(CFG.PDF_TEMPLATE); if (!r.ok) throw new Error('Modèle PDF introuvable'); _tpl = await r.arrayBuffer(); }
+  const doc = await PDFDocument.load(_tpl);
+  const form = doc.getForm();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages();
+  const pageOf = new Map(); // référence d'annotation → page qui la porte
+  pages.forEach(pg => (pg.node.Annots()?.asArray() || []).forEach(ref => pageOf.set(ref.toString(), pg)));
+  const where = name => {
+    const w = form.getField(name).acroField.getWidgets()[0];
+    const page = pageOf.get(String(doc.context.getObjectRef(w.dict)));
+    if (!page) throw new Error('Champ sans page : ' + name);
+    return { page, r: w.getRectangle() };
+  };
+  const p = pdfData(d);
+  for (const [key, fieldName] of Object.entries(PDF_TEXT)) {
+    const text = pdfSafe(p[key]).trim(); if (!text) continue;
+    const { page, r } = where(fieldName);
+    const maxW = r.width - 8;
+    if (fieldName.startsWith('textarea')) {
+      let size = 10, lines = wrap(font, text, size, maxW);
+      while (size > 6 && lines.length * size * 1.2 > r.height - 4) { size -= 0.5; lines = wrap(font, text, size, maxW); }
+      lines.forEach((ln, i) => page.drawText(ln, { x: r.x + 4, y: r.y + r.height - 2 - size * (i + 1) * 1.15, size, font, color: INK() }));
+    } else {
+      const one = text.replace(/\s*\n\s*/g, ' ');
+      const size = fitSize(font, one, maxW, 10, 6);
+      page.drawText(one, { x: r.x + 4, y: r.y + (r.height - size * 0.72) / 2, size, font, color: INK() });
+    }
+  }
+  const row = PDF_CHECK[p.reg_mode];
+  for (const name of row ? [row.mode, row[p.reg_fois]].filter(Boolean) : []) {
+    const { page, r } = where(name);
+    // coche tracée (deux traits) dans la case ❑ du formulaire
+    const x = r.x, y = r.y, s = Math.min(r.width, r.height);
+    page.drawLine({ start: { x: x + s * .18, y: y + s * .5 }, end: { x: x + s * .42, y: y + s * .2 }, thickness: 1.6, color: PDFLib.rgb(0.69, 0.07, 0.18) });
+    page.drawLine({ start: { x: x + s * .42, y: y + s * .2 }, end: { x: x + s * .95, y: y + s * .95 }, thickness: 1.6, color: PDFLib.rgb(0.69, 0.07, 0.18) });
+  }
+  // Plus aucun champ : document figé. On détache les widgets des pages et le formulaire du
+  // catalogue (form.removeField détruisait des objets encore référencés → fichier abîmé).
+  const { PDFName, PDFDict } = PDFLib;
+  for (const pg of pages) {
+    const annots = pg.node.Annots(); if (!annots) continue;
+    const keep = annots.asArray().filter(ref => { const o = doc.context.lookup(ref); return !(o instanceof PDFDict && o.get(PDFName.of('Subtype')) === PDFName.of('Widget')); });
+    if (keep.length) pg.node.set(PDFName.of('Annots'), doc.context.obj(keep)); else pg.node.delete(PDFName.of('Annots'));
+  }
+  doc.catalog.delete(PDFName.of('AcroForm'));
+  doc.setTitle(`Formulaire Adhésion Membre — ${p.ent_nom || ''}`);
+  doc.setAuthor('Club d\'affaires Protéine Maroc');
+  return await doc.save();
+}
+const fileName = d => `Adhesion_Proteine_${(d.ent_nom || d.m_nom || 'membre').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'')}.pdf`;
+
+/* ─── Envoi au CRM ────────────────────────────────────────────────────── */
+async function sb(path, opts = {}){
+  const r = await fetch(CFG.SB_URL + path, { ...opts, headers: { apikey: CFG.SB_KEY, Authorization: 'Bearer ' + CFG.SB_KEY, ...(opts.headers || {}) } });
+  if (!r.ok) throw new Error(`${r.status} ${await r.text().catch(() => '')}`.slice(0, 300));
+  return r;
+}
+async function sendToCrm(d, pdfBytes){
+  const id = crypto.randomUUID();
+  const path = `${id}.pdf`;
+  // 1) le PDF rempli (bucket privé, dépôt seul : personne ne peut le relire avec la clé publique)
+  await sb(`/storage/v1/object/${CFG.BUCKET}/${path}`, { method:'POST', headers:{ 'Content-Type':'application/pdf', 'x-upsert':'false' }, body: new Blob([pdfBytes], { type:'application/pdf' }) });
+  // 2) la fiche (fonction serveur, insertion seule)
+  await sb('/rest/v1/rpc/soumettre_adhesion', { method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ p_id: id, p_data: d, p_pdf_path: path, p_ref: REF || null }) });
+  return id;
+}
+
+let lastPdf = null, lastName = 'Adhesion_Proteine.pdf';
+async function submit(){
+  const btn = $('#btn-next'); btn.disabled = true; btn.textContent = 'Envoi en cours…';
+  const d = collect();
+  try {
+    lastPdf = await fillPdf(d); lastName = fileName(d);
+  } catch (e) {
+    console.error(e); btn.disabled = false; btn.textContent = 'Envoyer mon adhésion';
+    alert('Le formulaire PDF n\'a pas pu être préparé. Vérifiez votre connexion et réessayez.'); return;
+  }
+  let sent = false;
+  if (DEMO) sent = true; // démonstration : on montre le parcours, on n'envoie rien
+  else { try { await sendToCrm(d, lastPdf); sent = true; } catch (e) { console.error('envoi CRM', e); } }
+  f.classList.add('hidden'); $('#steps-ui').classList.add('hidden'); $('#bar').classList.add('hidden');
+  $('#done').classList.remove('hidden');
+  if (DEMO) $('#done-msg').textContent = 'En vrai, le formulaire part au club à cet instant. Voici ce qu\'il reçoit.';
+  if (sent) { try { localStorage.removeItem(STORE); } catch(_){} }
+  else {
+    $('#done').querySelector('h2').textContent = 'Formulaire prêt';
+    $('#done-msg').textContent = 'Votre formulaire est rempli.';
+    const w = $('#done-warn'); w.classList.remove('hidden');
+    w.textContent = 'L\'envoi automatique au club n\'a pas abouti. Téléchargez le PDF ou partagez-le directement avec votre animateur (WhatsApp, email). Vos réponses restent enregistrées sur ce téléphone.';
+  }
+  if (DEMO || !(navigator.canShare && navigator.canShare({ files: [new File([lastPdf], lastName, { type:'application/pdf' })] }))) $('#btn-share').classList.add('hidden');
+  if (DEMO) $('#btn-dl').classList.add('hidden'); // la maquette n'offre pas de téléchargement
+  toTop();
+  if (DEMO) demoApres(d);
+}
+$('#btn-dl').addEventListener('click', () => {
+  const url = URL.createObjectURL(new Blob([lastPdf], { type:'application/pdf' }));
+  const a = Object.assign(document.createElement('a'), { href:url, download:lastName }); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+});
+// navigator.share part du clic, sans aucune attente avant (sinon le navigateur refuse).
+$('#btn-share').addEventListener('click', () => {
+  const file = new File([lastPdf], lastName, { type:'application/pdf' });
+  navigator.share({ files:[file], title:'Adhésion Protéine Maroc' }).catch(() => {});
+});
+
+/* ─── Navigation ──────────────────────────────────────────────────────── */
+$('#btn-next').addEventListener('click', () => { if (!validate(step)) return; if (step < 5) show(step + 1); else submit(); });
+$('#btn-prev').addEventListener('click', () => { if (step > 1) show(step - 1); });
+
+/* ─── Démonstration : exemple, aperçu du PDF, carte CRM ──────────────── */
+const EXEMPLE = { metier:'Expert-comptable', ent_nom:'Cabinet Benali & Associés', ent_nom_legal:'BENALI CONSEIL SARL', ent_activite:'Expertise comptable, audit, conseil', ent_categorie:'SARL', ent_ice:'001234567000089', ent_patente:'25123456', ent_ville_rcs:'Rabat', ent_capital:'100 000 DH', ent_adresse:'12 avenue Fal Ould Oumeir, Agdal, Rabat', ent_tel:'05 37 77 88 99', ent_web:'www.benali-conseil.ma',
+  m_prenom:'Salma', m_nom:'Benali', m_fonction:'Associée gérante', m_email:'salma@benali-conseil.ma', m_tel:'06 61 23 45 67', m_naissance:'1984-03-12', m_hobbies:'Équitation, lecture',
+  reg_mode:'virement', reg_fois:'2', commentaires:'Premier versement à la signature, le second en janvier.' };
+function remplirExemple(){
+  for (const [k, v] of Object.entries(EXEMPLE)) { const el = f.elements[k]; if (el instanceof RadioNodeList) { for (const r of el) r.checked = r.value === v; } else if (el) el.value = v; }
+  f.elements.sig_same.checked = true; f.elements.fac_same.checked = true; toggleBlocks();
+  $$('.field.bad').forEach(x => x.classList.remove('bad'));
+  show(5);
+}
+function loadScript(src){ return new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+async function demoApres(d){
+  const mode = { cheque:'Chèque', virement:'Virement' }[d.reg_mode] || '';
+  $('#crm-bd').innerHTML = `<b>${esc(d.ent_nom)}</b>${esc(d.m_prenom + ' ' + d.m_nom)} · ${esc(d.metier)}<small>${esc(d.m_tel)} · ${esc(d.m_email)}</small><small>Règlement : ${esc(mode)} en ${esc(d.reg_fois)} fois</small>`;
+  const box = $('#pdf-pages');
+  try {
+    // pdf.js : le « worker » est chargé comme un script ordinaire (même fil), ce que la maquette autorise.
+    if (!window.pdfjsLib) { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'); await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'); }
+    const pdf = await pdfjsLib.getDocument({ data: lastPdf.slice(0) }).promise;
+    box.innerHTML = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const pg = await pdf.getPage(i), vp = pg.getViewport({ scale: 2 });
+      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height; c.setAttribute('aria-label', 'Page ' + i + ' du formulaire rempli');
+      box.appendChild(c); await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    }
+  } catch (e) { console.error(e); box.innerHTML = '<p class="hint">Aperçu indisponible ici, mais le PDF a bien été rempli.</p>'; }
+}
+$('#btn-exemple').addEventListener('click', remplirExemple);
+$('#btn-restart').addEventListener('click', () => {
+  f.reset(); try { localStorage.removeItem(STORE); } catch(_){}
+  f.classList.remove('hidden'); $('#steps-ui').classList.remove('hidden'); $('#bar').classList.remove('hidden'); $('#done').classList.add('hidden');
+  $('#btn-dl').classList.remove('hidden'); $('#btn-next').disabled = false; $('#pdf-pages').innerHTML = '<p class="hint">Préparation de l\'aperçu…</p>';
+  toggleBlocks(); show(1);
+});
+
+loadDraft(); prefillFromLink(); toggleBlocks(); show(step);
+// Le modèle PDF est chargé dès l'ouverture : l'envoi final ne dépend plus que de l'envoi.
+fetch(CFG.PDF_TEMPLATE).then(r => r.ok ? r.arrayBuffer() : null).then(b => { if (b) _tpl = b; }).catch(() => {});
+</script>
+</body>
+</html>

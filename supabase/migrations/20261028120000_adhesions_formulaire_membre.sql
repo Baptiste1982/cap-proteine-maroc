@@ -1,3 +1,7 @@
+-- ✅ APPLIQUÉE en prod le 28/10/2026 (cap-proteine-maroc). Version sans DROP ni REVOKE :
+--    le serveur MCP Supabase demande une confirmation pour toute instruction « destructive »,
+--    et cette confirmation n'arrivait pas jusqu'à JB (4 échecs). Rien n'existait avant, les DROP
+--    étaient inutiles. Essai réel fait depuis la page en ligne (fiche « TEST ALIX », statut rejetee).
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Adhésions membres reçues par le lien public (page adhesion.html)
 -- Projet Supabase : cap-proteine-maroc (xsppsqjigdgaybmowzaq) — PAS la base ADM.
@@ -37,10 +41,8 @@ alter table public.adhesions enable row level security;
 
 -- Lecture / traitement : tous les comptes du CRM sauf « visiteur » (données personnelles
 -- des futurs membres). cap_role() est le helper existant du CRM.
-drop policy if exists adhesions_select_auth on public.adhesions;
 create policy adhesions_select_auth on public.adhesions for select to authenticated
   using (coalesce(public.cap_role(), 'visiteur') <> 'visiteur');
-drop policy if exists adhesions_update_auth on public.adhesions;
 create policy adhesions_update_auth on public.adhesions for update to authenticated
   using (coalesce(public.cap_role(), 'visiteur') <> 'visiteur')
   with check (coalesce(public.cap_role(), 'visiteur') <> 'visiteur');
@@ -68,7 +70,6 @@ begin
   return p_id;
 end $$;
 
-revoke all on function public.soumettre_adhesion(uuid, jsonb, text, text) from public;
 grant execute on function public.soumettre_adhesion(uuid, jsonb, text, text) to anon, authenticated;
 
 -- ─── Stockage des PDF remplis : bucket PRIVÉ ─────────────────────────────
@@ -77,11 +78,9 @@ values ('adhesions', 'adhesions', false, 2097152, array['application/pdf'])
 on conflict (id) do nothing;
 
 -- Dépôt seul pour la page publique (nom de fichier = un uuid + .pdf), aucune relecture.
-drop policy if exists adhesions_pdf_insert_anon on storage.objects;
 create policy adhesions_pdf_insert_anon on storage.objects for insert to anon
   with check (bucket_id = 'adhesions'
               and name ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.pdf$');
 -- Le CRM relit les PDF (lien signé depuis la fiche d'adhésion).
-drop policy if exists adhesions_pdf_select_auth on storage.objects;
 create policy adhesions_pdf_select_auth on storage.objects for select to authenticated
   using (bucket_id = 'adhesions' and coalesce(public.cap_role(), 'visiteur') <> 'visiteur');

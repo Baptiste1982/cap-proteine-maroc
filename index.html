@@ -375,8 +375,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.4.8";
+const APP_VERSION="0.5.0";
 const CHANGELOG=[
+  {v:"0.5.0",date:"28 octobre 2026",notes:{
+    "Ajouté":[
+      "Formulaire d'adhésion en ligne : le futur membre reçoit un lien, remplit le formulaire sur son téléphone et le PDF officiel « Formulaire Adhésion Membre » est rempli automatiquement.",
+      "Bouton « 📝 Adhésions » sur la Synthèse : liste des formulaires reçus, ouverture du PDF, envoi du lien (copie ou WhatsApp, avec le club concerné) et intégration en un clic dans les membres du club (case Formulaire cochée)."
+    ]
+  }},
   {v:"0.4.8",date:"19 juillet 2026",notes:{
     "Modifié":[
       "Module Rendement enrichi : suivi réel de la région (clubs, membres, revenu réalisé), projection basée sur une hypothèse 10–15 membres/groupe (paramétrable), simulateur « membres par groupe » et calcul du nombre de membres/groupe nécessaire pour l'objectif."
@@ -549,6 +555,8 @@ async function loadDB(){
     reunions:(rc.data||[]).map(mapReunion),
     membres:(mc.data||[]).map(mapMembre)
   };
+  const adh=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
+  DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
   (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
 }
@@ -961,7 +969,7 @@ function viewDashboard(){
   const seeAll=true; // tout le monde voit le national + régional ; filtrage local par onglet
   const scope=DB.clubs;
   let html=`<div class="page"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
-    <div style="display:flex;gap:8px">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
+    <div style="display:flex;gap:8px">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
   if(seeAll){
     html+=`<div class="dash-band">National · tout le réseau</div>`+dashBlock(dashStats(DB.clubs));
     const reg=DB.clubs.filter(c=>REGION_RSK.includes(c.ville));
@@ -1448,6 +1456,97 @@ function exportCSV(){
   const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download="agenda-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Agenda exporté");
+}
+/* ============================================================
+   ADHÉSIONS — formulaires remplis par les futurs membres (adhesion.html)
+   La page publique dépose le PDF rempli + une ligne `adhesions` ; ici on
+   les lit, on ouvre le PDF, et on intègre la personne dans `membres`.
+   ============================================================ */
+const ADH_STATUTS={recue:"Reçue",traitee:"Traitée",integree:"Intégrée",rejetee:"Rejetée"};
+const ADH_DOT={recue:"bad",traitee:"warn",integree:"ok",rejetee:""};
+function adhLink(clubId){const u=new URL("adhesion.html",location.href);if(clubId)u.searchParams.set("ref",clubId);return u.toString()}
+function adhNom(a){return((a.data.m_prenom||"")+" "+(a.data.m_nom||"")).trim()||"—"}
+function adhDate(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
+function adhNouvelles(){return(DB.adhesions||[]).filter(a=>a.statut==="recue").length}
+async function openAdhesions(){
+  const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
+  if(error){console.error(error);toast(/does not exist|schema cache/i.test(error.message||"")?"Module adhésions pas encore installé":rlsMsg(error));return}
+  DB.adhesions=data||[];
+  const ordre={recue:0,traitee:1,integree:2,rejetee:3};
+  const list=[...DB.adhesions].sort((a,b)=>ordre[a.statut]-ordre[b.statut]||b.created_at.localeCompare(a.created_at));
+  const rows=list.length?list.map(a=>`<div class="rank-row" style="cursor:pointer" onclick="adhDetail('${a.id}')"><span class="hdot ${ADH_DOT[a.statut]}"></span><div class="rn">${esc(a.data.ent_nom||"—")}<small>${esc(adhNom(a))} · ${esc(a.data.metier||"")} · ${adhDate(a.created_at)}${a.ref&&club(a.ref).nom?" · "+esc(club(a.ref).nom):""}</small></div><div class="rv" style="font-size:12px;color:var(--muted)">${ADH_STATUTS[a.statut]}</div></div>`).join("")
+    :`<div class="empty"><b>Aucune adhésion reçue</b>Envoie le lien ci-dessous aux futurs membres.</div>`;
+  const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Adhésions</h3><div class="sheet-sub">Formulaires remplis par les futurs membres depuis leur téléphone.</div>
+    <div style="border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden;margin-bottom:18px">${rows}</div>
+    ${readOnly()?"":`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Envoyer le lien</div>
+    <div class="field"><label>Club concerné (facultatif)</label><select id="adh-club"><option value="">— Sans club —</option>${clubOpts}</select></div>
+    <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>`}
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function adhSelLink(){return adhLink(document.getElementById("adh-club").value)}
+async function adhCopy(){const u=adhSelLink();try{await navigator.clipboard.writeText(u);toast("Lien copié")}catch(e){prompt("Lien d'adhésion :",u)}}
+function adhWhatsApp(){
+  const msg="Bonjour, voici le formulaire d'adhésion au Club d'affaires Protéine Maroc. Il se remplit en 3 minutes depuis votre téléphone : "+adhSelLink();
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+}
+const ADH_CHAMPS=[["Entreprise",[["metier","Métier"],["ent_nom","Nom usuel"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_ice","ICE"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital"],["ent_adresse","Adresse"],["ent_tel","Téléphone"],["ent_web","Site web"]]],
+  ["Membre",[["m_prenom","Prénom"],["m_nom","Nom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Mobile"],["m_naissance","Naissance"],["m_hobbies","Hobbies"]]],
+  ["Signataire",[["s_prenom","Prénom"],["s_nom","Nom"],["s_fonction","Fonction"],["s_email","Email"],["s_tel","Mobile"]]],
+  ["Règlement",[["reg_mode","Mode"],["reg_fois","Versements"],["commentaires","Commentaires"]]],
+  ["Facturation",[["f_entreprise","Entreprise"],["f_adresse","Adresse"],["f_cpville","CP / Ville"]]]];
+function adhDetail(id){
+  const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;const d={...a.data};
+  if(d.sig_same){d.s_prenom="(le membre)";}
+  if(d.fac_same){d.f_entreprise="(l'entreprise)";}
+  d.reg_mode={cheque:"Chèque",virement:"Virement bancaire"}[d.reg_mode]||d.reg_mode;
+  if(d.reg_fois)d.reg_fois="En "+d.reg_fois+" fois";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
+  const blocs=ADH_CHAMPS.map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(d[k])}</div></div>${k==="m_tel"||k==="s_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k.endsWith("email")?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
+    return r?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:14px 0 4px">${esc(t)}</div>${r}`:""}).join("");
+  const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);
+  const clubOpts=DB.clubs.slice().sort((x,y)=>x.nom.localeCompare(y.nom)).map(c=>`<option value="${c.id}" ${c.id===a.ref?"selected":""}>${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
+  const peut=!readOnly();
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${esc(a.data.ent_nom||"Adhésion")}</h3><div class="sheet-sub">${esc(adhNom(a))} · reçue le ${adhDate(a.created_at)} · <b>${ADH_STATUTS[a.statut]}</b>${mb?" · membre n°"+mb.num+" de "+esc(club(mb.clubId).nom||""):""}</div>
+    ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
+    ${blocs}
+    ${peut&&a.statut!=="integree"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
+      <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
+      <button class="btn" onclick="adhIntegrer('${a.id}')">Intégrer dans le club</button>`:""}
+    <div class="sheet-actions" style="margin-top:12px">
+      <button class="btn ghost" onclick="openAdhesions()">Retour</button>
+      ${peut&&a.statut==="recue"?`<button class="btn ghost" onclick="adhStatut('${a.id}','traitee')">Marquer traitée</button>`:""}
+      ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhStatut('${a.id}','rejetee')">Rejeter</button>`:""}
+    </div>`;
+}
+async function adhPdf(id){
+  const a=DB.adhesions.find(x=>x.id===id);
+  const w=window.open("","_blank"); // ouvert AVANT l'attente réseau, sinon le téléphone bloque la fenêtre
+  const {data,error}=await sb.storage.from("adhesions").createSignedUrl(a.pdf_path,600);
+  if(error||!data){if(w)w.close();toast("PDF introuvable");return}
+  if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+}
+async function adhStatut(id,statut){
+  const {error}=await sb.from("adhesions").update({statut,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  const a=DB.adhesions.find(x=>x.id===id);a.statut=statut;toast("Adhésion : "+ADH_STATUTS[statut]);adhDetail(id);
+}
+async function adhIntegrer(id){
+  const a=DB.adhesions.find(x=>x.id===id),d=a.data;
+  const clubId=document.getElementById("adh-int-club").value;if(!clubId){toast("Choisis un club");return}
+  const nom=((d.m_nom||"").toUpperCase()+" "+(d.m_prenom||"")).trim();
+  if(DB.membres.some(x=>x.clubId===clubId&&x.nom.toLowerCase()===nom.toLowerCase())){toast(nom+" est déjà membre de ce club");return}
+  const num=DB.membres.filter(x=>x.clubId===clubId).reduce((m,b)=>Math.max(m,b.num||0),0)+1;
+  const com=[d.ent_nom,d.m_fonction,d.m_tel,d.m_email].filter(Boolean).join(" · ")+" — formulaire d'adhésion en ligne";
+  const {data,error}=await sb.from("membres").insert({club_id:clubId,num,nom,specialite:d.metier||"",formulaire:true,commentaires:com}).select().single();
+  if(error){toast(rlsMsg(error));return}
+  DB.membres.push(mapMembre(data));
+  const up=await sb.from("adhesions").update({statut:"integree",membre_id:data.id,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
+  if(up.error){toast("Membre créé, mais l'adhésion n'a pas pu être marquée : "+rlsMsg(up.error));return}
+  a.statut="integree";a.membre_id=data.id;toast(nom+" intégré(e) — membre n°"+num);adhDetail(id);
 }
 function exportMembres(){
   const oui=b=>b?"Oui":"Non";

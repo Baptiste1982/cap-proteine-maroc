@@ -4,6 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CAP · Protéine Maroc — CRM Animation</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#B0122E">
+<link rel="apple-touch-icon" href="icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CRM Protéine">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -344,6 +349,11 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .stp.on .stp-ic,.stp:has(input:checked) .stp-ic{background:#fff}
 .stp:has(input:focus-visible){outline:2px solid var(--crimson);outline-offset:2px}
 div.stp{cursor:default}
+.icon-btn{position:relative}
+.icon-btn.on{color:var(--crimson)}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--crimson);box-shadow:0 0 0 2px var(--card);animation:pulse 2s infinite}
+.notif-ios{margin:10px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.5}
+.notif-ios li{margin-bottom:6px}
 .adh-steps{display:inline-flex;gap:3px}
 .adh-steps i{width:12px;height:5px;border-radius:3px;background:var(--line)}
 .adh-steps i.on{background:var(--ok)}
@@ -540,6 +550,7 @@ div.stp{cursor:default}
       <span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
+        <button id="notif-btn" class="icon-btn hidden" onclick="openNotifs()" aria-label="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot hidden"></span></button>
         <button id="pwd-btn" class="icon-btn hidden" onclick="openMyPassword()" aria-label="Mon mot de passe"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"/></svg></button>
         <button id="admin-btn" class="icon-btn hidden" onclick="openAccounts()" aria-label="Comptes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
         <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
@@ -573,8 +584,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.11.0";
+const APP_VERSION="0.12.0";
 const CHANGELOG=[
+  {v:"0.12.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Notification sur le téléphone à chaque nouvelle adhésion : la cloche 🔔 en haut active les notifications sur l'appareil. La direction est prévenue de toutes les adhésions, et chaque animateur de celles de ses clubs.",
+      "Toucher la notification ouvre directement la fiche de l'adhésion.",
+      "Le CRM s'installe sur l'écran d'accueil comme une appli (icône Protéine). Sur iPhone, c'est nécessaire pour recevoir les notifications."
+    ]}},
   {v:"0.11.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Suivi des adhésions en 3 temps : reçue → intégrée au club → saisie dans le CRM national, visible sur chaque ligne et dans chaque fiche.",
@@ -873,7 +890,64 @@ async function bootIntoApp(){
   enterApp();
   verifierMdpInitial();
   adhAnnonce();
+  notifEtat().then(majBoutonNotif);
+  ouvrirLienAdhesion();
   return true;
+}
+/* ── v0.12 : notifications sur le téléphone (web push) ──
+   Le service worker (sw.js) affiche la notification ; l'abonnement de chaque appareil est rangé dans
+   push_abonnements ; la base appelle l'edge notif-adhesion à chaque nouvelle adhésion. */
+const VAPID_PUBLIC="BAKkMOISOmM62avwTzeE81_l592rvg9O-AiLBct4eGf7Xovoy_OswNK0lnQ0yokt6VDoRkL927x4LS5bFYnWbZM";
+function notifSupport(){return "serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window}
+function estIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function estInstalle(){return window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}
+function b64uVersOctets(b){const p="=".repeat((4-b.length%4)%4);const r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+async function notifReg(){if(!notifSupport())return null;try{return await navigator.serviceWorker.register("sw.js")}catch(e){console.warn(e);return null}}
+async function notifEtat(){
+  if(!SESSION||SESSION.role==="visiteur")return "masque";
+  if(!notifSupport())return estIOS()&&!estInstalle()?"ios":"non";
+  if(Notification.permission==="denied")return "refuse";
+  const reg=await notifReg();const sub=reg&&await reg.pushManager.getSubscription();
+  return sub?"actif":"inactif";
+}
+function majBoutonNotif(e){
+  const b=document.getElementById("notif-btn");if(!b)return;
+  b.classList.toggle("hidden",e==="masque"||e==="non");
+  b.classList.toggle("on",e==="actif");
+  b.querySelector(".notif-dot").classList.toggle("hidden",e==="actif"||e==="refuse");
+}
+async function notifActiver(){
+  const reg=await notifReg();if(!reg){toast("Notifications indisponibles sur ce navigateur");return}
+  const p=await Notification.requestPermission();
+  if(p!=="granted"){toast("Notifications refusées : à réautoriser dans les réglages du navigateur");openNotifs();return}
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uVersOctets(VAPID_PUBLIC)});
+  const j=sub.toJSON();
+  const {error}=await sb.from("push_abonnements").upsert({user_id:SESSION.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,appareil:(navigator.userAgent||"").slice(0,120)},{onConflict:"endpoint"});
+  if(error){toast("Abonnement non enregistré : "+rlsMsg(error));return}
+  toast("🔔 Notifications activées sur cet appareil");openNotifs();
+}
+async function notifCouper(){
+  const reg=await notifReg();const sub=reg&&await reg.pushManager.getSubscription();
+  if(sub){await sb.from("push_abonnements").delete().eq("endpoint",sub.endpoint);await sub.unsubscribe()}
+  toast("Notifications coupées sur cet appareil");openNotifs();
+}
+async function openNotifs(){
+  const e=await notifEtat();majBoutonNotif(e);
+  const corps={
+    actif:`<div class="ck-act ok" style="cursor:default"><span class="ic">✓</span><span class="tx">Activées sur cet appareil</span></div><p class="fh-note">Tu reçois une notification à chaque adhésion envoyée par le lien${SESSION.role==="animateur"?" pour tes clubs":""}.</p><div class="sheet-actions"><button class="btn ghost" onclick="notifCouper()">Couper sur cet appareil</button></div>`,
+    inactif:`<p class="fh-note" style="margin-bottom:12px">Sois prévenu dès qu'un futur membre envoie son formulaire d'adhésion${SESSION.role==="animateur"?" pour un de tes clubs":""}.</p><div class="sheet-actions"><button class="btn" onclick="notifActiver()">🔔 Activer sur cet appareil</button></div>`,
+    refuse:`<div class="ck-act urgent" style="cursor:default"><span class="ic">⛔</span><span class="tx">Notifications bloquées pour ce site</span></div><p class="fh-note">Réautorise-les dans les réglages du navigateur (cadenas à côté de l'adresse), puis reviens ici.</p>`,
+    ios:`<div class="ck-act todo" style="cursor:default"><span class="ic">📱</span><span class="tx">Une étape avant, sur iPhone</span></div><ol class="notif-ios"><li>Touche <b>Partager</b> (le carré avec la flèche) en bas de Safari.</li><li>Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li><li>Ouvre le CRM depuis l'icône, puis la cloche 🔔 en haut.</li></ol>`,
+    non:`<p class="fh-note">Ce navigateur ne gère pas les notifications.</p>`};
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:"Nouvelles adhésions, sur ce téléphone ou cet ordinateur"})}${corps[e]||corps.non}<div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+/* Lien d'une notification (?adh=<id>) : ouvre directement la fiche de l'adhésion. */
+async function ouvrirLienAdhesion(){
+  const id=new URLSearchParams(location.search).get("adh");if(!id||!SESSION||SESSION.role==="visiteur")return;
+  history.replaceState(null,"",location.pathname);
+  await openAdhesions("all");if((DB.adhesions||[]).some(a=>a.id===id))adhDetail(id);
 }
 /* Mot de passe initial « cap2026 » : tant qu'il est actif, une fenêtre impose d'en choisir un autre.
    La base répond (cap_mdp_a_changer) ; si la fonction manque ou ne répond pas, on n'empêche personne de travailler. */

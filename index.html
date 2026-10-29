@@ -344,6 +344,17 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .stp.on .stp-ic,.stp:has(input:checked) .stp-ic{background:#fff}
 .stp:has(input:focus-visible){outline:2px solid var(--crimson);outline-offset:2px}
 div.stp{cursor:default}
+.adh-steps{display:inline-flex;gap:3px}
+.adh-steps i{width:12px;height:5px;border-radius:3px;background:var(--line)}
+.adh-steps i.on{background:var(--ok)}
+.adh-age{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.adh-age.late{color:var(--crimson)}
+.adh-legend{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:11.5px;color:var(--muted);margin:8px 2px 0}
+.adh-legend b{color:var(--crimson)}
+.adh-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.adh-track div{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:11px;font-weight:600;color:var(--muted)}
+.adh-track i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1.5px solid var(--line);font-size:12px;font-weight:700}
+.adh-track div.on{color:var(--ok)}.adh-track div.on i{background:var(--ok);border-color:var(--ok);color:#fff;animation:pop .4s cubic-bezier(.2,.8,.2,1) backwards}
 @media (prefers-reduced-motion:reduce){.fh-kpis,.stp-bar i{animation:none!important}}
 @media(max-width:899px){.dash .stats{gap:8px;margin-bottom:10px}.dash .stat{padding:10px 10px 9px}.dash .stat .n{font-size:22px}.dash .stat .l{font-size:11px;line-height:1.25}}
 @media (prefers-reduced-motion:reduce){.rl-row,.mg .b i,.fn-col i,.nav-badge{animation:none!important}.rl-flag.urgent{animation:none}.rs .fg,.rl-x,.rl-in,.rl-chev,.seg-sc .knob{transition:none}}
@@ -562,8 +573,15 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.10.1";
+const APP_VERSION="0.11.0";
 const CHANGELOG=[
+  {v:"0.11.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Suivi des adhésions en 3 temps : reçue → intégrée au club → saisie dans le CRM national, visible sur chaque ligne et dans chaque fiche.",
+      "Filtres « À intégrer », « À saisir », « En retard » (en attente depuis plus de 2 jours) et répartition des adhésions par groupe.",
+      "À la connexion, un message annonce les adhésions arrivées depuis ta dernière visite.",
+      "Synthèse : les adhésions à intégrer et à saisir apparaissent dans l'encart « À traiter »."
+    ]}},
   {v:"0.10.1",date:"29 octobre 2026",notes:{
     "Modifié":[
       "Un compte qui utilise encore le mot de passe de départ, commun à toute l'équipe, doit en choisir un nouveau dès sa connexion avant de continuer.",
@@ -854,6 +872,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
+  adhAnnonce();
   return true;
 }
 /* Mot de passe initial « cap2026 » : tant qu'il est actif, une fenêtre impose d'en choisir un autre.
@@ -1263,10 +1282,14 @@ function dashBlock(s,sc){
 function dashATraiter(sc){
   const ids=new Set(_dashScope[sc]||[]);
   const l=DB.clubs.filter(c=>ids.has(c.id)).map(c=>({c,t:clubTone(c),na:clubNextAction(c)})).filter(x=>x.t!=="ok").sort((a,b)=>(a.t==="urgent"?0:1)-(b.t==="urgent"?0:1)||a.c.nom.localeCompare(b.c.nom));
-  if(!l.length)return `<div class="dash-todo ok">✓ Aucun club n'attend d'action.</div>`;
+  const nI=SESSION.role==="visiteur"?0:adhAIntegrer().length,nS=SESSION.role==="visiteur"?0:adhASaisir().length;
+  const adhRows=(nI?`<div class="rank-row link" onclick="openAdhesions('todo')"><span class="dt-ic urgent">📝</span><div class="rn">${nI} adhésion${nI>1?"s":""} à intégrer<small>Formulaires reçus par le lien</small></div></div>`:"")
+    +(nS?`<div class="rank-row link" onclick="openAdhesions('saisie')"><span class="dt-ic">🗂</span><div class="rn">${nS} à saisir dans le CRM national<small>Contrat membre à préparer</small></div></div>`:"");
+  if(!l.length&&!adhRows)return `<div class="dash-todo ok">✓ Rien n'attend d'action.</div>`;
+  if(!l.length)return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter</div><div class="rank dash-todo">${adhRows}</div>`;
   const vis=l.slice(0,4);
-  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${l.length}</span></div>
-    <div class="rank dash-todo">${vis.map(x=>`<div class="rank-row link" onclick="clubCardAction('${x.c.id}')"><span class="dt-ic ${x.t}">${clubIco(x.c,x.t)}</span><div class="rn">${esc(x.na.label)}<small>${esc(x.c.nom.replace(/^CAP\s+/,""))}</small></div></div>`).join("")}
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${l.length+(nI?1:0)+(nS?1:0)}</span></div>
+    <div class="rank dash-todo">${adhRows}${vis.map(x=>`<div class="rank-row link" onclick="clubCardAction('${x.c.id}')"><span class="dt-ic ${x.t}">${clubIco(x.c,x.t)}</span><div class="rn">${esc(x.na.label)}<small>${esc(x.c.nom.replace(/^CAP\s+/,""))}</small></div></div>`).join("")}
     ${l.length>vis.length?`<div class="rank-row link" onclick="filter='todo';go2('clubs')"><div class="rn" style="color:var(--crimson)">Voir les ${l.length} clubs à traiter</div></div>`:""}</div>`;
 }
 function go2(t){go(t);if(t==="clubs"){filter="todo";render()}}
@@ -1877,25 +1900,63 @@ function adhLink(clubId){const u=new URL("adhesion.html",location.href);if(clubI
 function adhNom(a){return((a.data.m_prenom||"")+" "+(a.data.m_nom||"")).trim()||"—"}
 function adhDate(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
 function adhNouvelles(){return(DB.adhesions||[]).filter(a=>a.statut==="recue").length}
-async function openAdhesions(){
+/* ── v0.11 : suivi des adhésions ──
+   Une adhésion avance en 3 temps : reçue → intégrée au club → saisie dans le CRM national.
+   « En retard » = en attente depuis plus de ADH_DELAI_J jours (à traiter ou à saisir). */
+const ADH_DELAI_J=2;
+function adhJours(iso){return Math.floor((Date.now()-new Date(iso).getTime())/864e5)}
+function adhAge(iso){const j=adhJours(iso);return j<=0?"aujourd'hui":j===1?"hier":"il y a "+j+" j"}
+function adhEtape(a){if(a.statut==="rejetee")return-1;return a.saisie_proteine_le?3:a.statut==="integree"?2:1}
+function adhEnRetard(a){const e=adhEtape(a);return(e===1||e===2)&&adhJours(a.created_at)>ADH_DELAI_J}
+function adhSuivi(a){const e=adhEtape(a);if(e<0)return `<span class="rl-fact">Rejetée</span>`;
+  return `<span class="adh-steps" title="Reçue → intégrée au club → saisie dans le CRM national">${[1,2,3].map(k=>`<i class="${k<=e?"on":""}"></i>`).join("")}</span>`}
+function adhAIntegrer(){return(DB.adhesions||[]).filter(a=>a.statut==="recue"||a.statut==="traitee")}
+let _adhFiltre="todo";
+async function openAdhesions(f){
+  if(f)_adhFiltre=f;
   const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
   if(error){console.error(error);toast(/does not exist|schema cache/i.test(error.message||"")?"Module adhésions pas encore installé":rlsMsg(error));return}
   DB.adhesions=data||[];
-  const ordre={recue:0,traitee:1,integree:2,rejetee:3};
-  const list=[...DB.adhesions].sort((a,b)=>ordre[a.statut]-ordre[b.statut]||b.created_at.localeCompare(a.created_at));
-  const rows=list.length?list.map(a=>`<div class="rank-row" style="cursor:pointer" onclick="adhDetail('${a.id}')"><span class="hdot ${ADH_DOT[a.statut]}"></span><div class="rn">${esc(a.data.ent_nom||"—")}<small>${esc(adhNom(a))} · ${esc(a.data.metier||"")} · ${adhDate(a.created_at)}${a.ref&&club(a.ref).nom?" · "+esc(club(a.ref).nom):""}</small></div><div class="rv" style="font-size:12px;color:var(--muted);text-align:right">${ADH_STATUTS[a.statut]}${a.saisie_proteine_le?"<br>✓ saisie":""}</div></div>`).join("")
-    :`<div class="empty"><b>Aucune adhésion reçue</b>Envoie le lien ci-dessous aux futurs membres.</div>`;
+  try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}
+  const all=DB.adhesions;
+  const F={todo:["À intégrer",a=>a.statut==="recue"||a.statut==="traitee"],saisie:["À saisir",a=>a.statut!=="rejetee"&&!a.saisie_proteine_le],retard:["En retard",adhEnRetard],all:["Toutes",a=>true],rejetee:["Rejetées",a=>a.statut==="rejetee"]};
+  if(!F[_adhFiltre])_adhFiltre="todo";
+  const list=all.filter(F[_adhFiltre][1]).sort((a,b)=>b.created_at.localeCompare(a.created_at));
+  const chips=Object.entries(F).map(([k,[l,fn]])=>`<button class="chip ${_adhFiltre===k?"on":""}" onclick="openAdhesions('${k}')">${l}<em>${all.filter(fn).length}</em></button>`).join("");
+  const rows=list.length?`<div class="rl">${list.map((a,i)=>{const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g);return `<div class="rl-row" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}"><button class="rl-h" onclick="adhDetail('${a.id}')">
+      <span class="rl-emb sm">${esc(initiales(a.data.ent_nom||adhNom(a)))}</span>
+      <span class="rl-t"><b>${esc(a.data.ent_nom||"—")}</b><small>${esc(adhNom(a))} · ${esc(g.replace(/^CAP\s+/,""))}</small></span>
+      <span class="rl-ind"><span class="adh-age ${adhEnRetard(a)?"late":""}">${adhAge(a.created_at)}</span>${adhSuivi(a)}</span><span class="rl-chev">›</span></button></div>`}).join("")}</div>`
+    :`<p class="fh-empty">${_adhFiltre==="todo"?"Rien à intégrer : tout est à jour ✓":"Aucune adhésion dans ce filtre."}</p>`;
+  // repères chiffrés + répartition par groupe (hors rejetées)
+  const vivantes=all.filter(a=>a.statut!=="rejetee");
+  const parGroupe={};vivantes.forEach(a=>{const g=adhGroupe(a);parGroupe[g]=(parGroupe[g]||0)+1});
+  const grp=Object.entries(parGroupe).sort((a,b)=>b[1]-a[1]);
+  const mx=Math.max(1,...grp.map(x=>x[1]));
+  const mois=vivantes.filter(a=>adhMoisCle(a.created_at)===adhMoisCle(new Date().toISOString())).length;
   const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
-    <h3>Adhésions</h3><div class="sheet-sub">Formulaires remplis par les futurs membres depuis leur téléphone.</div>
-    <button class="btn ghost" style="margin-bottom:14px" onclick="openClasseur()">📁 Classeur des PDF · par mois et par groupe</button>
-    <div style="border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden;margin-bottom:18px">${rows}</div>
-    ${readOnly()?"":`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin-bottom:8px">Envoyer le lien</div>
+    ${ficheHead({ini:"📝",title:"Adhésions",sub:"Formulaires remplis par les futurs membres depuis leur téléphone."})}
+    ${ficheKpis([[mois,"ce mois-ci"],[adhAIntegrer().length,"à intégrer",adhAIntegrer().length?"warn":""],[adhASaisir().length,"à saisir (national)",adhASaisir().length?"warn":""]])}
+    <div class="filters">${chips}</div>
+    ${rows}
+    <div class="adh-legend"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au club · saisie dans le CRM national${all.some(adhEnRetard)?` — <b>en retard</b> : en attente depuis plus de ${ADH_DELAI_J} jours`:""}</div>
+    ${grp.length?secHead("Par groupe",vivantes.length)+`<div class="rank">${grp.map(([g,n])=>`<div class="rank-row"><div class="rn">${esc(g.replace(/^CAP\s+/,""))}</div><div class="bar"><i style="width:${Math.round(n/mx*100)}%"></i></div><div class="rv">${n}</div></div>`).join("")}</div>`:""}
+    <button class="btn ghost" style="margin-top:14px;width:100%" onclick="openClasseur()">📁 Classeur des PDF</button>
+    ${readOnly()?"":`${secHead("Envoyer le lien")}
     <div class="field"><label>Club concerné (facultatif)</label><select id="adh-club"><option value="">— Sans club —</option>${clubOpts}</select></div>
-    <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>`}
-    ${readOnly()?"":`<div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="adhExportSaisie('csv')">Exporter pour saisie (${adhASaisir().length})</button><button class="btn ghost" style="flex:0 0 auto;width:auto" onclick="adhExportSaisie('json')" title="Fichier lu par le robot de saisie">JSON robot</button></div>`}
+    <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="adhExportSaisie('csv')">Exporter pour saisie (${adhASaisir().length})</button><button class="btn ghost" style="flex:0 0 auto;width:auto" onclick="adhExportSaisie('json')" title="Fichier lu par le robot de saisie">JSON robot</button></div>`}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
-  openSheet();
+  ficheOpen();
+}
+/* À la connexion : prévient s'il est arrivé des adhésions depuis la dernière visite de la liste. */
+function adhAnnonce(){
+  if(!SESSION||SESSION.role==="visiteur"||!(DB.adhesions||[]).length)return;
+  let vu=null;try{vu=localStorage.getItem("cap-adh-vu")}catch(e){}
+  const n=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&(!vu||a.created_at>vu)).length;
+  if(vu&&n)setTimeout(()=>toast(`📝 ${n} nouvelle${n>1?"s":""} adhésion${n>1?"s":""} depuis ta dernière visite`),900);
+  if(!vu){try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}}
 }
 async function adhCopyClub(id){const u=adhLink(id);try{await navigator.clipboard.writeText(u);toast("Lien du club copié")}catch(e){prompt("Lien d'adhésion :",u)}}
 function adhWhatsAppClub(id){window.open("https://wa.me/?text="+encodeURIComponent("Bonjour, voici le formulaire d'adhésion au "+(club(id).nom||"Club d'affaires Protéine")+". Il se remplit en 3 minutes depuis votre téléphone : "+adhLink(id)),"_blank")}
@@ -1923,7 +1984,9 @@ function adhDetail(id){
   const clubOpts=DB.clubs.slice().sort((x,y)=>x.nom.localeCompare(y.nom)).map(c=>`<option value="${c.id}" ${c.id===a.ref?"selected":""}>${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
   const peut=!readOnly();
   document.getElementById("sheet-content").innerHTML=`
-    <h3>${esc(a.data.ent_nom||"Adhésion")}</h3><div class="sheet-sub">${esc(adhNom(a))} · reçue le ${adhDate(a.created_at)} · <b>${ADH_STATUTS[a.statut]}</b>${mb?" · membre n°"+mb.num+" de "+esc(club(mb.clubId).nom||""):""}</div>
+    ${ficheHead({ini:initiales(a.data.ent_nom||adhNom(a)),title:a.data.ent_nom||"Adhésion",sub:`${esc(adhNom(a))} · reçue ${adhAge(a.created_at)} · <b>${ADH_STATUTS[a.statut]}</b>${mb?" · membre n°"+mb.num+" de "+esc(club(mb.clubId).nom||""):""}`})}
+    ${adhEtape(a)>0?`<div class="adh-track">${[["Reçue",1],["Intégrée au club",2],["Saisie CRM national",3]].map(([l,k])=>`<div class="${k<=adhEtape(a)?"on":""}"><i>${k<=adhEtape(a)?"✓":k}</i><span>${l}</span></div>`).join("")}</div>`:""}
+    ${adhEnRetard(a)?`<div class="ck-act urgent" style="margin-bottom:10px;cursor:default"><span class="ic">⏰</span><span class="tx">En attente depuis ${adhJours(a.created_at)} jours</span></div>`:""}
     ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
     <div class="drow" style="margin-top:10px"><div class="tx"><div class="k">CRM national Protéine</div><div class="v">${a.saisie_proteine_le?"Saisie faite le "+adhDate(a.saisie_proteine_le):"Pas encore saisie"}</div></div>${peut?`<a href="#" onclick="adhSaisie('${a.id}',${!a.saisie_proteine_le});return false">${a.saisie_proteine_le?"Annuler":"Marquer saisie"}</a>`:""}</div>
     ${blocs}
@@ -1931,7 +1994,7 @@ function adhDetail(id){
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
       <button class="btn" onclick="adhIntegrer('${a.id}')">Intégrer dans le club</button>`:""}
     <div class="sheet-actions" style="margin-top:12px">
-      <button class="btn ghost" onclick="openAdhesions()">Retour</button>
+      <button class="btn ghost" onclick="openAdhesions()">← Liste</button>
       ${peut&&a.statut==="recue"?`<button class="btn ghost" onclick="adhStatut('${a.id}','traitee')">Marquer traitée</button>`:""}
       ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhStatut('${a.id}','rejetee')">Rejeter</button>`:""}
     </div>`;

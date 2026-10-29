@@ -39,5 +39,14 @@ begin
   return new;
 end $$;
 
+-- Clé privée VAPID : rangée chiffrée dans Vault (nom « cap_vapid_private », posée hors migration
+-- pour qu'elle n'apparaisse jamais dans l'historique). Seule la clé de service peut la lire.
+create or replace function public.cap_vapid_private()
+returns text language plpgsql stable security definer set search_path = public, vault as $$
+begin
+  if coalesce(auth.role(), '') <> 'service_role' then raise exception 'interdit'; end if;
+  return (select decrypted_secret from vault.decrypted_secrets where name = 'cap_vapid_private' limit 1);
+end $$;
+
 create or replace trigger adhesion_notifier after insert on public.adhesions
   for each row execute function public.adhesion_notifier();

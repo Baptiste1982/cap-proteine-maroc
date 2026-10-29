@@ -5,11 +5,16 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import webpush from "npm:web-push@3.6.7";
 
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-webpush.setVapidDetails(
-  Deno.env.get("VAPID_SUBJECT") ?? "https://cap-proteine-maroc.vercel.app",
-  Deno.env.get("VAPID_PUBLIC")!,
-  Deno.env.get("VAPID_PRIVATE")!,
-);
+// Clé publique = celle du front (index.html, VAPID_PUBLIC). La privée est lue dans Vault (cap_vapid_private).
+const VAPID_PUBLIC = "BAKkMOISOmM62avwTzeE81_l592rvg9O-AiLBct4eGf7Xovoy_OswNK0lnQ0yokt6VDoRkL927x4LS5bFYnWbZM";
+let vapidPret = false;
+async function initVapid() {
+  if (vapidPret) return true;
+  const { data, error } = await sb.rpc("cap_vapid_private");
+  if (error || !data) return false;
+  webpush.setVapidDetails("https://cap-proteine-maroc.vercel.app", VAPID_PUBLIC, data as string);
+  return (vapidPret = true);
+}
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 
 Deno.serve(async (req) => {
@@ -38,6 +43,7 @@ Deno.serve(async (req) => {
     ["superadmin", "directeur_national", "directeur"].includes(p.role) || (animClub && p.animateur_id === animClub)
   ).map((p) => p.id);
   if (!ids.length) return json({ ok: true, envoyes: 0 });
+  if (!(await initVapid())) return json({ error: "cle_vapid_absente" }, 500);
   const { data: abos } = await sb.from("push_abonnements").select("id, endpoint, p256dh, auth").in("user_id", ids);
 
   const nom = [a.data?.m_prenom, a.data?.m_nom].filter(Boolean).join(" ");

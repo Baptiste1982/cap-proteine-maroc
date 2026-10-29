@@ -6,7 +6,9 @@
 <title>CAP · Protéine Maroc — CRM Animation</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#B0122E">
-<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CRM Protéine">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,6 +40,8 @@ input,select,textarea{font-family:inherit;font-size:16px}
   background:linear-gradient(160deg,#fff,#F3E7C9);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .auth-brand small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600}
 .auth-brand b{font-family:"Bricolage Grotesque";font-weight:700;font-size:16px}
+.mono:has(img){background:#fff}
+.mono img{width:82%;height:82%;object-fit:contain;display:block;border-radius:8px}
 .auth-hero{padding:38px 0 26px}
 .auth-hero .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:14px}
 .auth-hero h1{font-size:clamp(32px,9vw,44px);font-weight:800;line-height:1.02}
@@ -503,7 +507,7 @@ div.stp{cursor:default}
   .nav{top:0;bottom:0;left:0;right:auto;width:216px;max-width:none;height:100dvh;margin:0;
     flex-direction:column;justify-content:flex-start;align-items:stretch;gap:5px;
     padding:22px 12px;border-top:none;border-right:1px solid var(--line);box-shadow:none}
-  .nav::before{content:"CAP · Protéine Maroc";display:block;font-family:"Bricolage Grotesque";font-weight:800;font-size:15px;color:var(--crimson);padding:6px 14px 16px}
+  .nav::before{content:"";display:block;height:58px;margin:0 10px 14px;background:url(logo-proteine.png) left center/contain no-repeat}
   .nav button{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:13px;padding:11px 14px;border-radius:11px;font-size:14px;font-weight:600;color:var(--ink)}
   .nav button svg{width:20px;height:20px;color:var(--muted)}
   .nav button.on{background:var(--crimson-tint);color:var(--crimson)}
@@ -532,7 +536,7 @@ div.stp{cursor:default}
 
 <!-- LOGIN -->
 <div id="auth" class="auth">
-  <div class="auth-brand"><div class="mono">P</div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
+  <div class="auth-brand"><div class="mono"><img src="icone-192.png" alt="Protéine"></div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
   <div class="auth-hero">
     <div class="eyebrow">CRM Animation · Saison 2026</div>
     <h1>Le réseau,<br>piloté au&nbsp;cordeau.</h1>
@@ -553,7 +557,7 @@ div.stp{cursor:default}
 <div id="app" class="app hidden">
   <div class="topbar">
     <div class="tb-row">
-      <div class="mono">P</div>
+      <div class="mono"><img src="icone-192.png" alt="Protéine"></div>
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
@@ -594,8 +598,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.13.0";
+const APP_VERSION="0.13.1";
 const CHANGELOG=[
+  {v:"0.13.1",date:"29 octobre 2026",notes:{
+    "Modifié":[
+      "Logo Protéine partout : icône de l'onglet du navigateur, icône de l'écran d'accueil sur iPhone et Android, en-tête du CRM, écran de connexion et barre latérale sur ordinateur."
+    ]}},
   {v:"0.13.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Classeur des PDF rangé par groupe, chaque club ayant son dossier et ses adhésions mois par mois. La vue par mois reste disponible, et chaque groupe se télécharge en ZIP.",

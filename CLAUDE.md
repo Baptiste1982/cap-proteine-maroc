@@ -128,6 +128,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Micro-animations (bloc CSS `/*v024*/`) : cascade d'entrée `.page>*`, `#sheet-content>*`, `.rail>*`, survols. JB trouve encore le CRM « trop classique, plat, y compris les dispositions » : piste suivante = maquette de directions à cliquer.
 - **À terme (demande JB)** : un chat entre membres, en messages directs seulement, sans groupes. Les membres n'ont pas encore de compte : à cadrer le jour où ils en auront un.
 
+**📅 Mes réunions (v0.22.0, 29/10/2026)** — demande JB (« un espace pour la gestion des réunions et des comptes rendus, changer le jour, lieux à garder en mémoire ») :
+- Onglet `reunions` (`viewReunions`, après Agenda ; masqué en lecture seule). Périmètre = clubs dont l'animateur est `SESSION.animId` ; les directeurs basculent sur « Tous mes périmètres » (`window._reuTous`, clubs `canEditClubId`).
+- Migration `20261029200000_reunions_rythme_compte_rendu.sql` (appliquée) : `clubs.lieu_habituel_id`, `rythme_jour` (1 = lundi … 7), `rythme_rang` (0 = chaque semaine, 1..4 = Nième du mois, -1 = dernier), `heure_habituelle` ; `reunions.compte_rendu` (jsonb), `cr_le`, `cr_par`. Droits inchangés (`cap_can_edit_club`).
+- `changerJour(id)` (décalages rapides, case « retenir ce lieu et cette heure » → club), `openRythme(clubId)`, `prochaineDate(c)` (après la dernière réunion non annulée et pas avant aujourd'hui), `planifierSuivante(clubId)` (pré-remplit `meetingForm`), `openCR(id)` / `crEnregistrer` (passe la réunion en réalisée), `crBloc` dans la fiche réunion.
+- Le canevas du compte rendu (`CR_CHAMPS` : déroulé, décisions, suivi) est PROVISOIRE : JB doit fournir celui du national. Le jsonb évite une migration le jour où il change.
+- Barre du bas : 7 onglets (54 px chacun sur iPhone 13). Banc `scratchpad/tools/reunions.mjs` 53/53.
+- **Messages entre membres** : demande confirmée (« espace membre à part », messages directs, sans groupe). Maquette d'abord, rien de codé.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

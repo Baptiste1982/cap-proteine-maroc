@@ -88,6 +88,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **🃏 Cartes Clubs (v0.8.0, 29/10/2026)** : `clubTile(c,i)` (classes `ck-*`, les cartes Équipe gardent `cc-*`) — liseré couleur de ville, statut en pastille, animateur sous le nom, anneau de santé animé (`animateRings`), 2 repères (membres/objectif, prochaine réunion), barre d'objectif, et UNE action cliquable = `clubNextAction` (même règle que la fiche club, exécutée par `clubCardAction`).
 
+**📱 Lignes compactes sur mobile (v0.9.0, 29/10/2026)** — maquette validée par JB (https://claude.ai/artifact/SK8AXrtPxuKnKkvoCHUwQR) :
+- Sous 900 px, Clubs, Agenda, Lieux et Équipe s'affichent en lignes compactes (`.rl` / `.rl-row`) : une ligne par élément avec une jauge (`miniG`), un anneau de santé (`ringSm`) et un point d'alerte (`clubTone` : urgent = sans animateur ou sans réunion). Le détail se déplie au toucher (`rowToggle`). À 900 px et plus, les cartes riches restent (`clubTile`, `meetingCard`, `lieu-card`, `animTile`). La bascule se fait dans le JS par `isWide()`, avec un nouveau rendu quand on franchit le seuil.
+- Synthèse : un interrupteur National / Régional (`window._dashSc`) au lieu de deux blocs, un encart « À traiter » (`dashATraiter`) et un entonnoir en colonnes (`.funnel`).
+- Filtres en pastilles avec leur compte (`fchip`, `lieuVilleChip`) au lieu des menus déroulants. Pastille rouge sur l'onglet Clubs (`navBadges`).
+- Banc Playwright `scratchpad/tools/v09.mjs` : 42/42 en taille téléphone et en taille ordinateur.
+- Règle de ton : Alix **tutoie** JB, toujours.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

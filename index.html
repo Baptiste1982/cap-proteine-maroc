@@ -840,6 +840,32 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-ok{font-weight:600;color:#1f7a4d}.nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
 .nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .nat-plan{display:grid;gap:6px;margin:10px 0}.nat-plan div{display:flex;justify-content:space-between;gap:12px;font-size:13px}.nat-plan span{color:var(--muted)}.nat-plan b{text-align:right}
+/*v020*/
+/* ===== v0.20 — GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu permanent à droite, les fiches s'y ouvrent ===== */
+.rail{display:none}
+@media(min-width:1500px){
+  html.rail-on{--rail:clamp(380px,26vw,520px)}
+  html.rail-on .app{margin:0 var(--rail) 0 216px;max-width:none}
+  html.rail-on .fab{right:calc(var(--rail) + 34px)}
+  html.rail-on .update-bar{right:calc(var(--rail) + 12px)}
+  html.rail-on .rail{display:block;position:fixed;top:0;right:0;bottom:0;width:var(--rail);z-index:20;overflow-y:auto;
+    background:var(--card);border-left:1px solid var(--line);padding:22px 24px 28px}
+  html.rail-on .sheet-wrap:not(.force){inset:0 0 0 auto;width:var(--rail);z-index:25}
+  html.rail-on .sheet-wrap:not(.force) .sheet-bg{display:none}
+  html.rail-on .sheet-wrap:not(.force) .sheet{position:absolute;inset:0;width:auto;max-width:none;height:auto;border-left:1px solid var(--line);box-shadow:none;animation:railin .22s ease}
+}
+@keyframes railin{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.rail-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:2px}
+.rail-h h3{margin:0;font:800 19px "Bricolage Grotesque",sans-serif}
+.rail-h small{color:var(--muted);font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.rail-sub{color:var(--muted);font-size:12.5px;margin:2px 0 14px}
+.rail .rank{margin-bottom:6px}
+.rail .rank-row.link{cursor:pointer}
+.rail .rank-row.link:hover{background:var(--crimson-tint)}
+.rail-date{flex:0 0 42px;text-align:center;border-radius:10px;background:var(--crimson-tint);color:var(--crimson);padding:5px 0;line-height:1}
+.rail-date b{display:block;font:800 17px "Bricolage Grotesque",sans-serif}.rail-date small{font-size:10px;font-weight:700;text-transform:uppercase}
+.rail-vide{color:var(--muted);font-size:13px;padding:12px 14px}
+@media (prefers-reduced-motion:reduce){html.rail-on .sheet-wrap .sheet{animation:none!important}}
 </style>
 </head>
 <body>
@@ -896,6 +922,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
+<aside id="rail" class="rail" aria-label="Aperçu"></aside>
 <div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
@@ -912,8 +939,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.19.0";
+const APP_VERSION="0.20.0";
 const CHANGELOG=[
+  {v:"0.20.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Grand écran (1500 px et plus) : un panneau d'aperçu reste ouvert à droite. Il montre, selon l'onglet, la carte du réseau, les prochaines réunions, les dernières adhésions, les clubs à traiter, les réunions sans lieu ou les bilans à faire.",
+      "Sur grand écran, une fiche (club, réunion, membre, lieu…) s'ouvre dans ce panneau, sans assombrir la page : on garde la liste sous les yeux, et toucher une autre ligne remplace la fiche. Fermer la fiche rend l'aperçu."
+    ]}},
   {v:"0.19.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Dossier de chaque membre : ses informations (entreprise, coordonnées), reprises du formulaire d'adhésion ou saisies à la main, et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces. On ajoute un document (PDF ou photo) et on l'ouvre depuis la fiche du membre.",
@@ -1462,7 +1494,7 @@ async function verifierMdpInitial(){
 }
 async function logout(){await sb.auth.signOut();SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
-  document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);}
+  document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);railRender();}
 function enterApp(){
   document.getElementById("auth").classList.add("hidden");document.getElementById("app").classList.remove("hidden");
   document.getElementById("nav").classList.remove("hidden");
@@ -1495,7 +1527,56 @@ function render(){const v=document.getElementById("view");
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();}
+  animateRings(v);navBadges();railRender();}
+/* ============================================================
+   GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
+   Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
+   (même #sheet, docké par la CSS, sans voile). Fermer la fiche rend l'aperçu.
+   ============================================================ */
+function isRail(){return window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
+function railSync(){document.documentElement.classList.toggle("rail-on",isRail())}
+function railRang(t,rows,vide){return `<div class="sec-h"><span>${t}${rows.length?` <em>${rows.length}</em>`:""}</span></div><div class="rank">${rows.length?rows.join(""):`<div class="rail-vide">${vide}</div>`}</div>`}
+function railReunions(ids,n,filtre){
+  const l=DB.reunions.filter(r=>ids.has(r.clubId)&&!isPast(r.date)&&r.statut!=="annulee"&&(!filtre||filtre(r))).sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||"")).slice(0,n);
+  return l.map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openMeeting('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||r.type||"")}${r.heure?" · "+esc(r.heure):""} · ${esc(lieuNom(r.lieuId))}</small></div><span class="st ${r.statut}">${STATUTS[r.statut]||""}</span></div>`});
+}
+function railCarte(){
+  const svg=carteSvg({calme:true,hmax:300});if(!svg)return"";
+  return `<div class="sec-h"><span>Le réseau sur la carte</span></div><div class="mapc" onclick="const g=event.target.closest('.city');if(g)openCarte(g.dataset.v)">${svg}</div>
+    <div class="mapleg"><span><i style="background:${TON_COUL.ok}"></i>en forme</span><span><i style="background:${TON_COUL.todo}"></i>action à mener</span><span><i style="background:${TON_COUL.urgent}"></i>urgent</span></div>`;
+}
+function railATraiter(ids,n){
+  return DB.clubs.filter(c=>ids.has(c.id)).map(c=>({c,t:clubTone(c)})).filter(x=>x.t!=="ok").sort((a,b)=>(a.t==="urgent"?0:1)-(b.t==="urgent"?0:1)||a.c.nom.localeCompare(b.c.nom)).slice(0,n)
+    .map(x=>`<div class="rank-row link" onclick="openClub('${x.c.id}')"><span class="hdot ${x.t==="urgent"?"bad":"warn"}"></span><div class="rn">${esc(x.c.nom.replace(/^CAP\s+/,""))}<small>${esc(clubNextAction(x.c).label)}</small></div></div>`);
+}
+function railAdhesions(n){
+  if(!SESSION||SESSION.role==="visiteur")return"";
+  const l=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee").slice().sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||"")).slice(0,n);
+  return railRang("Dernières adhésions",l.map(a=>`<div class="rank-row link" onclick="adhDetail('${a.id}')"><div class="rn">${esc(adhNom(a))}<small>${esc(a.data.ent_nom||"")} · ${adhAge(a.created_at)}</small></div>${adhSuivi(a)}</div>`),"Aucune adhésion reçue pour l'instant.");
+}
+function railMembresIncomplets(ids,n){
+  const f=["formulaire","contrat","facture","paiement"];
+  return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
+}
+function railHTML(){
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
+  if(tab==="agenda"){
+    const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
+    return head("Cette semaine","Touche une réunion pour ouvrir sa fiche ici.")
+      +railRang("Dans les 7 jours",railReunions(ids,12,r=>r.date<=iso),"Aucune réunion dans les 7 jours.")
+      +(railReunions(ids,1,r=>r.date<=iso).length?"":railRang("Ensuite",railReunions(ids,5),"Aucune réunion à venir."))
+      +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · bilan à saisir</small></div></div>`}),""):"")
+      +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
+  }
+  if(tab==="clubs")return head("Clubs à suivre","Touche un club pour ouvrir sa fiche ici.")+railRang("À traiter",railATraiter(ids,8),"✓ Tous les clubs sont en forme.")+railCarte()+railRang("Dossiers incomplets",railMembresIncomplets(ids,8),"✓ Tous les membres sont à jour.");
+  if(tab==="lieux")return head("Lieux et réunions","Les réunions qui attendent un lieu, puis les prochaines.")+railRang("Lieu à trouver",railReunions(ids,10,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.")+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+railCarte();
+  if(tab==="team")return head("L'équipe en action","Prochaines réunions et clubs à reprendre.")+railRang("Prochaines réunions",railReunions(ids,8),"Aucune réunion à venir.")+railRang("Clubs sans animateur",DB.clubs.filter(c=>ids.has(c.id)&&!c.animId).map(c=>`<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot bad"></span><div class="rn">${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(c.ville)}</small></div></div>`),"✓ Chaque club a son animateur.");
+  return head("Le réseau d'un coup d'œil","Touche une ville, une réunion ou une adhésion : la fiche s'ouvre ici.")+railCarte()+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+railAdhesions(5);
+}
+function railRender(){railSync();const r=document.getElementById("rail");if(!r)return;if(!isRail()){r.innerHTML="";return}
+  try{r.innerHTML=railHTML();pillify(r)}catch(e){console.error(e);r.innerHTML=""}}
+window.addEventListener("resize",()=>{const on=isRail();if(on!==document.documentElement.classList.contains("rail-on"))railRender()});
 /* Mobile : lignes compactes à indicateurs, détail au toucher. Ordinateur (≥ 900 px) : cartes riches.
    On rerend quand on franchit le seuil (rotation, fenêtre redimensionnée). */
 function isWide(){return window.matchMedia("(min-width:900px)").matches}
@@ -3035,7 +3116,7 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));document.getElementById("sheet").classList.add("open")}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");if(isRail())w.querySelector(".sheet").scrollTop=0}
 function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
 
 

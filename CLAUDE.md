@@ -111,6 +111,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Visite guidée (`tutoLancer`, `TUTO_PARTIES`, `tutoEtapes(partie)`) : lancée une fois par compte (`profiles.tuto_vu_le`, RPC `cap_tuto_vu`, migration `20261029150000_profiles_tuto.sql`), après le changement du mot de passe initial ; rejouable dans Paramètres → Aide (`openAide`). Bancs `scratchpad/tools/tuto.mjs` 28/28, `nat.mjs`.
 - Nawar Mounchit intégrée le 29/10 comme membre n° 4 de Rabat Prévilège (données fictives d'essai, note « ESSAI ») : compte dans les statistiques tant qu'elle n'est pas retirée.
 
+**🖥 Panneau d'aperçu grand écran (v0.20.0, 29/10/2026)** — demande JB (« beaucoup de vide sur PC », capture de la carte ouverte à droite) :
+- Dès 1500 px de large et une fois connecté, `html.rail-on` (`railSync`) : la page s'arrête à `--rail` (`clamp(380px,26vw,520px)`) et `#rail` reste ouvert à droite. Contenu par onglet (`railHTML`) : Synthèse = carte + prochaines réunions + dernières adhésions ; Agenda = 7 jours / ensuite / bilans à faire ; Clubs = à traiter + carte + dossiers incomplets ; Lieux = réunions sans lieu ; Équipe = prochaines réunions + clubs sans animateur. Rendu à chaque `render()`.
+- Les fiches gardent le même `#sheet` : en grand écran la CSS le loge dans le panneau, sans voile (`.sheet-bg` masqué), la page reste cliquable. Le changement de mot de passe forcé garde la surimpression (classe `force` posée par `openSheet` quand `_mdpForce`). Sous 1500 px, rien ne change.
+- Banc `scratchpad/tools/rail.mjs` 23/23 (2000 px et 1440 px).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

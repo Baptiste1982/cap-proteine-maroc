@@ -995,6 +995,89 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .update-bar{left:12px;right:12px;margin:0 auto;width:max-content;max-width:min(420px,calc(100vw - 24px))}
 @media(min-width:900px){.update-bar{top:84px;bottom:auto;left:216px;right:0;animation:ubDown .35s cubic-bezier(.16,1,.3,1)}}
 @keyframes ubDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+/*v026*/
+/* ===== SYNTHÈSE « COCKPIT CLAIR » ===== */
+.ck{position:relative;--ck-r:24px}
+.ck-blob{position:absolute;width:520px;height:520px;right:-140px;top:-240px;border-radius:50%;background:radial-gradient(circle,rgba(200,162,76,.22),transparent 65%);pointer-events:none;z-index:0;animation:hBlob 14s ease-in-out infinite}
+.ck>*:not(.ck-blob){position:relative;z-index:1}
+.ck-head{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+.ck-hi{flex:1 1 320px;min-width:0}
+.ck .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--crimson)}
+.ck-hi h2{margin:4px 0 0;font:800 40px/1.05 "Bricolage Grotesque",sans-serif;letter-spacing:-.01em}
+.ck-sub{margin-top:6px;border:0;background:none;padding:0;color:var(--muted);font:500 15px Inter,sans-serif;cursor:pointer}
+.ck-sub:hover{color:var(--crimson)}
+.ck-seg{flex:0 0 340px;margin:0 0 4px}
+.ck-clock{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.ck-clock .h-time{color:var(--ink);text-shadow:none;font-size:60px}
+.ck-clock .h-col{color:var(--crimson)}
+.ck-date{margin-top:4px;font-size:14px;font-weight:600;color:var(--muted)}
+.ck-tools{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+.ck-tool{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.ck-tool:hover{border-color:rgba(176,18,46,.4);transform:translateY(-1px);box-shadow:var(--shadow)}
+.ck-tool.hl{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.ck-tool em{font-style:normal;background:var(--crimson);color:#fff;border-radius:99px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;font-size:11px}
+.ck-bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto;gap:16px;margin-bottom:16px}
+.ck-t{all:unset;box-sizing:border-box;cursor:pointer;border-radius:var(--ck-r);padding:22px;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 24px rgba(92,10,24,.06);min-width:0;font-family:Inter,sans-serif;color:var(--ink);
+  animation:ckRise .65s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*70ms);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}
+.ck-t:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(92,10,24,.12)}
+.ck-t:focus-visible{outline:2px solid var(--crimson);outline-offset:3px}
+.ck-t:active{transform:scale(.985)}
+@keyframes ckRise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+.ck-lab{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.ck-up{font-style:normal;font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-tint);padding:4px 10px;border-radius:99px}
+.ck-mb{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column}
+.ck-big{display:block;font:800 112px/1 "Bricolage Grotesque",sans-serif;margin-top:10px;background:linear-gradient(180deg,#C0163A,#5C0A18);-webkit-background-clip:text;background-clip:text;color:transparent}
+html.dark .ck-big{background:linear-gradient(180deg,#F3D88E,#E0566F);-webkit-background-clip:text;background-clip:text}
+.ck-spark{display:block;width:100%;height:140px;margin-top:auto}
+.ck-spark .l{stroke-dasharray:1400;animation:ckDraw 1.6s cubic-bezier(.4,0,.2,1) .35s backwards}
+@keyframes ckDraw{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+.ck-months{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+.ck-prio{grid-column:span 2;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;color:#fff;border:0;background:linear-gradient(120deg,#C0163A,#7A0D22)}
+.ck-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%);animation:sweep 4.5s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{0%,60%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+.ck-dot{width:14px;height:14px;flex:0 0 auto;border-radius:50%;background:#F3D88E;animation:ckPulse 1.8s infinite}
+@keyframes ckPulse{0%{box-shadow:0 0 0 0 rgba(243,216,142,.75)}70%{box-shadow:0 0 0 12px rgba(243,216,142,0)}100%{box-shadow:0 0 0 0 rgba(243,216,142,0)}}
+.ck-pt{flex:1;min-width:0;position:relative}
+.ck-pt b{display:block;font:800 21px/1.2 "Bricolage Grotesque",sans-serif}
+.ck-pt small{display:block;margin-top:4px;font-size:13.5px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-pb{position:relative;flex:0 0 auto;background:#fff;color:var(--crimson);font-weight:700;font-size:14px;padding:10px 16px;border-radius:99px}
+.ck-obj{display:flex;align-items:center;gap:14px}
+.ck-ring{width:96px;height:96px;flex:0 0 auto}
+.ck-ring .arc{animation:ckRing 1.4s cubic-bezier(.2,.8,.2,1) .5s backwards}
+@keyframes ckRing{from{stroke-dashoffset:302}}
+.ck-obj b{display:block;font:800 18px "Bricolage Grotesque",sans-serif}
+.ck-obj small,.ck-bil small{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.ck-num{display:block;font:800 58px/1 "Bricolage Grotesque",sans-serif;color:var(--warn);margin-top:10px}
+.ck-bil.ok{cursor:default}.ck-bil.ok .ck-num{color:var(--ok)}
+.ck-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.ck-k{all:unset;box-sizing:border-box;cursor:pointer;border-radius:18px;padding:15px 16px;background:var(--card);border:1px solid var(--line);min-width:0;font-family:Inter,sans-serif;animation:ckRise .55s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(.3s + var(--i,0)*45ms);transition:transform .2s,border-color .2s}
+button.ck-k:hover{transform:translateY(-3px);border-color:rgba(176,18,46,.35)}
+.ck-k b{display:block;font:800 30px/1.05 "Bricolage Grotesque",sans-serif;color:var(--crimson)}.ck-k b.ok{color:var(--ok)}
+.ck-k span{display:block;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.3}
+.ck-cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.ck-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ck-card{border-radius:var(--ck-r);padding:18px 18px 10px;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 24px rgba(92,10,24,.05);min-width:0}
+.ck-card>div:first-child[style*="font-size:12px"],.ck-h{font:800 17px "Bricolage Grotesque",sans-serif!important;color:var(--ink)!important;margin:0 4px 10px!important;text-transform:none!important;letter-spacing:0!important}
+.ck-card .rank{border:0;box-shadow:none;background:none;margin:0}
+.ck-card .rank-row{border-radius:14px;border-bottom:0;padding:11px 10px}
+.ck-card .rank-row.link:hover{background:var(--crimson-tint)}
+.ck-card .dash-todo.ok{margin:0}
+.ck-card .funnel{background:none;border:0;box-shadow:none;padding:0}
+.ck-card .act90{margin:0;border:0;background:none;box-shadow:none;padding:0 0 8px}
+@media(max-width:1199px){.ck-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.ck-cols{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:899px){
+  .ck-head{gap:12px}.ck-hi h2{font-size:27px}.ck-seg{flex:1 1 100%;order:3;margin:0}
+  .ck-clock{flex-direction:row;align-items:baseline;gap:10px}.ck-clock .h-time{font-size:38px}.ck-date{font-size:12.5px}
+  .ck-tools{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px;scrollbar-width:none}.ck-tools::-webkit-scrollbar{display:none}.ck-tool{flex:0 0 auto}
+  .ck-bento{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ck-mb,.ck-prio{grid-column:span 2}.ck-mb{grid-row:auto}
+  .ck-t{padding:16px;border-radius:20px}.ck-big{font-size:76px}.ck-spark{height:90px}
+  .ck-prio{gap:12px}.ck-pt b{font-size:17px}.ck-pb{padding:8px 12px;font-size:13px}
+  .ck-obj{flex-direction:column;align-items:flex-start;gap:8px}.ck-ring{width:74px;height:74px}
+  .ck-num{font-size:44px}
+  .ck-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+@media (prefers-reduced-motion:reduce){.ck-blob,.ck-t,.ck-k,.ck-spark .l,.ck-ring .arc,.ck-shine,.ck-dot{animation:none!important}.ck-shine{display:none}}
 </style>
 </head>
 <body>
@@ -1069,8 +1152,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.21.1";
+const APP_VERSION="0.22.0";
 const CHANGELOG=[
+  {v:"0.22.0",date:"29 octobre 2026",notes:{
+    "Nouveau":["La Synthèse passe en « Cockpit clair », la maquette choisie : grande horloge en en-tête, tuiles de tailles différentes (les membres et leur courbe, la priorité du moment en bordeaux, l'objectif le plus proche en anneau, les bilans à saisir), une rangée de chiffres, puis les listes en cartes blanches. Animations à l'arrivée (courbe qui se dessine, anneau qui se remplit, tuiles en cascade). Même page sur ordinateur et téléphone, en clair comme en sombre ; tout reste cliquable comme avant."]}},
   {v:"0.21.1",date:"29 octobre 2026",notes:{
     "Corrigé":["La fenêtre « Nouvelle version » est centrée : en haut de la page sous la barre sur ordinateur (elle ne recouvre plus les listes ni le panneau de droite), au-dessus de la barre du bas sur téléphone."]}},
   {v:"0.21.0",date:"29 octobre 2026",notes:{
@@ -1488,9 +1573,9 @@ function tutoEtapes(partie){
   const P={
     accueil:[
       {t:`Bienvenue ${prenom} 👋`,x:`Voici le CRM du réseau CAP Maroc : réunions, clubs, membres et adhésions au même endroit. La visite prend deux minutes${r==="visiteur"?" ; ton accès est en lecture seule":""}. Tu peux la revoir à tout moment dans Paramètres.`},
-      {go:"dash",c:"#nav",t:"La navigation",x:"Cinq espaces : Synthèse, Agenda, Clubs, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
+      {go:"dash",c:"#nav",t:"La navigation",x:"Six espaces : Synthèse, Agenda, Clubs, Membres, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
     synthese:[
-      {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte. L'interrupteur National / Régional change le périmètre."},
+      {go:"dash",c:"#view .ck-bento",t:"Les chiffres clés",x:"Les membres et leur courbe, la priorité du moment en bordeaux, l'objectif le plus proche, les bilans à saisir, puis une rangée de chiffres. Tout est cliquable : chaque chiffre ouvre la liste exacte qu'il compte. L'interrupteur National / Régional change le périmètre."},
       {go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action : club sans animateur, club sans réunion, adhésions à intégrer ou à saisir au national. Touche une ligne pour agir."}],
     agenda:[
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
@@ -2277,29 +2362,76 @@ function dashCountUp(root){
   });
 }
 function viewDashboard(){
-  const seeAll=true; // tout le monde voit le national + régional ; filtrage local par onglet
-  const scope=DB.clubs;
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
-  let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
-  /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
   const sc=window._dashSc==="reg"?"reg":"nat";
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
-  const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
-  if(large){
-    const sc=window._dashSc==="reg"?"reg":"nat";const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
-    html+=`<div class="dash-cols"><div><div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`
-      +dashBlock(dashStats(per),sc,true)+dashByAnim(per)+`</div><div>`+dashATraiter(sc)+dashFunnel(per,sc)+dashRelancer(per)+`</div></div>`;
-    return html+`<div style="height:8px"></div></div>`;
-  }
-  if(seeAll){
-    html+=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`+dashBlock(dashStats(per),sc);
-  }else{
-    html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(scope));
-  }
-  html+=dashFunnel(per,sc)+dashByAnim(per)+dashRelancer(per);
-  return html+`<div style="height:8px"></div></div>`;
+  return viewCockpit(sc,per);
+}
+/* ============================================================
+   SYNTHÈSE « COCKPIT CLAIR » (v0.22, maquette validée par JB) — un seul rendu pour toutes les tailles :
+   en-tête clair + grande horloge, tuiles (membres et leur courbe, priorité en bordeaux, anneau d'objectif,
+   bilans), rangée de chiffres, puis les sections existantes en cartes blanches. Tout reste cliquable comme avant.
+   ============================================================ */
+function ckCourbe(sc){
+  const ids=new Set(_dashScope[sc]||[]),mb=DB.membres.filter(m=>ids.has(m.clubId));
+  const now=new Date(),mois=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i+1,1);mois.push({fin:isoJour(d),lab:MOIS[(now.getMonth()-i+12)%12]})}
+  const pts=mois.map(x=>mb.filter(m=>!m.createdAt||m.createdAt.slice(0,10)<x.fin).length);
+  const W=560,H=150,max=Math.max(1,...pts),min=0,rg=Math.max(1,max-min);
+  const xy=pts.map((v,i)=>[Math.round(i*W/5),Math.round(H-10-(v-min)/rg*(H-46))]);
+  const d=xy.map((q,i)=>(i?"L":"M")+q[0]+" "+q[1]).join(" "),last=xy[5];
+  return `<svg class="ck-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Membres sur 6 mois : ${pts.join(", ")}"><defs><linearGradient id="ckg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--crimson)" stop-opacity=".2"/><stop offset="1" stop-color="var(--crimson)" stop-opacity="0"/></linearGradient></defs><path d="${d} L${W} ${H} L0 ${H} Z" fill="url(#ckg)"/><path class="l" d="${d}" fill="none" stroke="var(--crimson)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><circle cx="${last[0]-6}" cy="${last[1]}" r="7" fill="var(--gold)" stroke="var(--card)" stroke-width="3"/></svg>
+    <div class="ck-months">${mois.map(x=>`<span>${x.lab}</span>`).join("")}</div>`;
+}
+function ckPriorite(sc){
+  const dem=demListe();
+  if(dem.length){const a=dem[0];return{fn:dem.length>1?"openDemandes()":`adhDetail('${a.id}')`,t:`${dem.length} demande${dem.length>1?"s":""} d'adhésion à traiter`,s:[adhNom(a),a.data.ent_nom,adhGroupe(a)!=="Sans groupe"?adhGroupe(a).replace(/^CAP\s+/,""):"groupe à choisir"].filter(Boolean).join(" · "),b:"Traiter"}}
+  const ids=new Set(_dashScope[sc]||[]);
+  const r=DB.reunions.filter(x=>ids.has(x.clubId)&&!isPast(x.date)&&x.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||""))[0];
+  if(r){const d=dObj(r.date);return{fn:`openMeeting('${r.id}')`,t:`Prochaine réunion : ${d.getDate()} ${MOIS[d.getMonth()]}`,s:[(club(r.clubId).nom||"").replace(/^CAP\s+/,""),TYPES[r.type],r.heure,lieuNom(r.lieuId)].filter(Boolean).join(" · "),b:"Ouvrir"}}
+  return{fn:"filter='todo';go2('clubs')",t:"Aucune réunion planifiée",s:"Planifie la prochaine réunion d'un club",b:"Voir les clubs"};
+}
+function ckObjectif(sc,per){
+  const c=per.filter(c=>c.objectif).map(c=>({c,n:DB.membres.filter(m=>m.clubId===c.id).length})).filter(x=>x.n<x.c.objectif).sort((a,b)=>(b.n/b.c.objectif)-(a.n/a.c.objectif))[0];
+  if(c){const p=Math.round(c.n/c.c.objectif*100),k=c.c.objectif-c.n;return{fn:`openClub('${c.c.id}')`,p,t:c.c.nom.replace(/^CAP\s+/,""),s:`${c.n} membre${c.n>1?"s":""} sur ${c.c.objectif} · plus que ${k}`}}
+  const a=per.filter(c=>c.statut==="actif").length,p=per.length?Math.round(a/per.length*100):0;
+  return{fn:`dashDrill('clubs','${sc}')`,p,t:"Clubs actifs",s:`${a} sur ${per.length} clubs`};
+}
+function ckAnneau(p){const L=302,off=Math.round(L*(1-Math.min(100,p)/100));
+  return `<svg class="ck-ring" viewBox="0 0 110 110" aria-hidden="true"><defs><linearGradient id="ckr" x1="0" x2="1"><stop offset="0" stop-color="var(--crimson)"/><stop offset="1" stop-color="var(--gold)"/></linearGradient></defs><circle cx="55" cy="55" r="48" fill="none" stroke="var(--line)" stroke-width="10"/><circle class="arc" cx="55" cy="55" r="48" fill="none" stroke="url(#ckr)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${off}" transform="rotate(-90 55 55)" style="--off:${off}"/><text x="55" y="62" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="24" fill="var(--ink)">${p}%</text></svg>`}
+function viewCockpit(sc,per){
+  const s=dashStats(per),h=new Date().getHours(),sal=h<5||h>=18?"Bonsoir":"Bonjour",prenom=esc((SESSION.name||"").split(/[ @.]/)[0]);
+  const ids=new Set(_dashScope[sc]||[]);
+  const nAct=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
+  const x=horlogeTxt(),pr=ckPriorite(sc),ob=ckObjectif(sc,per),bil=reunionsSansBilan().filter(r=>ids.has(r.clubId));
+  const d90=jours90(),t90=DB.reunions.filter(r=>ids.has(r.clubId)&&tenue(r)&&r.date>=d90),inv=t90.reduce((a,r)=>a+(r.invitesVenus||0),0),adh=t90.reduce((a,r)=>a+(r.adhObt||0),0),cv=pct(adh,inv);
+  const seg=`<div class="seg-sc ck-seg" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
+  const outils=`${SESSION.role==="superadmin"?`<button class="ck-tool" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="ck-tool" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <em>${adhNouvelles()}</em>`:""}</button>`:""}<button class="ck-tool hl" onclick="openPresentation()">▶ Présenter</button><button class="ck-tool" onclick="openCarte()">🗺 Carte</button><button class="ck-tool" onclick="openZones()">🏆 Zones</button><button class="ck-tool" onclick="openLancements()">🚀 Lancements</button><button class="ck-tool" onclick="openRapport()">📄 Rapport du mois</button><button class="ck-tool" onclick="exportMembres()">⬇ Export</button>`;
+  const kpi=(n,l,kind,i)=>`<button class="ck-k" style="--i:${i}" onclick="dashDrill('${kind}','${sc}')"><b data-count="${n}">${n}</b><span>${l}</span></button>`;
+  const maxN=Math.max(1,...s.perClub.map(c=>c.n));
+  const groupes=s.perClub.map(c=>`<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot ${c.lvl}"></span><div class="rn">${esc(c.nom.replace("CAP ",""))}<small>${esc(c.ville)}</small></div><div class="bar"><i style="width:${Math.round(c.n/maxN*100)}%"></i></div><div class="rv">${c.n}</div></div>`).join("");
+  return `<div class="page dash ck"><span class="ck-blob" aria-hidden="true"></span>
+  <header class="ck-head">
+    <div class="ck-hi"><div class="eyebrow">Pilotage</div><h2>${sal} ${prenom} <span class="h-wave">👋</span></h2>
+      <button class="ck-sub" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">${nAct?`${nAct} action${nAct>1?"s":""} t'attend${nAct>1?"ent":""} →`:"Rien ne presse aujourd'hui ✓"}</button></div>
+    ${seg}
+    <div class="ck-clock"><span class="h-time" data-hor="t">${x.h}</span><span class="ck-date" data-hor="d">${x.d}</span></div>
+  </header>
+  <div class="ck-tools" role="toolbar" aria-label="Outils du réseau">${outils}</div>
+  <div class="ck-bento">
+    <button class="ck-t ck-mb" style="--i:0" onclick="dashDrill('membres','${sc}')">
+      <span class="ck-lab">Membres ${sc==="reg"?"de la région":"du réseau"}${s.membresMois?`<em class="ck-up">+${s.membresMois} ce mois</em>`:""}</span>
+      <b class="ck-big" data-count="${s.membres}">${s.membres}</b>${ckCourbe(sc)}</button>
+    <button class="ck-t ck-prio" style="--i:1" onclick="${pr.fn}"><span class="ck-shine" aria-hidden="true"></span><span class="ck-dot"></span><span class="ck-pt"><b>${esc(pr.t)}</b><small>${esc(pr.s)}</small></span><span class="ck-pb">${pr.b}</span></button>
+    <button class="ck-t ck-obj" style="--i:2" onclick="${ob.fn}">${ckAnneau(ob.p)}<span><b>${esc(ob.t)}</b><small>${esc(ob.s)}</small></span></button>
+    ${bil.length?`<button class="ck-t ck-bil" style="--i:3" onclick="openBilan()"><span class="ck-lab">Bilans en attente</span><b class="ck-num" data-count="${bil.length}">${bil.length}</b><small>La plus ancienne : ${dObj(bil[0].date).getDate()} ${MOIS_LONG[dObj(bil[0].date).getMonth()].toLowerCase()}</small></button>`
+      :`<div class="ck-t ck-bil ok" style="--i:3"><span class="ck-lab">Bilans de réunion</span><b class="ck-num">✓</b><small>Tous les bilans sont saisis</small></div>`}
+  </div>
+  <div class="ck-kpis">${kpi(s.clubs,`clubs · ${s.actifs} actifs`,"clubs",0)}${kpi(s.reunionsAvenir,"réunions à venir","reunions",1)}${kpi(s.payes,"membres à jour (payé)","payes",2)}${kpi(s.invites,"invités suivis","invites",3)}${kpi(s.sansAnim,"clubs sans animateur","sansAnim",4)}<div class="ck-k" style="--i:5"><b class="ok">${cv==null?"—":cv+"%"}</b><span>invités devenus membres (90 j)</span></div></div>
+  <div class="ck-cols">
+    <div class="ck-col"><div class="ck-card">${dashATraiter(sc)}</div><div class="ck-card">${dashRelancer(per)}</div></div>
+    <div class="ck-col"><div class="ck-card"><div class="ck-h">Membres par groupe</div><div class="rank">${groupes||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div></div>
+      ${dashFunnel(per,sc)?`<div class="ck-card">${dashFunnel(per,sc)}</div>`:""}${dashByAnim(per)?`<div class="ck-card">${dashByAnim(per)}</div>`:""}${dashActivite(sc)?`<div class="ck-card"><div class="ck-h">Activité des 90 derniers jours</div>${dashActivite(sc)}</div>`:""}</div>
+  </div><div style="height:8px"></div></div>`;
 }
 
 /* ============================================================

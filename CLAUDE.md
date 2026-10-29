@@ -128,6 +128,9 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Micro-animations (bloc CSS `/*v024*/`) : cascade d'entrée `.page>*`, `#sheet-content>*`, `.rail>*`, survols. JB trouve encore le CRM « trop classique, plat, y compris les dispositions » : piste suivante = maquette de directions à cliquer.
 - **À terme (demande JB)** : un chat entre membres, en messages directs seulement, sans groupes. Les membres n'ont pas encore de compte : à cadrer le jour où ils en auront un.
 
+**🏛 Synthèse « Cockpit clair » (v0.22.0, 29/10/2026)** — maquette https://claude.ai/artifact/NoUF3ysWp5KbHeQ8ERa766 (3 directions, JB a choisi A puis « pas sombre » → A clair) :
+- `viewDashboard` → `viewCockpit(sc,per)` : un seul rendu toutes tailles. En-tête (salut, bascule National/Régional, grande horloge `[data-hor]`), barre d'outils `.ck-tools`, tuiles `.ck-bento` (membres + `ckCourbe`, priorité `ckPriorite` = demande > prochaine réunion > clubs, anneau `ckObjectif`/`ckAnneau`, bilans), rangée `.ck-kpis` (chaque chiffre → `dashDrill`), puis cartes `.ck-card` qui reprennent `dashATraiter`, `dashRelancer`, membres par groupe, `dashFunnel`, `dashByAnim`, `dashActivite`. `dashBonjour`, `dashOutils`, `dashDemandes`, `dashBlock` ne sont plus appelés par la Synthèse. Banc `cockpit.mjs` 33/33.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

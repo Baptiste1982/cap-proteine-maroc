@@ -18,6 +18,33 @@ saisie » (CSV + JSON)            + correspondance des champs          chaque fi
         └──────────── « Marquer saisie » (fiche par fiche, ou tout le lot) ←────┘
 ```
 
+## Le parcours réel dans le CRM national (guide « Création de contrat Membre », reçu le 29/10/2026)
+
+Adresse : `https://animateur.ma.caproteine.com/connexion/extranet` (espace animateur, une
+session par club : « Protéine Rabat Privilège »…). Cinq temps, dans cet ordre :
+
+| # | Écran | Ce qu'on y fait | Qui |
+|---|---|---|---|
+| 1 | **Annuaire** (« Gestion des contacts ») | Vérifier que le contact existe (il arrive par les liens ou e-mails d'invitation, ou est ajouté à la main par l'animateur). **Sinon, le créer** : c'est obligatoire pour la suite. | robot |
+| 2 | **Membres et Prospects → Gestion Prospects**, onglet **« Sans contrat »** → « Ajouter un prospect membre » | Taper le nom de l'entreprise puis **cliquer la proposition** de l'annuaire (« 552 - PURPLE BIRDGE ») : le reste se remplit tout seul. Compléter civilité, nom, prénom, fonction, e-mail, téléphones → « Enregistrer ». | robot |
+| 3 | Ligne du prospect → icône clé → **« Envoyer le contrat membre pour signature »** | Assistant en 5 étapes : **1. Préparation** (choisir l'entreprise existante ou en créer une), **2. Entreprise**, **3. Personne membre** — ces trois étapes reprennent le formulaire d'adhésion et **tous les champs y sont obligatoires**. L'étape 3 affiche les **identifiants CRM et application du futur membre** : à relever pour les lui remettre à la fin. | robot (relève les identifiants dans le CRM CAP, fiche de l'adhésion) |
+| 4 | **4. Contrat** | L'animateur doit **lire le contrat** avant de pouvoir l'envoyer. | **JB** |
+| 5 | **5. Signature** | Envoi pour signature en ligne : le siège, le futur membre, l'animateur en copie. Le dossier passe dans l'onglet **« En attente de signature »**, puis, une fois signé, dans **Gestion Membres**. | **JB** clique |
+
+**Conséquences pour l'automatisation**
+- Le robot s'arrête **à l'étape 4** : la lecture du contrat et l'envoi en signature restent un geste de JB.
+- Les étapes 1 à 3 sont du remplissage pur : c'est là que le gain est réel (deux formulaires et un assistant, par adhésion).
+- **Écart à combler** : le CRM national exige *tous* les champs des étapes 2 et 3, alors que notre formulaire
+  d'adhésion n'en rend obligatoires que six (métier, entreprise, prénom, nom, e-mail, téléphone). Pendant la séance,
+  relever la liste exacte des champs des étapes 2 et 3, puis rendre les mêmes champs obligatoires dans `adhesion.html`
+  — sinon le robot bloquera sur un trou.
+- L'annuaire a des boutons Copier / CSV / Excel, et un second bouton à côté de « ajouter un contact » qui ressemble à
+  un **import** : à vérifier en séance. Un import en lot dans l'annuaire réglerait l'étape 1 d'un coup.
+- Doublons : l'annuaire contient déjà deux « PURPLE BIRDGE » (552 et 608). Le robot doit **choisir par identifiant**
+  ou s'arrêter et demander, jamais prendre la première ligne venue.
+- Suivi de bout en bout dans le CRM CAP : « saisie faite » quand le contrat part en signature, puis « intégrée »
+  quand le membre apparaît dans Gestion Membres.
+
 ## Deux façons de faire tourner le robot
 
 | | **A. Claude pilote votre navigateur** | **B. Script sur votre PC** (`outils/saisie-proteine/`) |

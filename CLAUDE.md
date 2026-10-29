@@ -86,6 +86,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **🖱 Synthèse cliquable + micro-animations (v0.7.0, 28/10/2026)** : chaque chiffre de la Synthèse (`dashTile` → `dashDrill(kind, périmètre)`, périmètre `nat`/`reg` mémorisé dans `_dashScope`) ouvre la liste qu'il compte, chaque ligne ouvre la fiche (club, membre, réunion, animateur). Lien d'adhésion propre à chaque club dans sa fiche. Animations : compteurs (`dashCountUp`), barres, cascade, survol, toucher — coupées sous `prefers-reduced-motion`.
 
+**🃏 Cartes Clubs (v0.8.0, 29/10/2026)** : `clubTile(c,i)` (classes `ck-*`, les cartes Équipe gardent `cc-*`) — liseré couleur de ville, statut en pastille, animateur sous le nom, anneau de santé animé (`animateRings`), 2 repères (membres/objectif, prochaine réunion), barre d'objectif, et UNE action cliquable = `clubNextAction` (même règle que la fiche club, exécutée par `clubCardAction`).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

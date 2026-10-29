@@ -562,8 +562,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.10.0";
+const APP_VERSION="0.10.1";
 const CHANGELOG=[
+  {v:"0.10.1",date:"29 octobre 2026",notes:{
+    "Modifié":[
+      "Un compte qui utilise encore le mot de passe de départ, commun à toute l'équipe, doit en choisir un nouveau dès sa connexion avant de continuer.",
+      "Mot de passe : 8 caractères minimum, et il doit être différent de celui de départ."
+    ]}},
   {v:"0.10.0",date:"29 octobre 2026",notes:{
     "Modifié":[
       "Fiches au même style que les listes : en-tête avec pastille, anneau de santé animé et trois repères chiffrés (membres, à jour, prochaine réunion…).",
@@ -848,7 +853,17 @@ async function bootIntoApp(){
   if(SESSION.role==="animateur"&&SESSION.animId)
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
+  verifierMdpInitial();
   return true;
+}
+/* Mot de passe initial « cap2026 » : tant qu'il est actif, une fenêtre impose d'en choisir un autre.
+   La base répond (cap_mdp_a_changer) ; si la fonction manque ou ne répond pas, on n'empêche personne de travailler. */
+let _mdpForce=false;
+async function verifierMdpInitial(){
+  if(!SESSION||SESSION.role==="visiteur")return;
+  let r;try{r=await sb.rpc("cap_mdp_a_changer")}catch(e){return}
+  if(!r||r.error||r.data!==true)return;
+  _mdpForce=true;openMyPassword(true);
 }
 async function logout(){await sb.auth.signOut();SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
@@ -2056,18 +2071,22 @@ function exportMembres(){
 }
 async function changePassword(){
   const p1=document.getElementById("cp-1").value,p2=document.getElementById("cp-2").value;
-  if(!p1||p1.length<6){toast("Mot de passe trop court (6 min.)");return}
+  if(!p1||p1.length<8){toast("8 caractères minimum");return}
+  if(p1.toLowerCase().includes("cap2026")){toast("Choisis un mot de passe différent de celui de départ");return}
   if(p1!==p2){toast("Les deux mots de passe diffèrent");return}
+  const b=document.getElementById("cp-go");if(b){b.disabled=true;b.textContent="Enregistrement…"}
   const {error}=await sb.auth.updateUser({password:p1});
+  if(b){b.disabled=false;b.textContent="Enregistrer"}
   if(error){toast("Erreur : "+error.message);return}
-  toast("Mot de passe modifié");closeSheet();
+  _mdpForce=false;toast("Mot de passe modifié");closeSheet();
 }
-function openMyPassword(){
+function openMyPassword(force){
   document.getElementById("sheet-content").innerHTML=`
-    <h3>Mon mot de passe</h3><div class="sheet-sub">Change ton mot de passe de connexion.</div>
-    <div class="field"><label>Nouveau mot de passe</label><input id="cp-1" type="password" placeholder="••••••••"></div>
-    <div class="field"><label>Confirmer</label><input id="cp-2" type="password" placeholder="••••••••"></div>
-    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="changePassword()">Enregistrer</button></div>`;
+    <h3>${force?"Choisis ton mot de passe":"Mon mot de passe"}</h3>
+    <div class="sheet-sub">${force?"Ton compte utilise encore le mot de passe de départ, commun à toute l'équipe. Choisis le tien pour continuer : 8 caractères minimum.":"Change ton mot de passe de connexion (8 caractères minimum)."}</div>
+    <div class="field"><label>Nouveau mot de passe</label><input id="cp-1" type="password" autocomplete="new-password" placeholder="••••••••"></div>
+    <div class="field"><label>Confirmer</label><input id="cp-2" type="password" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')changePassword()"></div>
+    <div class="sheet-actions">${force?`<button class="btn ghost" onclick="_mdpForce=false;logout();closeSheet()">Se déconnecter</button>`:`<button class="btn ghost" onclick="closeSheet()">Annuler</button>`}<button class="btn" id="cp-go" onclick="changePassword()">Enregistrer</button></div>`;
   openSheet();
 }
 
@@ -2197,7 +2216,7 @@ function showUpdateBar(v){
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
 function openSheet(){document.getElementById("sheet").classList.add("open")}
-function closeSheet(){document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
+function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
 
 /* ============================================================
    INIT

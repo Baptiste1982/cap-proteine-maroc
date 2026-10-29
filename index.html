@@ -226,6 +226,83 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .ck-act.ok{background:var(--ok-tint);color:var(--ok);cursor:default}
 @media (hover:hover){.ck-act.todo:hover,.ck-act.urgent:hover{filter:brightness(.97)}}
 @media (prefers-reduced-motion:reduce){.ck,.ck-prog i{animation:none!important}.ck-ring .fg{transition:none}}
+/* ── v0.9 : lignes compactes (mobile) — une ligne par club / réunion / lieu / animateur, détail au toucher ── */
+.rl{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.rl-row{animation:rise .4s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(min(var(--i,0),14)*30ms)}
+.rl-row+.rl-row{border-top:1px solid var(--line)}
+.rl-row.past{opacity:.6}.rl-row.annulee .rl-t b{text-decoration:line-through;color:var(--muted)}
+.rl-h{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;text-align:left;transition:background .15s}
+.rl-h:active{background:var(--crimson-tint)}
+@media (hover:hover){.rl-h:hover{background:#FCF7F6}}
+.rl-emb{width:36px;height:36px;border-radius:11px;flex:0 0 auto;display:grid;place-items:center;font:800 12.5px "Bricolage Grotesque",sans-serif;color:#fff;background:var(--vc);box-shadow:0 4px 10px -5px var(--vc)}
+.rl-emb.round{border-radius:50%}
+.rl-t{flex:1;min-width:0}
+.rl-t b{display:block;font:700 14.5px/1.2 "Bricolage Grotesque",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-t small{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden}
+.rl-no{color:var(--crimson);font-weight:600}
+.rl-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}.rl-dot.ok{background:var(--ok)}.rl-dot.warn{background:var(--warn)}
+.rl-ind{flex:0 0 auto;display:flex;align-items:center;gap:9px}
+.rl-chev{flex:0 0 auto;color:#D9CDCB;font-size:19px;line-height:1;transition:transform .3s cubic-bezier(.2,.8,.2,1),color .2s}
+.rl-row.open .rl-chev{transform:rotate(90deg);color:var(--crimson)}
+.mg{width:40px;display:block}
+.mg .v{display:block;font:700 11.5px "Bricolage Grotesque",sans-serif;text-align:right}
+.mg .v small{color:var(--muted);font:600 9.5px Inter,sans-serif}
+.mg .b{display:block;height:4px;border-radius:4px;background:var(--paper);overflow:hidden;margin-top:3px}
+.mg .b i{display:block;height:100%;background:var(--vc);border-radius:4px;transform-origin:left;animation:grow .8s cubic-bezier(.2,.8,.2,1) .15s backwards}
+.rs{width:28px;height:28px;position:relative;flex:0 0 auto}
+.rs svg{width:28px;height:28px;transform:rotate(-90deg)}
+.rs circle{fill:none;stroke-width:3.5}.rs .tr{stroke:var(--paper)}
+.rs .fg{stroke-linecap:round;stroke-dasharray:69.1;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.rs.ok .fg{stroke:var(--ok)}.rs.warn .fg{stroke:var(--warn)}.rs.bad .fg{stroke:var(--crimson)}
+.rs b{position:absolute;inset:0;display:grid;place-items:center;font:800 8.5px "Bricolage Grotesque",sans-serif}
+.rl-flag{flex:0 0 auto;width:8px;height:8px;border-radius:50%}
+.rl-flag.urgent{background:var(--crimson);animation:pulse 2s infinite}
+.rl-flag.todo{background:var(--warn)}
+.rl-flag.ok{background:transparent}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(176,18,46,.45)}70%{box-shadow:0 0 0 7px rgba(176,18,46,0)}100%{box-shadow:0 0 0 0 rgba(176,18,46,0)}}
+.rl-x{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s cubic-bezier(.2,.8,.2,1)}
+.rl-row.open .rl-x{grid-template-rows:1fr}
+.rl-x>div{overflow:hidden}
+.rl-in{padding:0 12px 12px 59px;display:grid;gap:8px;opacity:0;transform:translateY(-4px);transition:opacity .25s .05s,transform .25s .05s}
+.rl-row.open .rl-in{opacity:1;transform:none}
+.rl-in .ck-act{margin-top:0}
+.rl-facts{display:flex;flex-wrap:wrap;gap:6px}
+.rl-fact{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:8px;background:var(--paper);color:var(--ink);white-space:nowrap}
+.rl-fact.g{background:var(--ok-tint);color:var(--ok)}.rl-fact.y{background:#F6EED9;color:#8A6A1E}
+.rl-fact.link{cursor:pointer}.rl-fact.link:active{background:var(--crimson-tint)}
+.rl-links{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;font-weight:600}
+.rl-links button,.rl-links a{color:var(--crimson);text-decoration:none;padding:2px 0}
+.rl-date{width:40px;flex:0 0 auto;text-align:center;border-radius:11px;background:var(--paper);padding:5px 0;border-top:3px solid var(--vc)}
+.rl-date b{display:block;font:800 17px/1 "Bricolage Grotesque",sans-serif}
+.rl-date small{font-size:9.5px;font-weight:700;color:var(--crimson);text-transform:uppercase}
+.rl-type{font-size:10px;font-weight:700;padding:1px 6px;border-radius:6px;background:var(--crimson-tint);color:var(--crimson)}
+.rl-type.rl{background:#F6EED9;color:#8A6A1E}
+.rl-guests{font-size:11px;font-weight:600;color:var(--muted)}
+.rl-ind .st{font-size:10.5px;padding:3px 8px}
+.rl-thumb{width:42px;height:42px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--vc),color-mix(in srgb,var(--vc) 45%,#fff));background-size:cover;background-position:center}
+.rl-gps{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--paper);color:var(--muted)}
+.rl-gps.ok{background:var(--ok-tint);color:var(--ok)}
+.chip em{font-style:normal;font-size:11px;margin-left:6px;padding:0 6px;border-radius:99px;background:var(--paper);color:var(--muted)}
+.chip.on em{background:rgba(255,255,255,.2);color:inherit}
+.nav button{position:relative}
+.nav-badge{position:absolute;top:2px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--crimson);color:#fff;font:700 9.5px/16px Inter,sans-serif;text-align:center;animation:pop .4s cubic-bezier(.2,.8,.2,1)}
+@media(min-width:900px){.nav-badge{position:static;margin-left:auto}}
+.seg-sc{position:relative;display:grid;grid-template-columns:1fr 1fr;background:#EFE4E2;border-radius:99px;padding:4px;margin:4px 0 14px}
+.seg-sc .knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:99px;background:#fff;box-shadow:0 2px 8px -2px rgba(60,10,20,.25);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.seg-sc button{position:relative;z-index:1;padding:8px 6px;border-radius:99px;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .25s}
+.seg-sc button.on{color:var(--ink)}
+.dash-todo{margin-bottom:14px}.dash-todo.ok{font-size:13px;font-weight:600;color:var(--ok);background:var(--ok-tint);border-radius:12px;padding:10px 12px}
+.dt-ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:14px;flex:0 0 auto;background:var(--warn-tint)}
+.dt-ic.urgent{background:var(--crimson-tint)}
+.funnel{display:flex;align-items:flex-end;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 10px 10px}
+.fn-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;border-radius:10px;padding:2px 0}
+.fn-col:active{background:var(--crimson-tint)}
+.fn-col b{font:800 13px "Bricolage Grotesque",sans-serif}
+.fn-col i{display:block;width:100%;max-width:46px;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--crimson),var(--crimson-deep));transform-origin:bottom;animation:growy .7s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*70ms + .1s)}
+.fn-col small{font-size:9.5px;font-weight:600;color:var(--muted);text-align:center;line-height:1.15;min-height:22px}
+@keyframes growy{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media(max-width:899px){.dash .stats{gap:8px;margin-bottom:10px}.dash .stat{padding:10px 10px 9px}.dash .stat .n{font-size:22px}.dash .stat .l{font-size:11px;line-height:1.25}}
+@media (prefers-reduced-motion:reduce){.rl-row,.mg .b i,.fn-col i,.nav-badge{animation:none!important}.rl-flag.urgent{animation:none}.rs .fg,.rl-x,.rl-in,.rl-chev,.seg-sc .knob{transition:none}}
 
 /* lieu card */
 .lieu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;transition:transform .1s,box-shadow .15s}
@@ -441,8 +518,16 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.8.0";
+const APP_VERSION="0.9.0";
 const CHANGELOG=[
+  {v:"0.9.0",date:"29 octobre 2026",notes:{
+    "Modifié":[
+      "Sur téléphone, Clubs, Agenda, Lieux et Équipe passent en lignes compactes : une ligne par élément, avec une petite jauge de membres, un anneau de santé et un point d'alerte. Un toucher ouvre le détail sur place.",
+      "Sur ordinateur, les cartes riches restent.",
+      "Synthèse : un interrupteur National / Rabat·Salé·Kénitra remplace les deux blocs empilés, un encart « À traiter » liste ce qui attend une action, et l'entonnoir des invités devient un graphique en colonnes cliquables.",
+      "Filtres en pastilles avec leur compte (À traiter, Actifs, En création, villes) au lieu des menus déroulants.",
+      "Pastille rouge sur l'onglet Clubs : le nombre de clubs sans animateur ou sans réunion à venir."
+    ]}},
   {v:"0.8.0",date:"29 octobre 2026",notes:{
     "Modifié":[
       "Nouvelles cartes Clubs : en-tête lisible avec statut, anneau de santé animé, trois repères alignés (membres et objectif, prochaine réunion, animateur) et une seule action suivante cliquable (nommer un animateur, planifier une réunion, relancer…) à la place des étiquettes d'alerte."
@@ -746,7 +831,12 @@ function go(t){tab=t;filter="all";
 function render(){const v=document.getElementById("view");
   v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();
   if(tab==="dash")dashCountUp(v);
-  if(tab==="clubs")animateRings(v);}
+  animateRings(v);navBadges();}
+/* Mobile : lignes compactes à indicateurs, détail au toucher. Ordinateur (≥ 900 px) : cartes riches.
+   On rerend quand on franchit le seuil (rotation, fenêtre redimensionnée). */
+function isWide(){return window.matchMedia("(min-width:900px)").matches}
+let _wasWide=null;
+window.addEventListener("resize",()=>{const w=isWide();if(_wasWide!==null&&w!==_wasWide&&document.getElementById("view").innerHTML)render();_wasWide=w});
 function fabAction(){
   if(readOnly()||tab==="dash")return;
   if(tab==="agenda")openMeeting();
@@ -774,16 +864,17 @@ function viewAgenda(){
   else if(filter==="tbd")list=all.filter(m=>!m.lieuId&&!isPast(m.date));
   else if(["SI","RL"].includes(filter))list=all.filter(m=>m.type===filter);
   else if(filter.startsWith("v:"))list=all.filter(m=>club(m.clubId).ville===filter.slice(2));
+  const wide=isWide();
   const q=(window._q||"").toLowerCase();
   if(q)list=list.filter(m=>(club(m.clubId).nom+" "+lieuNom(m.lieuId)+" "+animNom(m.animId)).toLowerCase().includes(q));
 
   const villesAg=[...new Set(all.map(m=>club(m.clubId).ville))].sort();
-  const villeSelect=`<select class="filter-select" onchange="filter=this.value?('v:'+this.value):'all';render()"><option value="">Toutes les villes</option>${villesAg.map(vl=>`<option value="${esc(vl)}" ${filter==="v:"+vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
+  const villeChips=villesAg.map(vl=>chip(vl,"v:"+vl)).join("");
 
   let cards="";
   if(!list.length)cards=emptyState("Aucune réunion","Ajuste les filtres ou planifie une nouvelle date avec le bouton +.");
   else{let cm="";list.forEach(m=>{const dt=dObj(m.date),mk=dt.getFullYear()+"-"+dt.getMonth();
-    if(mk!==cm){cm=mk;cards+=`<div class="month-label">${MOIS_LONG[dt.getMonth()]} ${dt.getFullYear()}</div>`}cards+=meetingCard(m);});}
+    if(mk!==cm){if(cm&&!wide)cards+=`</div>`;cm=mk;cards+=`<div class="month-label">${MOIS_LONG[dt.getMonth()]} ${dt.getFullYear()}</div>`+(wide?"":`<div class="rl">`)}cards+=wide?meetingCard(m):meetingRow(m);});if(!wide)cards+=`</div>`;}
 
   return `<div class="page">
     <div class="page-head"><div><div class="eyebrow">Tout le réseau</div><h2>Agenda</h2></div>
@@ -795,12 +886,19 @@ function viewAgenda(){
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
-    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Réunions de lancement","RL")}</div>
-    ${villeSelect}
+    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Lancements","RL")}${villeChips}</div>
     ${cards}<div style="height:8px"></div></div>`;
 }
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
 
+function meetingRow(m){
+  const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),tbd=!m.lieuId,ng=(m.guests||[]).length;
+  return `<div class="rl-row ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" style="--vc:${villeColor(c.ville)}">
+    <button class="rl-h" onclick="openMeeting('${m.id}')"><span class="rl-date"><b>${dt.getDate()}</b><small>${JOURS[dt.getDay()]}</small></span>
+      <span class="rl-t"><b>${esc((c.nom||"—").replace(/^CAP\s+/,""))}</b><small><span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span>${m.heure?esc(m.heure)+" · ":""}${tbd&&!past?`<span class="rl-no">lieu à définir</span>`:esc(lieuNom(m.lieuId))}</small></span>
+      <span class="rl-ind">${ng?`<span class="rl-guests" title="${ng} invité${ng>1?"s":""}">👥 ${ng}</span>`:""}<span class="st ${m.statut}">${STATUTS[m.statut]}</span></span>
+      <span class="rl-chev">›</span></button></div>`;
+}
 function meetingCard(m){
   const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),tbd=!m.lieuId,ng=(m.guests||[]).length;
   return `<div class="mtg ${m.type==="RL"?"rl":""} ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" onclick="openMeeting('${m.id}')">
@@ -887,48 +985,89 @@ function clubTile(c,i){
 /* L'action proposée sur la carte = clubNextAction (même règle que la fiche du club). */
 function clubCardAction(id){const na=clubNextAction(club(id));if(na.act)(new Function(na.act))();}
 /* Anneaux de santé : partent de 0 et se remplissent jusqu'à leur valeur. */
-function animateRings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.querySelectorAll(".ck-ring .fg[data-off]").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));}
-function clubVilleChip(l,v){return `<button class="chip ${(window._clubVille||"")===v?"on":""}" onclick="window._clubVille='${v}';render()">${esc(l)}</button>`}
+function animateRings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.querySelectorAll(".fg[data-off]").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));}
+/* ── Briques des lignes compactes ── */
+function ringSm(h){return `<span class="rs ${h.level}" title="Santé : ${h.pct} %"><svg viewBox="0 0 28 28"><circle class="tr" cx="14" cy="14" r="11"/><circle class="fg" cx="14" cy="14" r="11" style="stroke-dashoffset:69.1" data-off="${(69.1*(1-h.pct/100)).toFixed(1)}"/></svg><b>${h.pct}</b></span>`}
+function miniG(n,obj){const p=obj?Math.min(100,Math.round(n/obj*100)):0;return `<span class="mg" title="${n}${obj?" sur "+obj:""} membre${n>1?"s":""}"><span class="v">${n}${obj?`<small>/${obj}</small>`:""}</span><span class="b"><i style="width:${p}%"></i></span></span>`}
+function rowToggle(btn){const r=btn.closest(".rl-row"),o=!r.classList.contains("open");
+  r.parentElement.querySelectorAll(".rl-row.open").forEach(x=>{x.classList.remove("open");x.querySelector(".rl-h").setAttribute("aria-expanded","false")});
+  if(o){r.classList.add("open");btn.setAttribute("aria-expanded","true")}}
+function clubTone(c){if(!c.animId||!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"urgent";return clubNextAction(c).act?"todo":"ok"}
+function clubIco(c,ton){return !c.animId?"👤":ton==="urgent"?"📅":ton==="todo"?"🔔":"✓"}
+function membreAJour(m){return m.formulaire&&m.contrat&&m.facture&&m.paiement}
+function clubRow(c,i){
+  const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date));
+  const a=anim(c.animId),membres=DB.membres.filter(m=>m.clubId===c.id),nbM=membres.length,okM=membres.filter(membreAJour).length;
+  const h=clubHealth(c),na=clubNextAction(c),ton=clubTone(c),nom=c.nom.replace(/^CAP\s+/,"");
+  const pro=up[0]?(()=>{const d=dObj(up[0].date);return `${d.getDate()} ${MOIS[d.getMonth()]}`})():"";
+  return `<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${i||0}">
+    <button class="rl-h" onclick="rowToggle(this)" aria-expanded="false">
+      <span class="rl-emb">${esc(initiales(nom))}</span>
+      <span class="rl-t"><b>${esc(nom)}</b><small><span class="rl-dot ${c.statut==="actif"?"ok":"warn"}"></span>${esc(c.ville)} · ${a?esc(a.nom.split(" ")[0]):`<span class="rl-no">sans animateur</span>`}</small></span>
+      <span class="rl-ind">${miniG(nbM,c.objectif)}${ringSm(h)}<span class="rl-flag ${ton}" title="${esc(na.label)}"></span></span>
+      <span class="rl-chev">›</span></button>
+    <div class="rl-x"><div><div class="rl-in">
+      <div class="rl-facts"><span class="rl-fact ${c.statut==="actif"?"g":"y"}">${c.statut==="actif"?"Actif":"En création"}</span><span class="rl-fact">${okM}/${nbM} à jour</span><span class="rl-fact">${up.length?"Prochaine : "+esc(pro)+(up.length>1?` · ${up.length} prévues`:""):"Aucune réunion"}</span>${a?`<span class="rl-fact">${esc(a.nom)}</span>`:""}</div>
+      <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
+      <div class="rl-links"><button onclick="openClub('${c.id}')">Ouvrir la fiche</button>${SESSION.role!=="visiteur"?`<button onclick="adhCopyClub('${c.id}')">Lien d'adhésion</button><button onclick="adhWhatsAppClub('${c.id}')">WhatsApp</button>`:""}</div>
+    </div></div></div></div>`;
+}
+/* Pastille sur l'onglet Clubs : clubs sans animateur ou sans réunion à venir. */
+function navBadges(){const b=document.querySelector('.nav button[data-tab="clubs"]');if(!b)return;
+  const n=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&clubTone(c)==="urgent").length;
+  let e=b.querySelector(".nav-badge");if(!n){if(e)e.remove();return}
+  if(!e){e=document.createElement("span");e.className="nav-badge";b.appendChild(e)}e.textContent=n;e.title=n+" club"+(n>1?"s":"")+" sans animateur ou sans réunion";}
+function fchip(l,v,n){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}${n!==undefined?`<em>${n}</em>`:""}</button>`}
 function viewClubs(){
   const ids=scopedClubIds();
-  let clubs=DB.clubs.filter(c=>ids.includes(c.id));
-  const q=(window._q2||"").toLowerCase();if(q)clubs=clubs.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
-  const villesDispo=[...new Set(clubs.map(c=>c.ville))].sort();
-  if(window._clubVille&&!villesDispo.includes(window._clubVille))window._clubVille="";
-  const villeChips=`<select class="filter-select" onchange="window._clubVille=this.value;render()"><option value="">Toutes les villes</option>${villesDispo.map(vl=>`<option value="${esc(vl)}" ${window._clubVille===vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
-  if(window._clubVille)clubs=clubs.filter(c=>c.ville===window._clubVille);
-  const sansAnim=clubs.filter(c=>!c.animId).length;
-  // regroupement par zone
+  let all=DB.clubs.filter(c=>ids.includes(c.id));
+  const q=(window._q2||"").toLowerCase();if(q)all=all.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
+  const villes=[...new Set(all.map(c=>c.ville))].sort();
+  const F={all:()=>true,todo:c=>clubTone(c)!=="ok",actif:c=>c.statut==="actif",creation:c=>c.statut!=="actif"};
+  if(!F[filter]&&!(filter.startsWith("v:")&&villes.includes(filter.slice(2))))filter="all";
+  const clubs=all.filter(F[filter]||(c=>c.ville===filter.slice(2)));
+  const sansAnim=all.filter(c=>!c.animId).length;
+  const wide=isWide();
   const groups={};
   clubs.forEach(c=>{const zn=zoneNomForVille(c.ville);(groups[zn]=groups[zn]||[]).push(c)});
   const zoneOrder=DB.zones.map(z=>z.nom).concat("Autres régions");
+  let k=0;
   const sections=Object.keys(groups)
     .sort((a,b)=>{const ia=zoneOrder.indexOf(a),ib=zoneOrder.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b)})
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
       return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
-        <div class="grid two">${list.map((c,k)=>clubTile(c,k)).join("")}</div>`;
+        ${wide?`<div class="grid two">${list.map(c=>clubTile(c,k++)).join("")}</div>`:`<div class="rl">${list.map(c=>clubRow(c,k++)).join("")}</div>`}`;
     }).join("");
-  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} clubs${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} club${clubs.length>1?"s":""}${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un club…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
-    ${villeChips}
-    ${sections||emptyState("Aucun club","")}<div style="height:8px"></div></div>`;
+    <div class="filters">${fchip("Tous","all",all.length)}${fchip("À traiter","todo",all.filter(F.todo).length)}${fchip("Actifs","actif",all.filter(F.actif).length)}${fchip("En création","creation",all.filter(F.creation).length)}${villes.map(v=>fchip(v,"v:"+v,all.filter(c=>c.ville===v).length)).join("")}</div>
+    ${sections||emptyState("Aucun club","Ajuste la recherche ou les filtres.")}<div style="height:8px"></div></div>`;
 }
 
 /* ============================================================
    LIEUX
    ============================================================ */
-function lieuVilleChip(l,v){return `<button class="chip ${(window._lieuVille||"")===v?"on":""}" onclick="window._lieuVille='${v}';render()">${esc(l)}</button>`}
+function lieuVilleChip(l,v,n){return `<button class="chip ${(window._lieuVille||"")===v?"on":""}" onclick="window._lieuVille='${v}';render()">${esc(l)}${n!==undefined?`<em>${n}</em>`:""}</button>`}
 function viewLieux(){
   let lieux=[...DB.lieux];
   lieux.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
   const q=(window._q3||"").toLowerCase();if(q)lieux=lieux.filter(l=>(l.nom+" "+l.ville+" "+l.adresse).toLowerCase().includes(q));
   const villesDispo=[...new Set(lieux.map(l=>l.ville).filter(Boolean))].sort();
   if(window._lieuVille&&!villesDispo.includes(window._lieuVille))window._lieuVille="";
-  const villeChips=`<select class="filter-select" onchange="window._lieuVille=this.value;render()"><option value="">Toutes les villes</option>${villesDispo.map(vl=>`<option value="${esc(vl)}" ${window._lieuVille===vl?"selected":""}>${esc(vl)}</option>`).join("")}</select>`;
+  const nbV=v=>lieux.filter(l=>l.ville===v).length,total=lieux.length;
+  const villeChips=`<div class="filters">${lieuVilleChip("Tous","",total)}${villesDispo.map(vl=>lieuVilleChip(vl,vl,nbV(vl))).join("")}</div>`;
   if(window._lieuVille)lieux=lieux.filter(l=>l.ville===window._lieuVille);
-  const cards=lieux.map(l=>{
+  const wide=isWide();
+  const rows=wide?"":lieux.map((l,i)=>{
+    const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
+    return `<div class="rl-row" style="--vc:${villeColor(l.ville)};--i:${i}"><button class="rl-h" onclick="openLieu('${l.id}')">
+      <span class="rl-thumb" style="${l.photo?`background-image:url('${l.photo}')`:""}">${l.photo?"":`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`}</span>
+      <span class="rl-t"><b>${esc(l.nom)}</b><small>${esc(l.ville)}${l.capacite?` · ${l.capacite} places`:""} · ${nbR?`${nbR} réunion${nbR>1?"s":""} à venir`:"aucune réunion"}</small></span>
+      <span class="rl-ind"><span class="rl-gps ${l.lat?"ok":""}" title="${l.lat?"Géolocalisé":"Géolocalisation manquante"}">${l.lat?"📍 GPS":"Sans GPS"}</span></span>
+      <span class="rl-chev">›</span></button></div>`;}).join("");
+  const cards=!wide?"":lieux.map(l=>{
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     const hasMap=!l.photo&&l.lat&&l.lng;
     return `<div class="lieu-card" style="border-left:4px solid ${villeColor(l.ville)}" onclick="openLieu('${l.id}')">
@@ -946,7 +1085,7 @@ function viewLieux(){
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un lieu…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
     ${villeChips}
-    ${cards||emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
+    ${lieux.length?(wide?`<div class="grid two">${cards}</div>`:`<div class="rl">${rows}</div>`):emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
 }
 
 /* ============================================================
@@ -969,8 +1108,25 @@ function animTile(a){
     </div>
     <div class="cc-badges">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}</div></div>`;
 }
+function animRow(a,i){
+  const clubs=DB.clubs.filter(c=>c.animId===a.id);
+  const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+  const nbM=DB.membres.filter(m=>clubs.some(c=>c.id===m.clubId)).length,obj=clubs.reduce((s,c)=>s+(c.objectif||0),0);
+  const hp=clubs.length?Math.round(clubs.reduce((s,c)=>s+clubHealth(c).pct,0)/clubs.length):0;
+  const h={pct:hp,level:hp>=70?"ok":hp>=40?"warn":"bad"};
+  const tel=(a.tel||"").replace(/[^\d+]/g,"");
+  return `<div class="rl-row" style="--vc:${villeColor(a.ville)};--i:${i}">
+    <button class="rl-h" onclick="rowToggle(this)" aria-expanded="false"><span class="rl-emb round">${esc(initiales(a.nom))}</span>
+      <span class="rl-t"><b>${esc(a.nom)}</b><small>${esc(a.ville||"")} · ${clubs.length} club${clubs.length>1?"s":""} · ${nbUp?nbUp+" à venir":"aucune réunion"}</small></span>
+      <span class="rl-ind">${clubs.length?miniG(nbM,obj)+ringSm(h):`<span class="rl-fact y">Aucun club</span>`}</span>
+      <span class="rl-chev">›</span></button>
+    <div class="rl-x"><div><div class="rl-in">
+      <div class="rl-facts">${clubs.map(c=>`<button class="rl-fact link" onclick="openClub('${c.id}')">${esc(c.nom.replace(/^CAP\s+/,""))} · ${DB.membres.filter(m=>m.clubId===c.id).length}</button>`).join("")||`<span class="rl-fact">Aucun club attribué</span>`}</div>
+      <div class="rl-links"><button onclick="openAnim('${a.id}')">Ouvrir la fiche</button>${tel?`<a href="tel:${tel}">Appeler</a><a href="https://wa.me/${tel.replace(/^\+/,"").replace(/^0/,"212")}" target="_blank" rel="noopener">WhatsApp</a>`:""}</div>
+    </div></div></div></div>`;
+}
 function viewTeam(){
-  let anims=[...DB.animateurs];
+  let anims=[...DB.animateurs];const wide=isWide();let k=0;
   const groups={};
   anims.forEach(a=>{const zn=zoneNomForVille(a.ville);(groups[zn]=groups[zn]||[]).push(a)});
   const zoneOrder=DB.zones.map(z=>z.nom).concat("Autres régions");
@@ -979,10 +1135,13 @@ function viewTeam(){
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
       return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
-        <div class="grid">${list.map(animTile).join("")}</div>`;
+        ${wide?`<div class="grid two">${list.map(animTile).join("")}</div>`:`<div class="rl">${list.map(a=>animRow(a,k++)).join("")}</div>`}`;
     }).join("");
+  const libres=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&!c.animId);
+  const pourvoir=libres.length?`<div class="month-label">À pourvoir <span style="color:var(--crimson);font-weight:700">${libres.length}</span></div>
+    <div class="${wide?"grid two":"rl"}">${libres.map(c=>`<div class="rl-row" style="--vc:${villeColor(c.ville)}"><button class="rl-h" onclick="openClub('${c.id}')"><span class="rl-emb">${esc(initiales(c.nom.replace(/^CAP\s+/,"")))}</span><span class="rl-t"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)} · <span class="rl-no">animateur à nommer</span></small></span><span class="rl-ind"><span class="rl-flag urgent"></span></span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:"";
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Équipe</div><h2>Animateurs</h2><p>${anims.length} animateur${anims.length>1?"s":""}</p></div></div>
-    ${sections||emptyState("Aucun animateur","")}<div style="height:8px"></div></div>`;
+    ${sections||emptyState("Aucun animateur","")}${pourvoir}<div style="height:8px"></div></div>`;
 }
 
 function emptyState(t,p){return `<div class="empty"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>${t}</b><p>${p}</p></div>`}
@@ -1030,16 +1189,30 @@ function dashBlock(s,sc){
       ${dashTile(s.invites,"Invités suivis","invites",sc,4)}
       ${dashTile(s.sansAnim,"Clubs sans animateur","sansAnim",sc,5)}
     </div>
+    ${dashATraiter(sc)}
     <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
     <div class="rank" style="--i:6">${ranks||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div>`;
 }
-function dashFunnel(clubs){
+/* Ce qui attend une action, club par club (même règle que la fiche du club) : urgent d'abord. */
+function dashATraiter(sc){
+  const ids=new Set(_dashScope[sc]||[]);
+  const l=DB.clubs.filter(c=>ids.has(c.id)).map(c=>({c,t:clubTone(c),na:clubNextAction(c)})).filter(x=>x.t!=="ok").sort((a,b)=>(a.t==="urgent"?0:1)-(b.t==="urgent"?0:1)||a.c.nom.localeCompare(b.c.nom));
+  if(!l.length)return `<div class="dash-todo ok">✓ Aucun club n'attend d'action.</div>`;
+  const vis=l.slice(0,4);
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${l.length}</span></div>
+    <div class="rank dash-todo">${vis.map(x=>`<div class="rank-row link" onclick="clubCardAction('${x.c.id}')"><span class="dt-ic ${x.t}">${clubIco(x.c,x.t)}</span><div class="rn">${esc(x.na.label)}<small>${esc(x.c.nom.replace(/^CAP\s+/,""))}</small></div></div>`).join("")}
+    ${l.length>vis.length?`<div class="rank-row link" onclick="filter='todo';go2('clubs')"><div class="rn" style="color:var(--crimson)">Voir les ${l.length} clubs à traiter</div></div>`:""}</div>`;
+}
+function go2(t){go(t);if(t==="clubs"){filter="todo";render()}}
+/* Entonnoir des invités : une colonne par étape, hauteur proportionnelle, clic = la liste. */
+function dashFunnel(clubs,sc){
   const ids=clubs.map(c=>c.id);
   const invites=DB.reunions.filter(r=>ids.includes(r.clubId)).flatMap(r=>r.guests||[]);
   if(!invites.length)return"";
-  const cells=GUEST_STATUTS.map((s,i)=>dashTile(invites.filter(g=>g.statut===s).length,esc(s),"inv:"+s,"nat",i)).join("");
-  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Entonnoir des invités</div>
-    <div class="stats" style="grid-template-columns:repeat(5,1fr)">${cells}</div>`;
+  const n=GUEST_STATUTS.map(s=>invites.filter(g=>g.statut===s).length),mx=Math.max(1,...n);
+  const cols=GUEST_STATUTS.map((s,i)=>`<button class="fn-col" onclick="dashDrill('inv:${s}','${sc||"nat"}')"><b data-count="${n[i]}">${n[i]}</b><i style="height:${Math.max(4,Math.round(n[i]/mx*56))}px;--i:${i}"></i><small>${esc(s)}</small></button>`).join("");
+  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Entonnoir des invités <span style="color:var(--crimson);font-weight:700">${invites.length}</span></div>
+    <div class="funnel">${cols}</div>`;
 }
 function dashByAnim(clubs){
   const ids=new Set(clubs.map(c=>c.id));
@@ -1118,14 +1291,15 @@ function viewDashboard(){
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
   let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
+  /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
+  const sc=window._dashSc==="reg"?"reg":"nat";
+  const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   if(seeAll){
-    html+=`<div class="dash-band">National · tout le réseau</div>`+dashBlock(dashStats(DB.clubs));
-    const reg=DB.clubs.filter(c=>REGION_RSK.includes(c.ville));
-    html+=`<div class="dash-band reg">Régional · Rabat · Salé · Kénitra</div>`+dashBlock(dashStats(reg),"reg");
+    html+=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`+dashBlock(dashStats(per),sc);
   }else{
     html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(scope));
   }
-  html+=dashFunnel(scope)+dashByAnim(scope)+dashRelancer(scope);
+  html+=dashFunnel(per,sc)+dashByAnim(per)+dashRelancer(per);
   return html+`<div style="height:8px"></div></div>`;
 }
 

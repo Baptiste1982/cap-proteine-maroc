@@ -1,7 +1,6 @@
 {
   "_aide": "Correspondance entre l'export « adhésions à saisir » du CRM CAP et l'Espace Animateur national (animateur.ma.caproteine.com), relevée le 29/10/2026. Les champs du national sont désignés par leur identifiant d'origine (attribut oldid ou id). Le robot saisir.mjs lit ce fichier : si le national renomme un champ, c'est ici qu'on le corrige.",
   "url_accueil": "https://animateur.ma.caproteine.com/connexion/extranet",
-
   "prospect": {
     "_aide": "Formulaire « Ajouter un prospect » (Membres et Prospects → Gestion Prospects → bouton +).",
     "cadre": "personneProspectMembre/formulaireSansContrat",
@@ -17,10 +16,10 @@
       "tel1": "m_tel",
       "adresse": "ent_adresse",
       "codePostal": "ent_cp",
-      "ville": "ent_ville"
+      "ville": "ent_ville",
+      "tel2": "m_tel2"
     }
   },
-
   "assistant": {
     "_aide": "Assistant « Envoyer le contrat membre pour signature » : 1 Préparation · 2 Entreprise · 3 Personne membre · 4 Contrat · 5 Signature. Le robot remplit jusqu'à l'étape 4 incluse et n'enregistre jamais le contrat ni ne lance la signature.",
     "cadre": "prospectMembre/formulaireAjoutAttenteSignature",
@@ -40,11 +39,19 @@
         "villeSiegeSocialEntreprise": "ent_ville",
         "adresseEntreprise": "ent_adresse",
         "codePostalEntreprise": "ent_cp",
-        "villeEntreprise": "ent_ville"
+        "villeEntreprise": "ent_ville",
+        "effectif": "ent_effectif",
+        "anneeCreation": "ent_annee"
       },
       "listes": {
-        "idCategorieJuridique": { "cle": "ent_categorie", "url": "/categorieJuridique/lister" },
-        "tabIdsMetier": { "cle": "metier", "url": "/metier/listerSansConcurrence" }
+        "idCategorieJuridique": {
+          "cle": "ent_categorie",
+          "url": "/categorieJuridique/lister"
+        },
+        "tabIdsMetier": {
+          "cle": "metier",
+          "url": "/metier/listerSansConcurrence"
+        }
       }
     },
     "personne": {
@@ -56,7 +63,8 @@
         "fonction": "m_fonction",
         "email": "m_email",
         "tel1": "m_tel",
-        "dateAnniversaire": "m_naissance"
+        "dateAnniversaire": "m_naissance",
+        "tel2": "m_tel2"
       },
       "vouvoiement": "true"
     },

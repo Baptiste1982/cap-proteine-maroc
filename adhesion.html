@@ -174,6 +174,10 @@ body.demo .wa-preview{display:block}
       </div>
       <div class="field"><label for="ent_tel">Téléphone</label><input id="ent_tel" name="ent_tel" type="tel" autocomplete="tel" inputmode="tel" required><div class="msg">Numéro requis.</div></div>
       <div class="field"><label for="ent_web">Site web <span class="opt">(facultatif)</span></label><input id="ent_web" name="ent_web" type="url" inputmode="url" placeholder="www.…"></div>
+      <div class="row2">
+        <div class="field"><label for="ent_effectif">Effectif <span class="opt">(facultatif)</span></label><input id="ent_effectif" name="ent_effectif" inputmode="numeric" placeholder="Nombre de salariés"></div>
+        <div class="field"><label for="ent_annee">Année de création <span class="opt">(facultatif)</span></label><input id="ent_annee" name="ent_annee" inputmode="numeric" maxlength="4" placeholder="Ex. 2015"><div class="msg">Année sur 4 chiffres.</div></div>
+      </div>
     </section>
 
     <!-- 2 · Membre -->
@@ -191,6 +195,7 @@ body.demo .wa-preview{display:block}
       <div class="field"><label for="m_fonction">Fonction occupée</label><input id="m_fonction" name="m_fonction" autocomplete="organization-title" required><div class="msg">Requis.</div></div>
       <div class="field"><label for="m_email">Email</label><input id="m_email" name="m_email" type="email" required autocomplete="email" inputmode="email"><div class="msg">Adresse email invalide.</div></div>
       <div class="field"><label for="m_tel">Téléphone mobile</label><input id="m_tel" name="m_tel" type="tel" required autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78"><div class="msg">Numéro de mobile requis.</div></div>
+      <div class="field"><label for="m_tel2">Autre téléphone <span class="opt">(facultatif)</span></label><input id="m_tel2" name="m_tel2" type="tel" inputmode="tel"></div>
       <div class="field"><label for="m_naissance">Date de naissance</label><input id="m_naissance" name="m_naissance" type="date" autocomplete="bday" required><div class="msg">Date de naissance requise.</div></div>
       <div class="field"><label for="m_hobbies">Hobbies <span class="opt">(facultatif)</span></label><input id="m_hobbies" name="m_hobbies"><div class="hint">Utile pour faire connaissance au club.</div></div>
     </section>
@@ -411,6 +416,7 @@ function validate(n){
     ok = bad('ent_ice', !/^\d{15}$/.test(ice)) && ok;
     ok = bad('ent_cp', !/^\d{5}$/.test(val('ent_cp').replace(/\s/g, ''))) && ok;
     ok = bad('ent_tel', val('ent_tel').replace(/\D/g, '').length < 9) && ok;
+    const an = val('ent_annee'); ok = bad('ent_annee', an && (!/^\d{4}$/.test(an) || +an > new Date().getFullYear() || +an < 1900)) && ok;
   }
   if (n === 2) {
     req('m_civilite'); req('m_dirigeant'); req('m_prenom'); req('m_nom'); req('m_fonction');
@@ -440,8 +446,8 @@ function renderRecap(){
   const sec = (title, goto, rows) => `<h3>${esc(title)} <button type="button" class="edit" data-goto="${goto}">Modifier</button></h3><dl>${rows}</dl>`;
   const mode = { cheque:'Chèque', virement:'Virement bancaire' }[d.reg_mode] || '';
   $('#recap').innerHTML =
-    sec('Entreprise', 1, L('Métier', d.metier) + L('Nom usuel', d.ent_nom) + L('Nom légal', d.ent_nom_legal) + L('Catégorie', d.ent_categorie) + L('Activité', d.ent_activite) + L('ICE', d.ent_ice) + L('Patente', d.ent_patente) + L('Ville RCS', d.ent_ville_rcs) + L('Capital', d.ent_capital) + L('Adresse', [d.ent_adresse, [d.ent_cp, d.ent_ville].filter(Boolean).join(' ')].filter(Boolean).join(', ')) + L('Téléphone', d.ent_tel) + L('Site web', d.ent_web)) +
-    sec('Membre', 2, L('Nom', `${d.m_civilite} ${d.m_prenom} ${d.m_nom}`) + L('Dirigeant', d.m_dirigeant === 'oui' ? 'Oui' : 'Non') + L('Fonction', d.m_fonction) + L('Email', d.m_email) + L('Mobile', d.m_tel) + L('Naissance', frDate(d.m_naissance)) + L('Hobbies', d.m_hobbies)) +
+    sec('Entreprise', 1, L('Métier', d.metier) + L('Nom usuel', d.ent_nom) + L('Nom légal', d.ent_nom_legal) + L('Catégorie', d.ent_categorie) + L('Activité', d.ent_activite) + L('ICE', d.ent_ice) + L('Patente', d.ent_patente) + L('Ville RCS', d.ent_ville_rcs) + L('Capital', d.ent_capital) + L('Adresse', [d.ent_adresse, [d.ent_cp, d.ent_ville].filter(Boolean).join(' ')].filter(Boolean).join(', ')) + L('Téléphone', d.ent_tel) + L('Site web', d.ent_web) + L('Effectif', d.ent_effectif) + L('Création', d.ent_annee)) +
+    sec('Membre', 2, L('Nom', `${d.m_civilite} ${d.m_prenom} ${d.m_nom}`) + L('Dirigeant', d.m_dirigeant === 'oui' ? 'Oui' : 'Non') + L('Fonction', d.m_fonction) + L('Email', d.m_email) + L('Mobile', d.m_tel) + L('Autre téléphone', d.m_tel2) + L('Naissance', frDate(d.m_naissance)) + L('Hobbies', d.m_hobbies)) +
     sec('Signataire', 3, d.sig_same ? L('Signataire', 'Le membre') : (L('Nom', `${d.s_prenom} ${d.s_nom}`) + L('Fonction', d.s_fonction) + L('Email', d.s_email) + L('Mobile', d.s_tel))) +
     sec('Règlement et facturation', 4, L('Règlement', mode && `${mode} · en ${d.reg_fois} fois`) + L('Commentaires', d.commentaires) + (d.fac_same ? L('Facturation', 'Entreprise ci-dessus') : (L('Facturer à', d.f_entreprise) + L('Adresse', d.f_adresse) + L('CP / Ville', d.f_cpville))));
 }

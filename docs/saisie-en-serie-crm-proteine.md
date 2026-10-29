@@ -53,6 +53,27 @@ session par club : « Protéine Rabat Privilège »…). Cinq temps, dans cet or
 - Doublons : l'annuaire contient déjà deux « PURPLE BIRDGE » (552 et 608). Quand le national propose plusieurs
   entreprises, c'est vous qui choisissez.
 
+## Depuis le CRM CAP : bouton « Envoyer au CRM national » (v0.18.0)
+
+Fiche d'une adhésion → bloc « Envoi au CRM national » (superadmin). C'est la voie normale ; le robot ci-dessous reste
+une solution de secours.
+
+- **Aperçu** : la fonction serveur `national-adhesion` se connecte au national, retrouve le prospect (par e-mail) et
+  l'entreprise, et affiche ce qui sera envoyé, **sans rien écrire**.
+- **Options** : offre spéciale (justification obligatoire si ce n'est pas « Aucune »), début de l'abonnement
+  (14 jours au plus, règle du national), signature : **papier** (contrat à imprimer, aucun e-mail) ou « je choisis au
+  national ». La signature électronique n'est jamais lancée d'ici.
+- **Envoi** : prospect (créé s'il n'existe pas) → entreprise (ce que le national sait déjà est gardé, les différences
+  sont notées) → personne membre (identifiants de l'application générés comme le fait le national) → contrat +
+  abonnement → PDF. La fiche garde le lien du contrat, les accès du membre et le journal ; l'adhésion passe en
+  « Saisie CRM national ». Chaque étape est enregistrée : un nouvel envoi reprend sans créer de doublon.
+- **Identifiants** : secrets Supabase `CAP_NATIONAL_IDENTIFIANT` et `CAP_NATIONAL_MOT_DE_PASSE`
+  (Edge Functions → Secrets). Après un changement de mot de passe du national, mettre le secret à jour.
+- ⚠ Les PDF de contrat du national sont servis par une adresse publique, sans connexion : le lien ne doit pas
+  circuler hors de l'équipe.
+- **Essai du 29/10/2026** : adhésion fictive de Nawar Mounchit (PURPLE BIRDGE) saisie par le formulaire, envoyée →
+  contrat papier n° 119 au national, dossier « En attente de signature » (signature manuscrite).
+
 ## Lancer le robot (sur votre PC)
 
 ```

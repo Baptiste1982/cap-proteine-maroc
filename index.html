@@ -654,6 +654,105 @@ div.stp{cursor:default}
   img{color-scheme:light}
 }
 @media (prefers-color-scheme:dark) and (hover:hover){.rl-h:hover{background:var(--hover)}}
+
+/* ===== v0.15 — POUR LE NATIONAL (maquette v4) ===== */
+:root{--sea:#DCE6EE;--land:#F4EDE6}
+@media (prefers-color-scheme:dark){:root{--sea:#1B2229;--land:#2A2023}}
+.tools{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px 14px;padding:2px 18px}
+.tools::-webkit-scrollbar{display:none}
+.tool{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:13px;font-weight:700;color:var(--ink);transition:border-color .2s,transform .12s}
+.tool:active{transform:scale(.97)}
+@media (hover:hover){.tool:hover{border-color:var(--crimson)}}
+.tool.hl{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.bil-alert{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:16px;background:var(--warn-tint);margin-bottom:14px;animation:rise .45s var(--ease) backwards}
+.bil-alert .n{font:800 28px "Bricolage Grotesque",sans-serif;color:var(--warn);min-width:34px;text-align:center}
+.bil-alert b{display:block;font-size:13.5px}.bil-alert small{font-size:12px;color:var(--muted)}
+.bil-alert .go{margin-left:auto;color:var(--warn);font-weight:800;font-size:18px}
+.act90{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.act90 div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 11px}
+.act90 b{display:block;font:800 21px/1 "Bricolage Grotesque",sans-serif;color:var(--crimson);font-variant-numeric:tabular-nums}
+.act90 span{font-size:11px;color:var(--muted);font-weight:600}
+.bsteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 10px}
+.bstep{border:1.5px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center}
+.bstep small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.bstep div{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.bstep b{font:800 22px "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums}
+.bstep button{width:32px;height:32px;border-radius:10px;background:var(--crimson-tint);color:var(--crimson);font-weight:800;font-size:18px}
+.bconv{font-size:12.5px;color:var(--muted);text-align:center;margin:0 0 6px}
+.bconv b{color:var(--ok)}
+.bil-sum{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.bil-reste{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+.mapc{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--sea);margin-bottom:10px}
+.mapc svg{display:block;width:100%;height:auto}
+.mapc .city{cursor:pointer;outline:none}
+.mapc .city:focus-visible circle.b{stroke:var(--ink);stroke-width:3}
+.mapc .pulse{animation:mpulse 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes mpulse{0%{transform:scale(1);opacity:.45}100%{transform:scale(2.3);opacity:0}}
+.mapleg{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);font-weight:600;margin:0 2px 12px}
+.mapleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.zseg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.zseg button{padding:8px 12px;border-radius:99px;border:1.5px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap;background:var(--card)}
+.zseg button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.zrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;align-items:center;padding:12px 2px;border-top:1px solid var(--line)}
+.zrow:first-child{border-top:0}
+.zrow b{font:700 15px "Bricolage Grotesque",sans-serif}.zrow small{font-size:11.5px;color:var(--muted)}
+.zrow .v{font:800 22px "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.zbar{grid-column:1/-1;height:8px;border-radius:8px;background:var(--paper);overflow:hidden;border:1px solid var(--line)}
+.zbar i{display:block;height:100%;border-radius:8px;transform-origin:left;animation:grow .9s var(--ease) backwards}
+.znote{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-top:10px}
+.lane-h{display:flex;justify-content:space-between;align-items:baseline;margin:14px 2px 6px;font-weight:700;font-size:13.5px}
+.lane-h span{font-size:11.5px;color:var(--muted);font-weight:600}
+.lnr{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border-radius:14px;background:var(--card);border:1px solid var(--line);margin-bottom:6px}
+.lnr .t{flex:1;min-width:0}.lnr b{display:block;font-size:13.5px}.lnr small{font-size:11.5px;color:var(--muted)}
+.ltrack{display:flex;gap:3px;flex:0 0 auto}.ltrack i{width:15px;height:6px;border-radius:3px;background:var(--line)}.ltrack i.on{background:var(--crimson)}
+.lflag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--crimson-tint);color:var(--crimson);white-space:nowrap;flex:0 0 auto}
+.lflag.w{background:var(--warn-tint);color:var(--warn)}.lflag.g{background:var(--ok-tint);color:var(--ok)}
+.rp-sel{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.rp-sel select{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:600 14px Inter,sans-serif}
+.rpdoc{background:#fff;color:#1B1416;border:1px solid var(--line);border-radius:12px;padding:18px 16px;font-size:12.5px;margin-bottom:10px}
+.rpdoc .hd{border-bottom:3px solid #B0122E;padding-bottom:8px;margin-bottom:10px}
+.rpdoc .hd b{font:800 17px "Bricolage Grotesque",sans-serif;color:#5C0A18;display:block}.rpdoc .hd small{color:#7A6E71}
+.rpdoc h5{font:800 11.5px "Bricolage Grotesque",sans-serif;color:#B0122E;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 7px}
+.rpk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+@media(min-width:600px){.rpk{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.rpk div{border:1px solid #EADFE0;border-radius:8px;padding:7px 8px}
+.rpk b{display:block;font:800 17px "Bricolage Grotesque",sans-serif;color:#B0122E}.rpk span{color:#7A6E71;font-size:10.5px}
+.rpt{overflow-x:auto}.rpt table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:440px}
+.rpt th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#7A6E71;border-bottom:1px solid #EADFE0;padding:4px 3px}
+.rpt td{padding:5px 3px;border-bottom:1px solid #F3ECEA}.rpt td.n,.rpt th.n{text-align:right}
+.rpdoc ul{margin:0;padding-left:16px}.rpdoc li{margin:3px 0}
+.show-o{position:fixed;inset:0;z-index:90;background:radial-gradient(120% 90% at 85% -10%,rgba(200,162,76,.22),transparent 55%),linear-gradient(155deg,#5C0A18,#22040A);color:#fff;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 22px) max(22px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 26px) max(22px,env(safe-area-inset-left));overflow:hidden}
+.show-o .h{display:flex;align-items:center;gap:12px}
+.show-o .h .mono{width:42px;height:42px}
+.show-o .h small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.65;font-weight:600}
+.show-o .h b{font:700 17px "Bricolage Grotesque",sans-serif}
+.show-o .clk{margin-left:auto;font-weight:700;opacity:.75;font-variant-numeric:tabular-nums}
+.show-o .x{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-size:18px}
+.show-o .sl{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:1100px;width:100%;margin:0 auto;animation:rise .6s var(--ease)}
+.show-o h3{font:800 clamp(28px,5vw,58px)/1.05 "Bricolage Grotesque",sans-serif;margin:0 0 clamp(18px,4vh,40px);text-wrap:balance}
+.show-o h3 em{font-style:normal;color:#F3D88E}
+.sbig{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2vw,24px)}
+@media(max-width:700px){.sbig{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sbig div{border-top:2px solid rgba(243,216,142,.5);padding-top:10px}
+.sbig b{display:block;font:800 clamp(34px,7vw,84px)/1 "Bricolage Grotesque",sans-serif;color:#F3D88E;font-variant-numeric:tabular-nums}
+.sbig span{font-size:clamp(13px,1.6vw,17px);opacity:.78}
+.szl{display:grid;gap:14px;max-width:820px}
+.szl div{display:grid;grid-template-columns:minmax(90px,220px) minmax(0,1fr) auto;gap:14px;align-items:center;font-size:clamp(14px,1.8vw,19px)}
+.szl i{height:14px;border-radius:7px;background:linear-gradient(90deg,#C8A24C,#F3D88E);transform-origin:left;animation:grow 1s var(--ease) backwards;min-width:4px}
+.szl b{font:800 clamp(20px,3vw,32px) "Bricolage Grotesque",sans-serif;color:#F3D88E;text-align:right}
+.slist{display:grid;gap:10px;max-width:820px;font-size:clamp(15px,2vw,21px)}
+.slist div{display:flex;gap:14px;align-items:baseline}.slist em{font-style:normal;color:#F3D88E;font-weight:800;min-width:5.5em}
+.smap{max-width:min(640px,100%);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.06)}
+.smap svg{display:block;width:100%;height:auto;max-height:58vh}
+.sprog{display:flex;gap:6px;margin-top:16px}
+.sprog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}
+.sprog i b{display:block;height:100%;background:#F3D88E;width:0}
+.sprog i.on b{animation:sfill 7s linear forwards}.sprog i.done b{width:100%}
+@keyframes sfill{to{width:100%}}
+.show-o .tap{position:absolute;inset:90px 0 60px;display:grid;grid-template-columns:1fr 2fr;z-index:0}
+.show-o .h,.show-o .sl,.show-o .sprog{position:relative;z-index:1}
+.show-o .sl{pointer-events:none}
+@media (prefers-reduced-motion:reduce){.tool,.bil-alert,.mapc .pulse,.zbar i,.show-o .sl,.szl i,.sprog i.on b{animation:none!important;transition:none!important}.sprog i.on b{width:100%}}
 </style>
 </head>
 <body>
@@ -724,8 +823,17 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.14.0";
+const APP_VERSION="0.15.0";
 const CHANGELOG=[
+  {v:"0.15.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Bilan de réunion : après chaque réunion, le CRM demande si elle a eu lieu, combien de présents, d'invités venus et d'adhésions. La Synthèse signale les réunions qui attendent leur bilan et affiche l'activité des 90 derniers jours.",
+      "Carte du réseau : les clubs par ville, colorés selon ce qu'ils demandent (en forme, action à mener, urgent).",
+      "Comparaison des zones : santé, membres, réunions tenues, adhésions et conversion, avec le classement.",
+      "Lancement des clubs : de la création à l'activité, avec ce qui bloque chaque club.",
+      "Rapport du mois : une page par zone ou pour tout le réseau, à envoyer en PDF ou à copier pour WhatsApp.",
+      "Mode présentation : la Synthèse en plein écran, qui défile toute seule, pour la projeter en réunion."
+    ]}},
   {v:"0.14.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Synthèse : un bonjour personnalisé avec le nombre d'actions qui t'attendent, la tendance des membres du mois, une courbe des membres sur 6 mois, le club le plus proche de son objectif, et une petite fête quand un club atteint son objectif.",
@@ -958,7 +1066,7 @@ function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??""}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[]}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",createdAt:r.created_at||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
@@ -1526,6 +1634,7 @@ function dashBlock(s,sc){
       ${dashTile(s.sansAnim,"Clubs sans animateur","sansAnim",sc,5)}
     </div>
     ${dashObjectif(sc)}
+    ${dashActivite(sc)}
     ${dashATraiter(sc)}
     ${dashCourbe(sc)}
     <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
@@ -1636,7 +1745,7 @@ function viewDashboard(){
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
   const sc=window._dashSc==="reg"?"reg":"nat";
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
-  html+=dashBonjour();
+  html+=dashBonjour()+dashOutils()+dashBilanAlerte();
   if(seeAll){
     html+=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`+dashBlock(dashStats(per),sc);
   }else{
@@ -1760,6 +1869,7 @@ function meetingDetail(m,editable){
       <div class="tx"><div class="k">Animateur</div><div class="v">${esc(animNom(m.animId))}</div></div></div>
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
+    ${bilanBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>
@@ -2664,6 +2774,293 @@ function dashFete(){
   box.innerHTML=Array.from({length:60},(_,i)=>`<i style="left:${Math.random()*100}%;background:${col[i%col.length]};animation-delay:${Math.random()*.4}s;--dx:${Math.round(Math.random()*160-80)}px;--r:${Math.round(Math.random()*720-360)}deg"></i>`).join("");
   setTimeout(()=>box.innerHTML="",2600);
 }
+
+/* ============================================================
+   v0.15 — POUR LE NATIONAL (maquette v4)
+   Bilan de réunion, carte, zones, lancements, rapport mensuel, mode présentation.
+   ============================================================ */
+function jours90(){const d=new Date(TODAY);d.setDate(d.getDate()-90);return isoJour(d)}
+function tenue(r){return r.statut==="realisee"}
+function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);return mb?mb.clubId:(a.ref||null)}
+function pct(a,b){return b?Math.round(a/b*100):null}
+function dashOutils(){
+  const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
+}
+/* ---------- 1. Bilan de réunion ---------- */
+function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
+function dashBilanAlerte(){
+  const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
+  return `<button class="bil-alert" onclick="openBilan()"><span class="n">${l.length}</span><span><b>${l.length} réunion${l.length>1?"s attendent leur":" attend son"} bilan</b><small>La plus ancienne date du ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Une question par réunion.</small></span><span class="go">›</span></button>`;
+}
+function dashActivite(sc){
+  const ids=new Set(_dashScope[sc]||[]),d0=jours90();
+  const t=DB.reunions.filter(r=>ids.has(r.clubId)&&tenue(r)&&r.date>=d0);
+  if(!t.length)return"";
+  const avecP=t.filter(r=>r.presents!=null),moy=avecP.length?Math.round(avecP.reduce((s,r)=>s+r.presents,0)/avecP.length):null;
+  const inv=t.reduce((s,r)=>s+(r.invitesVenus||0),0),adh=t.reduce((s,r)=>s+(r.adhObt||0),0),cv=pct(adh,inv);
+  return `<div class="act90" title="90 derniers jours"><div><b>${t.length}</b><span>réunion${t.length>1?"s":""} tenue${t.length>1?"s":""} (90 j)</span></div><div><b>${moy??"—"}</b><span>présents en moyenne</span></div><div><b>${cv==null?"—":cv+" %"}</b><span>invités devenus membres</span></div></div>`;
+}
+let _bil=null;
+function openBilan(id){
+  const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
+  if(!m){toast("Toutes les réunions ont leur bilan");return}
+  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:m.presents??0,inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:""};
+  renderBilan();openSheet();
+}
+function renderBilan(){
+  const m=DB.reunions.find(x=>x.id===_bil.id),c=club(m.clubId),d=dObj(m.date);
+  const reste=reunionsSansBilan().filter(x=>x.id!==m.id).length;
+  const st=(k,l)=>`<button type="button" class="pill ${_bil.statut===k?"on":""}" role="radio" aria-checked="${_bil.statut===k}" onclick="bilStatut('${k}')">${l}</button>`;
+  const step=(k,l)=>`<div class="bstep"><small>${l}</small><div><button type="button" onclick="bilStep('${k}',-1)" aria-label="${l} : moins">−</button><b id="bil-${k}">${_bil[k]}</b><button type="button" onclick="bilStep('${k}',1)" aria-label="${l} : plus">+</button></div></div>`;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Comment s'est passée la réunion ?</h3>
+    <div class="sheet-sub">${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${TYPES[m.type]||m.type} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
+    <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}</div></div>
+    ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>`:""}
+    ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer le bilan"}</button></div>
+    ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}`;
+}
+function bilConv(){const c=pct(_bil.adh,_bil.inv);return c==null?"Ajoute les invités venus pour voir le taux de conversion":`Invités devenus membres : <b>${c} %</b>`}
+function bilStatut(k){_bil.statut=k;renderBilan()}
+function bilStep(k,d){_bil[k]=Math.max(0,_bil[k]+d);document.getElementById("bil-"+k).textContent=_bil[k];const cv=document.getElementById("bil-conv");if(cv)cv.innerHTML=bilConv()}
+async function saveBilan(){
+  const m=DB.reunions.find(x=>x.id===_bil.id);let row;
+  if(_bil.statut==="reportee"){
+    if(!_bil.date||_bil.date<isoJour(TODAY)){toast("Choisis une nouvelle date à venir","w");return}
+    row={date:_bil.date,statut:"planifiee"};
+  }else row={statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+  const {error}=await sb.from("reunions").update(row).eq("id",m.id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(m,{statut:row.statut,date:row.date||m.date});
+  if(_bil.statut!=="reportee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
+  await okPuis();
+  toast(_bil.statut==="reportee"?"Réunion reportée":"Bilan enregistré");
+  const next=reunionsSansBilan()[0];
+  render();
+  if(next)openBilan(next.id);else closeSheet();
+}
+function bilanBloc(m,editable){
+  if(!isPast(m.date))return"";
+  if(m.bilanLe&&m.statut==="realisee"){const cv=pct(m.adhObt||0,m.invitesVenus||0);
+    return `<div class="bil-sum"><span class="rl-fact g">${m.presents??0} présents</span><span class="rl-fact y">${m.invitesVenus??0} invités venus</span><span class="rl-fact g">${m.adhObt??0} adhésion${(m.adhObt||0)>1?"s":""}</span>${cv!=null?`<span class="rl-fact">${cv} % convertis</span>`:""}</div>${editable?`<button class="btn ghost mini" onclick="openBilan('${m.id}')">Modifier le bilan</button>`:""}`}
+  if(editable&&m.statut!=="annulee")return `<button class="btn" style="margin-top:12px" onclick="openBilan('${m.id}')">Saisir le bilan de la réunion</button>`;
+  return"";
+}
+/* ---------- 2. Carte du Maroc (schéma : côte atlantique + villes, sans tuiles externes) ---------- */
+const VILLE_GPS={"Rabat":[34.02,-6.84],"Salé":[34.05,-6.80],"Kenitra":[34.26,-6.58],"Casablanca":[33.57,-7.59],"Dar Bouazza":[33.52,-7.81],"Bouskoura":[33.45,-7.65],"Marrakech":[31.63,-8.0],"Tanger":[35.76,-5.83],"Fès":[34.03,-5.0],"Meknès":[33.9,-5.55],"Agadir":[30.42,-9.6],"Oujda":[34.68,-1.91],"Tétouan":[35.57,-5.37],"El Jadida":[33.25,-8.5],"Mohammedia":[33.69,-7.38],"Temara":[33.93,-6.91]};
+const COTE=[[35.79,-5.92],[35.2,-6.15],[34.68,-6.35],[34.26,-6.62],[34.02,-6.86],[33.69,-7.4],[33.6,-7.64],[33.25,-8.5],[32.6,-9.0],[32.3,-9.24],[31.5,-9.77],[30.9,-9.84],[30.42,-9.62],[29.9,-9.9],[28.5,-11.1]];
+const TON_COUL={urgent:"#B0122E",todo:"#B07A12",ok:"#2E7D5B"};
+function carteSvg(opts){
+  opts=opts||{};const W=360,HMAX=opts.hmax||380,cl=0.84;
+  const villes=[...new Set(DB.clubs.map(c=>c.ville))].filter(v=>VILLE_GPS[v]);
+  if(!villes.length)return"";
+  const la=villes.map(v=>VILLE_GPS[v][0]),lo=villes.map(v=>VILLE_GPS[v][1]);
+  let la0=Math.min(...la)-.45,la1=Math.max(...la)+.45,lo0=Math.min(...lo)-.6,lo1=Math.max(...lo)+.6;
+  let k=W/((lo1-lo0)*cl),H=(la1-la0)*k;
+  if(H>HMAX){k=HMAX/(la1-la0);H=HMAX;const w=W/(k*cl),mid=(lo0+lo1)/2;lo0=mid-w/2;lo1=mid+w/2}
+  if(H<220){const h2=220/k,mid=(la0+la1)/2;la0=mid-h2/2;la1=mid+h2/2;H=220}
+  const P=(a,o)=>[(o-lo0)*k*cl,(la1-a)*k];
+  const land="M"+COTE.map(([a,o])=>P(a,o).map(n=>n.toFixed(1)).join(",")).join(" L")+` L${P(27,-11.1).map(n=>n.toFixed(1))} L${P(27,5).map(n=>n.toFixed(1))} L${P(37,5).map(n=>n.toFixed(1))} L${P(37,-5.92).map(n=>n.toFixed(1))} Z`;
+  const rang={urgent:0,todo:1,ok:2};
+  const nodes=villes.map(v=>{const cs=DB.clubs.filter(c=>c.ville===v);const t=cs.map(clubTone).sort((a,b)=>rang[a]-rang[b])[0];const[x,y]=P(...VILLE_GPS[v]);return{v,n:cs.length,t,x,y,r:Math.min(22,7+cs.length*2.4)}});
+  for(let it=0;it<120;it++)for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j];let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;const need=a.r+b.r+(Math.abs(dy/d)>.5?30:22);if(d<need){const p=(need-d)/2;dx/=d;dy/=d;a.x-=dx*p;a.y-=dy*p;b.x+=dx*p;b.y+=dy*p}}
+  nodes.forEach(n=>{n.x=Math.max(n.r+2,Math.min(W-n.r-2,n.x));n.y=Math.max(n.r+2,Math.min(H-n.r-14,n.y))});
+  const col=n=>TON_COUL[n.t]||"#8C8085";
+  const g=nodes.map(n=>`<g class="city" data-v="${esc(n.v)}" tabindex="0" role="button" aria-label="${esc(n.v)} : ${n.n} club${n.n>1?"s":""}">${opts.calme?"":`<circle class="pulse" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${col(n)}"/>`}<circle class="b" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${col(n)}" stroke="${opts.dark?"#3E0710":"var(--card)"}" stroke-width="2"/><text x="${n.x.toFixed(1)}" y="${(n.y+4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" font-family="Inter,sans-serif">${n.n}</text><text x="${n.x.toFixed(1)}" y="${(n.y+n.r+12).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${opts.dark?"rgba(255,255,255,.8)":"var(--ink)"}" font-family="Inter,sans-serif">${esc(n.v)}</text></g>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Carte des clubs par ville"><path d="${land}" fill="${opts.dark?"rgba(255,255,255,.07)":"var(--land)"}" stroke="${opts.dark?"rgba(255,255,255,.18)":"var(--line)"}" stroke-width="1.5"/><text x="12" y="${(H-12).toFixed(0)}" font-size="10.5" font-style="italic" fill="${opts.dark?"rgba(255,255,255,.5)":"var(--muted)"}" font-family="Inter,sans-serif">Océan Atlantique</text>${g}</svg>`;
+}
+function openCarte(ville){
+  const villes=[...new Set(DB.clubs.map(c=>c.ville))],hors=villes.filter(v=>!VILLE_GPS[v]);
+  const v=ville||villes.slice().sort((a,b)=>DB.clubs.filter(c=>c.ville===b).length-DB.clubs.filter(c=>c.ville===a).length)[0];
+  const cs=DB.clubs.filter(c=>c.ville===v).sort((a,b)=>a.nom.localeCompare(b.nom));
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Le réseau sur la carte</h3><div class="sheet-sub">${DB.clubs.length} clubs dans ${villes.length} villes · touche une ville</div>
+    <div class="mapc" id="mapc" onclick="const g=event.target.closest('.city');if(g)openCarte(g.dataset.v)" onkeydown="const g=event.target.closest('.city');if(g&&event.key==='Enter')openCarte(g.dataset.v)">${carteSvg({calme:_calme()})}</div>
+    <div class="mapleg"><span><i style="background:${TON_COUL.ok}"></i>en forme</span><span><i style="background:${TON_COUL.todo}"></i>action à mener</span><span><i style="background:${TON_COUL.urgent}"></i>urgent</span><span>taille = nombre de clubs</span></div>
+    ${hors.length?`<p style="font-size:12px;color:var(--muted)">Pas encore placées sur la carte : ${hors.map(esc).join(", ")}.</p>`:""}
+    ${secHead(esc(v),cs.length)}
+    <div class="rank">${cs.map(c=>{const t=clubTone(c),na=clubNextAction(c);return `<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot ${t==="urgent"?"bad":t==="todo"?"warn":"ok"}"></span><div class="rn">${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(animNom(c.animId))} · ${esc(na.label)}</small></div></div>`}).join("")}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+/* ---------- 3. Comparaison des zones ---------- */
+function zonesListe(){
+  const z=DB.zones.map(z=>({nom:z.nom,villes:z.villes||[]}));
+  const prises=new Set(z.flatMap(x=>x.villes)),autres=[...new Set(DB.clubs.map(c=>c.ville))].filter(v=>!prises.has(v));
+  if(autres.length)z.push({nom:"Autres régions",villes:autres});
+  return z;
+}
+function zoneStats(z){
+  const cs=DB.clubs.filter(c=>z.villes.includes(c.ville)),ids=new Set(cs.map(c=>c.id)),d0=jours90();
+  const rs=DB.reunions.filter(r=>ids.has(r.clubId));const inv=rs.flatMap(r=>r.guests||[]);
+  return{clubs:cs.length,actifs:cs.filter(c=>c.statut==="actif").length,
+    sante:cs.length?Math.round(cs.reduce((s,c)=>s+clubHealth(c).pct,0)/cs.length):0,
+    membres:DB.membres.filter(m=>ids.has(m.clubId)).length,
+    tenues:rs.filter(r=>tenue(r)&&r.date>=d0).length,
+    adh:(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&ids.has(adhClubId(a))&&a.created_at>=d0).length,
+    conv:pct(inv.filter(g=>g.statut==="Membre").length,inv.length)};
+}
+const Z_MET=[["sante","Santé","Santé moyenne des clubs","/100"],["membres","Membres","Membres",""],["tenues","Réunions tenues","Réunions tenues sur 90 jours",""],["adh","Adhésions","Adhésions reçues sur 90 jours",""],["conv","Conversion","Invités devenus membres"," %"],["clubs","Clubs","Clubs (dont actifs)",""]];
+let _zMet=0;
+function openZones(){
+  const zs=zonesListe().map(z=>({...z,s:zoneStats(z)})).filter(z=>z.s.clubs);
+  const [k,,lib,u]=Z_MET[_zMet];
+  const l=zs.slice().sort((a,b)=>(b.s[k]??-1)-(a.s[k]??-1));const mx=Math.max(1,...l.map(z=>z.s[k]||0));
+  const med=["🥇","🥈","🥉"];
+  const lead=m=>{const t=zs.slice().sort((a,b)=>(b.s[m]??-1)-(a.s[m]??-1));return t[0]&&(t[0].s[m]||0)>0&&(!t[1]||t[0].s[m]!==t[1].s[m])?t[0].nom:null};
+  const notes=[[lead("membres"),"compte le plus de membres"],[lead("tenues"),"tient le plus de réunions"],[lead("sante"),"a les clubs en meilleure santé"]].filter(x=>x[0]).map(x=>`<b>${esc(x[0])}</b> ${x[1]}`);
+  const petite=zs.filter(z=>z.s.clubs===1).map(z=>esc(z.nom));
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Comparaison des zones</h3><div class="sheet-sub">${zs.length} zones · mêmes indicateurs pour toutes</div>
+    <div class="zseg" role="tablist">${Z_MET.map(([,l],i)=>`<button role="tab" aria-selected="${i===_zMet}" class="${i===_zMet?"on":""}" onclick="_zMet=${i};openZones()">${l}</button>`).join("")}</div>
+    <div>${l.map((z,i)=>{const v=z.s[k];return `<div class="zrow"><span><b>${med[i]?med[i]+" ":""}${esc(z.nom)}</b><br><small>${lib}${k==="clubs"?` · ${z.s.actifs} actif${z.s.actifs>1?"s":""}`:""}</small></span><span class="v">${v==null?"—":v+(u&&u!=="/100"?u:"")}${u==="/100"&&v!=null?`<small style="font-size:12px;color:var(--muted)">/100</small>`:""}</span><span class="zbar"><i style="width:${v?Math.max(3,v/mx*100):0}%;background:${i===0?"var(--crimson)":"var(--gold)"};animation-delay:${i*90}ms"></i></span></div>`}).join("")}</div>
+    ${notes.length||petite.length?`<div class="znote">${notes.join(" · ")}${petite.length?`${notes.length?"<br>":""}Une seule implantation : ${petite.join(", ")}. C'est là que le réseau peut grandir.`:""}</div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+/* ---------- 4. Lancement des clubs ---------- */
+function clubEtape(c){if(c.statut==="actif")return 2;return DB.reunions.some(r=>r.clubId===c.id&&r.type==="SI"&&tenue(r))?1:0}
+function openLancements(){
+  const lanes=[["Création","pas encore de session d'information tenue",0],["Session d'information tenue","en route vers le lancement",1],["Lancé et actif","réunions régulières",2]];
+  const row=c=>{const e=clubEtape(c),up=DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date))[0];
+    const fl=!c.animId?`<span class="lflag">sans animateur</span>`:!up?`<span class="lflag w">aucune date</span>`:`<span class="lflag g">${dObj(up.date).getDate()} ${MOIS[dObj(up.date).getMonth()]} · ${up.type}</span>`;
+    return `<button class="lnr" onclick="openClub('${c.id}')"><span class="t"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)} · ${esc(animNom(c.animId))}</small></span>${fl}<span class="ltrack" aria-label="étape ${e+1} sur 3">${[0,1,2].map(i=>`<i class="${i<=e?"on":""}"></i>`).join("")}</span></button>`};
+  const nC=DB.clubs.filter(c=>c.statut!=="actif").length;
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Lancement des clubs</h3><div class="sheet-sub">${DB.clubs.length} clubs · ${nC} en création · ${DB.clubs.length-nC} actifs</div>
+    ${lanes.map(([t,s,n])=>{const l=DB.clubs.filter(c=>clubEtape(c)===n).sort((a,b)=>a.nom.localeCompare(b.nom));return l.length?`<div class="lane-h">${t}<span>${l.length} · ${s}</span></div>${l.map(row).join("")}`:""}).join("")}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+/* ---------- 5. Rapport mensuel ---------- */
+let _rp={mois:"",zone:""};
+function rpMoisListe(){const r=[];for(let i=0;i<6;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-i,1);r.push(isoJour(d).slice(0,7))}return r}
+function rpMoisLib(m){const[y,mm]=m.split("-").map(Number);return MOIS_LONG[mm-1]+" "+y}
+function rpData(){
+  const zs=zonesListe();const z=_rp.zone?zs.find(x=>x.nom===_rp.zone):null;
+  const cs=DB.clubs.filter(c=>!z||z.villes.includes(c.ville)).sort((a,b)=>(b.statut==="actif")-(a.statut==="actif")||a.nom.localeCompare(b.nom));
+  const ids=new Set(cs.map(c=>c.id)),m=_rp.mois,dansMois=d=>(d||"").slice(0,7)===m;
+  const[y,mm]=m.split("-").map(Number),suiv=isoJour(new Date(y,mm,1)).slice(0,7);
+  const rs=DB.reunions.filter(r=>ids.has(r.clubId));
+  const tenues=rs.filter(r=>tenue(r)&&dansMois(r.date));
+  const adh=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&ids.has(adhClubId(a))&&dansMois(a.created_at));
+  const inv=tenues.reduce((s,r)=>s+(r.invitesVenus??(r.guests||[]).length),0),adhO=tenues.reduce((s,r)=>s+(r.adhObt||0),0);
+  const lignes=cs.map(c=>({c,m:DB.membres.filter(x=>x.clubId===c.id).length,nouv:DB.membres.filter(x=>x.clubId===c.id&&dansMois(x.createdAt)).length,t:tenues.filter(r=>r.clubId===c.id).length,i:tenues.filter(r=>r.clubId===c.id).reduce((s,r)=>s+(r.invitesVenus??(r.guests||[]).length),0),a:adh.filter(a=>adhClubId(a)===c.id).length,tone:clubTone(c)}));
+  const surv=[];
+  cs.filter(c=>!c.animId).forEach(c=>surv.push(c.nom.replace(/^CAP\s+/,"")+" : animateur à nommer."));
+  cs.filter(c=>c.animId&&!rs.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee")).forEach(c=>surv.push(c.nom.replace(/^CAP\s+/,"")+" : aucune réunion à venir, prochaine date à fixer."));
+  const sansB=rs.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")).length;
+  if(sansB)surv.push(sansB+" réunion"+(sansB>1?"s passées attendent leur":" passée attend son")+" bilan dans le CRM.");
+  const aS=(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee"&&ids.has(adhClubId(a))).length;
+  if(aS)surv.push(aS+" adhésion"+(aS>1?"s attendent leur":" attend sa")+" saisie dans le CRM national.");
+  const proch=rs.filter(r=>(r.date||"").slice(0,7)===suiv&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)).map(r=>{const d=dObj(r.date);return `${d.getDate()} ${MOIS[d.getMonth()]} · ${TYPES[r.type]||r.type} · ${club(r.clubId).nom.replace(/^CAP\s+/,"")}`});
+  const dz=z?DB.zones.find(x=>x.nom===z.nom):null,dir=dz?null:null;
+  return{titre:"Rapport mensuel · "+rpMoisLib(m),perim:z?"Zone "+z.nom:"Tout le réseau",clubs:cs.length,actifs:cs.filter(c=>c.statut==="actif").length,
+    membres:lignes.reduce((s,l)=>s+l.m,0),nouv:lignes.reduce((s,l)=>s+l.nouv,0),tenues:tenues.length,adh:adh.length,conv:pct(adhO,inv),lignes,surv,proch,suivLib:rpMoisLib(suiv),auteur:SESSION.name};
+}
+function openRapport(){
+  if(!_rp.mois)_rp.mois=rpMoisListe()[0];
+  if(_rp.zone===""&&SESSION.role==="directeur"&&SESSION.zoneId){const z=zone(SESSION.zoneId);if(z)_rp.zone=z.nom}
+  if(_rp.zone===""&&!isNationalEditor()){const z=DB.zones.find(z=>(z.villes||[]).includes("Rabat"));if(z)_rp.zone=z.nom}
+  const d=rpData();
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Rapport du mois</h3><div class="sheet-sub">Une page prête à envoyer au directeur national</div>
+    <div class="rp-sel"><select id="rp-mois" aria-label="Mois" onchange="_rp.mois=this.value;openRapport()">${rpMoisListe().map(m=>`<option value="${m}" ${m===_rp.mois?"selected":""}>${rpMoisLib(m)}</option>`).join("")}</select>
+      <select id="rp-zone" aria-label="Zone" onchange="_rp.zone=this.value;openRapport()"><option value="">Tout le réseau</option>${zonesListe().map(z=>`<option ${z.nom===_rp.zone?"selected":""}>${esc(z.nom)}</option>`).join("")}</select></div>
+    <div class="rpdoc">
+      <div class="hd"><b>${esc(d.titre)}</b><small>${esc(d.perim)} · établi par ${esc(d.auteur)}</small></div>
+      <h5>L'essentiel</h5>
+      <div class="rpk"><div><b>${d.clubs}</b><span>clubs, dont ${d.actifs} actif${d.actifs>1?"s":""}</span></div><div><b>${d.membres}</b><span>membres${d.nouv?` (+${d.nouv} ce mois)`:""}</span></div><div><b>${d.tenues}</b><span>réunion${d.tenues>1?"s":""} tenue${d.tenues>1?"s":""}</span></div><div><b>${d.adh}</b><span>adhésion${d.adh>1?"s":""} reçue${d.adh>1?"s":""}</span></div></div>
+      <h5>Les clubs</h5>
+      <div class="rpt"><table><thead><tr><th>Club</th><th>Statut</th><th class="n">Membres</th><th class="n">Réunions</th><th class="n">Invités</th><th class="n">Adhésions</th></tr></thead><tbody>${d.lignes.map(l=>`<tr><td><span class="hdot ${l.tone==="urgent"?"bad":l.tone==="todo"?"warn":"ok"}" style="display:inline-block;margin-right:6px"></span>${esc(l.c.nom.replace(/^CAP\s+/,""))}</td><td>${l.c.statut==="actif"?"actif":"création"}</td><td class="n">${l.m}${l.nouv?` (+${l.nouv})`:""}</td><td class="n">${l.t}</td><td class="n">${l.i}</td><td class="n">${l.a}</td></tr>`).join("")}</tbody></table></div>
+      <h5>À surveiller</h5>${d.surv.length?`<ul>${d.surv.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p style="margin:0">Rien de particulier.</p>`}
+      <h5>${esc(d.suivLib)}</h5>${d.proch.length?`<ul>${d.proch.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p style="margin:0">Aucune réunion planifiée pour l'instant.</p>`}
+    </div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="rpCopier()">Copier le résumé</button><button class="btn" id="rp-pdf" onclick="rpPdf()">Envoyer le PDF</button></div>`;
+  openSheet();
+}
+function rpTexte(){const d=rpData();
+  return `${d.titre} · ${d.perim}\n\n• ${d.clubs} clubs, dont ${d.actifs} actifs\n• ${d.membres} membres${d.nouv?` (+${d.nouv} ce mois)`:""}\n• ${d.tenues} réunion(s) tenue(s)\n• ${d.adh} adhésion(s) reçue(s)${d.conv!=null?`\n• ${d.conv} % des invités devenus membres`:""}\n\nÀ surveiller :\n${d.surv.map(x=>"– "+x).join("\n")||"– rien de particulier"}\n\n${d.suivLib} :\n${d.proch.map(x=>"– "+x).join("\n")||"– aucune réunion planifiée"}\n\n${d.auteur}`}
+async function rpCopier(){try{await navigator.clipboard.writeText(rpTexte());toast("Résumé copié, colle-le dans WhatsApp")}catch(e){toast("Copie impossible sur cet appareil")}}
+async function chargerPdfLib(){if(window.PDFLib)return;await new Promise((ok,ko)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";sc.onload=ok;sc.onerror=()=>ko(new Error("Module PDF indisponible"));document.head.appendChild(sc)})}
+function pdfTxt(s){return String(s??"").replace(/[→]/g,"->").replace(/[^\x20-\x7E -ÿ–—‘’“”…•€Œœ]/g,"")}
+async function rpPdf(){
+  const b=document.getElementById("rp-pdf");const lib=b.textContent;b.textContent="Préparation…";
+  try{
+    await chargerPdfLib();const d=rpData();const{PDFDocument,StandardFonts,rgb}=PDFLib;
+    const doc=await PDFDocument.create();const f=await doc.embedFont(StandardFonts.Helvetica),fb=await doc.embedFont(StandardFonts.HelveticaBold);
+    const CR=rgb(.69,.07,.18),DE=rgb(.36,.04,.09),MU=rgb(.48,.43,.44),IN=rgb(.11,.08,.09),LI=rgb(.92,.87,.88);
+    let page=doc.addPage([595.28,841.89]);let y=790;const X=48,WD=499;
+    const txt=(t,x,yy,o={})=>page.drawText(pdfTxt(t),{x,y:yy,size:o.s||10,font:o.b?fb:f,color:o.c||IN});
+    const nouvellePage=()=>{page=doc.addPage([595.28,841.89]);y=790};
+    const besoin=h=>{if(y-h<60)nouvellePage()};
+    try{const png=await (await fetch("icone-192.png")).arrayBuffer();const im=await doc.embedPng(png);page.drawImage(im,{x:X+WD-40,y:y-14,width:40,height:40})}catch(e){}
+    txt(d.titre,X,y,{s:19,b:1,c:DE});y-=18;txt(d.perim+" · établi par "+d.auteur,X,y,{s:10,c:MU});y-=12;
+    page.drawRectangle({x:X,y,width:WD,height:2.5,color:CR});y-=26;
+    const sec=t=>{besoin(40);txt(t.toUpperCase(),X,y,{s:10,b:1,c:CR});y-=16};
+    sec("L'essentiel");
+    const kp=[[d.clubs,"clubs, dont "+d.actifs+" actifs"],[d.membres,"membres"+(d.nouv?" (+"+d.nouv+" ce mois)":"")],[d.tenues,"réunions tenues"],[d.adh,"adhésions reçues"]];
+    const kw=(WD-18)/4;kp.forEach(([n,l],i)=>{const x=X+i*(kw+6);page.drawRectangle({x,y:y-40,width:kw,height:46,borderColor:LI,borderWidth:1});txt(String(n),x+8,y-14,{s:17,b:1,c:CR});txt(l,x+8,y-32,{s:8,c:MU})});y-=62;
+    sec("Les clubs");
+    const cols=[["Club",X,0],["Statut",X+200,0],["Membres",X+300,1],["Réunions",X+360,1],["Invités",X+420,1],["Adhésions",X+WD,1]];
+    const ligne=(vals,o={})=>{besoin(18);vals.forEach((v,i)=>{const[,cx,right]=cols[i];const t=pdfTxt(v);const w=(o.b?fb:f).widthOfTextAtSize(t,o.s||9);txt(t,right?cx-w:cx,y,{s:o.s||9,b:o.b,c:o.c})});y-=6;page.drawLine({start:{x:X,y},end:{x:X+WD,y},thickness:.6,color:LI});y-=12};
+    ligne(cols.map(c=>c[0]),{s:7.5,b:1,c:MU});
+    d.lignes.forEach(l=>ligne([l.c.nom.replace(/^CAP\s+/,""),l.c.statut==="actif"?"actif":"création",l.m+(l.nouv?" (+"+l.nouv+")":""),l.t,l.i,l.a]));
+    y-=6;
+    const puces=(arr,vide)=>{(arr.length?arr:[vide]).forEach(x=>{const mots=pdfTxt(x).split(" ");let l="";const out=[];mots.forEach(m=>{const t=l?l+" "+m:m;if(f.widthOfTextAtSize(t,9.5)>WD-14){out.push(l);l=m}else l=t});out.push(l);besoin(out.length*13+4);out.forEach((o,i)=>{if(i===0&&arr.length)txt("•",X,y,{s:9.5,c:CR});txt(o,X+12,y,{s:9.5});y-=13});y-=2})};
+    sec("À surveiller");puces(d.surv,"Rien de particulier.");y-=8;
+    sec(d.suivLib);puces(d.proch,"Aucune réunion planifiée pour l'instant.");
+    const pages=doc.getPages();pages.forEach((p,i)=>{p.drawText(pdfTxt("CRM CAP Protéine Maroc · généré le "+new Date().toLocaleDateString("fr-FR")),{x:X,y:34,size:8,font:f,color:MU});p.drawText(`Page ${i+1} / ${pages.length}`,{x:X+WD-50,y:34,size:8,font:f,color:MU})});
+    const bytes=await doc.save();const nom=pdfTxt("Rapport CAP "+rpMoisLib(_rp.mois)+" - "+d.perim).replace(/[\/\\:*?"<>|]/g,"-")+".pdf";
+    const file=new File([bytes],nom,{type:"application/pdf"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:d.titre,text:d.titre+" · "+d.perim});b.textContent=lib;return}catch(e){if(e.name==="AbortError"){b.textContent=lib;return}}}
+    const u=URL.createObjectURL(file);const a=document.createElement("a");a.href=u;a.download=nom;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+    toast("Rapport téléchargé");
+  }catch(e){console.error(e);toast("Erreur : rapport impossible à générer")}
+  b.textContent=lib;
+}
+/* ---------- 6. Mode présentation ---------- */
+let _sh={i:0,t:null};
+function showSlides(){
+  const d0=jours90(),t90=DB.reunions.filter(r=>tenue(r)&&r.date>=d0);
+  const inv=DB.reunions.flatMap(r=>r.guests||[]),cv=pct(inv.filter(g=>g.statut==="Membre").length,inv.length);
+  const villes=new Set(DB.clubs.map(c=>c.ville)).size;
+  const zs=zonesListe().map(z=>({...z,s:zoneStats(z)})).filter(z=>z.s.clubs);
+  const parM=zs.some(z=>z.s.membres),mx=Math.max(1,...zs.map(z=>parM?z.s.membres:z.s.clubs));
+  const crea=DB.clubs.filter(c=>c.statut!=="actif"),sansA=crea.filter(c=>!c.animId).length;
+  const prochaines=DB.reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
+  const adh30=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee").length;
+  const S=[
+    `<h3>Le réseau <em>Protéine Maroc</em></h3><div class="sbig"><div><b>${DB.clubs.length}</b><span>clubs dans ${villes} villes</span></div><div><b>${DB.membres.length}</b><span>membres</span></div><div><b>${DB.animateurs.length}</b><span>animateurs</span></div><div><b>${t90.length}</b><span>réunions tenues sur 90 jours</span></div></div>`,
+    `<h3>Implanté dans <em>${villes} villes</em></h3><div class="smap">${carteSvg({dark:1,calme:1,hmax:420})}</div>`,
+    `<h3>Les zones, <em>côte à côte</em></h3><div class="szl">${zs.map((z,i)=>{const v=parM?z.s.membres:z.s.clubs;return `<div><span>${esc(z.nom)}</span><i style="width:${Math.max(1,v/mx*100)}%;animation-delay:${i*.12}s"></i><b>${v}</b></div>`}).join("")}</div><p style="opacity:.65;margin-top:18px">${parM?"membres":"clubs"} par zone</p>`,
+    crea.length?`<h3><em>${crea.length} club${crea.length>1?"s":""}</em> en route vers leur lancement</h3><div class="slist">${crea.slice(0,7).map(c=>`<div><em>${["Création","SI tenue","Actif"][clubEtape(c)]}</em><span>${esc(c.nom.replace(/^CAP\s+/,""))} · ${esc(c.ville)}${c.animId?"":" · animateur à nommer"}</span></div>`).join("")}</div>${sansA?`<p style="opacity:.7;margin-top:16px">Dont ${sansA} en attente d'un animateur.</p>`:""}`:"",
+    prochaines.length?`<h3>Les <em>prochaines réunions</em></h3><div class="slist">${prochaines.map(r=>{const d=dObj(r.date);return `<div><em>${d.getDate()} ${MOIS[d.getMonth()]}</em><span>${TYPES[r.type]||r.type} · ${esc(club(r.clubId).nom.replace(/^CAP\s+/,""))}</span></div>`}).join("")}</div>`:"",
+    `<h3>La conversion</h3><div class="sbig"><div><b>${inv.length}</b><span>invités suivis</span></div><div><b>${cv==null?"—":cv+" %"}</b><span>devenus membres</span></div><div><b>${adh30}</b><span>adhésions reçues par le lien</span></div><div><b>${DB.membres.filter(m=>m.paiement).length}</b><span>membres à jour du paiement</span></div></div>`
+  ].filter(Boolean);
+  return S;
+}
+function openPresentation(){
+  closePresentation();
+  const o=document.createElement("div");o.className="show-o";o.id="show-o";o.setAttribute("role","dialog");o.setAttribute("aria-label","Mode présentation");
+  document.body.appendChild(o);_sh.i=0;showRender();
+  try{if(document.documentElement.requestFullscreen&&isWide())document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
+  document.addEventListener("keydown",showKey);
+}
+function showRender(){
+  const o=document.getElementById("show-o");if(!o)return;const S=showSlides();_sh.i=(_sh.i+S.length)%S.length;
+  o.innerHTML=`<div class="tap"><button aria-label="Diapositive précédente" onclick="showGo(-1)"></button><button aria-label="Diapositive suivante" onclick="showGo(1)"></button></div>
+    <div class="h"><span class="mono"><img src="icone-192.png" alt=""></span><span><small>Club d'Affaires</small><b>Protéine Maroc</b></span><span class="clk">${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span><button class="x" onclick="closePresentation()" aria-label="Quitter la présentation">✕</button></div>
+    <div class="sl">${S[_sh.i]}</div>
+    <div class="sprog">${S.map((_,i)=>`<i class="${i<_sh.i?"done":i===_sh.i?"on":""}"><b></b></i>`).join("")}</div>`;
+  clearTimeout(_sh.t);_sh.t=setTimeout(()=>showGo(1),7000);
+}
+function showGo(d){_sh.i+=d;showRender()}
+function showKey(e){if(e.key==="Escape")closePresentation();else if(e.key==="ArrowRight"||e.key===" ")showGo(1);else if(e.key==="ArrowLeft")showGo(-1)}
+function closePresentation(){clearTimeout(_sh.t);const o=document.getElementById("show-o");if(o)o.remove();document.removeEventListener("keydown",showKey);try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+
 /* Comptes : une couleur par rôle. */
 function roleCouleur(r){return{superadmin:"#B0122E",directeur_national:"#5C0A18",directeur:"#B8862A",animateur:"#2E7D5B",visiteur:"#8C8085"}[r]||"#8C8085"}
 function rolePill(r){return{directeur:"dir",directeur_national:"dir",animateur:"an",visiteur:"vi"}[r]||""}

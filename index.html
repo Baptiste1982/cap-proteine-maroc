@@ -995,6 +995,23 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .update-bar{left:12px;right:12px;margin:0 auto;width:max-content;max-width:min(420px,calc(100vw - 24px))}
 @media(min-width:900px){.update-bar{top:84px;bottom:auto;left:216px;right:0;animation:ubDown .35s cubic-bezier(.16,1,.3,1)}}
 @keyframes ubDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+/*v027*/
+/* ===== Mes réunions ===== */
+.reu-l{display:grid;gap:10px;margin-bottom:6px}
+@media(min-width:900px){.reu-l{grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:12px}}
+.reu-card,.reu-club{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--vc);box-shadow:var(--shadow);min-width:0;animation:rise .4s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*40ms);flex-wrap:wrap}
+.reu-d{flex:0 0 54px;border:0;border-radius:12px;background:var(--crimson-tint);color:var(--crimson);padding:6px 0;text-align:center;cursor:pointer;line-height:1}
+.reu-d b{display:block;font:800 22px "Bricolage Grotesque",sans-serif}.reu-d small{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;margin-top:2px}.reu-d em{display:block;font-style:normal;font-size:10px;opacity:.75;margin-top:2px}
+.reu-t,.reu-ct{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:3px}
+.reu-t b,.reu-ct b{font-size:14.5px}.reu-t small,.reu-ct small{color:var(--muted);font-size:12.5px}
+.reu-t .st{align-self:flex-start}
+.reu-ct em{font-style:normal;font-size:12px;color:var(--crimson);font-weight:600}
+.reu-warn{color:var(--warn);font-weight:600}
+.reu-act{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.reu-quick{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.reu-mem{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);margin:4px 0 6px;cursor:pointer}
+.reu-mem input{margin-top:2px;accent-color:var(--crimson)}
+@media(max-width:899px){.nav button{font-size:9.5px}}
 </style>
 </head>
 <body>
@@ -1043,6 +1060,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 <nav id="nav" class="nav hidden">
   <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
   <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
+  <button data-tab="reunions" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg>Réunions</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
   <button data-tab="membres" onclick="go('membres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="18" y2="14"/></svg>Membres</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
@@ -1069,8 +1087,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.21.1";
+const APP_VERSION="0.22.0";
 const CHANGELOG=[
+  {v:"0.22.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Nouvel onglet « Mes réunions » : l'espace de l'animateur pour ses clubs. Les réunions à venir avec « Changer le jour » (+1 semaine, +2 semaines, ou une date au choix, avec l'heure et le lieu) et « Confirmer » ; les comptes rendus à écrire ; puis le rythme de chaque club.",
+      "Rythme du club : lieu, jour et heure habituels (chaque semaine, ou le 1er, 2e, 3e, 4e ou dernier jour X du mois). Le CRM propose la date de la prochaine réunion, et « Planifier la suivante » ouvre la réunion déjà remplie (date, heure, lieu). Quand on déplace une réunion, on peut retenir le lieu et l'heure pour les suivantes.",
+      "Compte rendu de réunion : chiffres du bilan, déroulé, décisions, points à suivre. L'enregistrer passe la réunion en « Réalisée ». Il s'ouvre aussi depuis la fiche de la réunion. Canevas provisoire, à aligner sur le modèle du national.",
+      "Les directeurs basculent entre « Mes clubs » et « Tous mes périmètres »."]}},
   {v:"0.21.1",date:"29 octobre 2026",notes:{
     "Corrigé":["La fenêtre « Nouvelle version » est centrée : en haut de la page sous la barre sur ordinateur (elle ne recouvre plus les listes ni le panneau de droite), au-dessus de la barre du bas sur téléphone."]}},
   {v:"0.21.0",date:"29 octobre 2026",notes:{
@@ -1367,9 +1391,9 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??""}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||""}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
@@ -1493,6 +1517,7 @@ function tutoEtapes(partie){
       {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte. L'interrupteur National / Régional change le périmètre."},
       {go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action : club sans animateur, club sans réunion, adhésions à intégrer ou à saisir au national. Touche une ligne pour agir."}],
     agenda:[
+      {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : changer le jour d'une réunion, écrire le compte rendu, et planifier la suivante en un clic avec le lieu, le jour et l'heure habituels du club."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
       ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
       {go:"agenda",c:'#view [onclick^="openMeeting"]',t:"Une réunion",x:"Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
@@ -1663,13 +1688,13 @@ function updateRegionLabel(){
 /* ============================================================
    NAV
    ============================================================ */
-const TAB_ORDER=["dash","agenda","clubs","membres","lieux","team"];let _navDir=null;
+const TAB_ORDER=["dash","agenda","reunions","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="lieux"?viewLieux():viewTeam();
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewReunions():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="lieux"?viewLieux():viewTeam();
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
@@ -1705,7 +1730,7 @@ function railMembresIncomplets(ids,n){
   return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
 }
 function railHTML(){
-  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"}[tab]||"";
   const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
@@ -1714,6 +1739,11 @@ function railHTML(){
       +(railReunions(ids,1,r=>r.date<=iso).length?"":railRang("Ensuite",railReunions(ids,5),"Aucune réunion à venir."))
       +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · bilan à saisir</small></div></div>`}),""):"")
       +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
+  }
+  if(tab==="reunions"){
+    const cr=reuACompteRendu(),iso=isoJour(new Date(TODAY.getTime()+7*864e5));
+    return head("Cette semaine","Touche une réunion pour la gérer ici.")+railRang("Dans les 7 jours",railReunions(new Set(reuClubs().map(c=>c.id)),10,r=>r.date<=iso),"Rien dans les 7 jours.")
+      +railRang("Comptes rendus à écrire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
   }
   if(tab==="membres"){
     const l=DB.membres.filter(m=>ids.has(m.clubId)).slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
@@ -1809,6 +1839,154 @@ async function openQuiConnecte(){
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();await presenceMaj();
 }
+/* ============================================================
+   MES RÉUNIONS (v0.22) — l'espace de l'animateur : ses réunions à venir (changer le jour, le lieu, confirmer),
+   les comptes rendus à écrire, le rythme de chaque club (lieu, jour, heure habituels → « Planifier la suivante »).
+   Le compte rendu (reunions.compte_rendu, jsonb) suit un canevas provisoire, à aligner sur le modèle national.
+   ============================================================ */
+const JOURS_LONG=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
+const RANGS={0:"chaque",1:"1er",2:"2e",3:"3e",4:"4e","-1":"dernier"};
+const CR_CHAMPS=[["deroule","Déroulé de la réunion","Ordre du jour, interventions, présentations de membres…"],["decisions","Décisions et recommandations","Mises en relation, affaires passées, décisions du groupe…"],["suivi","Points à suivre","Qui fait quoi d'ici la prochaine réunion"]];
+function reuMesClubs(){return SESSION.animId?DB.clubs.filter(c=>c.animId===SESSION.animId):[]}
+function reuPeutTout(){return ["superadmin","directeur_national","directeur"].includes(SESSION.role)}
+function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)return DB.clubs.filter(c=>canEditClubId(c.id));return mine}
+function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&r.statut!=="annulee"&&!r.crLe&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
+function rythmeTexte(c){if(!c.rJour)return"";const r=c.rRang??0;return (r===0?"Chaque "+JOURS_LONG[c.rJour]:"Le "+RANGS[r]+" "+JOURS_LONG[c.rJour]+" du mois")+(c.heureHab?" à "+c.heureHab:"")}
+function nthJour(y,m,jour,rang){ // jour 1=lundi..7 ; rang 1..4 ou -1
+  const js=jour%7;
+  if(rang===-1){const d=new Date(y,m+1,0);while(d.getDay()!==js)d.setDate(d.getDate()-1);return d}
+  const d=new Date(y,m,1);while(d.getDay()!==js)d.setDate(d.getDate()+1);d.setDate(d.getDate()+7*(rang-1));return d.getMonth()===m?d:null;
+}
+function prochaineDate(c){
+  if(!c.rJour)return null;
+  const der=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").map(r=>r.date).sort().pop();
+  const min=new Date(TODAY);if(der){const d=dObj(der);d.setDate(d.getDate()+1);if(d>min)min.setTime(d.getTime())}
+  const r=c.rRang??0;
+  if(r===0){const d=new Date(min);while(d.getDay()!==c.rJour%7)d.setDate(d.getDate()+1);return d}
+  for(let k=0;k<14;k++){const d=nthJour(min.getFullYear(),min.getMonth()+k,c.rJour,r);if(d&&d>=min)return d}
+  return null;
+}
+function dateLongue(d){return JOURS_LONG[d.getDay()||7]+" "+d.getDate()+" "+MOIS_LONG[d.getMonth()].toLowerCase()}
+function reuCarte(r,i){
+  const c=club(r.clubId),d=dObj(r.date),ed=canEditReunion(r),passe=isPast(r.date);
+  return `<div class="reu-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,12)}">
+    <button class="reu-d" onclick="openMeeting('${r.id}')" aria-label="Ouvrir la réunion"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small><em>${JOURS[d.getDay()]}</em></button>
+    <div class="reu-t"><b>${esc((c.nom||"").replace(/^CAP\s+/,""))} <span class="rl-type ${r.type==="RL"?"rl":""}">${r.type}</span></b>
+      <small>${r.heure?esc(r.heure)+" · ":""}${r.lieuId?esc(lieuNom(r.lieuId)):`<span class="reu-warn">lieu à définir</span>`}</small>
+      <span class="st ${r.statut}">${STATUTS[r.statut]}</span></div>
+    <div class="reu-act">${ed&&!passe?`<button class="btn ghost mini" onclick="changerJour('${r.id}')">Changer le jour</button>${r.statut==="planifiee"?`<button class="btn ghost mini" onclick="reuConfirmer('${r.id}')">Confirmer</button>`:""}`:""}
+      ${passe?`<button class="btn mini ${r.crLe?"ghost":""}" onclick="openCR('${r.id}')">${r.crLe?"Compte rendu":"Écrire le compte rendu"}</button>`:""}</div></div>`;
+}
+function viewReunions(){
+  if(readOnly())return `<div class="page">${emptyState("Espace réservé","Les réunions se gèrent depuis un compte animateur ou directeur.")}</div>`;
+  const mine=reuMesClubs(),clubs=reuClubs(),ids=new Set(clubs.map(c=>c.id));
+  const avenir=DB.reunions.filter(r=>ids.has(r.clubId)&&!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||""));
+  const acr=reuACompteRendu();
+  const hist=DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&r.crLe).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+  const bascule=mine.length&&reuPeutTout()?`<div class="seg-sc" role="tablist" style="max-width:420px"><span class="knob" style="transform:translateX(${window._reuTous?"100%":"0"})"></span><button role="tab" class="${window._reuTous?"":"on"}" onclick="window._reuTous=false;render()">Mes clubs</button><button role="tab" class="${window._reuTous?"on":""}" onclick="window._reuTous=true;render()">Tous mes périmètres</button></div>`:"";
+  const rythmes=clubs.map((c,i)=>{const nd=prochaineDate(c),rt=rythmeTexte(c);
+    return `<div class="reu-club" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,12)}"><div class="reu-ct"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b>
+      <small>${rt?esc(rt):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · "+esc(lieuNom(c.lieuHab)):""}</small>
+      ${nd?`<em>Prochaine date proposée : ${dateLongue(nd)}</em>`:""}</div>
+      <div class="reu-act">${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">${rt?"Régler":"Définir le rythme"}</button><button class="btn mini" onclick="planifierSuivante('${c.id}')">Planifier la suivante</button>`:""}</div></div>`}).join("");
+  return `<div class="page reu"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mes réunions</h2><p>${clubs.length} club${clubs.length>1?"s":""} · ${avenir.length} réunion${avenir.length>1?"s":""} à venir${acr.length?` · <b style="color:var(--crimson)">${acr.length} compte${acr.length>1?"s":""} rendu${acr.length>1?"s":""} à écrire</b>`:""}</p></div></div>
+    ${bascule}
+    ${acr.length?`<div class="month-label">Comptes rendus à écrire <span style="color:var(--crimson);font-weight:700">${acr.length}</span></div><div class="reu-l">${acr.map(reuCarte).join("")}</div>`:""}
+    <div class="month-label">À venir <span style="color:var(--crimson);font-weight:700">${avenir.length}</span></div>
+    <div class="reu-l">${avenir.length?avenir.map(reuCarte).join(""):`<p class="fh-empty">Aucune réunion à venir. Planifie la suivante depuis le rythme d'un club ci-dessous.</p>`}</div>
+    <div class="month-label">Rythme de ${mine.length&&!window._reuTous?"mes ":""}clubs</div>
+    <div class="reu-l">${rythmes||`<p class="fh-empty">Aucun club rattaché à ton compte.</p>`}</div>
+    ${hist.length?`<div class="month-label">Derniers comptes rendus</div><div class="reu-l">${hist.map(reuCarte).join("")}</div>`:""}
+    <div style="height:8px"></div></div>`;
+}
+async function reuConfirmer(id){
+  const {error}=await sb.from("reunions").update({statut:"confirmee"}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  DB.reunions.find(x=>x.id===id).statut="confirmee";toast("Réunion confirmée");render();
+}
+function lieuOptions(sel,ville){const l=DB.lieux.slice().sort((a,b)=>(a.ville===ville?0:1)-(b.ville===ville?0:1)||a.nom.localeCompare(b.nom));return `<option value="">À définir</option>`+l.map(x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${esc(x.nom)} — ${esc(x.ville)}</option>`).join("")}
+function changerJour(id){
+  const r=DB.reunions.find(x=>x.id===id),c=club(r.clubId);
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({vc:villeColor(c.ville),ini:initiales(c.nom.replace(/^CAP\s+/,"")),title:"Changer le jour",sub:`${esc(c.nom.replace(/^CAP\s+/,""))} · actuellement le ${dateLongue(dObj(r.date))}${r.heure?" à "+esc(r.heure):""}`})}
+    <div class="reu-quick"><button class="chip" onclick="cjDecaler(7)">+1 semaine</button><button class="chip" onclick="cjDecaler(14)">+2 semaines</button><button class="chip" onclick="cjDecaler(-7)">−1 semaine</button></div>
+    <div class="frow"><div class="field"><label>Nouvelle date</label><input id="cj-date" type="date" value="${r.date}" min="${isoJour(TODAY)}"></div><div class="field"><label>Heure</label><input id="cj-heure" type="time" value="${esc(r.heure||c.heureHab||"19:00")}"></div></div>
+    <div class="field"><label>Lieu</label><select id="cj-lieu">${lieuOptions(r.lieuId||c.lieuHab,c.ville)}</select></div>
+    <label class="reu-mem"><input type="checkbox" id="cj-mem" ${!c.lieuHab?"checked":""}> Retenir ce lieu et cette heure pour les prochaines réunions du club</label>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="cjEnregistrer('${id}')">Enregistrer</button></div>`;
+  openSheet();
+}
+function cjDecaler(n){const el=document.getElementById("cj-date");const d=dObj(el.value);d.setDate(d.getDate()+n);if(d<TODAY)return;el.value=isoJour(d)}
+async function cjEnregistrer(id){
+  const r=DB.reunions.find(x=>x.id===id),c=club(r.clubId),g=x=>document.getElementById(x).value;
+  const date=g("cj-date");if(!date){toast("Choisis une date");return}
+  const row={date,heure:g("cj-heure")||null,lieu_id:g("cj-lieu")||null};
+  const {error}=await sb.from("reunions").update(row).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(r,{date,heure:row.heure||"",lieuId:row.lieu_id});
+  if(document.getElementById("cj-mem").checked&&(row.lieu_id||row.heure)){
+    const up={};if(row.lieu_id)up.lieu_habituel_id=row.lieu_id;if(row.heure)up.heure_habituelle=row.heure;
+    const e2=await sb.from("clubs").update(up).eq("id",c.id);if(!e2.error){if(up.lieu_habituel_id)c.lieuHab=up.lieu_habituel_id;if(up.heure_habituelle)c.heureHab=up.heure_habituelle}
+  }
+  toast("Réunion déplacée au "+dateLongue(dObj(date)));await okPuis();closeSheet();render();
+}
+function openRythme(clubId){
+  const c=club(clubId);
+  const jours=[1,2,3,4,5,6,7].map(j=>`<option value="${j}" ${c.rJour===j?"selected":""}>${JOURS_LONG[j].replace(/^./,x=>x.toUpperCase())}</option>`).join("");
+  const rangs=[[0,"Chaque semaine"],[1,"1er du mois"],[2,"2e du mois"],[3,"3e du mois"],[4,"4e du mois"],[-1,"Dernier du mois"]].map(([v,l])=>`<option value="${v}" ${(c.rRang??0)===v?"selected":""}>${l}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({vc:villeColor(c.ville),ini:initiales(c.nom.replace(/^CAP\s+/,"")),title:"Rythme du club",sub:esc(c.nom.replace(/^CAP\s+/,""))+" · lieu, jour et heure habituels"})}
+    <p class="fh-note">Le CRM s'en sert pour proposer la date de la prochaine réunion et pré-remplir le lieu et l'heure.</p>
+    <div class="frow"><div class="field"><label>Fréquence</label><select id="ry-rang">${rangs}</select></div><div class="field"><label>Jour</label><select id="ry-jour"><option value="">—</option>${jours}</select></div></div>
+    <div class="field"><label>Heure habituelle</label><input id="ry-heure" type="time" value="${esc(c.heureHab||"19:00")}"></div>
+    <div class="field"><label>Lieu habituel</label><select id="ry-lieu">${lieuOptions(c.lieuHab,c.ville)}</select></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="ryEnregistrer('${clubId}')">Enregistrer</button></div>`;
+  openSheet();
+}
+async function ryEnregistrer(clubId){
+  const c=club(clubId),g=x=>document.getElementById(x).value;
+  const row={rythme_jour:g("ry-jour")?+g("ry-jour"):null,rythme_rang:g("ry-jour")?+g("ry-rang"):null,heure_habituelle:g("ry-heure")||null,lieu_habituel_id:g("ry-lieu")||null};
+  const {error}=await sb.from("clubs").update(row).eq("id",clubId);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(c,{rJour:row.rythme_jour,rRang:row.rythme_rang,heureHab:row.heure_habituelle||"",lieuHab:row.lieu_habituel_id});
+  toast("Rythme enregistré");await okPuis();closeSheet();render();
+}
+function planifierSuivante(clubId){
+  const c=club(clubId),nd=prochaineDate(c);
+  meetingForm(null,clubId);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.value=v};
+  if(nd)set("f-date",isoJour(nd));set("f-heure",c.heureHab);set("f-lieu",c.lieuHab);
+  if(typeof majApercuReunion==="function")majApercuReunion();
+  pillify(document.getElementById("sheet-content"));
+}
+function crBloc(m,editable){
+  if(!isPast(m.date)||m.statut==="annulee")return"";
+  if(m.crLe)return `<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Voir le compte rendu</button>`;
+  return editable?`<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Écrire le compte rendu</button>`:"";
+}
+function openCR(id){
+  const m=DB.reunions.find(x=>x.id===id),c=club(m.clubId),d=dObj(m.date),ed=canEditReunion(m),cr=m.cr||{};
+  const champs=CR_CHAMPS.map(([k,l,ph])=>ed?`<div class="field"><label>${l}</label><textarea id="cr-${k}" rows="4" placeholder="${esc(ph)}">${esc(cr[k]||"")}</textarea></div>`
+    :(cr[k]?`<div class="drow"><div class="tx"><div class="k">${l}</div><div class="v" style="font-weight:400;white-space:pre-line">${esc(cr[k])}</div></div></div>`:"")).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Compte rendu",sub:`${esc(c.nom.replace(/^CAP\s+/,""))} · ${TYPES[m.type]||m.type} du ${dateLongue(d)} · ${esc(lieuNom(m.lieuId))}`})}
+    ${bilanBloc(m,ed)}
+    ${champs||`<p class="fh-empty">Pas encore de compte rendu.</p>`}
+    ${m.crLe?`<p class="fh-note">Écrit le ${adhDate(m.crLe)}.</p>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">${ed?"Annuler":"Fermer"}</button>${ed?`<button class="btn" onclick="crEnregistrer('${id}')">Enregistrer le compte rendu</button>`:""}</div>`;
+  openSheet();
+}
+async function crEnregistrer(id){
+  const m=DB.reunions.find(x=>x.id===id),cr={};
+  CR_CHAMPS.forEach(([k])=>{const v=document.getElementById("cr-"+k).value.trim();if(v)cr[k]=v});
+  if(!Object.keys(cr).length){toast("Le compte rendu est vide");return}
+  const row={compte_rendu:cr,cr_le:new Date().toISOString(),cr_par:SESSION.id};
+  if(m.statut==="planifiee"||m.statut==="confirmee")row.statut="realisee";
+  const {error}=await sb.from("reunions").update(row).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(m,{cr,crLe:row.cr_le});if(row.statut)m.statut=row.statut;
+  toast("Compte rendu enregistré");await okPuis();closeSheet();render();
+}
 /* Mobile : lignes compactes à indicateurs, détail au toucher. Ordinateur (≥ 900 px) : cartes riches.
    On rerend quand on franchit le seuil (rotation, fenêtre redimensionnée). */
 function isWide(){return window.matchMedia("(min-width:900px)").matches}
@@ -1816,7 +1994,7 @@ let _wasWide=null;
 window.addEventListener("resize",()=>{const w=isWide();if(_wasWide!==null&&w!==_wasWide&&document.getElementById("view").innerHTML)render();_wasWide=w});
 function fabAction(){
   if(readOnly()||tab==="dash"||tab==="membres")return;
-  if(tab==="agenda")openMeeting();
+  if(tab==="agenda"||tab==="reunions")openMeeting();
   else if(tab==="lieux")openLieu();
   else if(tab==="clubs"&&canManageStructure())clubForm(null);
   else if(tab==="team"&&canManageStructure())openAnim();
@@ -2417,6 +2595,7 @@ function meetingDetail(m,editable){
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
     ${bilanBloc(m,editable)}
+    ${crBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>
@@ -3917,7 +4096,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -3936,7 +4115,7 @@ function filFicheRendu(){
   el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
-const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
 const FIL_FILTRES={todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}

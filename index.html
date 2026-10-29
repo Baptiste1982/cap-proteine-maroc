@@ -889,8 +889,18 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.16.1";
+const APP_VERSION="0.17.0";
 const CHANGELOG=[
+  {v:"0.17.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Robot de saisie vers le CRM national réécrit sur le vrai parcours de l'Espace Animateur : il retrouve ou crée le prospect, remplit Préparation, Entreprise, Personne membre et Contrat, puis s'arrête. L'enregistrement du contrat et la signature restent à l'animateur.",
+      "Répétition à blanc du robot (--essai) : seules les lectures partent au national, rien n'y est écrit."
+    ],
+    "Modifié":[
+      "Formulaire d'adhésion : civilité et « dirigeant » obligatoires ; catégorie juridique et métier choisis dans les listes officielles du national (13 catégories, 402 métiers).",
+      "Formulaire d'adhésion : patente, ville RC et capital deviennent facultatifs pour un entrepreneur individuel ou une profession libérale, comme au national.",
+      "Fiche d'adhésion et export pour saisie : civilité, dirigeant, « signataire = membre » et « facturation = entreprise du membre »."
+    ]}},
   {v:"0.16.1",date:"29 octobre 2026",notes:{
     "Modifié":[
       "Formulaire d'adhésion : tous les champs entreprise et membre deviennent obligatoires, comme dans le CRM national (sauf site web, loisirs et suppléant). L'adresse est séparée en rue, code postal et ville.",
@@ -2427,7 +2437,7 @@ function adhWhatsApp(){
   window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
 const ADH_CHAMPS=[["Entreprise",[["metier","Métier"],["ent_nom","Nom usuel"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_ice","ICE"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"]]],
-  ["Membre",[["m_prenom","Prénom"],["m_nom","Nom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Mobile"],["m_naissance","Naissance"],["m_hobbies","Hobbies"]]],
+  ["Membre",[["m_civilite","Civilité"],["m_dirigeant","Dirigeant"],["m_prenom","Prénom"],["m_nom","Nom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Mobile"],["m_naissance","Naissance"],["m_hobbies","Hobbies"]]],
   ["Signataire",[["s_prenom","Prénom"],["s_nom","Nom"],["s_fonction","Fonction"],["s_email","Email"],["s_tel","Mobile"]]],
   ["Règlement",[["reg_mode","Mode"],["reg_fois","Versements"],["commentaires","Commentaires"]]],
   ["Facturation",[["f_entreprise","Entreprise"],["f_adresse","Adresse"],["f_cpville","CP / Ville"]]]];
@@ -2555,11 +2565,12 @@ async function adhSaisie(id,faite){
 /* Export « prêt à saisir » : une ligne par adhésion pas encore saisie dans le CRM national,
    colonnes dans l'ordre du formulaire officiel. Sert à la saisie en série (voir
    docs/saisie-en-serie-crm-proteine.md) ; le format JSON est lu par l'outil de saisie. */
-const ADH_EXPORT_COLS=[["id","Réf. adhésion"],["created_at","Reçue le"],["metier","Métier représenté"],["ent_nom","Nom de l'entreprise"],["ent_ice","ICE"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital social"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"],["m_nom","Nom"],["m_prenom","Prénom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Téléphone mobile"],["m_naissance","Date de naissance"],["m_hobbies","Hobbies"],["s_nom","Signataire nom"],["s_prenom","Signataire prénom"],["s_fonction","Signataire fonction"],["s_email","Signataire email"],["s_tel","Signataire mobile"],["reg_mode","Mode de règlement"],["reg_fois","Nombre de versements"],["commentaires","Commentaires"],["f_entreprise","Facturation entreprise"],["f_adresse","Facturation adresse"],["f_cpville","Facturation CP / ville"],["club","Club"]];
+const ADH_EXPORT_COLS=[["id","Réf. adhésion"],["created_at","Reçue le"],["metier","Métier représenté"],["ent_nom","Nom de l'entreprise"],["ent_ice","ICE"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital social"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"],["m_civilite","Civilité"],["m_nom","Nom"],["m_prenom","Prénom"],["m_dirigeant","Dirigeant"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Téléphone mobile"],["m_naissance","Date de naissance"],["m_hobbies","Hobbies"],["sig_same","Signataire = membre"],["s_nom","Signataire nom"],["s_prenom","Signataire prénom"],["s_fonction","Signataire fonction"],["s_email","Signataire email"],["s_tel","Signataire mobile"],["reg_mode","Mode de règlement"],["reg_fois","Nombre de versements"],["commentaires","Commentaires"],["fac_same","Facturation = entreprise du membre"],["f_entreprise","Facturation entreprise"],["f_adresse","Facturation adresse"],["f_cpville","Facturation CP / ville"],["club","Club"]];
 function adhLigneExport(a){
   const d={...a.data};
   if(d.sig_same){d.s_nom=d.m_nom;d.s_prenom=d.m_prenom;d.s_fonction=d.m_fonction;d.s_email=d.m_email;d.s_tel=d.m_tel}
   if(d.fac_same){d.f_entreprise=d.ent_nom_legal||d.ent_nom;d.f_adresse=d.ent_adresse;d.f_cpville=[d.ent_cp,d.ent_ville].filter(Boolean).join(" ")}
+  const oui=v=>v===true||v==="true"?"Oui":v===false||v==="false"?"Non":"";d.sig_same=oui(d.sig_same);d.fac_same=oui(d.fac_same);
   d.reg_mode={cheque:"Chèque",virement:"Virement bancaire"}[d.reg_mode]||d.reg_mode||"";
   if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
   d.id=a.id;d.created_at=a.created_at.slice(0,10);d.club=a.ref&&club(a.ref).nom||"";

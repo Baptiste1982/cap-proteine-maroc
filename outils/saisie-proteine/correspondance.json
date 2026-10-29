@@ -1,39 +1,73 @@
 {
-  "_aide": "À compléter pendant la séance où JB montre le CRM national. Pour chaque colonne de l'export : le libellé du champ tel qu'affiché à l'écran (label) OU un sélecteur CSS précis (selecteur, prioritaire). type = texte | liste | case. Laisser label et selecteur vides pour ignorer une colonne.",
-  "url_connexion": "",
-  "url_formulaire": "",
-  "bouton_enregistrer": "Enregistrer",
-  "champs": [
-    { "cle": "metier",         "label": "", "selecteur": "", "type": "liste" },
-    { "cle": "ent_nom",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_ice",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_nom_legal",  "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_categorie",  "label": "", "selecteur": "", "type": "liste" },
-    { "cle": "ent_activite",   "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_patente",    "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_ville_rcs",  "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_capital",    "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_adresse",    "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_tel",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "ent_web",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_nom",          "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_prenom",       "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_fonction",     "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_email",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_tel",          "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_naissance",    "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "m_hobbies",      "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "s_nom",          "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "s_prenom",       "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "s_fonction",     "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "s_email",        "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "s_tel",          "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "reg_mode",       "label": "", "selecteur": "", "type": "liste" },
-    { "cle": "reg_fois",       "label": "", "selecteur": "", "type": "liste" },
-    { "cle": "commentaires",   "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "f_entreprise",   "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "f_adresse",      "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "f_cpville",      "label": "", "selecteur": "", "type": "texte" },
-    { "cle": "club",           "label": "", "selecteur": "", "type": "liste" }
-  ]
+  "_aide": "Correspondance entre l'export « adhésions à saisir » du CRM CAP et l'Espace Animateur national (animateur.ma.caproteine.com), relevée le 29/10/2026. Les champs du national sont désignés par leur identifiant d'origine (attribut oldid ou id). Le robot saisir.mjs lit ce fichier : si le national renomme un champ, c'est ici qu'on le corrige.",
+  "url_accueil": "https://animateur.ma.caproteine.com/connexion/extranet",
+
+  "prospect": {
+    "_aide": "Formulaire « Ajouter un prospect » (Membres et Prospects → Gestion Prospects → bouton +).",
+    "cadre": "personneProspectMembre/formulaireSansContrat",
+    "bouton_enregistrer": "btValiderFormContact",
+    "champs": {
+      "nomEntreprise": "ent_nom",
+      "activiteEntreprise": "ent_activite",
+      "civilite": "m_civilite",
+      "nom": "m_nom",
+      "prenom": "m_prenom",
+      "fonction": "m_fonction",
+      "email": "m_email",
+      "tel1": "m_tel",
+      "adresse": "ent_adresse",
+      "codePostal": "ent_cp",
+      "ville": "ent_ville"
+    }
+  },
+
+  "assistant": {
+    "_aide": "Assistant « Envoyer le contrat membre pour signature » : 1 Préparation · 2 Entreprise · 3 Personne membre · 4 Contrat · 5 Signature. Le robot remplit jusqu'à l'étape 4 incluse et n'enregistre jamais le contrat ni ne lance la signature.",
+    "cadre": "prospectMembre/formulaireAjoutAttenteSignature",
+    "entreprise": {
+      "recherche_ice": "siret",
+      "champs": {
+        "nomEntreprise": "ent_nom",
+        "nomLegalEntreprise": "ent_nom_legal",
+        "activite": "ent_activite",
+        "numTva": "ent_patente",
+        "villeRcs": "ent_ville_rcs",
+        "montantCapitalSocial": "ent_capital",
+        "urlSiteInternet": "ent_web",
+        "telStandard": "ent_tel",
+        "adresseSiegeSocialEntreprise": "ent_adresse",
+        "codePostalSiegeSocialEntreprise": "ent_cp",
+        "villeSiegeSocialEntreprise": "ent_ville",
+        "adresseEntreprise": "ent_adresse",
+        "codePostalEntreprise": "ent_cp",
+        "villeEntreprise": "ent_ville"
+      },
+      "listes": {
+        "idCategorieJuridique": { "cle": "ent_categorie", "url": "/categorieJuridique/lister" },
+        "tabIdsMetier": { "cle": "metier", "url": "/metier/listerSansConcurrence" }
+      }
+    },
+    "personne": {
+      "champs": {
+        "civilite": "m_civilite",
+        "isDirigeante": "m_dirigeant",
+        "nom": "m_nom",
+        "prenom": "m_prenom",
+        "fonction": "m_fonction",
+        "email": "m_email",
+        "tel1": "m_tel",
+        "dateAnniversaire": "m_naissance"
+      },
+      "vouvoiement": "true"
+    },
+    "contrat": {
+      "offre_speciale": "Aucune",
+      "mode_reglement": {
+        "Virement bancaire|1": "1",
+        "Virement bancaire|2": "6",
+        "Chèque|1": "4",
+        "Chèque|2": "8"
+      }
+    }
+  }
 }

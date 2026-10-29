@@ -121,6 +121,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - **Présence** : migration `20261029190000_presence_comptes.sql` (prod `20261029122311`) — `profiles.vu_le`, RPC `cap_ping()` (appelée au démarrage puis chaque minute, appli visible) et `cap_qui_connecte()` (superadmin + directeur_national, sinon erreur). Voyant `#online-pill` « N en ligne » (en ligne = vu < 3 min), feuille `openQuiConnecte`. Pas de REVOKE dans la migration (l'outil MCP bloque les ordres « destructifs »).
 - Compte **Ghita** (bureau national, bras droit du directeur national) créé le 29/10 : identifiant `ghita`, rôle `directeur`, zone Rabat · Salé · Kénitra → voit tout le réseau, modifie et voit les adhésions sur RSK. Mot de passe transmis par JB, jamais écrit ici.
 - Banc `scratchpad/tools/membres.mjs` 37/37 (2000 px et iPhone).
+- **Fil d'Ariane** (fin du script principal) : fiches = `_fil`, les ouvreurs de `FIL_FICHES` sont enveloppés (`filNoter`) ; une fiche ouverte depuis une fiche (clic capturé dans `#sheet`) s'empile, sinon fil neuf ; rouvrir une fiche du fil y remonte. Rendu dans `#fil-fiche` par `openSheet`, vidé par `closeSheet`. Pages = `_filPage` (via `go`) : le menu (`#nav`) remet à zéro, un lien s'empile ; rendu en tête de `.page`. ⚠ Une nouvelle fonction qui ouvre une fiche doit être ajoutée à `FIL_FICHES`, sinon elle n'apparaît pas dans le fil. Banc `fil.mjs` 28/28.
+- **Date et heure** : `#tb-clock` dans la barre du haut (`horlogeDemarrer`, recalée sur la minute).
 - **À terme (demande JB)** : un chat entre membres, en messages directs seulement, sans groupes. Les membres n'ont pas encore de compte : à cadrer le jour où ils en auront un.
 
 **⚠️ À traiter** :

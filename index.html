@@ -885,6 +885,21 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .mb-t em{font-style:normal;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mb-tel{flex:0 0 auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--crimson-tint);text-decoration:none;font-size:15px}
 @media (prefers-reduced-motion:reduce){.mb-card{animation:none}.online-pill i{animation:none}}
+/*v022*/
+.fil{display:none}
+.fil.on{display:flex;align-items:center;gap:8px;min-width:0;margin:0 0 12px;font-size:12.5px;color:var(--muted)}
+.fil-page.on{margin:-6px 0 14px}
+.fil-ret{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--crimson);font-weight:800;font-size:15px;display:grid;place-items:center;cursor:pointer}
+.fil-ret:hover{background:var(--crimson-tint)}
+.fil-l{display:flex;align-items:center;gap:6px;min-width:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.fil-l::-webkit-scrollbar{display:none}
+.fil-c{border:0;background:none;padding:2px 0;color:var(--crimson);font:inherit;font-weight:600;cursor:pointer;max-width:16ch;overflow:hidden;text-overflow:ellipsis}
+.fil-c:hover{text-decoration:underline}
+.fil-s{color:var(--muted);opacity:.7}
+.fil-l b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.tb-clock{display:inline-flex;align-items:baseline;gap:7px;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tb-clock b{font:800 15px "Bricolage Grotesque",sans-serif;color:var(--ink)}
+@media(max-width:899px){.tb-clock .tc-d{display:none}}
 </style>
 </head>
 <body>
@@ -916,7 +931,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
+      <span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -943,7 +958,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
 <aside id="rail" class="rail" aria-label="Aperçu"></aside>
-<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
+<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
 <div id="confetti" class="confetti"></div>
@@ -964,7 +979,9 @@ const CHANGELOG=[
   {v:"0.21.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Nouvel onglet Membres : l'annuaire de tout le réseau, tous clubs confondus. On cherche par nom, entreprise, métier, club ou ville (sans se soucier des accents ni des majuscules), on filtre par ville, et on ouvre la fiche du membre. Bouton pour appeler quand son mobile est connu.",
-      "Qui est connecté (superadmin et directeur national) : un voyant « N en ligne » en haut de l'écran, et la liste des comptes en ligne maintenant, déjà connectés (avec l'heure) et jamais connectés. Aussi dans Paramètres."
+      "Qui est connecté (superadmin et directeur national) : un voyant « N en ligne » en haut de l'écran, et la liste des comptes en ligne maintenant, déjà connectés (avec l'heure) et jamais connectés. Aussi dans Paramètres.",
+      "Fil d'Ariane : dans une fiche ouverte depuis une autre (Carte › Club › Membre), le chemin s'affiche en haut avec un bouton ← pour revenir d'un cran ; même chose en haut des pages quand on passe d'un écran à l'autre par un lien (Synthèse › Clubs à traiter). Le menu repart toujours de zéro.",
+      "La date et l'heure en haut de l'écran, à la minute (l'heure seule au téléphone)."
     ],
     "Corrigé":["Les initiales ignorent les signes comme « · » dans un nom affiché."]}},
   {v:"0.20.0",date:"29 octobre 2026",notes:{
@@ -1357,6 +1374,7 @@ async function bootIntoApp(){
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();
   presenceDemarrer();
+  horlogeDemarrer();
   return true;
 }
 /* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe
@@ -1546,7 +1564,7 @@ function updateRegionLabel(){
    NAV
    ============================================================ */
 const TAB_ORDER=["dash","agenda","clubs","membres","lieux","team"];let _navDir=null;
-function go(t){_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
+function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
@@ -1555,7 +1573,7 @@ function render(){const v=document.getElementById("view");
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();railRender();}
+  animateRings(v);navBadges();railRender();filPageRendu(v);}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -3230,8 +3248,8 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");if(isRail())w.querySelector(".sheet").scrollTop=0}
-function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
+function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null;_fil=[];filFicheRendu()}
 
 
 /* ============================================================
@@ -3713,6 +3731,65 @@ function rolePill(r){return{directeur:"dir",directeur_national:"dir",animateur:"
   if(session)await bootIntoApp();
   checkUpdate();setInterval(checkUpdate,180000);
 })();
+
+/* ============================================================
+   FIL D'ARIANE
+   1. Fiches (panneau / feuille) : chaque fiche ouverte DEPUIS une fiche s'empile (Carte › Club › Membre).
+      Ouverte depuis la page, elle repart d'un fil neuf. Rouvrir une fiche déjà dans le fil y remonte (pas de boucle).
+      Les ouvreurs sont enveloppés une fois pour toutes (FIL_FICHES), sans toucher à leur code.
+   2. Pages : passer d'un onglet à l'autre par un lien (« Voir les clubs à traiter ») s'empile ; le menu repart à zéro.
+   ============================================================ */
+let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
+document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
+const FIL_FICHES=["openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
+function filNoter(n,a){
+  const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
+  if(!ouverte||!_filClicFiche)_fil=[];
+  else if(_fil.length)_fil[_fil.length-1].t=filTitreCourant()||_fil[_fil.length-1].t;
+  let k;try{k=n+"|"+JSON.stringify(a)}catch(e){k=n+"|"+Math.random()}
+  const i=_fil.findIndex(x=>x.k===k);if(i>=0)_fil=_fil.slice(0,i);
+  _fil.push({k,n,a,t:""});_filClicFiche=false;
+}
+FIL_FICHES.forEach(n=>{const f=window[n];if(typeof f!=="function")return;window[n]=function(...a){filNoter(n,a);return f.apply(this,a)}});
+function filFicheRendu(){
+  const el=document.getElementById("fil-fiche");if(!el)return;
+  if(_fil.length)_fil[_fil.length-1].t=filTitreCourant()||_fil[_fil.length-1].t||"Fiche";
+  if(_fil.length<2){el.innerHTML="";el.classList.remove("on");return}
+  el.classList.add("on");
+  el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
+}
+function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
+const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_FILTRES={todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
+function filPageNoter(t){
+  if(_filPageRejeu){_filPageRejeu=false;return}
+  if(_filMenu||!_filPage.length){_filPage=[{tab:t,filter:"all"}];_filMenu=false;return}
+  const i=_filPage.findIndex(x=>x.tab===t);if(i>=0)_filPage=_filPage.slice(0,i);
+  _filPage.push({tab:t,filter:"all"});
+}
+function filPageLib(x){return (FIL_ONGLETS[x.tab]||x.tab)+(x.filter&&x.filter!=="all"?" · "+(x.filter.startsWith("v:")?x.filter.slice(2):FIL_FILTRES[x.filter]||x.filter):"")}
+function filPageRendu(v){
+  if(!_filPage.length)_filPage=[{tab,filter}];
+  const top=_filPage[_filPage.length-1];if(top.tab===tab)top.filter=filter;
+  if(_filPage.length<2)return;
+  const pg=v.querySelector(".page");if(!pg)return;
+  const n=document.createElement("nav");n.className="fil fil-page on";n.setAttribute("aria-label","Fil d'Ariane");
+  n.innerHTML=`<button class="fil-ret" onclick="filPageAller(${_filPage.length-2})" aria-label="Revenir à ${esc(filPageLib(_filPage[_filPage.length-2]))}">←</button><span class="fil-l">${_filPage.map((x,i)=>i<_filPage.length-1?`<button class="fil-c" onclick="filPageAller(${i})">${esc(filPageLib(x))}</button><span class="fil-s">›</span>`:`<b>${esc(filPageLib(x))}</b>`).join("")}</span>`;
+  pg.prepend(n);
+}
+function filPageAller(i){const e=_filPage[i];if(!e)return;_filPage=_filPage.slice(0,i+1);_filPageRejeu=true;go(e.tab);if(e.filter!=="all"){filter=e.filter;render()}}
+
+/* ============================================================
+   DATE ET HEURE — en haut de l'écran, à la minute.
+   ============================================================ */
+let _horT=null;
+function horlogeMaj(){
+  const el=document.getElementById("tb-clock");if(!el)return;const d=new Date();
+  const j=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}),h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  el.innerHTML=`<span class="tc-d">${j.charAt(0).toUpperCase()+j.slice(1)}</span><b>${h}</b>`;el.title=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+function horlogeDemarrer(){horlogeMaj();clearTimeout(_horT);const suite=()=>{horlogeMaj();_horT=setTimeout(suite,60000-Date.now()%60000+50)};_horT=setTimeout(suite,60000-Date.now()%60000+50)}
 </script>
 </body>
 </html>

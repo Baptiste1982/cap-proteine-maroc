@@ -3,6 +3,7 @@
 // l'assistant « Envoyer le contrat membre pour signature » (relevées le 29/10/2026).
 //
 //   action "apercu"  : se connecte, LIT seulement, et dit ce qui serait envoyé.
+//   action "contrat" : range le PDF du contrat (déjà généré) dans le dossier du membre.
 //   action "envoyer" : prospect → entreprise → personne → contrat + abonnement → PDF du contrat.
 //                      signature "papier" : contrat papier à imprimer (aucun e-mail ne part) ;
 //                      signature "aucune" : s'arrête une fois le contrat généré.
@@ -23,6 +24,22 @@ const MODES: Record<string, string> = { 'virement|1': '1', 'virement|2': '6', 'c
 const n = (t: unknown) => String(t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[-'’.]/g, ' ').replace(/\s+/g, ' ').trim();
 const frDate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso || '') ? iso.split('-').reverse().join('/') : (iso || '');
 const aujourdhui = () => new Date().toLocaleDateString('fr-FR', { timeZone: 'Africa/Casablanca' });
+
+// Copie le PDF du contrat généré par le national dans le stockage privé « membres » et l'attache au
+// dossier (membre_documents) : le lien du national est public, notre copie ne l'est pas.
+async function rangerContrat(admin: any, a: any, nat: Record<string, any>) {
+  const url = nat.url_contrat_papier || nat.url_contrat;
+  if (!url || !nat.contrat_id) throw new Error('Aucun contrat généré au national pour cette adhésion');
+  const r = await fetch(url);
+  if (!r.ok || !(r.headers.get('content-type') || '').includes('pdf')) throw new Error(`PDF du contrat introuvable au national (${r.status})`);
+  const chemin = `adh-${a.id}/contrat-${nat.contrat_id}.pdf`;
+  const up = await admin.storage.from('membres').upload(chemin, new Uint8Array(await r.arrayBuffer()), { contentType: 'application/pdf', upsert: true });
+  if (up.error) throw new Error('Rangement du contrat : ' + up.error.message);
+  const nom = `Contrat membre n° ${nat.contrat_id}${nat.signature === 'papier' ? ' (papier, à signer)' : ''}.pdf`;
+  const ins = await admin.from('membre_documents').upsert({ chemin, nom, type: 'contrat', adhesion_id: a.id, membre_id: a.membre_id || null, source: url }, { onConflict: 'chemin' });
+  if (ins.error) throw new Error('Rangement du contrat : ' + ins.error.message);
+  return chemin;
+}
 
 class National {
   jar: Record<string, string> = {};
@@ -80,7 +97,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const { action, adhesion_id } = body;
     const opt = { offre: 'Aucune', justification: '', date_debut: '', signature: 'papier', ...(body.options || {}) };
-    if (!['apercu', 'envoyer'].includes(action)) return json({ error: 'Action inconnue' }, 400);
+    if (!['apercu', 'envoyer', 'contrat'].includes(action)) return json({ error: 'Action inconnue' }, 400);
     if (!['papier', 'aucune'].includes(opt.signature)) return json({ error: 'Signature électronique non prise en charge ici' }, 400);
 
     const { data: a, error: aerr } = await admin.from('adhesions').select('*').eq('id', adhesion_id).single();
@@ -90,8 +107,15 @@ Deno.serve(async (req) => {
     surErreur = async () => { if (action === 'envoyer') await admin.from('adhesions').update({ national: { ...nat, etapes, erreur: etapes[etapes.length - 1], maj: new Date().toISOString() } }).eq('id', a.id); };
     const sauver = async (extra: Record<string, unknown> = {}) => {
       Object.assign(nat, extra, { maj: new Date().toISOString(), etapes, erreur: null });
-      if (action === 'envoyer') await admin.from('adhesions').update({ national: nat }).eq('id', a.id);
+      if (action !== 'apercu') await admin.from('adhesions').update({ national: nat }).eq('id', a.id);
     };
+
+    if (action === 'contrat') {
+      const chemin = await rangerContrat(admin, a, nat);
+      etapes.push(...(nat.etapes || []), 'Contrat rangé dans le dossier du membre.');
+      await sauver({ contrat_pdf: chemin });
+      return json({ ok: true, etapes, national: nat });
+    }
 
     // Ce qu'il faut absolument avoir pour un contrat.
     const manque = [['ent_nom', 'nom de l\'entreprise'], ['ent_nom_legal', 'nom légal'], ['ent_ice', 'ICE'], ['ent_categorie', 'catégorie juridique'],
@@ -232,6 +256,8 @@ Deno.serve(async (req) => {
       etapes.push('Signature papier choisie : contrat à imprimer en deux exemplaires.');
       await sauver({ statut: 'contrat_papier', signature: 'papier' });
     }
+    try { const chemin = await rangerContrat(admin, a, nat); etapes.push('Contrat rangé dans le dossier du membre.'); await sauver({ contrat_pdf: chemin }); }
+    catch (e) { etapes.push('⚠ ' + String((e as Error)?.message || e) + ' (bouton « Ranger le contrat » pour réessayer)'); await sauver(); }
     await admin.from('adhesions').update({ saisie_proteine_le: new Date().toISOString(), saisie_proteine_par: user.id }).eq('id', a.id);
     return json({ ok: true, etapes, national: nat });
   } catch (e) {

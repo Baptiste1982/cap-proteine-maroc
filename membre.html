@@ -63,6 +63,7 @@ nav.bas .badge{position:absolute;top:0;right:12px}
 .login h1{font-size:30px;font-weight:800}
 .tel{display:flex;align-items:center;height:56px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);overflow:hidden}
 .tel:focus-within,.code:focus{border-color:var(--crimson)}
+.code::placeholder{letter-spacing:normal;font-size:16px;font-weight:500}
 .tel span{padding:0 12px 0 16px;font-weight:700;color:var(--muted);border-right:1px solid var(--line);height:100%;display:flex;align-items:center}
 .tel input{border:0;outline:0;background:none;font-size:18px;padding:0 14px;flex:1;min-width:0;letter-spacing:.04em}
 .code{height:60px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:26px;letter-spacing:.5em;text-align:center;outline:0;width:100%;font-weight:700}
@@ -130,62 +131,48 @@ const ICO={envoi:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
   retour:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
   tel:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>'};
 
-/* ---------- Connexion : numéro de téléphone + code WhatsApp ---------- */
-function telE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("212"))return "+"+d;if(d.startsWith("0"))d=d.slice(1);return d.length===9?"+212"+d:null}
-function telLisible(e){const d=String(e||"").replace(/\D/g,"").replace(/^212/,"0");return d.replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
+/* ---------- Connexion : mobile + code d'accès donné par l'animateur (fonction membre-acces) ----------
+   Le compte est un compte Supabase dont l'e-mail est fabriqué à partir du mobile : 212661234567@membres.cap-proteine.ma. */
+const DOMAINE="membres.cap-proteine.ma";
+function telE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("212"))return /^212[5-7]\d{8}$/.test(d)?d:null;if(d.startsWith("0"))d=d.slice(1);return /^[5-7]\d{8}$/.test(d)?"212"+d:null}
 function vueLogin(msg){
   $("nav").hidden=true;
-  const tel=S.etape==="tel";
   $("app").innerHTML=`<div class="login">
     <img src="logo-proteine.png" alt="Club d'affaires Protéine Maroc">
-    <div><div class="eyebrow">Espace membre</div><h1>${tel?"Bienvenue dans le réseau":"Ton code"}</h1>
-      <p class="sub">${tel?"Entre ton numéro de mobile : tu reçois un code par WhatsApp. Pas de mot de passe à retenir.":`On vient de l'envoyer par WhatsApp au ${esc(telLisible(S.tel))}.`}</p></div>
+    <div><div class="eyebrow">Espace membre</div><h1>Bienvenue dans le réseau</h1>
+      <p class="sub">Entre ton mobile et le code d'accès que ton animateur t'a donné.</p></div>
     ${msg?`<div class="msg ${msg.ok?"ok":""}">${esc(msg.t)}</div>`:""}
     <form id="f-login" style="display:flex;flex-direction:column;gap:12px">
-      ${tel?`<label class="tel"><span>+212</span><input id="l-tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="6 61 23 45 67" aria-label="Numéro de mobile" value="${esc(S.telSaisi||"")}"></label>`
-        :`<input class="code" id="l-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······" aria-label="Code reçu par WhatsApp">`}
-      <button class="btn" id="l-go" type="submit">${tel?"Recevoir mon code WhatsApp":"Entrer"}</button>
+      <label class="tel"><span>+212</span><input id="l-tel" type="tel" inputmode="tel" autocomplete="username" placeholder="6 61 23 45 67" aria-label="Numéro de mobile" value="${esc(S.telSaisi||"")}"></label>
+      <input class="code" id="l-code" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Code d'accès" aria-label="Code d'accès" style="letter-spacing:.25em;font-size:22px">
+      <button class="btn" id="l-go" type="submit">Entrer</button>
     </form>
-    ${tel?`<p class="note">C'est le numéro que tu as donné dans ton formulaire d'adhésion. S'il a changé, demande à ton animateur de le mettre à jour.</p>`
-      :`<button class="lien" id="l-autre" type="button">Changer de numéro</button><button class="lien" id="l-renvoi" type="button" style="margin-top:-12px">Renvoyer le code</button>`}
+    <p class="note">Pas encore de code, ou code oublié ? Demande à ton animateur : il t'en crée un nouveau en un clic.</p>
   </div>`;
-  $("f-login").onsubmit=e=>{e.preventDefault();tel?demanderCode():verifierCode()};
-  if(!tel){$("l-autre").onclick=()=>{S.etape="tel";vueLogin()};$("l-renvoi").onclick=()=>demanderCode(true);
-    const c=$("l-code");c.focus();c.oninput=()=>{c.value=c.value.replace(/\D/g,"").slice(0,6);if(c.value.length===6)verifierCode()}}
-  else $("l-tel").focus();
+  $("f-login").onsubmit=e=>{e.preventDefault();seConnecter()};
+  (S.telSaisi?$("l-code"):$("l-tel")).focus();
 }
-async function demanderCode(renvoi){
-  const v=renvoi?S.tel:telE164($("l-tel").value);
-  if(!renvoi)S.telSaisi=$("l-tel").value;
-  if(!v){vueLogin({t:"Ce numéro ne ressemble pas à un mobile marocain. Exemple : 06 61 23 45 67."});return}
-  const b=$("l-go");if(b){b.disabled=true;b.textContent="Envoi…"}
-  S.tel=v;
-  if(DEMO){S.etape="code";vueLogin({ok:true,t:"Démonstration : tape 123456."});return}
-  const {error}=await sb.auth.signInWithOtp({phone:v,options:{channel:"whatsapp"}});
-  if(error){S.etape="tel";vueLogin({t:errLogin(error)});return}
-  S.etape="code";vueLogin(renvoi?{ok:true,t:"Nouveau code envoyé."}:null);
-}
-async function verifierCode(){
-  const c=$("l-code").value.trim();if(c.length!==6)return;
-  const b=$("l-go");b.disabled=true;b.textContent="Vérification…";
-  if(DEMO){if(c!=="123456"){vueLogin({t:"Code incorrect. En démonstration, c'est 123456."});return}return demarrer()}
-  const {error}=await sb.auth.verifyOtp({phone:S.tel,token:c,type:"sms"});
-  if(error){vueLogin({t:/expired|invalid/i.test(error.message)?"Code incorrect ou expiré. Réessaie, ou demande un nouveau code.":errLogin(error)});return}
+async function seConnecter(){
+  S.telSaisi=$("l-tel").value;
+  const t=telE164(S.telSaisi),code=$("l-code").value.trim();
+  if(!t)return vueLogin({t:"Ce numéro ne ressemble pas à un mobile marocain. Exemple : 06 61 23 45 67."});
+  if(code.length<6)return vueLogin({t:"Le code d'accès fait au moins 6 caractères."});
+  const b=$("l-go");b.disabled=true;b.textContent="Connexion…";
+  if(DEMO){if(code!=="123456")return vueLogin({t:"Code incorrect. En démonstration, c'est 123456."});return demarrer()}
+  const {error}=await sb.auth.signInWithPassword({email:t+"@"+DOMAINE,password:code});
+  if(error)return vueLogin({t:/invalid|credentials/i.test(error.message)?"Mobile ou code incorrect. Vérifie le code, ou demande-en un nouveau à ton animateur."
+    :/rate|too many/i.test(error.message)?"Trop d'essais d'un coup. Attends quelques minutes avant de réessayer.":"Connexion impossible pour l'instant ("+error.message+")."});
   demarrer();
 }
-function errLogin(e){const m=String(e&&e.message||e);
-  if(/provider|unsupported|disabled|not enabled/i.test(m))return "La connexion par WhatsApp n'est pas encore activée. Réessaie dans quelques jours, ou contacte ton animateur.";
-  if(/rate|too many|seconds/i.test(m))return "Trop de demandes d'un coup. Attends une minute avant de redemander un code.";
-  return "Impossible d'envoyer le code pour l'instant ("+m+").";}
 
 /* ---------- Démarrage ---------- */
 async function demarrer(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   if(DEMO){Object.assign(S,demo());return lancer()}
   const {data:moi,error}=await sb.rpc("cap_membre_lier");
-  if(error){S.etape="tel";await sb.auth.signOut();return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
+  if(error){await sb.auth.signOut();return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
   if(moi.statut!=="ok"){
-    await sb.auth.signOut();S.etape="tel";
+    await sb.auth.signOut();
     return vueLogin({t:moi.statut==="en_cours"?"Ta demande d'adhésion est bien reçue. Ton espace s'ouvrira dès que ton animateur t'aura intégré à ton club : tu pourras alors te connecter avec ce même numéro."
       :moi.statut==="ambigu"?"Ce numéro est inscrit sur plusieurs fiches. Ton animateur doit corriger la fiche en double avant que tu puisses entrer."
       :"Ce numéro n'est relié à aucune fiche membre. Demande à ton animateur de l'ajouter dans ta fiche (mobile), puis réessaie."});
@@ -330,6 +317,11 @@ function vueProfil(){
       <label class="switch"><span>Apparaître dans l'annuaire</span><input type="checkbox" id="p-annu" ${m.annuaire_visible!==false?"checked":""}></label>
       <button class="btn" type="submit">Enregistrer</button>
     </form>
+    <form id="f-code" class="card" style="display:flex;flex-direction:column;gap:10px">
+      <span class="label">Changer mon code d'accès</span>
+      <input class="code" id="c-new" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Nouveau code (6 chiffres ou plus)" aria-label="Nouveau code" style="font-size:18px;letter-spacing:.15em;height:52px">
+      <button class="btn ghost" type="submit">Changer mon code</button>
+    </form>
     <p class="note">Ton nom, ton métier et ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
     <button class="btn ghost" id="p-out" type="button">Me déconnecter</button></div>`;
 }
@@ -354,6 +346,10 @@ function brancher(){
     t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
     t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyer()}}}
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
+  const fc=$("f-code");if(fc)fc.onsubmit=async e=>{e.preventDefault();const v=$("c-new").value.trim();
+    if(v.length<6){toast("Le code doit faire au moins 6 caractères");return}
+    if(!DEMO){const {error}=await sb.auth.updateUser({password:v});if(error){toast("Code non changé : "+error.message);return}}
+    $("c-new").value="";toast("Code changé. Garde-le pour ta prochaine connexion.")};
   const o=$("p-out");if(o)o.onclick=async()=>{if(!DEMO)await sb.auth.signOut();location.reload()};
 }
 function brancherRes(){const r=$("res");r.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));r.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire))}
@@ -373,7 +369,7 @@ function demo(){
 }
 
 (async()=>{
-  if(DEMO)return vueLogin({ok:true,t:"Démonstration : entre n'importe quel numéro, puis le code 123456. Rien n'est envoyé."});
+  if(DEMO)return vueLogin({ok:true,t:"Démonstration : entre n'importe quel mobile et le code 123456. Rien n'est enregistré."});
   const {data:{session}}=await sb.auth.getSession();
   if(session)demarrer();else vueLogin();
 })();

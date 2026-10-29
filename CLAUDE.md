@@ -82,7 +82,7 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - ⚠️ **Piège** : le serveur MCP Supabase demande une confirmation pour tout SQL « destructif » (DROP, DELETE, REVOKE…) et elle n'apparaît pas chez JB → l'appel expire. Écrire des migrations sans DROP quand c'est possible ; un vrai DELETE passe par l'éditeur SQL du dashboard.
 - **📁 Classeur des PDF (v0.6.0)** : Adhésions → Classeur. Rangement par mois de réception puis par groupe (club du membre intégré, sinon club du lien `?ref=`, sinon « Sans groupe »), adhésions rejetées exclues. Fichiers nommés `NOM Prénom - JJ-MM-AAAA - Groupe.pdf` **au téléchargement** (le stockage garde l'id : le groupe n'est souvent connu qu'à l'intégration). ZIP d'un mois = un dossier par groupe (JSZip 3.10.1 chargé à la demande).
 - **Saisie en série dans le CRM national Protéine** (pas d'API, login/mot de passe) : `docs/saisie-en-serie-crm-proteine.md` + robot `outils/saisie-proteine/saisir.mjs` (Playwright sur le PC de JB, JB se connecte lui-même, mode prudent par défaut). La correspondance des champs `correspondance.json` est **vide** : à remplir pendant la séance où JB montre les écrans.
-- ⚠️ Supabase gratuit : le projet se met en pause après ~7 jours sans activité → les adhésions envoyées pendant une pause échouent (le membre garde son PDF). Il était en pause le 28/10.
+- Supabase : l'organisation est en offre **Pro** (vérifié le 29/10) → pas de mise en pause automatique. (Une note disait l'inverse : fausse. La pause vue le 28/10 date d'avant le passage en Pro.)
 
 **🖱 Synthèse cliquable + micro-animations (v0.7.0, 28/10/2026)** : chaque chiffre de la Synthèse (`dashTile` → `dashDrill(kind, périmètre)`, périmètre `nat`/`reg` mémorisé dans `_dashScope`) ouvre la liste qu'il compte, chaque ligne ouvre la fiche (club, membre, réunion, animateur). Lien d'adhésion propre à chaque club dans sa fiche. Animations : compteurs (`dashCountUp`), barres, cascade, survol, toucher — coupées sous `prefers-reduced-motion`.
 
@@ -115,6 +115,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Dès 1500 px de large et une fois connecté, `html.rail-on` (`railSync`) : la page s'arrête à `--rail` (`clamp(380px,26vw,520px)`) et `#rail` reste ouvert à droite. Contenu par onglet (`railHTML`) : Synthèse = carte + prochaines réunions + dernières adhésions ; Agenda = 7 jours / ensuite / bilans à faire ; Clubs = à traiter + carte + dossiers incomplets ; Lieux = réunions sans lieu ; Équipe = prochaines réunions + clubs sans animateur. Rendu à chaque `render()`.
 - Les fiches gardent le même `#sheet` : en grand écran la CSS le loge dans le panneau, sans voile (`.sheet-bg` masqué), la page reste cliquable. Le changement de mot de passe forcé garde la surimpression (classe `force` posée par `openSheet` quand `_mdpForce`). Sous 1500 px, rien ne change.
 - Banc `scratchpad/tools/rail.mjs` 23/23 (2000 px et 1440 px).
+
+**👥 Annuaire des membres + qui est connecté (v0.21.0, 29/10/2026)** :
+- Onglet **Membres** (`viewMembres`, entre Clubs et Lieux) : annuaire de tout le réseau, recherche multi-mots insensible aux accents (`mbIndex` : nom, spécialité, `infos.metier/ent_nom/ent_activite/m_fonction/ent_ville`, club, ville), filtre ville, carte → `memberSheet`, bouton appeler si `infos.m_tel`. La frappe ne rerend que `#mb-res` (le champ garde le focus).
+- **Présence** : migration `20261029190000_presence_comptes.sql` (prod `20261029122311`) — `profiles.vu_le`, RPC `cap_ping()` (appelée au démarrage puis chaque minute, appli visible) et `cap_qui_connecte()` (superadmin + directeur_national, sinon erreur). Voyant `#online-pill` « N en ligne » (en ligne = vu < 3 min), feuille `openQuiConnecte`. Pas de REVOKE dans la migration (l'outil MCP bloque les ordres « destructifs »).
+- Compte **Ghita** (bureau national, bras droit du directeur national) créé le 29/10 : identifiant `ghita`, rôle `directeur`, zone Rabat · Salé · Kénitra → voit tout le réseau, modifie et voit les adhésions sur RSK. Mot de passe transmis par JB, jamais écrit ici.
+- Banc `scratchpad/tools/membres.mjs` 37/37 (2000 px et iPhone).
+- **À terme (demande JB)** : un chat entre membres, en messages directs seulement, sans groupes. Les membres n'ont pas encore de compte : à cadrer le jour où ils en auront un.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

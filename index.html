@@ -866,6 +866,25 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .rail-date b{display:block;font:800 17px "Bricolage Grotesque",sans-serif}.rail-date small{font-size:10px;font-weight:700;text-transform:uppercase}
 .rail-vide{color:var(--muted);font-size:13px;padding:12px 14px}
 @media (prefers-reduced-motion:reduce){html.rail-on .sheet-wrap .sheet{animation:none!important}}
+/*v021*/
+.online-pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:11.5px;font-weight:700;white-space:nowrap;cursor:pointer}
+.online-pill i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(46,125,91,.5);animation:qcpulse 2s infinite}
+@keyframes qcpulse{0%{box-shadow:0 0 0 0 rgba(46,125,91,.45)}70%{box-shadow:0 0 0 7px rgba(46,125,91,0)}100%{box-shadow:0 0 0 0 rgba(46,125,91,0)}}
+.qc-av{position:relative;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 12px "Bricolage Grotesque",sans-serif;flex:0 0 auto}
+.qc-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--card)}
+.mb-n{font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px}
+.mb-grid{display:grid;gap:8px}
+@media(min-width:900px){.mb-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
+.mb-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-left:4px solid var(--vc);cursor:pointer;min-width:0;animation:rise .38s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*25ms);transition:transform .15s,box-shadow .15s}
+.mb-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.mb-card:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+.mb-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:var(--vc);color:#fff;font:800 14px "Bricolage Grotesque",sans-serif}
+.mb-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.mb-t b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-t small{color:var(--ink);opacity:.75;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-t em{font-style:normal;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-tel{flex:0 0 auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--crimson-tint);text-decoration:none;font-size:15px}
+@media (prefers-reduced-motion:reduce){.mb-card{animation:none}.online-pill i{animation:none}}
 </style>
 </head>
 <body>
@@ -897,7 +916,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <span id="tb-role" class="role-pill">—</span>
+      <button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -915,6 +934,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
   <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
   <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
+  <button data-tab="membres" onclick="go('membres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="18" y2="14"/></svg>Membres</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
   <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
   <button class="nav-set" onclick="openParametres()" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Paramètres</button>
@@ -939,8 +959,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.20.0";
+const APP_VERSION="0.21.0";
 const CHANGELOG=[
+  {v:"0.21.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Nouvel onglet Membres : l'annuaire de tout le réseau, tous clubs confondus. On cherche par nom, entreprise, métier, club ou ville (sans se soucier des accents ni des majuscules), on filtre par ville, et on ouvre la fiche du membre. Bouton pour appeler quand son mobile est connu.",
+      "Qui est connecté (superadmin et directeur national) : un voyant « N en ligne » en haut de l'écran, et la liste des comptes en ligne maintenant, déjà connectés (avec l'heure) et jamais connectés. Aussi dans Paramètres."
+    ],
+    "Corrigé":["Les initiales ignorent les signes comme « · » dans un nom affiché."]}},
   {v:"0.20.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Grand écran (1500 px et plus) : un panneau d'aperçu reste ouvert à droite. Il montre, selon l'onglet, la carte du réseau, les prochaines réunions, les dernières adhésions, les clubs à traiter, les réunions sans lieu ou les bilans à faire.",
@@ -1271,7 +1297,7 @@ function animNom(id){const a=anim(id);return a?a.nom:"Non attribué"}
 function lieu(id){return DB.lieux.find(l=>l.id===id)}
 function lieuNom(id){const l=lieu(id);return l?l.nom:"À définir"}
 function zone(id){return DB.zones.find(z=>z.id===id)}
-function initiales(n){return(n||"?").split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+function initiales(n){const w=String(n||"").split(/\s+/).filter(x=>/\p{L}/u.test(x));return w.length?w.slice(0,2).map(x=>x.match(/\p{L}/u)[0]).join("").toUpperCase():"?"}
 function dObj(iso){const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d)}
 function isPast(iso){return dObj(iso)<TODAY}
 function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -1330,6 +1356,7 @@ async function bootIntoApp(){
   tutoAuDemarrage();
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();
+  presenceDemarrer();
   return true;
 }
 /* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe
@@ -1354,7 +1381,8 @@ function tutoEtapes(partie){
     clubs:[
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
       {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
-      {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`}],
+      {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`},
+      {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`}],
     adhesions:ed?[
       {go:"dash",c:'#view button[onclick="openAdhesions()"]',t:"Les adhésions en ligne",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent ici. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
       ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
@@ -1492,7 +1520,7 @@ async function verifierMdpInitial(){
   if(!r||r.error||r.data!==true)return;
   _mdpForce=true;openMyPassword(true);
 }
-async function logout(){await sb.auth.signOut();SESSION=null;DB=null;
+async function logout(){presenceArreter();await sb.auth.signOut();SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
   document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);railRender();}
 function enterApp(){
@@ -1517,13 +1545,13 @@ function updateRegionLabel(){
 /* ============================================================
    NAV
    ============================================================ */
-const TAB_ORDER=["dash","agenda","clubs","lieux","team"];let _navDir=null;
+const TAB_ORDER=["dash","agenda","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="lieux"?viewLieux():viewTeam();
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
@@ -1559,7 +1587,7 @@ function railMembresIncomplets(ids,n){
   return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
 }
 function railHTML(){
-  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"}[tab]||"";
   const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
@@ -1569,6 +1597,10 @@ function railHTML(){
       +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · bilan à saisir</small></div></div>`}),""):"")
       +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
   }
+  if(tab==="membres"){
+    const l=DB.membres.filter(m=>ids.has(m.clubId)).slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
+    return head("Derniers arrivés","Touche un membre pour ouvrir sa fiche ici.")+railRang("Nouveaux membres",l.map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc(mbSousTitre(m))}</small></div></div>`),"Aucun membre pour l'instant.")+railCarte();
+  }
   if(tab==="clubs")return head("Clubs à suivre","Touche un club pour ouvrir sa fiche ici.")+railRang("À traiter",railATraiter(ids,8),"✓ Tous les clubs sont en forme.")+railCarte()+railRang("Dossiers incomplets",railMembresIncomplets(ids,8),"✓ Tous les membres sont à jour.");
   if(tab==="lieux")return head("Lieux et réunions","Les réunions qui attendent un lieu, puis les prochaines.")+railRang("Lieu à trouver",railReunions(ids,10,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.")+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+railCarte();
   if(tab==="team")return head("L'équipe en action","Prochaines réunions et clubs à reprendre.")+railRang("Prochaines réunions",railReunions(ids,8),"Aucune réunion à venir.")+railRang("Clubs sans animateur",DB.clubs.filter(c=>ids.has(c.id)&&!c.animId).map(c=>`<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot bad"></span><div class="rn">${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(c.ville)}</small></div></div>`),"✓ Chaque club a son animateur.");
@@ -1577,13 +1609,95 @@ function railHTML(){
 function railRender(){railSync();const r=document.getElementById("rail");if(!r)return;if(!isRail()){r.innerHTML="";return}
   try{r.innerHTML=railHTML();pillify(r)}catch(e){console.error(e);r.innerHTML=""}}
 window.addEventListener("resize",()=>{const on=isRail();if(on!==document.documentElement.classList.contains("rail-on"))railRender()});
+/* ============================================================
+   MEMBRES — annuaire de tout le réseau, recherche sur nom, entreprise, métier, club, ville.
+   La recherche ne rerend que la liste (#mb-res) : le champ garde le focus et le clavier reste ouvert.
+   ============================================================ */
+function mbNorm(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
+function mbEntreprise(m){const i=m.infos||{};return i.ent_nom||""}
+function mbMetier(m){const i=m.infos||{};return m.specialite||i.metier||i.ent_activite||""}
+function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(m),(c.nom||"").replace(/^CAP\s+/,"")].filter(Boolean).join(" · ")}
+function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
+function mbListe(){
+  const ids=new Set(scopedClubIds());const q=mbNorm(window._q4||"").split(/\s+/).filter(Boolean);
+  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(!q.length||(x=>q.every(t=>x.includes(t)))(mbIndex(m))))
+    .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
+}
+function mbCarte(m,i){
+  const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
+  return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
+    <span class="mb-av">${esc(initiales(m.nom))}</span>
+    <span class="mb-t"><b>${esc(m.nom)}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
+  </div>`;
+}
+function mbResultats(){
+  const l=mbListe();
+  if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
+  return `<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div><div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
+}
+function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=mbResultats()}
+function viewMembres(){
+  const ids=new Set(scopedClubIds());const tous=DB.membres.filter(m=>ids.has(m.clubId));
+  const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} dans tout le réseau</p></div></div>
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="mb-q" type="search" placeholder="Nom, entreprise, métier, club, ville…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
+    <div class="filters">${fchip("Tous","all",tous.length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>
+    <div id="mb-res">${mbResultats()}</div><div style="height:8px"></div></div>`;
+}
+
+/* ============================================================
+   QUI EST CONNECTÉ — chaque appli ouverte se signale (cap_ping) chaque minute ;
+   superadmin et directeur national voient la liste (cap_qui_connecte). En ligne = vu il y a moins de 3 min.
+   ============================================================ */
+let _presT=null,_presVis=false,_presListe=[];
+function presenceVoit(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
+function presencePing(){try{if(SESSION&&document.visibilityState==="visible")sb.rpc("cap_ping").then(()=>{},()=>{})}catch(e){}}
+function presenceDemarrer(){
+  presencePing();presenceMaj();clearInterval(_presT);
+  _presT=setInterval(()=>{presencePing();presenceMaj()},60000);
+  if(!_presVis){_presVis=true;document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&SESSION){presencePing();presenceMaj()}})}
+}
+function presenceArreter(){clearInterval(_presT);_presT=null;_presListe=[];const p=document.getElementById("online-pill");if(p)p.classList.add("hidden")}
+function enLigne(u){return !!u.vu_le&&Date.now()-new Date(u.vu_le).getTime()<3*60000}
+async function presenceMaj(){
+  const p=document.getElementById("online-pill");
+  if(!presenceVoit()){if(p)p.classList.add("hidden");return}
+  let r;try{r=await sb.rpc("cap_qui_connecte")}catch(e){return}const {data,error}=r||{};if(error||!data){if(error)console.warn(error);return}
+  _presListe=data||[];
+  const n=_presListe.filter(enLigne).length;
+  if(p){p.innerHTML=`<i></i>${n} en ligne`;p.classList.remove("hidden")}
+  const sc=document.getElementById("qui-co");if(sc)sc.innerHTML=quiConnecteHTML();
+}
+function depuis(iso){
+  if(!iso)return"jamais";const d=new Date(iso),min=Math.round((Date.now()-d.getTime())/60000);
+  if(min<1)return"à l'instant";if(min<60)return"il y a "+min+" min";
+  const h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  if(d.toDateString()===new Date().toDateString())return"aujourd'hui à "+h;
+  const hier=new Date();hier.setDate(hier.getDate()-1);if(d.toDateString()===hier.toDateString())return"hier à "+h;
+  return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+" à "+h;
+}
+function quiConnecteHTML(){
+  const l=_presListe,on=l.filter(enLigne),autres=l.filter(u=>!enLigne(u)&&(u.vu_le||u.derniere_connexion)),jamais=l.filter(u=>!u.vu_le&&!u.derniere_connexion);
+  const der=u=>{const a=u.vu_le?new Date(u.vu_le).getTime():0,b=u.derniere_connexion?new Date(u.derniere_connexion).getTime():0;return a>b?u.vu_le:u.derniere_connexion};
+  const row=(u,quand)=>`<div class="rank-row"><span class="qc-av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.login))}${enLigne(u)?`<i class="qc-dot"></i>`:""}</span><div class="rn">${esc(u.nom||u.login)}${u.id===SESSION.id?" <span style=\"color:var(--muted);font-weight:500\">(toi)</span>":""}<small>${esc(ROLES[u.role]||u.role||"")} · ${quand}</small></div></div>`;
+  return secHead("En ligne maintenant",on.length)+`<div class="rank">${on.length?on.map(u=>row(u,"actif "+depuis(u.vu_le))).join(""):`<div class="rail-vide">Personne pour l'instant.</div>`}</div>`
+    +(autres.length?secHead("Déjà connectés",autres.length)+`<div class="rank">${autres.sort((a,b)=>new Date(der(b))-new Date(der(a))).map(u=>row(u,"vu "+depuis(der(u)))).join("")}</div>`:"")
+    +(jamais.length?secHead("Jamais connectés",jamais.length)+`<div class="rank">${jamais.map(u=>row(u,"jamais connecté")).join("")}</div>`:"");
+}
+async function openQuiConnecte(){
+  document.getElementById("sheet-content").innerHTML=`<h3>Qui est connecté</h3><div class="sheet-sub">Mis à jour chaque minute · en ligne = actif dans les 3 dernières minutes</div><div id="qui-co"><div class="rail-vide">Chargement…</div></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();await presenceMaj();
+}
 /* Mobile : lignes compactes à indicateurs, détail au toucher. Ordinateur (≥ 900 px) : cartes riches.
    On rerend quand on franchit le seuil (rotation, fenêtre redimensionnée). */
 function isWide(){return window.matchMedia("(min-width:900px)").matches}
 let _wasWide=null;
 window.addEventListener("resize",()=>{const w=isWide();if(_wasWide!==null&&w!==_wasWide&&document.getElementById("view").innerHTML)render();_wasWide=w});
 function fabAction(){
-  if(readOnly()||tab==="dash")return;
+  if(readOnly()||tab==="dash"||tab==="membres")return;
   if(tab==="agenda")openMeeting();
   else if(tab==="lieux")openLieu();
   else if(tab==="clubs"&&canManageStructure())clubForm(null);
@@ -3574,7 +3688,8 @@ async function openParametres(){
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
-    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
+    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
     <div class="set-sec">Aide</div>
     <div class="set-l">${r("🎓","Visite guidée","Revoir l'utilisation du CRM, en entier ou par partie","openAide()")}</div>
     <div class="set-sec">Application</div>

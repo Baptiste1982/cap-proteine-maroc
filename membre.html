@@ -7,6 +7,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" sizes="180x180" href="icone-180.png">
+<link rel="manifest" href="membre.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Protéine">
 <meta name="theme-color" content="#B0122E">
 <meta name="description" content="Espace membre du Club d'affaires Protéine Maroc : annuaire et messages entre membres">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,7 +57,7 @@ a{color:var(--crimson)}
 .vide{text-align:center;color:var(--muted);font-size:14px;padding:28px 12px}
 nav.bas{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--card);border-top:1px solid var(--line2);padding:6px 12px calc(8px + var(--safe-b));z-index:5}
 nav.bas .in{display:flex;justify-content:space-around;width:100%;max-width:560px}
-nav.bas button{position:relative;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:76px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted)}
+nav.bas button{position:relative;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted)}
 nav.bas button.on{color:var(--crimson);font-weight:700}
 nav.bas .badge{position:absolute;top:0;right:12px}
 /* connexion */
@@ -96,6 +99,7 @@ nav.bas .badge{position:absolute;top:0;right:12px}
 .conv-row .quand{font-size:12px;color:var(--soft);flex-shrink:0}
 .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;cursor:pointer}
 .switch input{width:22px;height:22px;accent-color:var(--crimson);flex-shrink:0}
+input.champ1{height:46px;border-radius:12px;border:1px solid var(--line);padding:0 12px;outline:0;font-size:15px;width:100%}input.champ1:focus{border-color:var(--crimson)}
 textarea.champ{width:100%;min-height:90px;border-radius:12px;border:1px solid var(--line);padding:10px 12px;resize:vertical;outline:0}
 textarea.champ:focus{border-color:var(--crimson)}
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw;animation:rise .25s ease}
@@ -109,6 +113,7 @@ textarea.champ:focus{border-color:var(--crimson)}
 <nav class="bas" id="nav" hidden><div class="in">
   <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Annuaire</button>
   <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
+  <button data-o="inviter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>Inviter</button>
   <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon profil</button>
 </div></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -181,7 +186,12 @@ async function demarrer(){
   await Promise.all([chargerAnnuaire(),chargerMessages()]);
   ecouter();lancer();
 }
-function lancer(){$("nav").hidden=false;rendu()}
+function lancer(){$("nav").hidden=false;
+  const c=(location.hash.match(/^#c=([0-9a-z-]+)$/i)||[])[1];
+  if(c&&membre(c)){history.replaceState(null,"",location.pathname);ouvrirConv(c)}else rendu();
+  notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil"].includes(S.onglet))rendu(true)});
+  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const m=u&&String(u).match(/#c=([0-9a-z-]+)/i);if(m)ouvrirConv(m[1])});}
+window.addEventListener("hashchange",()=>{const c=(location.hash.match(/^#c=([0-9a-z-]+)$/i)||[])[1];if(c&&S.moi&&membre(c)){history.replaceState(null,"",location.pathname);ouvrirConv(c)}});
 async function chargerAnnuaire(){const {data,error}=await sb.rpc("cap_annuaire");if(!error)S.annuaire=data||[]}
 async function chargerMessages(){
   const {data,error}=await sb.from("messages_membres").select("id,de,a,texte,cree_le,lu_le").order("cree_le",{ascending:true}).limit(2000);
@@ -207,7 +217,7 @@ function rendu(garderDefilement){
   document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||(S.onglet==="conv"&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
   const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
   $("nav").hidden=S.onglet==="conv";
-  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil}[S.onglet];
+  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter}[S.onglet];
   $("app").innerHTML=v();
   brancher();
   if(S.onglet==="conv"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
@@ -268,6 +278,7 @@ function vueMessages(){
   const c=conversations();
   return `<div class="page">
     <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mes messages</h1><p class="sub">Entre membres, en direct. Pas de groupes.</p></div></div>
+    ${bandeauNotif()}
     ${c.length?c.map((x,i)=>{const m=membre(x.id)||{id:x.id,nom:"Membre"};const de=x.dernier.de===S.moi.id?"Vous : ":"";
       return `<button class="row conv-row" style="--i:${Math.min(i,14)};width:100%;text-align:left" data-conv="${x.id}">${av(m)}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${x.nl?"nl":""}">${esc(m.nom)}</b><span class="quand">${quand(x.dernier.cree_le)}</span></span>
         <span style="display:flex;justify-content:space-between;align-items:center;gap:8px;overflow:visible"><span class="${x.nl?"nl":""}" style="overflow:hidden;text-overflow:ellipsis">${esc(de+x.dernier.texte)}</span>${x.nl?`<span class="badge">${x.nl}</span>`:""}</span></span></button>`}).join("")
@@ -310,6 +321,7 @@ function vueProfil(){
   return `<div class="page">
     <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mon profil</h1></div></div>
     <div class="card" style="display:flex;align-items:center;gap:14px">${av(m)}<div style="min-width:0"><b class="bri" style="font-size:18px">${esc(m.nom)}</b><p class="sub">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</p></div></div>
+    ${carteNotif()}
     <form id="f-profil" class="card" style="display:flex;flex-direction:column;gap:14px">
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ce que je cherche</span>
         <textarea class="champ" id="p-cherche" maxlength="600" placeholder="Ex. : des promoteurs qui lancent un programme à Rabat, des gérants de franchises…">${esc(m.cherche||"")}</textarea></label>
@@ -333,6 +345,92 @@ async function enregistrerProfil(){
   toast("Profil enregistré");
 }
 
+/* ---------- Notifications sur le téléphone (web push, même service worker que le CRM) ---------- */
+const VAPID_PUBLIC="BAKkMOISOmM62avwTzeE81_l592rvg9O-AiLBct4eGf7Xovoy_OswNK0lnQ0yokt6VDoRkL927x4LS5bFYnWbZM";
+function notifSupport(){return "serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window}
+const estIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+const estInstalle=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function b64u(b){const p="=".repeat((4-b.length%4)%4);const r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+async function notifReg(){if(!notifSupport())return null;try{return await navigator.serviceWorker.register("sw.js")}catch(e){return null}}
+async function notifEtat(){
+  if(DEMO)return S.notif||"inactif";
+  if(!notifSupport())return estIOS()&&!estInstalle()?"ios":"non";
+  if(Notification.permission==="denied")return "refuse";
+  const reg=await notifReg();const sub=reg&&await reg.pushManager.getSubscription();
+  return sub?"actif":"inactif";
+}
+async function notifActiver(){
+  if(DEMO){S.notif="actif";toast("Démonstration : notifications activées");return rendu(true)}
+  const reg=await notifReg();if(!reg){toast("Notifications indisponibles sur ce navigateur");return}
+  const p=await Notification.requestPermission();
+  if(p!=="granted"){S.notif="refuse";toast("Notifications refusées");return rendu(true)}
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});
+  const j=sub.toJSON();const {data:{user}}=await sb.auth.getUser();
+  const {error}=await sb.from("push_abonnements").upsert({user_id:user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,appareil:(navigator.userAgent||"").slice(0,120)},{onConflict:"endpoint"});
+  if(error){toast("Abonnement non enregistré : "+error.message);return}
+  S.notif="actif";toast("🔔 Tu seras prévenu de chaque nouveau message");rendu(true);
+}
+async function notifCouper(){
+  if(!DEMO){const reg=await notifReg();const sub=reg&&await reg.pushManager.getSubscription();
+    if(sub){await sb.from("push_abonnements").delete().eq("endpoint",sub.endpoint);await sub.unsubscribe()}}
+  S.notif="inactif";toast("Notifications coupées sur ce téléphone");rendu(true);
+}
+const IOS_ETAPES=`<ol style="margin:4px 0 0;padding-left:20px;font-size:14px;display:flex;flex-direction:column;gap:4px"><li>Touche <b>Partager</b> (le carré avec la flèche) en bas de Safari.</li><li>Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li><li>Ouvre l'espace membre depuis l'icône, puis active les notifications ici.</li></ol>`;
+function bandeauNotif(){
+  const e=S.notif;
+  if(e==="inactif")return `<div class="card" style="display:flex;align-items:center;gap:12px;background:var(--tint);border-color:transparent"><span style="font-size:22px" aria-hidden="true">🔔</span><span style="flex:1;font-size:14px">Sois prévenu dès qu'un membre t'écrit.</span><button class="btn" style="height:40px;padding:0 14px;font-size:14px" data-notif="on">Activer</button></div>`;
+  if(e==="ios")return `<div class="card" style="background:var(--tint);border-color:transparent"><b style="font-size:14px">🔔 Pour être prévenu des messages sur iPhone</b>${IOS_ETAPES}</div>`;
+  return "";
+}
+function carteNotif(){
+  const e=S.notif;
+  const corps={actif:`<span style="font-size:14px">✓ Activées sur ce téléphone.</span><button class="btn ghost" type="button" data-notif="off">Couper</button>`,
+    inactif:`<span style="font-size:14px">Une notification à chaque nouveau message.</span><button class="btn" type="button" data-notif="on">Activer sur ce téléphone</button>`,
+    refuse:`<span style="font-size:14px">Bloquées pour ce site : réautorise-les dans les réglages du navigateur.</span>`,
+    ios:`<span style="font-size:14px">Sur iPhone, il faut d'abord installer l'espace membre :</span>${IOS_ETAPES}`,
+    non:`<span style="font-size:14px">Ce navigateur ne gère pas les notifications.</span>`}[e||"non"];
+  return `<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Notifications</span>${corps}</div>`;
+}
+
+/* ---------- Inviter quelqu'un à la prochaine réunion de mon club ---------- */
+const STATUT_INV={"À confirmer":["En attente","#7A6A6E"],"Intéressé":["Intéressé","#2C4A73"],"Non intéressé":["Pas intéressé","#7A6A6E"],"À intégrer":["Va nous rejoindre","#6B5420"],"Membre":["Membre 🎉","#2F5B33"]};
+async function chargerInviter(){
+  if(DEMO){S.prochaine=S.prochaine||{date:new Date(Date.now()+6*864e5).toISOString().slice(0,10),heure:"19:00",type:"SI",lieu:"Hôtel Farah",ville:"Rabat",club:"CAP Rabat Signature"};S.mesInvites=S.mesInvites||[];return}
+  const [p,l]=await Promise.all([sb.rpc("cap_membre_prochaine_reunion"),sb.rpc("cap_membre_mes_invites")]);
+  S.prochaine=p.error?null:p.data;S.mesInvites=l.error?[]:(l.data||[]);
+}
+function dateReu(d,h){const x=new Date(d+"T12:00:00");return x.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+(h?" à "+h:"")}
+function vueInviter(){
+  if(S.prochaine===undefined){chargerInviter().then(()=>{if(S.onglet==="inviter")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
+  const r=S.prochaine;
+  return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au club : ton animateur le reçoit tout de suite.</p></div></div>
+    ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--deep);color:#fff;border-color:transparent"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
+      <b class="bri" style="font-size:20px">${esc(dateReu(r.date,r.heure))}</b><span style="color:var(--tint);font-size:14px">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span></div>
+    <form id="f-inv" class="card" style="display:flex;flex-direction:column;gap:12px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son nom *</span><input class="champ1" id="i-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son entreprise</span><input class="champ1" id="i-ent" maxlength="120"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son métier</span><input class="champ1" id="i-met" maxlength="120"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son mobile</span><input class="champ1" id="i-tel" type="tel" inputmode="tel" maxlength="40" placeholder="06…"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Un mot pour l'animateur</span><textarea class="champ" id="i-note" maxlength="600" placeholder="Comment tu le connais, pourquoi il serait bien dans le club…"></textarea></label>
+      <button class="btn" type="submit">Proposer pour le ${esc(new Date(r.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}</button>
+    </form>`
+    :`<div class="card"><b>Pas de réunion planifiée pour ton club en ce moment.</b><p class="sub">Dès que ton animateur en aura programmé une, tu pourras proposer tes invités ici.</p></div>`}
+    <div class="label">Mes invités${S.mesInvites.length?" · "+S.mesInvites.length:""}</div>
+    ${S.mesInvites.length?S.mesInvites.map((x,i)=>{const [l,c]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"];return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>Réunion du ${esc(new Date(x.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}</small></span><span style="font-size:12px;font-weight:700;color:${c};text-align:right">${esc(l)}</span></div>`}).join("")
+      :`<p class="vide" style="padding:12px">Tu n'as encore proposé personne.</p>`}
+  </div>`;
+}
+async function proposerInvite(){
+  const g=id=>$(id).value.trim(),nom=g("i-nom");if(!nom){toast("Indique au moins son nom");return}
+  const b=$("f-inv").querySelector("button");b.disabled=true;b.textContent="Envoi…";
+  const v={p_nom:nom,p_entreprise:g("i-ent"),p_metier:g("i-met"),p_tel:g("i-tel"),p_note:g("i-note")};
+  if(DEMO){S.mesInvites.unshift({id:"i"+Date.now(),nom,entreprise:v.p_entreprise,metier:v.p_metier,statut:"À confirmer",date:S.prochaine.date})}
+  else{const {error}=await sb.rpc("cap_membre_proposer_invite",v);if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyé : "+error.message);return}
+    await chargerInviter()}
+  toast("Invité proposé : ton animateur est prévenu");rendu();
+}
 /* ---------- Écouteurs ---------- */
 function brancher(){
   const app=$("app");
@@ -346,6 +444,8 @@ function brancher(){
     t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
     t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyer()}}}
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
+  app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
+  const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
   const fc=$("f-code");if(fc)fc.onsubmit=async e=>{e.preventDefault();const v=$("c-new").value.trim();
     if(v.length<6){toast("Le code doit faire au moins 6 caractères");return}
     if(!DEMO){const {error}=await sb.auth.updateUser({password:v});if(error){toast("Code non changé : "+error.message);return}}

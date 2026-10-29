@@ -1014,6 +1014,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 @media(max-width:899px){.nav button{font-size:9.5px}}
 /*v029*/
 .mb-code{margin:8px 0 4px;padding:14px;border-radius:14px;background:var(--crimson-tint);display:flex;flex-direction:column;gap:6px}.mb-code span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--crimson)}.mb-code b{font:800 34px "Bricolage Grotesque",sans-serif;letter-spacing:.18em;color:var(--ink)}.mb-code small{color:var(--muted);font-size:12.5px}.mb-code-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.mb-code-act a{text-decoration:none}
+.guest{flex-wrap:wrap}.guest .gi{flex:1 1 180px}.guest .gi small{display:block}.g-mb{white-space:nowrap;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);background:var(--crimson-tint);padding:2px 6px;border-radius:6px;vertical-align:middle}
 .mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
 </style>
 </head>
@@ -1090,8 +1091,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.24.0";
+const APP_VERSION="0.25.0";
 const CHANGELOG=[
+  {v:"0.25.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Espace membre : notifications sur le téléphone à chaque nouveau message (la notification ouvre la conversation). À activer dans « Mon profil » ou dans « Mes messages ». Sur iPhone, l'espace membre s'installe d'abord sur l'écran d'accueil (icône « Protéine »).",
+      "Espace membre : nouvel onglet « Inviter ». Le membre voit la prochaine réunion de son club et y propose un invité (nom, entreprise, métier, mobile, un mot pour l'animateur), puis suit ce qu'il devient (en attente, intéressé, membre…).",
+      "CRM : l'invité proposé arrive directement dans la réunion, marqué « espace membre », avec son entreprise, son métier et le mot du membre. L'animateur du club et la direction reçoivent une notification qui ouvre la réunion."]}},
   {v:"0.24.0",date:"30 octobre 2026",notes:{
     "Changé":["Espace membre : plus besoin de WhatsApp ni de Twilio pour se connecter. Dans la fiche d'un membre, « Créer son code » fabrique un code d'accès à 6 chiffres, affiché une seule fois, avec un bouton pour l'envoyer par WhatsApp (lien, mobile et code dans le message). Le membre entre son mobile et ce code, et peut le changer dans « Mon profil ». Code oublié : « Nouveau code »."]}},
   {v:"0.23.0",date:"29 octobre 2026",notes:{
@@ -1404,7 +1410,7 @@ function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",ema
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||""}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null}}
-function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
+function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
@@ -1506,7 +1512,7 @@ async function bootIntoApp(){
   adhAnnonce();
   tutoAuDemarrage();
   notifEtat().then(majBoutonNotif);
-  ouvrirLienAdhesion();
+  ouvrirLienAdhesion();ouvrirLienReunion();
   presenceDemarrer();
   horlogeDemarrer();
   return true;
@@ -1663,6 +1669,12 @@ async function ouvrirLienAdhesion(){
   const id=new URLSearchParams(location.search).get("adh");if(!id||!SESSION||SESSION.role==="visiteur")return;
   history.replaceState(null,"",location.pathname);
   await openAdhesions("all");if((DB.adhesions||[]).some(a=>a.id===id))adhDetail(id);
+}
+/* Lien d'une notification « invité proposé » (?reunion=<id>) : ouvre la fiche de la réunion. */
+function ouvrirLienReunion(){
+  const id=new URLSearchParams(location.search).get("reunion");if(!id||!SESSION||SESSION.role==="visiteur")return;
+  history.replaceState(null,"",location.pathname);
+  if(DB.reunions.some(r=>r.id===id))openMeeting(id);
 }
 /* Mot de passe initial « cap2026 » : tant qu'il est actif, une fenêtre impose d'en choisir un autre.
    La base répond (cap_mdp_a_changer) ; si la fonction manque ou ne répond pas, on n'empêche personne de travailler. */
@@ -2591,7 +2603,7 @@ function meetingDetail(m,editable){
   const guests=m.guests||[];
   const guestsHtml=guests.length?guests.map((g,i)=>`
     <div class="guest"><div class="gav">${initiales(g.nom)}</div>
-      <div class="gi"><b>${esc(g.nom)}</b><small>${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small></div>
+      <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
       ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson);font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
     </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;

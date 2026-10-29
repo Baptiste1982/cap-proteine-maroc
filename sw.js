@@ -13,7 +13,12 @@ self.addEventListener("notificationclick", (e) => {
   const url = new URL((e.notification.data && e.notification.data.url) || "/", self.location.origin).href;
   e.waitUntil((async () => {
     const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    for (const w of wins) { if ("focus" in w) { await w.navigate(url).catch(() => {}); return w.focus(); } }
+    // Une fenêtre déjà ouverte sur la bonne page (CRM « / » ou espace membre « /membre.html ») en priorité.
+    const chemin = new URL(url).pathname;
+    const memePage = wins.filter((w) => new URL(w.url).pathname === chemin);
+    for (const w of memePage.length ? memePage : wins.filter((w) => chemin !== "/membre.html" && new URL(w.url).pathname !== "/membre.html")) {
+      if ("focus" in w) { await w.navigate(url).catch(() => {}); return w.focus(); }
+    }
     return self.clients.openWindow(url);
   })());
 });

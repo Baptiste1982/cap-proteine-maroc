@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
+<script>/* thème posé avant l'affichage : clair par défaut, sombre ou automatique si choisi dans Paramètres */
+(function(){try{var t=localStorage.getItem("cap-theme")||"clair";var d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CAP · Protéine Maroc — CRM Animation</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -634,30 +636,29 @@ div.stp{cursor:default}
 .cl .tg.add{background:var(--ok-tint);color:var(--ok)}.cl .tg.mod{background:var(--info-tint);color:var(--info)}.cl .tg.fix{background:var(--warn-tint);color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.pill,.page.slide-next,.page.slide-prev,.sk,.toast.show,.auth-brand,.auth-hero *,.auth-card,.demo-note,.hello,.spark-c path,.confetti i,.gauge i,.rd-k,.acc,.cl,.btn .chk path{animation:none!important;transition:none!important}.spark-c path.l{stroke-dashoffset:0}.spark-c path.a{opacity:1}.btn .chk path{stroke-dashoffset:0}}
 /* mode sombre : suit le réglage du téléphone */
-@media (prefers-color-scheme:dark){
-  :root{--crimson:#E2475F;--crimson-tint:#3A1A20;--ink:#F3ECEA;--muted:#A99A9D;--paper:#1A1214;--card:#241A1D;--line:#3A2D30;
+/* Mode sombre : choisi dans Paramètres (html.dark), clair par défaut */
+html.dark{--crimson:#E2475F;--crimson-tint:#3A1A20;--ink:#F3ECEA;--muted:#A99A9D;--paper:#1A1214;--card:#241A1D;--line:#3A2D30;
     --ok:#5FC08E;--ok-tint:#1D3229;--info:#8EA9E8;--info-tint:#1E2638;--warn:#E3AE4A;--warn-tint:#352A16;--gold-tint:#3A3020;--hover:#2C2024;--soft:#33262A;--topbar:rgba(26,18,20,.92);
     --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.35);--shadow-lg:0 12px 40px rgba(0,0,0,.5);color-scheme:dark}
-  .field input,.field select,.field textarea,.icon-btn,.seg,.chip:not(.on),.searchbar,.gstat,.stp,.fh-link .btn,.seg-sc .knob{background-color:var(--card)}
-  .filter-select{background-color:var(--card)}
-  .topbar{background:var(--topbar)}
-  .badge.rl,.ck-pill.creation,.rl-fact.y,.rl-type.rl{background:var(--gold-tint);color:#E3C27A}
-  .seg-sc{background:var(--soft)}
-  .dash-band.reg::after{background:linear-gradient(90deg,var(--gold-tint),transparent)}
-  .stp.on .stp-ic,.stp:has(input:checked) .stp-ic{background:var(--card)}
-  .toast{background:#F3ECEA;color:#1B1416}
-  .update-bar button{background:var(--card)}
-  .auth-card .field input{background:#fff;color:#1B1416;border-color:#ECE3E1}
-  .auth-card{background:#fff;color:#1B1416}.auth-card label{color:#7A6E71}
-  .auth-err:not(:empty){background:#F8E9EC;color:#B0122E}
-  .mono:has(img){background:#fff}
-  img{color-scheme:light}
-}
-@media (prefers-color-scheme:dark) and (hover:hover){.rl-h:hover{background:var(--hover)}}
+html.dark .field input,html.dark .field select,html.dark .field textarea,html.dark .icon-btn,html.dark .seg,html.dark .chip:not(.on),html.dark .searchbar,html.dark .gstat,html.dark .stp,html.dark .fh-link .btn,html.dark .seg-sc .knob{background-color:var(--card)}
+html.dark .filter-select{background-color:var(--card)}
+html.dark .topbar{background:var(--topbar)}
+html.dark .badge.rl,html.dark .ck-pill.creation,html.dark .rl-fact.y,html.dark .rl-type.rl{background:var(--gold-tint);color:#E3C27A}
+html.dark .seg-sc{background:var(--soft)}
+html.dark .dash-band.reg::after{background:linear-gradient(90deg,var(--gold-tint),transparent)}
+html.dark .stp.on .stp-ic,html.dark .stp:has(input:checked) .stp-ic{background:var(--card)}
+html.dark .toast{background:#F3ECEA;color:#1B1416}
+html.dark .update-bar button{background:var(--card)}
+html.dark .auth-card .field input{background:#fff;color:#1B1416;border-color:#ECE3E1}
+html.dark .auth-card{background:#fff;color:#1B1416}
+html.dark .auth-card label{color:#7A6E71}
+html.dark .auth-err:not(:empty){background:#F8E9EC;color:#B0122E}
+html.dark .mono:has(img){background:#fff}
+html.dark img{color-scheme:light}@media (hover:hover){html.dark .rl-h:hover{background:var(--hover)}}
 
 /* ===== v0.15 — POUR LE NATIONAL (maquette v4) ===== */
 :root{--sea:#DCE6EE;--land:#F4EDE6}
-@media (prefers-color-scheme:dark){:root{--sea:#1B2229;--land:#2A2023}}
+html.dark{--sea:#1B2229;--land:#2A2023}
 .tools{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px 14px;padding:2px 18px}
 .tools::-webkit-scrollbar{display:none}
 .tool{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:13px;font-weight:700;color:var(--ink);transition:border-color .2s,transform .12s}
@@ -752,6 +753,69 @@ div.stp{cursor:default}
 .show-o .tap{position:absolute;inset:90px 0 60px;display:grid;grid-template-columns:1fr 2fr;z-index:0}
 .show-o .h,.show-o .sl,.show-o .sprog{position:relative;z-index:1}
 .show-o .sl{pointer-events:none}
+/*v016*/
+/* ===== v0.16 — GRAND ÉCRAN, PARAMÈTRES ===== */
+html.dark .nav::before{background-color:#fff;background-size:auto 70%;background-position:center;border-radius:12px}
+.nav .nav-set{display:none}
+@media(min-width:900px){
+  .nav .nav-set{display:flex;margin-top:auto;border-top:1px solid var(--line);border-radius:0;padding-top:16px}
+  .app{max-width:1280px}
+}
+.set-btn{display:flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;font-weight:700}
+.set-btn svg{color:var(--muted)}
+.set-btn .notif-dot{position:static;margin-left:2px}
+@media(max-width:899px){.set-btn span.l{display:none}.set-btn{padding:0;width:38px;justify-content:center}}
+.set-who{display:flex;align-items:center;gap:12px;padding:4px 0 14px}
+.set-who .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 15px "Bricolage Grotesque",sans-serif;flex:0 0 auto}
+.set-who b{display:block;font:800 18px "Bricolage Grotesque",sans-serif}.set-who small{color:var(--muted);font-size:12.5px}
+.set-sec{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:16px 2px 8px}
+.set-l{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.set-r{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;border-top:1px solid var(--line);font-size:14px}
+.set-r:first-child{border-top:0}
+.set-r .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--crimson-tint);color:var(--crimson);flex:0 0 auto;font-size:15px}
+.set-r .t{flex:1;min-width:0}.set-r b{display:block;font-weight:600}.set-r small{color:var(--muted);font-size:12px}
+.set-r .go{color:var(--muted);font-size:18px}
+@media (hover:hover){button.set-r:hover{background:var(--hover)}}
+.theme3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}
+.theme3 button{border:1.5px solid var(--line);border-radius:14px;padding:10px 6px 9px;font-size:12.5px;font-weight:700;color:var(--muted);display:grid;gap:7px;justify-items:center;background:var(--card)}
+.theme3 button.on{border-color:var(--crimson);color:var(--crimson);box-shadow:0 0 0 3px var(--crimson-tint)}
+.theme3 i{width:46px;height:30px;border-radius:7px;border:1px solid var(--line);display:block}
+.set-out{margin-top:16px;color:var(--crimson)}
+/* tableaux sur grand écran */
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:14px}
+.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;background:var(--paper);border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr.row{cursor:pointer;transition:background .15s}
+@media (hover:hover){.tbl tbody tr.row:hover{background:var(--hover)}}
+.tbl tr.row:focus-visible{outline:2px solid var(--crimson);outline-offset:-2px}
+.tbl .n{text-align:right}.tbl .c{text-align:center}
+.tbl .who{display:flex;align-items:center;gap:10px;min-width:0}
+.tbl .who b{display:block;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbl .who small{display:block;color:var(--muted);font-size:12px}
+.tbl .emb{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;font:800 11.5px "Bricolage Grotesque",sans-serif;background:var(--vc);flex:0 0 auto}
+.tbl .emb.round{border-radius:50%}
+.tbl .mut{color:var(--muted)}.tbl .red{color:var(--crimson);font-weight:600}
+.tbl .date b{font:800 17px "Bricolage Grotesque",sans-serif}.tbl .date small{color:var(--muted);font-size:11.5px;margin-left:5px;text-transform:capitalize}
+.tbl tr.past td{color:var(--muted)}.tbl tr.past .who b{color:var(--muted)}
+.tbl tr.now td{padding:4px 12px;background:var(--paper)}.tbl tr.now .nowline{margin:2px 0}
+.tbl .act{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;font-size:12.5px;font-weight:700;background:var(--crimson-tint);color:var(--crimson);white-space:nowrap}
+.tbl .act.ok{background:var(--ok-tint);color:var(--ok)}.tbl .act.todo{background:var(--warn-tint);color:var(--warn)}
+.tbl .chipz{display:flex;flex-wrap:wrap;gap:4px}.tbl .chipz span{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--paper);border:1px solid var(--line)}
+.tbl-wrap{overflow-x:auto}
+.tbl .rs{display:inline-block;vertical-align:middle}.tbl .mg{width:58px;margin-left:auto}.tbl .mg .v{font-size:13px}.tbl .mg .b i{background:var(--crimson)}
+/* synthèse en deux colonnes */
+.dash-cols{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:start}
+.dash-cols>div{min-width:0}
+.dash-cols .stats{grid-template-columns:repeat(3,1fr)}
+.dash-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:stretch;margin-bottom:14px}
+.dash-top .hello{margin:0}
+.dash-top .tools{flex-direction:column;margin:0;padding:0;overflow:visible;flex-wrap:nowrap;justify-content:space-between}
+.dash-top .tools .tool{justify-content:flex-start}
+@media(min-width:900px) and (max-width:1199px){.dash-top{grid-template-columns:minmax(0,1fr)}.dash-top .tools{flex-direction:row;flex-wrap:wrap}}
+.lieux-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.lieux-grid .lieu-card{height:100%}
 @media (prefers-reduced-motion:reduce){.tool,.bil-alert,.mapc .pulse,.zbar i,.show-o .sl,.szl i,.sprog i.on b{animation:none!important;transition:none!important}.sprog i.on b{width:100%}}
 </style>
 </head>
@@ -759,7 +823,7 @@ div.stp{cursor:default}
 
 <!-- LOGIN -->
 <div id="auth" class="auth">
-  <div class="auth-brand"><div class="mono"><img src="icone-192.png" alt="Protéine"></div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
+  <div class="auth-brand"><div class="mono"><img src="icone-512.png" alt="Protéine"></div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
   <div class="auth-hero">
     <div class="eyebrow">CRM Animation · Saison 2026</div>
     <h1>Le réseau,<br>piloté au&nbsp;cordeau.</h1>
@@ -780,17 +844,18 @@ div.stp{cursor:default}
 <div id="app" class="app hidden">
   <div class="topbar">
     <div class="tb-row">
-      <div class="mono"><img src="icone-192.png" alt="Protéine"></div>
+      <div class="mono"><img src="icone-512.png" alt="Protéine"></div>
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
       <span id="tb-role" class="role-pill">—</span>
-      <div class="tb-actions">
+      <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
+        <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
         <button id="notif-btn" class="icon-btn hidden" onclick="openNotifs()" aria-label="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot hidden"></span></button>
         <button id="pwd-btn" class="icon-btn hidden" onclick="openMyPassword()" aria-label="Mon mot de passe"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"/></svg></button>
         <button id="admin-btn" class="icon-btn hidden" onclick="openAccounts()" aria-label="Comptes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
-        <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+        <button class="icon-btn" onclick="logout()" aria-label="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></span>
       </div>
     </div>
   </div>
@@ -803,6 +868,7 @@ div.stp{cursor:default}
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
   <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
+  <button class="nav-set" onclick="openParametres()" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Paramètres</button>
 </nav>
 
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
@@ -823,8 +889,18 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.15.0";
+const APP_VERSION="0.16.0";
 const CHANGELOG=[
+  {v:"0.16.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Paramètres : un seul bouton regroupe l'apparence, les notifications, le mot de passe, les comptes, le rendement, les notes de version, le rechargement des données et la déconnexion.",
+      "Choix du thème : clair, sombre, ou comme le téléphone."
+    ],
+    "Modifié":[
+      "Sur ordinateur : Synthèse en deux colonnes, clubs, agenda et animateurs en tableaux lisibles, lieux en grille régulière.",
+      "Le mode clair est le thème par défaut.",
+      "Logos plus nets : icône haute définition, et logo posé sur fond blanc en mode sombre."
+    ]}},
   {v:"0.15.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Bilan de réunion : après chaque réunion, le CRM demande si elle a eu lieu, combien de présents, d'invités venus et d'adhésions. La Synthèse signale les réunions qui attendent leur bilan et affiche l'activité des 90 derniers jours.",
@@ -1313,10 +1389,12 @@ function viewAgenda(){
 
   let cards="";
   if(!list.length)cards=emptyState("Aucune réunion","Ajuste les filtres ou planifie une nouvelle date avec le bouton +.");
-  else{let cm="",nowDone=list.every(m=>!isPast(m.date))||list.every(m=>isPast(m.date));list.forEach(m=>{const dt=dObj(m.date),mk=dt.getFullYear()+"-"+dt.getMonth();
-    if(mk!==cm){if(cm&&!wide)cards+=`</div>`;cm=mk;cards+=`<div class="month-label">${filter.startsWith("d:")?jourLong(m.date):MOIS_LONG[dt.getMonth()]+" "+dt.getFullYear()}</div>`+(wide?"":`<div class="rl">`)}
-    if(!nowDone&&!isPast(m.date)){nowDone=true;cards+=wide?`<div class="nowline" style="grid-column:1/-1">Aujourd'hui</div>`:`</div><div class="nowline">Aujourd'hui</div><div class="rl">`}
-    cards+=wide?meetingCard(m):meetingRow(m);});if(!wide)cards+=`</div>`;cards=cards.replace(/<div class="rl"><\/div>/g,"");}
+  else{let cm="",nowDone=list.every(m=>!isPast(m.date))||list.every(m=>isPast(m.date));
+    const OPEN=wide?`<div class="tbl tbl-wrap"><table>${AG_THEAD}<tbody>`:`<div class="rl">`,CLOSE=wide?`</tbody></table></div>`:`</div>`;
+    list.forEach(m=>{const dt=dObj(m.date),mk=dt.getFullYear()+"-"+dt.getMonth();
+    if(mk!==cm){if(cm)cards+=CLOSE;cm=mk;cards+=`<div class="month-label">${filter.startsWith("d:")?jourLong(m.date):MOIS_LONG[dt.getMonth()]+" "+dt.getFullYear()}</div>`+OPEN}
+    if(!nowDone&&!isPast(m.date)){nowDone=true;cards+=wide?`<tr class="now"><td colspan="8"><div class="nowline">Aujourd'hui</div></td></tr>`:`</div><div class="nowline">Aujourd'hui</div><div class="rl">`}
+    cards+=wide?meetingTr(m):meetingRow(m);});cards+=CLOSE;cards=cards.replace(/<div class="rl"><\/div>/g,"");}
 
   return `<div class="page">
     <div class="page-head"><div><div class="eyebrow">Tout le réseau</div><h2>Agenda</h2></div>
@@ -1480,7 +1558,7 @@ function viewClubs(){
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
       return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
-        ${wide?`<div class="grid two">${list.map(c=>clubTile(c,k++)).join("")}</div>`:`<div class="rl">${list.map(c=>clubRow(c,k++)).join("")}</div>`}`;
+        ${wide?clubsTable(list):`<div class="rl">${list.map(c=>clubRow(c,k++)).join("")}</div>`}`;
     }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} club${clubs.length>1?"s":""}${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1528,7 +1606,7 @@ function viewLieux(){
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher un lieu…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
     ${villeChips}
-    ${lieux.length?(wide?`<div class="grid two">${cards}</div>`:`<div class="rl">${rows}</div>`):emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
+    ${lieux.length?(wide?`<div class="lieux-grid">${cards}</div>`:`<div class="rl">${rows}</div>`):emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
 }
 
 /* ============================================================
@@ -1578,7 +1656,7 @@ function viewTeam(){
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
       return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson);font-weight:700">${list.length}</span></div>
-        ${wide?`<div class="grid two">${list.map(animTile).join("")}</div>`:`<div class="rl">${list.map(a=>animRow(a,k++)).join("")}</div>`}`;
+        ${wide?animsTable(list):`<div class="rl">${list.map(a=>animRow(a,k++)).join("")}</div>`}`;
     }).join("");
   const libres=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&!c.animId);
   const pourvoir=libres.length?`<div class="month-label">À pourvoir <span style="color:var(--crimson);font-weight:700">${libres.length}</span></div>
@@ -1617,7 +1695,7 @@ function dashStats(clubs){
    sc = périmètre : "nat" (tout le réseau) ou "reg" (Rabat·Salé·Kénitra), mémorisé dans _dashScope. */
 let _dashScope={};
 function dashTile(n,l,kind,sc,i,tr){return `<div class="stat link" style="--i:${i}" role="button" tabindex="0" onclick="dashDrill('${kind}','${sc}')" onkeydown="if(event.key==='Enter')dashDrill('${kind}','${sc}')"><div class="n" data-count="${n}">${n}</div><div class="l">${l}</div>${tr?`<div class="tr">▲ ${tr}</div>`:""}</div>`}
-function dashBlock(s,sc){
+function dashBlock(s,sc,sansTodo){
   sc=sc||"nat";
   const maxN=Math.max(1,...s.perClub.map(c=>c.n));
   const ranks=s.perClub.map(c=>`<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot ${c.lvl}"></span><div class="rn">${esc(c.nom.replace("CAP ",""))}<small>${esc(c.ville)}</small></div>
@@ -1635,7 +1713,7 @@ function dashBlock(s,sc){
     </div>
     ${dashObjectif(sc)}
     ${dashActivite(sc)}
-    ${dashATraiter(sc)}
+    ${sansTodo?"":dashATraiter(sc)}
     ${dashCourbe(sc)}
     <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
     <div class="rank" style="--i:6">${ranks||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div>`;
@@ -1745,7 +1823,14 @@ function viewDashboard(){
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
   const sc=window._dashSc==="reg"?"reg":"nat";
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
-  html+=dashBonjour()+dashOutils()+dashBilanAlerte();
+  const large=window.matchMedia("(min-width:1100px)").matches;
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashBilanAlerte():dashBonjour()+dashOutils()+dashBilanAlerte();
+  if(large){
+    const sc=window._dashSc==="reg"?"reg":"nat";const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
+    html+=`<div class="dash-cols"><div><div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`
+      +dashBlock(dashStats(per),sc,true)+dashByAnim(per)+`</div><div>`+dashATraiter(sc)+dashFunnel(per,sc)+dashRelancer(per)+`</div></div>`;
+    return html+`<div style="height:8px"></div></div>`;
+  }
   if(seeAll){
     html+=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`+dashBlock(dashStats(per),sc);
   }else{
@@ -3060,6 +3145,72 @@ function showRender(){
 function showGo(d){_sh.i+=d;showRender()}
 function showKey(e){if(e.key==="Escape")closePresentation();else if(e.key==="ArrowRight"||e.key===" ")showGo(1);else if(e.key==="ArrowLeft")showGo(-1)}
 function closePresentation(){clearTimeout(_sh.t);const o=document.getElementById("show-o");if(o)o.remove();document.removeEventListener("keydown",showKey);try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+
+
+/* ============================================================
+   v0.16 — GRAND ÉCRAN (tableaux) ET PARAMÈTRES
+   ============================================================ */
+function trOpen(fn,cls){return `class="row ${cls||""}" tabindex="0" onclick="${fn}" onkeydown="if(event.key==='Enter')${fn}"`}
+function clubsTable(list){
+  return `<div class="tbl tbl-wrap"><table><thead><tr><th>Club</th><th>Animateur</th><th>Statut</th><th class="n">Membres</th><th>Prochaine réunion</th><th class="c">Santé</th><th>À faire</th></tr></thead><tbody>${list.map(c=>{
+    const nom=c.nom.replace(/^CAP\s+/,""),nbM=DB.membres.filter(m=>m.clubId===c.id).length,h=clubHealth(c),na=clubNextAction(c),t=clubTone(c);
+    const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date))[0];
+    return `<tr ${trOpen(`openClub('${c.id}')`)}><td><div class="who" style="--vc:${villeColor(c.ville)}"><span class="emb">${esc(initiales(nom))}</span><span><b>${esc(nom)}</b><small>${esc(c.ville)}</small></span></div></td>
+      <td class="${c.animId?"":"red"}">${c.animId?esc(animNom(c.animId)):"À nommer"}</td>
+      <td><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span></td>
+      <td class="n">${miniG(nbM,c.objectif)}</td>
+      <td>${up?`<b>${dObj(up.date).getDate()} ${MOIS[dObj(up.date).getMonth()]}</b> <span class="mut">· ${up.type}</span>`:`<span class="red">aucune</span>`}</td>
+      <td class="c">${ringSm(h)}</td>
+      <td>${na.act?`<button class="act ${t==="urgent"?"":"todo"}" onclick="event.stopPropagation();clubCardAction('${c.id}')">${esc(na.label)} ›</button>`:`<span class="act ok">✓ ${esc(na.label.replace(/\s*✓$/,""))}</span>`}</td></tr>`}).join("")}</tbody></table></div>`;
+}
+const AG_THEAD=`<thead><tr><th>Date</th><th>Heure</th><th>Club</th><th>Type</th><th>Lieu</th><th>Animateur</th><th>Invités</th><th>Statut</th></tr></thead>`;
+function meetingTr(m){
+  const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),ng=(m.guests||[]).length,nom=(c.nom||"—").replace(/^CAP\s+/,"");
+  return `<tr ${trOpen(`openMeeting('${m.id}')`,past?"past":"")}><td class="date"><b>${dt.getDate()}</b><small>${JOURS[dt.getDay()]}</small></td>
+    <td class="mut">${esc(m.heure||"—")}</td>
+    <td><div class="who" style="--vc:${villeColor(c.ville)}"><span class="emb">${esc(initiales(nom))}</span><span><b>${esc(nom)}</b><small>${esc(c.ville||"")}</small></span></div></td>
+    <td><span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span></td>
+    <td class="${!m.lieuId&&!past?"red":""}">${m.lieuId?esc(lieuNom(m.lieuId)):(past?"—":"À définir")}</td>
+    <td>${m.animId?esc(animNom(m.animId)):`<span class="mut">Non attribué</span>`}</td>
+    <td>${ng?guestStack(m.guests,ng):`<span class="mut">—</span>`}</td>
+    <td><span class="st ${m.statut}">${STATUTS[m.statut]}</span>${past&&(m.statut==="planifiee"||m.statut==="confirmee")&&canEditReunion(m)?` <button class="act todo" onclick="event.stopPropagation();openBilan('${m.id}')">Bilan ›</button>`:""}</td></tr>`;
+}
+function animsTable(list){
+  return `<div class="tbl tbl-wrap"><table><thead><tr><th>Animateur</th><th>Clubs</th><th class="n">Membres</th><th class="n">Réunions à venir</th><th>Téléphone</th></tr></thead><tbody>${list.map(a=>{
+    const cs=DB.clubs.filter(c=>c.animId===a.id),nbM=DB.membres.filter(m=>cs.some(c=>c.id===m.clubId)).length,nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
+    return `<tr ${trOpen(`openAnim('${a.id}')`)}><td><div class="who" style="--vc:${villeColor(a.ville)}"><span class="emb round">${esc(initiales(a.nom))}</span><span><b>${esc(a.nom)}</b><small>${esc(a.ville||"")}</small></span></div></td>
+      <td>${cs.length?`<div class="chipz">${cs.map(c=>`<span>${esc(c.nom.replace(/^CAP\s+/,""))}</span>`).join("")}</div>`:`<span class="mut">aucun club</span>`}</td>
+      <td class="n">${nbM}</td><td class="n ${nbUp?"":"red"}">${nbUp}</td><td class="mut">${a.tel?esc(fmtTelAff(a.tel)):"—"}</td></tr>`}).join("")}</tbody></table></div>`;
+}
+function fmtTelAff(t){return String(t).replace(/^\+212/,"0").replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
+/* ---------- Thème ---------- */
+function themeChoisi(){try{return localStorage.getItem("cap-theme")||"clair"}catch(e){return"clair"}}
+function appliquerTheme(){const t=themeChoisi(),d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark",d);const m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=d?"dark":"light"}
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(themeChoisi()==="auto")appliquerTheme()})}catch(e){}
+function choisirTheme(t){try{localStorage.setItem("cap-theme",t)}catch(e){}appliquerTheme();openParametres();toast(t==="clair"?"Mode clair":t==="sombre"?"Mode sombre":"Le thème suit le téléphone")}
+/* ---------- Paramètres : tous les réglages au même endroit ---------- */
+async function openParametres(){
+  const role=SESSION.role,t=themeChoisi(),sa=role==="superadmin";
+  const r=(ic,tit,sub,fn)=>`<button class="set-r" onclick="${fn}"><span class="ic">${ic}</span><span class="t"><b>${tit}</b>${sub?`<small>${sub}</small>`:""}</span><span class="go">›</span></button>`;
+  const th=(k,l,a,b)=>`<button class="${t===k?"on":""}" onclick="choisirTheme('${k}')" aria-pressed="${t===k}"><i style="background:linear-gradient(135deg,${a} 50%,${b} 50%)"></i>${l}</button>`;
+  const ne=await notifEtat().catch(()=>"non");
+  const notifLib={actif:"Activées sur cet appareil",inactif:"Désactivées sur cet appareil",refuse:"Bloquées dans le navigateur",ios:"Ajoute d'abord le CRM à l'écran d'accueil",non:"Non disponibles sur cet appareil"}[ne]||"";
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Paramètres</h3>
+    <div class="set-who"><span class="av" style="background:${roleCouleur(role)}">${esc(initiales(SESSION.name))}</span><span><b>${esc(SESSION.name)}</b><small>${esc(ROLES[role]||role)} · ${esc(document.getElementById("tb-region").textContent)}</small></span></div>
+    <div class="set-sec">Apparence</div>
+    <div class="set-l"><div class="theme3" role="group" aria-label="Thème">${th("clair","Clair","#FAF6F4","#FFFFFF")}${th("sombre","Sombre","#1A1214","#241A1D")}${th("auto","Comme le téléphone","#FAF6F4","#1A1214")}</div></div>
+    ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
+      ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
+      ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
+    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    <div class="set-sec">Application</div>
+    <div class="set-l">${r("📝","Notes de version","Version "+APP_VERSION,"openChangelog()")}${r("↻","Recharger les données","Récupère les dernières saisies","rechargerDonnees()")}</div>
+    <button class="btn ghost set-out" onclick="logout()">Se déconnecter</button>`;
+  openSheet();
+}
+async function rechargerDonnees(){toast("Mise à jour…");try{await loadDB();if(SESSION.role==="animateur"&&SESSION.animId)SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);closeSheet();render();toast("Données à jour")}catch(e){toast("Erreur de mise à jour")}}
 
 /* Comptes : une couleur par rôle. */
 function roleCouleur(r){return{superadmin:"#B0122E",directeur_national:"#5C0A18",directeur:"#B8862A",animateur:"#2E7D5B",visiteur:"#8C8085"}[r]||"#8C8085"}

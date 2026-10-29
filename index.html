@@ -866,6 +866,129 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .rail-date b{display:block;font:800 17px "Bricolage Grotesque",sans-serif}.rail-date small{font-size:10px;font-weight:700;text-transform:uppercase}
 .rail-vide{color:var(--muted);font-size:13px;padding:12px 14px}
 @media (prefers-reduced-motion:reduce){html.rail-on .sheet-wrap .sheet{animation:none!important}}
+/*v021*/
+.online-pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:11.5px;font-weight:700;white-space:nowrap;cursor:pointer}
+.online-pill i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(46,125,91,.5);animation:qcpulse 2s infinite}
+@keyframes qcpulse{0%{box-shadow:0 0 0 0 rgba(46,125,91,.45)}70%{box-shadow:0 0 0 7px rgba(46,125,91,0)}100%{box-shadow:0 0 0 0 rgba(46,125,91,0)}}
+.qc-av{position:relative;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 12px "Bricolage Grotesque",sans-serif;flex:0 0 auto}
+.qc-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--card)}
+.mb-n{font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px}
+.mb-grid{display:grid;gap:8px}
+@media(min-width:900px){.mb-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
+.mb-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-left:4px solid var(--vc);cursor:pointer;min-width:0;animation:rise .38s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*25ms);transition:transform .15s,box-shadow .15s}
+.mb-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.mb-card:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+.mb-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:var(--vc);color:#fff;font:800 14px "Bricolage Grotesque",sans-serif}
+.mb-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.mb-t b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-t small{color:var(--ink);opacity:.75;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-t em{font-style:normal;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-tel{flex:0 0 auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--crimson-tint);text-decoration:none;font-size:15px}
+@media (prefers-reduced-motion:reduce){.mb-card{animation:none}.online-pill i{animation:none}}
+/*v022*/
+.fil{display:none}
+.fil.on{display:flex;align-items:center;gap:8px;min-width:0;margin:0 0 12px;font-size:12.5px;color:var(--muted)}
+.fil-page.on{margin:-6px 0 14px}
+.fil-ret{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--crimson);font-weight:800;font-size:15px;display:grid;place-items:center;cursor:pointer}
+.fil-ret:hover{background:var(--crimson-tint)}
+.fil-l{display:flex;align-items:center;gap:6px;min-width:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.fil-l::-webkit-scrollbar{display:none}
+.fil-c{border:0;background:none;padding:2px 0;color:var(--crimson);font:inherit;font-weight:600;cursor:pointer;max-width:16ch;overflow:hidden;text-overflow:ellipsis}
+.fil-c:hover{text-decoration:underline}
+.fil-s{color:var(--muted);opacity:.7}
+.fil-l b{color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.tb-clock{display:inline-flex;align-items:baseline;gap:7px;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tb-clock b{font:800 15px "Bricolage Grotesque",sans-serif;color:var(--ink)}
+@media(max-width:899px){.tb-clock .tc-d{display:none}}
+/*v023*/
+.dem-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.dem-btn em{font-style:normal;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#fff;color:var(--crimson);font-size:11px;display:grid;place-items:center}
+.dem-btn.on{background:var(--crimson);border-color:var(--crimson);color:#fff;animation:dembtn 2.4s ease-in-out infinite}
+@keyframes dembtn{0%,100%{box-shadow:0 0 0 0 rgba(176,18,46,.35)}50%{box-shadow:0 0 0 6px rgba(176,18,46,0)}}
+@media(max-width:899px){.dem-btn .l{display:none}}
+.dem{margin:0 0 16px;padding:14px;border-radius:calc(var(--r) + 4px);background:linear-gradient(135deg,var(--crimson-tint),var(--card));border:1.5px solid rgba(176,18,46,.28);animation:rise .45s cubic-bezier(.2,.8,.2,1) backwards}
+.dem-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dem-h b{flex:1;font:800 16px "Bricolage Grotesque",sans-serif;color:var(--crimson)}
+.dem-pulse{width:10px;height:10px;border-radius:50%;background:var(--crimson);animation:qcpulse 1.8s infinite;box-shadow:0 0 0 0 rgba(176,18,46,.5)}
+.dem-l{display:grid;gap:8px}
+@media(min-width:900px){.dem .dem-l{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}}
+.dem-card{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--vc);cursor:pointer;min-width:0;animation:rise .4s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*60ms + .1s);transition:transform .15s,box-shadow .15s}
+.dem-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.dem-av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:var(--vc);color:#fff;font:800 13px "Bricolage Grotesque",sans-serif}
+.dem-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.dem-t b,.dem-t small,.dem-t em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dem-t b{font-size:14px}.dem-t small{font-size:12.5px;opacity:.75}.dem-t em{font-style:normal;font-size:11.5px;color:var(--muted)}
+.dem-age{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}.dem-age.late{color:var(--crimson)}
+.dem-go{font-size:12px;font-weight:700;color:var(--crimson);white-space:nowrap}
+@media(max-width:899px){.dem-go{display:none}}
+.dem-plus{margin-top:8px;border:0;background:none;color:var(--crimson);font-weight:700;font-size:13px;cursor:pointer}
+.rail-dem{margin-bottom:6px}.rail-dem .dem-go{display:none}
+@media (prefers-reduced-motion:reduce){.dem,.dem-card,.dem-btn.on,.dem-pulse{animation:none}}
+/*v024*/
+/* ===== Bandeau d'accueil : grande horloge vivante, date lisible, même ordre sur PC et téléphone ===== */
+.hello{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"l c n";align-items:center;gap:20px;padding:18px 20px;
+  background:linear-gradient(120deg,#C0163A,#8E0F27 50%,#4A0813);background-size:220% 220%;animation:rise .45s var(--ease) backwards,helloGrad 16s ease-in-out infinite alternate}
+.hello::after{display:none}
+@keyframes helloGrad{0%{background-position:0% 30%}100%{background-position:100% 70%}}
+.h-blob{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.h-blob.b1{width:220px;height:220px;right:-50px;top:-80px;background:radial-gradient(circle,rgba(243,216,142,.42),transparent 68%);animation:hBlob 10s ease-in-out infinite}
+.h-blob.b2{width:170px;height:170px;left:38%;bottom:-90px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);animation:hBlob 13s ease-in-out infinite reverse}
+@keyframes hBlob{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.12)}}
+.h-shine{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.14) 50%,transparent 62%);transform:translateX(-120%);animation:hShine 8s ease-in-out 1.5s infinite}
+@keyframes hShine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.h-l,.h-clock,.h-n{position:relative;z-index:1;min-width:0}
+.h-l{grid-area:l}.h-clock{grid-area:c}.h-n{grid-area:n}
+.hello b.h-sal{display:block;font:800 23px/1.15 "Bricolage Grotesque",sans-serif}
+.hello small.h-sub{display:block;margin-top:6px;font-size:14px;opacity:.92}
+.h-wave{display:inline-block;transform-origin:70% 75%;animation:hWave 1.8s ease .7s 2}
+@keyframes hWave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-8deg)}}
+.h-clock{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.h-time{font:800 46px/1 "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.18)}
+.h-time.tick{animation:hTick .55s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes hTick{0%{transform:translateY(5px);opacity:.4}100%{transform:none;opacity:1}}
+.h-col{font-style:normal;display:inline-block;margin:0 1px;animation:hCol 2s steps(1) infinite}
+@keyframes hCol{50%{opacity:.25}}
+.h-date{margin-top:6px;font-size:13.5px;font-weight:600;opacity:.9;white-space:nowrap}
+.h-n{display:flex;flex-direction:column;align-items:center;padding:6px 0 6px 20px;border-left:1px solid rgba(255,255,255,.22)}
+.h-n b{font:800 36px/1 "Bricolage Grotesque",sans-serif;color:#F3D88E}
+.h-n small{margin-top:4px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+@media(min-width:1100px){.dash-top .hello{padding:22px 28px}.dash-top .h-time{font-size:64px}.dash-top .hello b.h-sal{font-size:28px}.dash-top .h-date{font-size:15px}.dash-top .h-n b{font-size:44px}}
+@media(max-width:620px){
+  .hello{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l n" "c c";gap:12px 14px;padding:16px}
+  .h-clock{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:10px;text-align:left;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)}
+  .h-time{font-size:34px}.h-date{margin:0;font-size:13px;white-space:normal}
+  .hello b.h-sal{font-size:19px}.hello small.h-sub{font-size:13px}
+  .h-n{padding-left:14px}.h-n b{font-size:30px}
+}
+/* Horloge de la barre du haut : même format partout, lisible */
+.tb-clock{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:12.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tb-clock b{font:800 14px "Bricolage Grotesque",sans-serif;color:var(--crimson)}
+@media(max-width:899px){.tb-clock .tc-d{display:inline}}
+@media(max-width:420px){.tb-clock .tc-d{display:none}}
+/* ===== Micro-animations ===== */
+.page>*{animation:fUp .42s cubic-bezier(.2,.8,.2,1) backwards}
+.page>*:nth-child(2){animation-delay:.04s}.page>*:nth-child(3){animation-delay:.08s}.page>*:nth-child(4){animation-delay:.12s}.page>*:nth-child(5){animation-delay:.16s}.page>*:nth-child(n+6){animation-delay:.2s}
+#sheet-content>*{animation:fUp .36s cubic-bezier(.2,.8,.2,1) backwards}
+#sheet-content>*:nth-child(2){animation-delay:.03s}#sheet-content>*:nth-child(3){animation-delay:.06s}#sheet-content>*:nth-child(4){animation-delay:.09s}#sheet-content>*:nth-child(5){animation-delay:.12s}#sheet-content>*:nth-child(n+6){animation-delay:.15s}
+.rail>*{animation:fUp .4s cubic-bezier(.2,.8,.2,1) backwards}.rail>*:nth-child(n+3){animation-delay:.08s}.rail>*:nth-child(n+5){animation-delay:.16s}
+@keyframes fUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.stat.link{transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,border-color .18s}
+.stat.link:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(176,18,46,.35)}
+.stat.link:active,.mb-card:active,.dem-card:active,.rank-row.link:active{transform:scale(.985)}
+.rank-row.link{transition:background .15s,transform .15s}
+.rank-row.link .rn{transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.rank-row.link:hover .rn{transform:translateX(4px)}
+.btn{transition:transform .12s,box-shadow .15s,background .15s}
+.btn:active{transform:scale(.96)}
+.chip{transition:background .2s,color .2s,transform .15s}.chip:active{transform:scale(.94)}
+.fil.on{animation:fUp .3s ease backwards}
+.nav-badge{animation:badgePop .5s cubic-bezier(.2,.9,.3,1.5)}
+@keyframes badgePop{0%{transform:scale(0)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.hello,.h-blob,.h-shine,.h-wave,.h-time.tick,.h-col,.page>*,#sheet-content>*,.rail>*,.fil.on,.nav-badge{animation:none!important}.h-shine{display:none}.stat.link:hover,.rank-row.link:hover .rn{transform:none}}
+/*v024b*/
+@media(min-width:900px){.dem .dem-l{grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr))}}
+@media(max-width:899px){.online-pill .l{display:none}.dem-h b{font-size:15px}}
+@media(max-width:480px){#tb-role{display:none}}
 </style>
 </head>
 <body>
@@ -897,7 +1020,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <span id="tb-role" class="role-pill">—</span>
+      <span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -915,6 +1038,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
   <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
   <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
+  <button data-tab="membres" onclick="go('membres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="18" y2="14"/></svg>Membres</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
   <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
   <button class="nav-set" onclick="openParametres()" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Paramètres</button>
@@ -923,7 +1047,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
 <aside id="rail" class="rail" aria-label="Aperçu"></aside>
-<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><div id="sheet-content"></div></div></div>
+<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
 <div id="confetti" class="confetti"></div>
@@ -939,8 +1063,19 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.20.0";
+const APP_VERSION="0.21.0";
 const CHANGELOG=[
+  {v:"0.21.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Nouvel onglet Membres : l'annuaire de tout le réseau, tous clubs confondus. On cherche par nom, entreprise, métier, club ou ville (sans se soucier des accents ni des majuscules), on filtre par ville, et on ouvre la fiche du membre. Bouton pour appeler quand son mobile est connu.",
+      "Qui est connecté (superadmin et directeur national) : un voyant « N en ligne » en haut de l'écran, et la liste des comptes en ligne maintenant, déjà connectés (avec l'heure) et jamais connectés. Aussi dans Paramètres.",
+      "Fil d'Ariane : dans une fiche ouverte depuis une autre (Carte › Club › Membre), le chemin s'affiche en haut avec un bouton ← pour revenir d'un cran ; même chose en haut des pages quand on passe d'un écran à l'autre par un lien (Synthèse › Clubs à traiter). Le menu repart toujours de zéro.",
+      "La date et l'heure : en grand dans le bandeau d'accueil de la Synthèse (horloge vivante), et en haut de l'écran sur les autres pages, au même format sur ordinateur et téléphone.",
+      "Demandes à traiter : un bouton « 📥 Demandes » en haut, rouge quand une adhésion attend, un bloc en tête de la Synthèse avec chaque demande (nom, entreprise, groupe, responsable) et une section en tête du panneau de droite. Les adhésions sont relues chaque minute : une demande arrivée pendant la session s'affiche sans recharger, avec un message.",
+      "Le formulaire PDF d'une adhésion porte le nom du groupe concerné et son responsable, à l'ouverture comme au téléchargement (toujours les valeurs du moment).",
+      "Animations : bandeau d'accueil vivant, entrées en cascade des pages, des fiches et du panneau, survols et appuis plus vivants."
+    ],
+    "Corrigé":["Les initiales ignorent les signes comme « · » dans un nom affiché."]}},
   {v:"0.20.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Grand écran (1500 px et plus) : un panneau d'aperçu reste ouvert à droite. Il montre, selon l'onglet, la carte du réseau, les prochaines réunions, les dernières adhésions, les clubs à traiter, les réunions sans lieu ou les bilans à faire.",
@@ -1271,7 +1406,7 @@ function animNom(id){const a=anim(id);return a?a.nom:"Non attribué"}
 function lieu(id){return DB.lieux.find(l=>l.id===id)}
 function lieuNom(id){const l=lieu(id);return l?l.nom:"À définir"}
 function zone(id){return DB.zones.find(z=>z.id===id)}
-function initiales(n){return(n||"?").split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+function initiales(n){const w=String(n||"").split(/\s+/).filter(x=>/\p{L}/u.test(x));return w.length?w.slice(0,2).map(x=>x.match(/\p{L}/u)[0]).join("").toUpperCase():"?"}
 function dObj(iso){const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d)}
 function isPast(iso){return dObj(iso)<TODAY}
 function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -1330,6 +1465,8 @@ async function bootIntoApp(){
   tutoAuDemarrage();
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();
+  presenceDemarrer();
+  horlogeDemarrer();
   return true;
 }
 /* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe
@@ -1354,7 +1491,8 @@ function tutoEtapes(partie){
     clubs:[
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
       {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
-      {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`}],
+      {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`},
+      {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`}],
     adhesions:ed?[
       {go:"dash",c:'#view button[onclick="openAdhesions()"]',t:"Les adhésions en ligne",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent ici. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
       ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
@@ -1492,7 +1630,7 @@ async function verifierMdpInitial(){
   if(!r||r.error||r.data!==true)return;
   _mdpForce=true;openMyPassword(true);
 }
-async function logout(){await sb.auth.signOut();SESSION=null;DB=null;
+async function logout(){presenceArreter();await sb.auth.signOut();SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
   document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);railRender();}
 function enterApp(){
@@ -1517,17 +1655,17 @@ function updateRegionLabel(){
 /* ============================================================
    NAV
    ============================================================ */
-const TAB_ORDER=["dash","agenda","clubs","lieux","team"];let _navDir=null;
-function go(t){_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
+const TAB_ORDER=["dash","agenda","clubs","membres","lieux","team"];let _navDir=null;
+function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="lieux"?viewLieux():viewTeam();
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="lieux"?viewLieux():viewTeam();
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();railRender();}
+  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -1559,7 +1697,7 @@ function railMembresIncomplets(ids,n){
   return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
 }
 function railHTML(){
-  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"}[tab]||"";
   const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
@@ -1569,21 +1707,107 @@ function railHTML(){
       +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · bilan à saisir</small></div></div>`}),""):"")
       +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
   }
+  if(tab==="membres"){
+    const l=DB.membres.filter(m=>ids.has(m.clubId)).slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
+    return head("Derniers arrivés","Touche un membre pour ouvrir sa fiche ici.")+railRang("Nouveaux membres",l.map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc(mbSousTitre(m))}</small></div></div>`),"Aucun membre pour l'instant.")+railCarte();
+  }
   if(tab==="clubs")return head("Clubs à suivre","Touche un club pour ouvrir sa fiche ici.")+railRang("À traiter",railATraiter(ids,8),"✓ Tous les clubs sont en forme.")+railCarte()+railRang("Dossiers incomplets",railMembresIncomplets(ids,8),"✓ Tous les membres sont à jour.");
   if(tab==="lieux")return head("Lieux et réunions","Les réunions qui attendent un lieu, puis les prochaines.")+railRang("Lieu à trouver",railReunions(ids,10,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.")+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+railCarte();
   if(tab==="team")return head("L'équipe en action","Prochaines réunions et clubs à reprendre.")+railRang("Prochaines réunions",railReunions(ids,8),"Aucune réunion à venir.")+railRang("Clubs sans animateur",DB.clubs.filter(c=>ids.has(c.id)&&!c.animId).map(c=>`<div class="rank-row link" onclick="openClub('${c.id}')"><span class="hdot bad"></span><div class="rn">${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(c.ville)}</small></div></div>`),"✓ Chaque club a son animateur.");
-  return head("Le réseau d'un coup d'œil","Touche une ville, une réunion ou une adhésion : la fiche s'ouvre ici.")+railCarte()+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+railAdhesions(5);
+  return head("Le réseau d'un coup d'œil","Touche une ville, une réunion ou une adhésion : la fiche s'ouvre ici.")+railDemandes()+railCarte()+railRang("Prochaines réunions",railReunions(ids,6),"Aucune réunion à venir.")+(adhAIntegrer().length?"":railAdhesions(5));
 }
 function railRender(){railSync();const r=document.getElementById("rail");if(!r)return;if(!isRail()){r.innerHTML="";return}
   try{r.innerHTML=railHTML();pillify(r)}catch(e){console.error(e);r.innerHTML=""}}
 window.addEventListener("resize",()=>{const on=isRail();if(on!==document.documentElement.classList.contains("rail-on"))railRender()});
+/* ============================================================
+   MEMBRES — annuaire de tout le réseau, recherche sur nom, entreprise, métier, club, ville.
+   La recherche ne rerend que la liste (#mb-res) : le champ garde le focus et le clavier reste ouvert.
+   ============================================================ */
+function mbNorm(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
+function mbEntreprise(m){const i=m.infos||{};return i.ent_nom||""}
+function mbMetier(m){const i=m.infos||{};return m.specialite||i.metier||i.ent_activite||""}
+function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(m),(c.nom||"").replace(/^CAP\s+/,"")].filter(Boolean).join(" · ")}
+function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
+function mbListe(){
+  const ids=new Set(scopedClubIds());const q=mbNorm(window._q4||"").split(/\s+/).filter(Boolean);
+  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(!q.length||(x=>q.every(t=>x.includes(t)))(mbIndex(m))))
+    .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
+}
+function mbCarte(m,i){
+  const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
+  return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
+    <span class="mb-av">${esc(initiales(m.nom))}</span>
+    <span class="mb-t"><b>${esc(m.nom)}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
+  </div>`;
+}
+function mbResultats(){
+  const l=mbListe();
+  if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
+  return `<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div><div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
+}
+function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=mbResultats()}
+function viewMembres(){
+  const ids=new Set(scopedClubIds());const tous=DB.membres.filter(m=>ids.has(m.clubId));
+  const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} dans tout le réseau</p></div></div>
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="mb-q" type="search" placeholder="Nom, entreprise, métier, club, ville…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
+    <div class="filters">${fchip("Tous","all",tous.length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>
+    <div id="mb-res">${mbResultats()}</div><div style="height:8px"></div></div>`;
+}
+
+/* ============================================================
+   QUI EST CONNECTÉ — chaque appli ouverte se signale (cap_ping) chaque minute ;
+   superadmin et directeur national voient la liste (cap_qui_connecte). En ligne = vu il y a moins de 3 min.
+   ============================================================ */
+let _presT=null,_presVis=false,_presListe=[];
+function presenceVoit(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
+function presencePing(){try{if(SESSION&&document.visibilityState==="visible")sb.rpc("cap_ping").then(()=>{},()=>{})}catch(e){}}
+function presenceDemarrer(){
+  presencePing();presenceMaj();clearInterval(_presT);
+  _presT=setInterval(()=>{presencePing();presenceMaj();adhRafraichir()},60000);
+  if(!_presVis){_presVis=true;document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&SESSION){presencePing();presenceMaj();adhRafraichir()}})}
+}
+function presenceArreter(){clearInterval(_presT);_presT=null;_presListe=[];const p=document.getElementById("online-pill");if(p)p.classList.add("hidden")}
+function enLigne(u){return !!u.vu_le&&Date.now()-new Date(u.vu_le).getTime()<3*60000}
+async function presenceMaj(){
+  const p=document.getElementById("online-pill");
+  if(!presenceVoit()){if(p)p.classList.add("hidden");return}
+  let r;try{r=await sb.rpc("cap_qui_connecte")}catch(e){return}const {data,error}=r||{};if(error||!data){if(error)console.warn(error);return}
+  _presListe=data||[];
+  const n=_presListe.filter(enLigne).length;
+  if(p){p.innerHTML=`<i></i>${n}<span class="l"> en ligne</span>`;p.classList.remove("hidden")}
+  const sc=document.getElementById("qui-co");if(sc)sc.innerHTML=quiConnecteHTML();
+}
+function depuis(iso){
+  if(!iso)return"jamais";const d=new Date(iso),min=Math.round((Date.now()-d.getTime())/60000);
+  if(min<1)return"à l'instant";if(min<60)return"il y a "+min+" min";
+  const h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  if(d.toDateString()===new Date().toDateString())return"aujourd'hui à "+h;
+  const hier=new Date();hier.setDate(hier.getDate()-1);if(d.toDateString()===hier.toDateString())return"hier à "+h;
+  return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+" à "+h;
+}
+function quiConnecteHTML(){
+  const l=_presListe,on=l.filter(enLigne),autres=l.filter(u=>!enLigne(u)&&(u.vu_le||u.derniere_connexion)),jamais=l.filter(u=>!u.vu_le&&!u.derniere_connexion);
+  const der=u=>{const a=u.vu_le?new Date(u.vu_le).getTime():0,b=u.derniere_connexion?new Date(u.derniere_connexion).getTime():0;return a>b?u.vu_le:u.derniere_connexion};
+  const row=(u,quand)=>`<div class="rank-row"><span class="qc-av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.login))}${enLigne(u)?`<i class="qc-dot"></i>`:""}</span><div class="rn">${esc(u.nom||u.login)}${u.id===SESSION.id?" <span style=\"color:var(--muted);font-weight:500\">(toi)</span>":""}<small>${esc(ROLES[u.role]||u.role||"")} · ${quand}</small></div></div>`;
+  return secHead("En ligne maintenant",on.length)+`<div class="rank">${on.length?on.map(u=>row(u,"actif "+depuis(u.vu_le))).join(""):`<div class="rail-vide">Personne pour l'instant.</div>`}</div>`
+    +(autres.length?secHead("Déjà connectés",autres.length)+`<div class="rank">${autres.sort((a,b)=>new Date(der(b))-new Date(der(a))).map(u=>row(u,"vu "+depuis(der(u)))).join("")}</div>`:"")
+    +(jamais.length?secHead("Jamais connectés",jamais.length)+`<div class="rank">${jamais.map(u=>row(u,"jamais connecté")).join("")}</div>`:"");
+}
+async function openQuiConnecte(){
+  document.getElementById("sheet-content").innerHTML=`<h3>Qui est connecté</h3><div class="sheet-sub">Mis à jour chaque minute · en ligne = actif dans les 3 dernières minutes</div><div id="qui-co"><div class="rail-vide">Chargement…</div></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();await presenceMaj();
+}
 /* Mobile : lignes compactes à indicateurs, détail au toucher. Ordinateur (≥ 900 px) : cartes riches.
    On rerend quand on franchit le seuil (rotation, fenêtre redimensionnée). */
 function isWide(){return window.matchMedia("(min-width:900px)").matches}
 let _wasWide=null;
 window.addEventListener("resize",()=>{const w=isWide();if(_wasWide!==null&&w!==_wasWide&&document.getElementById("view").innerHTML)render();_wasWide=w});
 function fabAction(){
-  if(readOnly()||tab==="dash")return;
+  if(readOnly()||tab==="dash"||tab==="membres")return;
   if(tab==="agenda")openMeeting();
   else if(tab==="lieux")openLieu();
   else if(tab==="clubs"&&canManageStructure())clubForm(null);
@@ -2054,7 +2278,7 @@ function viewDashboard(){
   const sc=window._dashSc==="reg"?"reg":"nat";
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashBilanAlerte():dashBonjour()+dashOutils()+dashBilanAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
   if(large){
     const sc=window._dashSc==="reg"?"reg":"nat";const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
     html+=`<div class="dash-cols"><div><div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`
@@ -2473,6 +2697,7 @@ async function mbDocsCharger(m,canEd){
     :`<p class="fh-empty">Aucun document pour l'instant.</p>`;
 }
 async function mbDocOuvrir(bucket,chemin){
+  if(bucket==="adhesions"){const a=(DB.adhesions||[]).find(x=>x.pdf_path===chemin);if(a)return adhPdf(a.id)}
   const w=window.open("","_blank"); // ouvert avant l'attente réseau, sinon le téléphone bloque la fenêtre
   const {data,error}=await sb.storage.from(bucket).createSignedUrl(chemin,600);
   if(error||!data){if(w)w.close();toast("Document introuvable");return}
@@ -2821,7 +3046,7 @@ async function adhBlob(a){
   const {data,error}=await sb.storage.from("adhesions").createSignedUrl(a.pdf_path,600);
   if(error||!data)throw new Error("PDF introuvable");
   const r=await fetch(data.signedUrl);if(!r.ok)throw new Error("PDF introuvable");
-  return await r.blob();
+  return await adhTamponner(await r.blob(),a);
 }
 function adhSauver(blob,nom){const u=URL.createObjectURL(blob);const l=Object.assign(document.createElement("a"),{href:u,download:nom});document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
 async function adhTelecharger(id){
@@ -2848,9 +3073,9 @@ function adhZipGroupe(g){return adhZip(adhClasseurListe().filter(a=>adhGroupe(a)
 async function adhPdf(id){
   const a=DB.adhesions.find(x=>x.id===id);
   const w=window.open("","_blank"); // ouvert AVANT l'attente réseau, sinon le téléphone bloque la fenêtre
-  const {data,error}=await sb.storage.from("adhesions").createSignedUrl(a.pdf_path,600);
-  if(error||!data){if(w)w.close();toast("PDF introuvable");return}
-  if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+  let b;try{b=await adhBlob(a)}catch(e){if(w)w.close();toast("PDF introuvable");return}
+  const u=URL.createObjectURL(b);setTimeout(()=>URL.revokeObjectURL(u),600000);
+  if(w)w.location=u;else location.href=u;
 }
 /* ---- Envoi au CRM national Protéine (fonction serveur national-adhesion, superadmin) ----
    Aperçu (lecture seule au national) → choix de l'offre, de la date et de la signature → envoi.
@@ -3116,8 +3341,8 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");if(isRail())w.querySelector(".sheet").scrollTop=0}
-function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
+function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null;_fil=[];filFicheRendu()}
 
 
 /* ============================================================
@@ -3196,8 +3421,11 @@ function dashBonjour(){
   const prenom=(SESSION.name||"").split(/[ @.]/)[0];
   const ids=new Set(_dashScope.nat||[]);
   const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
-  const jour=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}).replace(/^./,c=>c.toUpperCase());
-  return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})"><span style="flex:1;position:relative;z-index:1"><b>${sal} ${esc(prenom)} 👋</b><small>${jour} · ${n?`${n} action${n>1?"s":""} t'attend${n>1?"ent":""}`:"rien ne presse"}</small></span><span class="n">${n||"✓"}</span></button>`;
+  return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">
+    <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span>
+    <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`:"Rien ne presse aujourd'hui ✓"}</small></span>
+    <span class="h-clock"><span class="h-time" data-hor="t">${horlogeTxt().h}</span><span class="h-date" data-hor="d">${horlogeTxt().d}</span></span>
+    <span class="h-n"><b data-count="${n}">${n||"✓"}</b><small>${n?"à faire":"à jour"}</small></span></button>`;
 }
 function dashObjectif(sc){
   const ids=new Set(_dashScope[sc]||[]);
@@ -3574,7 +3802,8 @@ async function openParametres(){
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
-    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
+    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
     <div class="set-sec">Aide</div>
     <div class="set-l">${r("🎓","Visite guidée","Revoir l'utilisation du CRM, en entier ou par partie","openAide()")}</div>
     <div class="set-sec">Application</div>
@@ -3598,6 +3827,141 @@ function rolePill(r){return{directeur:"dir",directeur_national:"dir",animateur:"
   if(session)await bootIntoApp();
   checkUpdate();setInterval(checkUpdate,180000);
 })();
+
+/* ============================================================
+   DEMANDES À TRAITER — les adhésions reçues par le lien, bien en vue :
+   bouton « 📥 Demandes N » en haut, bloc en tête de la Synthèse, section en tête du panneau de droite.
+   Les adhésions sont relues chaque minute (et au retour sur l'appli) : une demande arrivée
+   pendant la session apparaît sans recharger, avec un message.
+   ============================================================ */
+function adhResponsable(a){const cid=adhClubId(a),c=cid?club(cid):null;return c&&c.animId?animNom(c.animId):""}
+function demListe(){return SESSION&&SESSION.role!=="visiteur"?adhAIntegrer().slice().sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||"")):[]}
+function demBadge(){
+  const b=document.getElementById("dem-btn");if(!b)return;
+  if(!SESSION||SESSION.role==="visiteur"){b.classList.add("hidden");return}
+  const n=demListe().length;b.classList.remove("hidden");b.classList.toggle("on",n>0);
+  b.innerHTML=`<span aria-hidden="true">📥</span><span class="l">Demandes</span>${n?`<em>${n}</em>`:""}`;
+  b.title=n?n+" demande"+(n>1?"s":"")+" d'adhésion à traiter":"Aucune demande à traiter";
+}
+function openDemandes(){openAdhesions("todo")}
+function demCarte(a,i){
+  const g=adhGroupe(a),r=adhResponsable(a),c=DB.clubs.find(x=>x.nom===g);
+  return `<div class="dem-card" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}" role="button" tabindex="0" onclick="adhDetail('${a.id}')" onkeydown="if(event.key==='Enter')adhDetail('${a.id}')">
+    <span class="dem-av">${esc(initiales(adhNom(a)))}</span>
+    <span class="dem-t"><b>${esc(adhNom(a))}</b><small>${esc([a.data.ent_nom,a.data.metier].filter(Boolean).join(" · ")||"—")}</small>
+      <em>${g==="Sans groupe"?"Groupe à choisir":esc(g.replace(/^CAP\s+/,""))}${r?" · resp. "+esc(r):""}</em></span>
+    <span class="dem-age ${adhEnRetard(a)?"late":""}">${adhAge(a.created_at)}</span>
+    ${a.pdf_path?`<button class="btn ghost mini" onclick="event.stopPropagation();adhPdf('${a.id}')">PDF</button>`:""}
+    <span class="dem-go">Traiter ›</span></div>`;
+}
+function dashDemandes(){
+  const l=demListe();if(!l.length)return"";
+  return `<section class="dem" aria-label="Demandes à traiter"><div class="dem-h"><span class="dem-pulse"></span><b>📥 ${l.length} demande${l.length>1?"s":""} d'adhésion à traiter</b><button class="btn ghost mini" onclick="openDemandes()">Tout voir</button></div>
+    <div class="dem-l">${l.slice(0,4).map(demCarte).join("")}</div>${l.length>4?`<button class="dem-plus" onclick="openDemandes()">+ ${l.length-4} autre${l.length-4>1?"s":""}</button>`:""}</section>`;
+}
+function railDemandes(){
+  const l=demListe();if(!l.length)return"";
+  return `<div class="sec-h"><span>Demandes à traiter <em>${l.length}</em></span></div><div class="dem-l rail-dem">${l.slice(0,5).map(demCarte).join("")}</div>`;
+}
+let _adhRafr=false;
+async function adhRafraichir(){
+  if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
+  try{
+    const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
+    if(error||!data)return;
+    const avant=new Set((DB.adhesions||[]).map(a=>a.id)),nouv=data.filter(a=>!avant.has(a.id)&&a.statut==="recue");
+    const change=data.length!==(DB.adhesions||[]).length||data.some(a=>{const o=(DB.adhesions||[]).find(x=>x.id===a.id);return !o||o.statut!==a.statut||o.membre_id!==a.membre_id});
+    DB.adhesions=data;
+    if(nouv.length)toast(nouv.length>1?"📥 "+nouv.length+" nouvelles demandes d'adhésion":"📥 Nouvelle demande d'adhésion : "+adhNom(nouv[0]));
+    if(change){const sh=document.getElementById("sheet");if(!(sh&&sh.classList.contains("open")&&!isRail()))render();else demBadge()}
+  }catch(e){console.warn(e)}finally{_adhRafr=false}
+}
+/* Groupe et responsable imprimés sur le formulaire PDF, à l'ouverture et au téléchargement :
+   toujours les valeurs du moment (le groupe peut changer à l'intégration). En cas d'échec, le PDF d'origine. */
+let _pdfLibP=null;
+function pdfLibCharger(){if(window.PDFLib)return Promise.resolve(window.PDFLib);
+  return _pdfLibP=_pdfLibP||new Promise((ok,ko)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";sc.onload=()=>ok(window.PDFLib);sc.onerror=()=>{_pdfLibP=null;ko(new Error("pdf-lib indisponible"))};document.head.appendChild(sc)})}
+function pdfTexteSur(t){return String(t||"").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,"-").replace(/[^\x20-\x7E -ÿ·]/g,"")}
+async function adhTamponner(blob,a){
+  try{
+    const {PDFDocument,StandardFonts,rgb}=await pdfLibCharger();
+    const doc=await PDFDocument.load(await blob.arrayBuffer());const pg=doc.getPages()[0];if(!pg)return blob;
+    const f=await doc.embedFont(StandardFonts.Helvetica),fb=await doc.embedFont(StandardFonts.HelveticaBold);
+    const g=adhGroupe(a),r=adhResponsable(a);
+    const lignes=[["Groupe : ",g==="Sans groupe"?"à attribuer":g],["Responsable du groupe : ",r||"à désigner"]];
+    const {width,height}=pg.getSize(),droite=width*494/540;let y=height*668/780;
+    for(const [k,v] of lignes){
+      const kv=pdfTexteSur(k),vv=pdfTexteSur(v);let tv=9;while(tv>6&&f.widthOfTextAtSize(kv,8)+fb.widthOfTextAtSize(vv,tv)>230)tv-=.5;
+      const wk=f.widthOfTextAtSize(kv,8),wv=fb.widthOfTextAtSize(vv,tv),x=droite-wk-wv;
+      pg.drawText(kv,{x,y,size:8,font:f,color:rgb(.42,.38,.4)});
+      pg.drawText(vv,{x:x+wk,y,size:tv,font:fb,color:rgb(.69,.07,.18)});y-=12.5;
+    }
+    return new Blob([await doc.save()],{type:"application/pdf"});
+  }catch(e){console.warn("Tampon PDF :",e);return blob}
+}
+
+/* ============================================================
+   FIL D'ARIANE
+   1. Fiches (panneau / feuille) : chaque fiche ouverte DEPUIS une fiche s'empile (Carte › Club › Membre).
+      Ouverte depuis la page, elle repart d'un fil neuf. Rouvrir une fiche déjà dans le fil y remonte (pas de boucle).
+      Les ouvreurs sont enveloppés une fois pour toutes (FIL_FICHES), sans toucher à leur code.
+   2. Pages : passer d'un onglet à l'autre par un lien (« Voir les clubs à traiter ») s'empile ; le menu repart à zéro.
+   ============================================================ */
+let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
+document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
+const FIL_FICHES=["openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
+function filNoter(n,a){
+  const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
+  if(!ouverte||!_filClicFiche)_fil=[];
+  else if(_fil.length)_fil[_fil.length-1].t=filTitreCourant()||_fil[_fil.length-1].t;
+  let k;try{k=n+"|"+JSON.stringify(a)}catch(e){k=n+"|"+Math.random()}
+  const i=_fil.findIndex(x=>x.k===k);if(i>=0)_fil=_fil.slice(0,i);
+  _fil.push({k,n,a,t:""});_filClicFiche=false;
+}
+FIL_FICHES.forEach(n=>{const f=window[n];if(typeof f!=="function")return;window[n]=function(...a){filNoter(n,a);return f.apply(this,a)}});
+function filFicheRendu(){
+  const el=document.getElementById("fil-fiche");if(!el)return;
+  if(_fil.length)_fil[_fil.length-1].t=filTitreCourant()||_fil[_fil.length-1].t||"Fiche";
+  if(_fil.length<2){el.innerHTML="";el.classList.remove("on");return}
+  el.classList.add("on");
+  el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
+}
+function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
+const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_FILTRES={todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
+function filPageNoter(t){
+  if(_filPageRejeu){_filPageRejeu=false;return}
+  if(_filMenu||!_filPage.length){_filPage=[{tab:t,filter:"all"}];_filMenu=false;return}
+  const i=_filPage.findIndex(x=>x.tab===t);if(i>=0)_filPage=_filPage.slice(0,i);
+  _filPage.push({tab:t,filter:"all"});
+}
+function filPageLib(x){return (FIL_ONGLETS[x.tab]||x.tab)+(x.filter&&x.filter!=="all"?" · "+(x.filter.startsWith("v:")?x.filter.slice(2):FIL_FILTRES[x.filter]||x.filter):"")}
+function filPageRendu(v){
+  if(!_filPage.length)_filPage=[{tab,filter}];
+  const top=_filPage[_filPage.length-1];if(top.tab===tab)top.filter=filter;
+  if(_filPage.length<2)return;
+  const pg=v.querySelector(".page");if(!pg)return;
+  const n=document.createElement("nav");n.className="fil fil-page on";n.setAttribute("aria-label","Fil d'Ariane");
+  n.innerHTML=`<button class="fil-ret" onclick="filPageAller(${_filPage.length-2})" aria-label="Revenir à ${esc(filPageLib(_filPage[_filPage.length-2]))}">←</button><span class="fil-l">${_filPage.map((x,i)=>i<_filPage.length-1?`<button class="fil-c" onclick="filPageAller(${i})">${esc(filPageLib(x))}</button><span class="fil-s">›</span>`:`<b>${esc(filPageLib(x))}</b>`).join("")}</span>`;
+  pg.prepend(n);
+}
+function filPageAller(i){const e=_filPage[i];if(!e)return;_filPage=_filPage.slice(0,i+1);_filPageRejeu=true;go(e.tab);if(e.filter!=="all"){filter=e.filter;render()}}
+
+/* ============================================================
+   DATE ET HEURE — en haut de l'écran, à la minute.
+   ============================================================ */
+let _horT=null;
+function horlogeTxt(){const d=new Date(),h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  return{h:h.replace(":",'<i class="h-col">:</i>'),d:d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase()),
+    court:d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"}).replace(/^./,c=>c.toUpperCase()),hs:h}}
+function horlogeMaj(){
+  const x=horlogeTxt(),el=document.getElementById("tb-clock");
+  if(el){el.innerHTML=`<span class="tc-d">${x.court}</span><b>${x.hs}</b>`;el.title=x.d}
+  document.querySelectorAll('[data-hor="t"]').forEach(e=>{if(e.dataset.v!==x.hs){e.dataset.v=x.hs;e.innerHTML=x.h;e.classList.remove("tick");void e.offsetWidth;e.classList.add("tick")}});
+  document.querySelectorAll('[data-hor="d"]').forEach(e=>e.textContent=x.d);
+}
+function horlogeDemarrer(){horlogeMaj();clearTimeout(_horT);const suite=()=>{horlogeMaj();_horT=setTimeout(suite,60000-Date.now()%60000+50)};_horT=setTimeout(suite,60000-Date.now()%60000+50)}
 </script>
 </body>
 </html>

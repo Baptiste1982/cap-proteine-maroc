@@ -817,6 +817,14 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .lieux-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .lieux-grid .lieu-card{height:100%}
 @media (prefers-reduced-motion:reduce){.tool,.bil-alert,.mapc .pulse,.zbar i,.show-o .sl,.szl i,.sprog i.on b{animation:none!important;transition:none!important}.sprog i.on b{width:100%}}
+.field[hidden]{display:none}
+.nat-box a.btn{text-decoration:none}
+.nat-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
+.nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson)}
+.nat-v{font-size:13px;color:var(--muted)}.nat-v b{color:var(--ink)}
+.nat-ok{font-weight:600;color:#1f7a4d}.nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
+.nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.nat-plan{display:grid;gap:6px;margin:10px 0}.nat-plan div{display:flex;justify-content:space-between;gap:12px;font-size:13px}.nat-plan span{color:var(--muted)}.nat-plan b{text-align:right}
 </style>
 </head>
 <body>
@@ -889,8 +897,16 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.17.0";
+const APP_VERSION="0.18.0";
 const CHANGELOG=[
+  {v:"0.18.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Fiche d'adhésion : bouton « Envoyer au CRM national » (superadmin). Aperçu sans rien écrire, choix de l'offre, de la date de début et de la signature, puis création ou mise à jour du prospect, de l'entreprise et de la personne, et génération du contrat. En mode papier, le contrat est prêt à imprimer et aucun e-mail ne part.",
+      "La fiche garde le lien du contrat à signer, les accès à l'application Protéine du membre et le journal de l'envoi. Un nouvel envoi met à jour le contrat existant sans en créer un second."
+    ],
+    "Modifié":[
+      "Formulaire d'adhésion : effectif, année de création et second téléphone, comme au national (facultatifs)."
+    ]}},
   {v:"0.17.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Robot de saisie vers le CRM national réécrit sur le vrai parcours de l'Espace Animateur : il retrouve ou crée le prospect, remplit Préparation, Entreprise, Personne membre et Contrat, puis s'arrête. L'enregistrement du contrat et la signature restent à l'animateur.",
@@ -2436,8 +2452,8 @@ function adhWhatsApp(){
   const msg="Bonjour, voici le formulaire d'adhésion au Club d'affaires Protéine Maroc. Il se remplit en 3 minutes depuis votre téléphone : "+adhSelLink();
   window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
-const ADH_CHAMPS=[["Entreprise",[["metier","Métier"],["ent_nom","Nom usuel"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_ice","ICE"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"]]],
-  ["Membre",[["m_civilite","Civilité"],["m_dirigeant","Dirigeant"],["m_prenom","Prénom"],["m_nom","Nom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Mobile"],["m_naissance","Naissance"],["m_hobbies","Hobbies"]]],
+const ADH_CHAMPS=[["Entreprise",[["metier","Métier"],["ent_nom","Nom usuel"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_ice","ICE"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"],["ent_effectif","Effectif"],["ent_annee","Année de création"]]],
+  ["Membre",[["m_civilite","Civilité"],["m_dirigeant","Dirigeant"],["m_prenom","Prénom"],["m_nom","Nom"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Mobile"],["m_tel2","Autre téléphone"],["m_naissance","Naissance"],["m_hobbies","Hobbies"]]],
   ["Signataire",[["s_prenom","Prénom"],["s_nom","Nom"],["s_fonction","Fonction"],["s_email","Email"],["s_tel","Mobile"]]],
   ["Règlement",[["reg_mode","Mode"],["reg_fois","Versements"],["commentaires","Commentaires"]]],
   ["Facturation",[["f_entreprise","Entreprise"],["f_adresse","Adresse"],["f_cpville","CP / Ville"]]]];
@@ -2459,6 +2475,7 @@ function adhDetail(id){
     ${adhEnRetard(a)?`<div class="ck-act urgent" style="margin-bottom:10px;cursor:default"><span class="ic">⏰</span><span class="tx">En attente depuis ${adhJours(a.created_at)} jours</span></div>`:""}
     ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
     <div class="drow" style="margin-top:10px"><div class="tx"><div class="k">CRM national Protéine</div><div class="v">${a.saisie_proteine_le?"Saisie faite le "+adhDate(a.saisie_proteine_le):"Pas encore saisie"}</div></div>${peut?`<a href="#" onclick="adhSaisie('${a.id}',${!a.saisie_proteine_le});return false">${a.saisie_proteine_le?"Annuler":"Marquer saisie"}</a>`:""}</div>
+    ${SESSION.role==="superadmin"&&a.statut!=="rejetee"?adhNationalBloc(a):""}
     ${blocs}
     ${peut&&a.statut!=="integree"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
@@ -2556,6 +2573,54 @@ async function adhPdf(id){
   if(error||!data){if(w)w.close();toast("PDF introuvable");return}
   if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
 }
+/* ---- Envoi au CRM national Protéine (fonction serveur national-adhesion, superadmin) ----
+   Aperçu (lecture seule au national) → choix de l'offre, de la date et de la signature → envoi.
+   La fonction crée ou complète prospect, entreprise et personne, génère le contrat et, en mode
+   papier, le met à disposition pour impression. Elle ne lance jamais la signature électronique. */
+const NAT_STATUTS={contrat_genere:"Contrat généré",contrat_papier:"Contrat papier prêt à signer"};
+function adhNationalBloc(a){
+  const n=a.national||{},lien=n.url_contrat_papier||n.url_contrat;
+  return `<div class="nat-box">
+    <div class="nat-t">Envoi au CRM national</div>
+    ${n.contrat_id?`<div class="nat-ok">✓ ${esc(NAT_STATUTS[n.statut]||"Contrat créé")} · contrat n° ${esc(n.contrat_id)}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Pas encore envoyée.</div>`}
+    ${lien?`<a class="btn" href="${esc(lien)}" target="_blank" rel="noopener">📄 Ouvrir le contrat à signer</a>`:""}
+    ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
+    ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
+    <button class="btn ${n.contrat_id?"ghost":""}" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>
+  </div>`;
+}
+async function adhNational(id){
+  const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
+  const sc=document.getElementById("sheet-content");
+  sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(a.data.ent_nom||adhNom(a))})}<p class="nat-v">Connexion au CRM national et vérification, sans rien y écrire…</p>`;
+  const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"apercu",adhesion_id:id}});
+  const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:r?.error;
+  if(err||!r?.ok){sc.innerHTML+=`<div class="nat-err">${esc(err||"Erreur inconnue")}</div><div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${id}')">← Retour</button></div>`;return}
+  const p=r.plan,auj=new Date(),max=new Date(auj.getTime()+14*864e5);
+  sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(r.club||"")})}
+    ${p.deja?`<div class="ck-act urgent" style="cursor:default"><span class="ic">!</span><span class="tx">${esc(p.deja)} : l'envoi le mettra à jour, sans doublon.</span></div>`:""}
+    <div class="nat-plan">${[["Prospect",p.prospect],["Entreprise",p.entreprise],["Catégorie",p.categorie],["Métier",p.metier],["Règlement",p.reglement],["Montant",p.montant+" MAD HT"]].map(([k,v])=>`<div><span>${k}</span><b>${esc(v)}</b></div>`).join("")}</div>
+    <div class="field"><label>Offre spéciale</label><select id="nat-offre" onchange="document.getElementById('nat-just-f').hidden=this.value==='Aucune'"><option>Aucune</option><option>1 mois offert</option><option>2 mois offert</option></select></div>
+    <div class="field" id="nat-just-f" hidden><label>Justification de l'offre</label><textarea id="nat-just" rows="2"></textarea></div>
+    <div class="field"><label>Début de l'abonnement</label><input type="date" id="nat-debut" value="${isoJour(auj)}" max="${isoJour(max)}"></div>
+    <div class="field"><label>Signature</label><select id="nat-sig"><option value="papier">Contrat papier à imprimer et faire signer (aucun e-mail envoyé)</option><option value="aucune">Générer le contrat, je choisis la signature au national</option></select></div>
+    <p class="fh-note">La signature électronique n'est pas lancée d'ici : elle enverrait le contrat au membre et au siège.</p>
+    <div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${id}')">Annuler</button><button class="btn" id="nat-go" onclick="adhNationalEnvoyer('${id}')">Confirmer l'envoi</button></div>`;
+  pillify(sc);
+}
+async function adhNationalEnvoyer(id){
+  const v=x=>document.getElementById(x).value,b=document.getElementById("nat-go");
+  const offre=v("nat-offre"),just=v("nat-just").trim();
+  if(offre!=="Aucune"&&!just){toast("Justification requise pour une offre spéciale");return}
+  const deb=v("nat-debut");if(!deb){toast("Date de début requise");return}
+  b.disabled=true;b.textContent="Envoi en cours…";
+  const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"envoyer",adhesion_id:id,options:{offre,justification:just,date_debut:deb.split("-").reverse().join("/"),signature:v("nat-sig")}}});
+  const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error);
+  const {data:row}=await sb.from("adhesions").select("*").eq("id",id).single();
+  if(row){const i=DB.adhesions.findIndex(x=>x.id===id);if(i>=0)DB.adhesions[i]=row}
+  toast(err?"Envoi interrompu : "+err:"Envoyée au CRM national : contrat prêt",err?"e":"s");
+  adhDetail(id);
+}
 function adhASaisir(){return(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee")}
 async function adhSaisie(id,faite){
   const {error}=await sb.from("adhesions").update(faite?{saisie_proteine_le:new Date().toISOString(),saisie_proteine_par:SESSION.id}:{saisie_proteine_le:null,saisie_proteine_par:null}).eq("id",id);
@@ -2565,7 +2630,7 @@ async function adhSaisie(id,faite){
 /* Export « prêt à saisir » : une ligne par adhésion pas encore saisie dans le CRM national,
    colonnes dans l'ordre du formulaire officiel. Sert à la saisie en série (voir
    docs/saisie-en-serie-crm-proteine.md) ; le format JSON est lu par l'outil de saisie. */
-const ADH_EXPORT_COLS=[["id","Réf. adhésion"],["created_at","Reçue le"],["metier","Métier représenté"],["ent_nom","Nom de l'entreprise"],["ent_ice","ICE"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital social"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"],["m_civilite","Civilité"],["m_nom","Nom"],["m_prenom","Prénom"],["m_dirigeant","Dirigeant"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Téléphone mobile"],["m_naissance","Date de naissance"],["m_hobbies","Hobbies"],["sig_same","Signataire = membre"],["s_nom","Signataire nom"],["s_prenom","Signataire prénom"],["s_fonction","Signataire fonction"],["s_email","Signataire email"],["s_tel","Signataire mobile"],["reg_mode","Mode de règlement"],["reg_fois","Nombre de versements"],["commentaires","Commentaires"],["fac_same","Facturation = entreprise du membre"],["f_entreprise","Facturation entreprise"],["f_adresse","Facturation adresse"],["f_cpville","Facturation CP / ville"],["club","Club"]];
+const ADH_EXPORT_COLS=[["id","Réf. adhésion"],["created_at","Reçue le"],["metier","Métier représenté"],["ent_nom","Nom de l'entreprise"],["ent_ice","ICE"],["ent_nom_legal","Nom légal"],["ent_categorie","Catégorie juridique"],["ent_activite","Activité"],["ent_patente","Patente"],["ent_ville_rcs","Ville RCS"],["ent_capital","Capital social"],["ent_adresse","Adresse"],["ent_cp","Code postal"],["ent_ville","Ville"],["ent_tel","Téléphone"],["ent_web","Site web"],["ent_effectif","Effectif"],["ent_annee","Année de création"],["m_civilite","Civilité"],["m_nom","Nom"],["m_prenom","Prénom"],["m_dirigeant","Dirigeant"],["m_fonction","Fonction"],["m_email","Email"],["m_tel","Téléphone mobile"],["m_tel2","Autre téléphone"],["m_naissance","Date de naissance"],["m_hobbies","Hobbies"],["sig_same","Signataire = membre"],["s_nom","Signataire nom"],["s_prenom","Signataire prénom"],["s_fonction","Signataire fonction"],["s_email","Signataire email"],["s_tel","Signataire mobile"],["reg_mode","Mode de règlement"],["reg_fois","Nombre de versements"],["commentaires","Commentaires"],["fac_same","Facturation = entreprise du membre"],["f_entreprise","Facturation entreprise"],["f_adresse","Facturation adresse"],["f_cpville","Facturation CP / ville"],["club","Club"]];
 function adhLigneExport(a){
   const d={...a.data};
   if(d.sig_same){d.s_nom=d.m_nom;d.s_prenom=d.m_prenom;d.s_fonction=d.m_fonction;d.s_email=d.m_email;d.s_tel=d.m_tel}

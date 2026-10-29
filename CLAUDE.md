@@ -95,6 +95,15 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Banc Playwright `scratchpad/tools/v09.mjs` : 42/42 en taille téléphone et en taille ordinateur.
 - Règle de ton : Alix **tutoie** JB, toujours.
 
+**🔗 Connexion au CRM national (v0.16.1 → v0.18.0, 29/10/2026)** :
+- Espace Animateur national = `animateur.ma.caproteine.com` (PHP + jQuery, session PHPSESSID, pas d'API). Connexion : POST `/connexion/extranet` (login, password, autoConnect). Les champs de l'assistant de contrat portent un `id` brouillé ; l'identifiant d'origine est dans l'attribut `oldid`.
+- **Fonction serveur `national-adhesion`** (Supabase, superadmin) : rejoue en HTTP les requêtes de l'assistant « Envoyer le contrat membre pour signature » : `/personne/enregistrer` + `/entreprise/enregistrer` (nouveau prospect), `/entrepriseProspectMembre/enregistrer`, `/personneProspectMembre/enregistrer`, `/contrat/enregistrer`, `/abonnement/enregistrer`, `/contrat/genererPdf`, puis `/contrat/enregistrer` type=1 pour le papier. Payloads relevés le 29/10 en capturant le vrai navigateur, écritures simulées. Résultat dans `adhesions.national` (jsonb). Bouton dans la fiche d'adhésion du CRM.
+- Secrets `CAP_NATIONAL_IDENTIFIANT` / `CAP_NATIONAL_MOT_DE_PASSE` à poser dans Supabase (Edge Functions → Secrets). L'outil MCP `create_edge_function_secret` demande la valeur à JB par une fenêtre qui n'apparaît pas chez lui (même souci que les confirmations SQL).
+- Pièges : le champ « Num. RC » du national est la **patente** ; patente, ville RC et capital sont facultatifs pour « Entrepreneur individuel » (1000) et « Profession libérale » (1001) ; listes officielles = 13 catégories, 402 métiers (embarquées dans `adhesion.html`) ; formule standard 9 000 MAD HT (idFormule 14), début d'abonnement au plus à J+14.
+- Les PDF de contrat du national sont publics (`app.ma.caproteine.com/uploads/contratMembre/…`) : ne pas faire circuler les liens.
+- Essai réel du 29/10 : adhésion fictive de Nawar Mounchit (PURPLE BIRDGE, prospect 629, entreprise 552) → contrat papier n° 119, « En attente de signature » au national. Données fictives dans le national et dans notre base (adhésion `c056ad2a…`, note « ESSAI ») : à nettoyer avec JB.
+- Robot Playwright de secours : `outils/saisie-proteine/saisir.mjs` (`--essai` = répétition à blanc).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

@@ -350,6 +350,16 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .stp:has(input:focus-visible){outline:2px solid var(--crimson);outline-offset:2px}
 div.stp{cursor:default}
 .icon-btn{position:relative}
+.cls-dos{border:1px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:10px;overflow:hidden}
+.cls-dos>summary{display:flex;align-items:center;gap:11px;padding:10px 12px;cursor:pointer;list-style:none}
+.cls-dos>summary::-webkit-details-marker{display:none}
+.cls-dos>summary .btn{flex:0 0 auto}
+.cls-dos[open]>summary{border-bottom:1px solid var(--line)}
+.cls-dos .rank{border:0;border-radius:0;box-shadow:none}
+.cls-mois{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 14px 4px}
+.cls-mois em,.cls-mtitre em{font-style:normal;color:var(--crimson)}
+.cls-mtitre{display:flex;align-items:center;gap:8px;font:800 17px "Bricolage Grotesque",sans-serif;color:var(--crimson-deep);margin:16px 2px 6px}
+.cls-mtitre em{font:600 12px Inter,sans-serif;flex:1}
 .icon-btn.on{color:var(--crimson)}
 .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--crimson);box-shadow:0 0 0 2px var(--card);animation:pulse 2s infinite}
 .notif-ios{margin:10px 0 4px;padding-left:20px;font-size:13.5px;line-height:1.5}
@@ -584,8 +594,16 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.12.0";
+const APP_VERSION="0.13.0";
 const CHANGELOG=[
+  {v:"0.13.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Classeur des PDF rangé par groupe, chaque club ayant son dossier et ses adhésions mois par mois. La vue par mois reste disponible, et chaque groupe se télécharge en ZIP.",
+      "Le classeur garde toutes les demandes reçues, y compris les rejetées (marquées comme telles) : rien n'est jamais effacé."
+    ],
+    "Modifié":[
+      "Chacun voit les adhésions et les PDF de son périmètre : l'animateur ceux de ses clubs, le directeur régional ceux de sa zone, la direction nationale tout le réseau. Les adhésions sans groupe restent visibles des directeurs."
+    ]}},
   {v:"0.12.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Notification sur le téléphone à chaque nouvelle adhésion : la cloche 🔔 en haut active les notifications sur l'appareil. La direction est prévenue de toutes les adhésions, et chaque animateur de celles de ses clubs.",
@@ -2088,30 +2106,42 @@ function adhMoisCle(iso){const d=new Date(iso);return d.getFullYear()+"-"+String
 function adhNomFichierPropre(t){return String(t||"").replace(/[\\/:*?"<>|]+/g,"-").replace(/\s+/g," ").trim()}
 function adhNomFichier(a){
   const nomPers=((a.data.m_nom||"").toUpperCase()+" "+(a.data.m_prenom||"")).trim()||"Sans nom";
-  return adhNomFichierPropre(nomPers+" - "+adhDateFr(a.created_at)+" - "+adhGroupe(a))+".pdf";
+  return adhNomFichierPropre(nomPers+" - "+adhDateFr(a.created_at)+" - "+adhGroupe(a)+(a.statut==="rejetee"?" (rejetée)":""))+".pdf";
 }
-function adhClasseurListe(){return(DB.adhesions||[]).filter(a=>a.pdf_path&&a.statut!=="rejetee")}
-async function openClasseur(){
+/* Classeur : TOUTES les demandes reçues avec un PDF, rejetées comprises (trace complète, rien n'est
+   jamais effacé : la base n'autorise aucune suppression d'adhésion ni de PDF). Chacun n'y voit que son
+   périmètre (RLS cap_peut_voir_adhesion) : animateur = ses clubs, directeur = sa zone, national = tout. */
+function adhClasseurListe(){return(DB.adhesions||[]).filter(a=>a.pdf_path)}
+let _clsMode="groupe";
+function adhPerimetre(){const r=SESSION&&SESSION.role;return r==="animateur"?"tes clubs":r==="directeur"?"ta zone":"tout le réseau"}
+function clsLigne(a){return `<div class="rank-row"><span style="font-size:18px">📄</span><div class="rn" style="cursor:pointer" onclick="adhPdf('${a.id}')" title="${esc(adhNomFichier(a))}">${esc(((a.data.m_nom||"").toUpperCase()+" "+(a.data.m_prenom||"")).trim()||"Sans nom")}<small>${adhDateFr(a.created_at).replace(/-/g,"/")} · ${esc(a.data.ent_nom||"")} · ${a.statut==="rejetee"?'<b style="color:var(--muted)">Rejetée</b>':ADH_STATUTS[a.statut]}</small></div><button class="btn ghost mini" onclick="adhTelecharger('${a.id}')" aria-label="Télécharger">⬇</button></div>`}
+function clsMoisTitre(m){const [y,mm]=m.split("-");return MOIS_FR[+mm-1]+" "+y}
+function clsGrouper(liste,cle){const o={};liste.forEach(a=>{const k=cle(a);(o[k]=o[k]||[]).push(a)});return o}
+async function openClasseur(mode){
+  if(mode)_clsMode=mode;
   if(!DB.adhesions){await openAdhesions();}
-  const parMois={};
-  adhClasseurListe().forEach(a=>{(parMois[adhMoisCle(a.created_at)]=parMois[adhMoisCle(a.created_at)]||[]).push(a)});
-  const mois=Object.keys(parMois).sort().reverse();
-  const html=mois.length?mois.map(m=>{
-    const [y,mm]=m.split("-");const liste=parMois[m];
-    const parGroupe={};liste.forEach(a=>{(parGroupe[adhGroupe(a)]=parGroupe[adhGroupe(a)]||[]).push(a)});
-    const groupes=Object.keys(parGroupe).sort((x,y)=>(x==="Sans groupe")-(y==="Sans groupe")||x.localeCompare(y));
-    return `<div style="margin-bottom:18px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
-        <div style="font:800 17px 'Bricolage Grotesque',sans-serif;color:var(--crimson-deep)">${MOIS_FR[+mm-1]} ${y} <span style="font:500 13px Inter;color:var(--muted)">· ${liste.length} PDF</span></div>
-        <button class="btn ghost mini" onclick="adhZipMois('${m}')">⬇ Tout le mois (.zip)</button></div>
-      ${groupes.map(g=>`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:10px 0 4px">📂 ${esc(g)} <span style="color:var(--muted);font-weight:500">(${parGroupe[g].length})</span></div>
-        <div style="border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden">${parGroupe[g].sort((x,y)=>x.created_at.localeCompare(y.created_at)).map(a=>`<div class="rank-row"><span style="font-size:18px">📄</span><div class="rn" style="cursor:pointer" onclick="adhPdf('${a.id}')" title="${esc(adhNomFichier(a))}">${esc(((a.data.m_nom||"").toUpperCase()+" "+(a.data.m_prenom||"")).trim())}<small>${adhDateFr(a.created_at).replace(/-/g,"/")} · ${esc(a.data.ent_nom||"")} · ${ADH_STATUTS[a.statut]}</small></div><button class="btn ghost mini" onclick="adhTelecharger('${a.id}')" aria-label="Télécharger">⬇</button></div>`).join("")}</div>`).join("")}
-    </div>`}).join(""):`<div class="empty"><b>Aucun PDF pour l'instant</b>Les formulaires reçus apparaîtront ici, rangés par mois.</div>`;
+  const liste=adhClasseurListe();
+  const triG=(x,y)=>(x==="Sans groupe")-(y==="Sans groupe")||x.localeCompare(y);
+  let html="";
+  if(!liste.length)html=`<div class="empty"><b>Aucun PDF pour l'instant</b>Les formulaires reçus apparaîtront ici.</div>`;
+  else if(_clsMode==="groupe"){
+    const pg=clsGrouper(liste,adhGroupe);
+    html=Object.keys(pg).sort(triG).map((g,i)=>{const l=pg[g],pm=clsGrouper(l,a=>adhMoisCle(a.created_at)),c=DB.clubs.find(x=>x.nom===g);
+      return `<details class="cls-dos" style="--vc:${c?villeColor(c.ville):"#8C8085"}" ${i===0?"open":""}><summary><span class="rl-emb sm">${esc(initiales(g.replace(/^CAP\s+/,"")))}</span><span class="rl-t"><b>${esc(g.replace(/^CAP\s+/,""))}</b><small>${l.length} PDF${c?" · "+esc(c.ville):""}</small></span><button class="btn ghost mini" onclick="event.preventDefault();adhZipGroupe(${JSON.stringify(g).replace(/"/g,"&quot;")})">⬇ .zip</button></summary>
+        ${Object.keys(pm).sort().reverse().map(m=>`<div class="cls-mois">${clsMoisTitre(m)} <em>${pm[m].length}</em></div><div class="rank">${pm[m].sort((x,y)=>y.created_at.localeCompare(x.created_at)).map(clsLigne).join("")}</div>`).join("")}</details>`}).join("");
+  }else{
+    const pm=clsGrouper(liste,a=>adhMoisCle(a.created_at));
+    html=Object.keys(pm).sort().reverse().map(m=>{const pg=clsGrouper(pm[m],adhGroupe);
+      return `<div class="cls-mtitre">${clsMoisTitre(m)} <em>${pm[m].length} PDF</em><button class="btn ghost mini" onclick="adhZipMois('${m}')">⬇ .zip</button></div>
+        ${Object.keys(pg).sort(triG).map(g=>`<div class="cls-mois">📂 ${esc(g)} <em>${pg[g].length}</em></div><div class="rank">${pg[g].map(clsLigne).join("")}</div>`).join("")}`}).join("");
+  }
   document.getElementById("sheet-content").innerHTML=`
-    <h3>Classeur des PDF</h3><div class="sheet-sub">Formulaires d'adhésion rangés par mois de réception, puis par groupe. Nom des fichiers : NOM Prénom - date - groupe.</div>
+    ${ficheHead({ini:"📁",title:"Classeur des PDF",sub:`Toutes les demandes reçues, rejetées comprises · ${adhPerimetre()}`})}
+    <div class="seg-sc" style="margin-top:0"><span class="knob" style="transform:translateX(${_clsMode==="mois"?"100%":"0"})"></span><button class="${_clsMode==="groupe"?"on":""}" onclick="openClasseur('groupe')">Par groupe</button><button class="${_clsMode==="mois"?"on":""}" onclick="openClasseur('mois')">Par mois</button></div>
     ${html}
-    <div class="sheet-actions"><button class="btn ghost" onclick="openAdhesions()">Retour</button></div>`;
-  openSheet();
+    <p class="fh-note" style="margin-top:12px">Fichiers nommés « NOM Prénom - date - groupe ». Rien n'est jamais effacé : chaque demande reçue reste consultable.</p>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openAdhesions()">← Adhésions</button></div>`;
+  ficheOpen();
 }
 async function adhBlob(a){
   const {data,error}=await sb.storage.from("adhesions").createSignedUrl(a.pdf_path,600);
@@ -2124,15 +2154,14 @@ async function adhTelecharger(id){
   const a=DB.adhesions.find(x=>x.id===id);
   try{adhSauver(await adhBlob(a),adhNomFichier(a))}catch(e){toast(e.message)}
 }
-async function adhZipMois(m){
-  const liste=adhClasseurListe().filter(a=>adhMoisCle(a.created_at)===m);if(!liste.length)return;
+async function adhZip(liste,racine,dossier){
+  if(!liste.length)return;
   toast("Préparation du ZIP ("+liste.length+" PDF)…");
   try{
     if(!window.JSZip)await new Promise((ok,ko)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";sc.onload=ok;sc.onerror=()=>ko(new Error("Module ZIP indisponible"));document.head.appendChild(sc)});
-    const [y,mm]=m.split("-");const racine="Adhesions "+y+"-"+mm+" ("+MOIS_FR[+mm-1]+")";
     const zip=new JSZip();const vus=new Set();let manquants=0;
     for(const a of liste){
-      let nom=adhNomFichier(a),chemin=racine+"/"+adhNomFichierPropre(adhGroupe(a))+"/"+nom,k=2;
+      let chemin=racine+"/"+adhNomFichierPropre(dossier(a))+"/"+adhNomFichier(a),k=2;
       while(vus.has(chemin)){chemin=chemin.replace(/( \(\d+\))?\.pdf$/," ("+(k++)+").pdf")}vus.add(chemin);
       try{zip.file(chemin,await adhBlob(a))}catch(e){manquants++}
     }
@@ -2140,6 +2169,8 @@ async function adhZipMois(m){
     toast(manquants?(liste.length-manquants)+" PDF dans le ZIP, "+manquants+" introuvable(s)":"ZIP prêt : "+liste.length+" PDF");
   }catch(e){toast(e.message)}
 }
+function adhZipMois(m){const [y,mm]=m.split("-");return adhZip(adhClasseurListe().filter(a=>adhMoisCle(a.created_at)===m),"Adhesions "+y+"-"+mm+" ("+MOIS_FR[+mm-1]+")",adhGroupe)}
+function adhZipGroupe(g){return adhZip(adhClasseurListe().filter(a=>adhGroupe(a)===g),"Adhesions "+adhNomFichierPropre(g),a=>{const m=adhMoisCle(a.created_at);return m+" ("+MOIS_FR[+m.split("-")[1]-1]+")"})}
 async function adhPdf(id){
   const a=DB.adhesions.find(x=>x.id===id);
   const w=window.open("","_blank"); // ouvert AVANT l'attente réseau, sinon le téléphone bloque la fenêtre

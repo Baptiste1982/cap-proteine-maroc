@@ -818,6 +818,21 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .lieux-grid .lieu-card{height:100%}
 @media (prefers-reduced-motion:reduce){.tool,.bil-alert,.mapc .pulse,.zbar i,.show-o .sl,.szl i,.sprog i.on b{animation:none!important;transition:none!important}.sprog i.on b{width:100%}}
 .field[hidden]{display:none}
+.tuto{position:fixed;inset:0;z-index:1000;display:none}.tuto.on{display:block}
+.tuto.libre{background:rgba(20,10,12,.6)}
+.tuto-spot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(20,10,12,.6),0 0 0 3px var(--gold);transition:all .3s ease;pointer-events:none}
+.tuto.libre .tuto-spot{display:none}
+.tuto-bulle{position:fixed;background:var(--card);color:var(--ink);border-radius:16px;padding:16px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.35);transition:top .3s ease,left .3s ease}
+.tuto-bulle h4{margin:8px 0 6px;font-family:'Bricolage Grotesque',Inter,sans-serif;font-size:18px;color:var(--crimson)}
+.tuto-bulle p{margin:0 0 12px;font-size:14px;line-height:1.5}
+.tuto-prog{display:flex;gap:4px}.tuto-prog i{flex:1;height:3px;border-radius:2px;background:var(--line)}.tuto-prog i.on{background:var(--crimson)}
+.tuto-act{display:flex;align-items:center;gap:6px}.tuto-act span{flex:1;font-size:12px;color:var(--muted);text-align:center}
+.tuto-passer{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:6px 4px}
+@media (prefers-reduced-motion:reduce){.tuto-spot,.tuto-bulle{transition:none}}
+.mb-dossier{margin-top:14px}.mb-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:10px 0 2px}
+.mb-docs{display:grid;gap:8px}.mb-doc{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.mb-doc-ic{font-size:18px}.mb-doc-t{flex:1;min-width:0;display:grid}.mb-doc-t b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mb-doc-t small{color:var(--muted);font-size:12px}
+.mb-add{display:flex;gap:6px;align-items:center}.mb-add select{font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .nat-box a.btn{text-decoration:none}
 .nat-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson)}
@@ -897,8 +912,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.18.0";
+const APP_VERSION="0.19.0";
 const CHANGELOG=[
+  {v:"0.19.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Dossier de chaque membre : ses informations (entreprise, coordonnées), reprises du formulaire d'adhésion ou saisies à la main, et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces. On ajoute un document (PDF ou photo) et on l'ouvre depuis la fiche du membre.",
+      "Le contrat généré au CRM national est récupéré et rangé dans le dossier du membre, dans un stockage privé. Ajouter le contrat signé coche l'étape « Contrat ».",
+      "Visite guidée à la première connexion : chaque partie du CRM mise en lumière et expliquée. Elle se rejoue depuis Paramètres → Aide, en entier ou par partie."
+    ]}},
   {v:"0.18.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Fiche d'adhésion : bouton « Envoyer au CRM national » (superadmin). Aperçu sans rien écrire, choix de l'offre, de la date de début et de la signature, puis création ou mise à jour du prospect, de l'entreprise et de la personne, et génération du contrat. En mode papier, le contrat est prêt à imprimer et aucun e-mail ne part.",
@@ -1175,7 +1196,7 @@ function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",createdAt:r.created_at||""}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -1261,7 +1282,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le};
   return true;
 }
 async function bootIntoApp(){
@@ -1274,9 +1295,106 @@ async function bootIntoApp(){
   enterApp();
   verifierMdpInitial();
   adhAnnonce();
+  tutoAuDemarrage();
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();
   return true;
+}
+/* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe
+   initial), retenue par compte (profiles.tuto_vu_le, RPC cap_tuto_vu) ; à revoir dans Paramètres, en
+   entier ou par partie. Chaque étape : un onglet à ouvrir, un élément à mettre en lumière, un texte. ── */
+let _tutoEnAttente=false,_tuto=null;
+function tutoPeutEditer(){return SESSION.role!=="visiteur"}
+const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Synthèse"],["agenda","📅","Agenda et réunions"],["clubs","🏛","Clubs et membres"],["adhesions","📝","Adhésions en ligne"],["lieux","📍","Lieux et équipe"],["reglages","⚙️","Paramètres"]];
+function tutoEtapes(partie){
+  const r=SESSION.role,ed=tutoPeutEditer(),prenom=String(SESSION.name||"").split(" ")[0],mes=r==="animateur"?"tes clubs":"les clubs";
+  const P={
+    accueil:[
+      {t:`Bienvenue ${prenom} 👋`,x:`Voici le CRM du réseau CAP Maroc : réunions, clubs, membres et adhésions au même endroit. La visite prend deux minutes${r==="visiteur"?" ; ton accès est en lecture seule":""}. Tu peux la revoir à tout moment dans Paramètres.`},
+      {go:"dash",c:"#nav",t:"La navigation",x:"Cinq espaces : Synthèse, Agenda, Clubs, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
+    synthese:[
+      {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte. L'interrupteur National / Régional change le périmètre."},
+      {go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action : club sans animateur, club sans réunion, adhésions à intégrer ou à saisir au national. Touche une ligne pour agir."}],
+    agenda:[
+      {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
+      ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
+      {go:"agenda",c:'#view [onclick^="openMeeting"]',t:"Une réunion",x:"Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
+    clubs:[
+      {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
+      {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
+      {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`}],
+    adhesions:ed?[
+      {go:"dash",c:'#view button[onclick="openAdhesions()"]',t:"Les adhésions en ligne",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent ici. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
+      ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
+    lieux:[
+      {go:"lieux",c:'#nav [data-tab="lieux"]',t:"Les lieux",x:"Hôtels et salles de réunion : photo, adresse, capacité et carte."},
+      {go:"team",c:'#nav [data-tab="team"]',t:"L'équipe",x:`Les animateurs, ${mes} qu'ils animent et leurs réunions à venir.`}],
+    reglages:[
+      {go:"dash",c:"#set-btn",t:"Paramètres",x:"Thème clair ou sombre, notifications, mot de passe. C'est aussi ici que tu revois cette visite, en entier ou une partie seulement."},
+      {t:"C'est à toi ✨",x:"Bonne animation ! En cas de doute, la visite reste à portée de main dans Paramètres → Aide."}],
+  };
+  return partie==="complet"?TUTO_PARTIES.flatMap(([k])=>P[k]):(P[partie]||[]);
+}
+function tutoAuDemarrage(){
+  let vu=SESSION.tutoVu;try{vu=vu||localStorage.getItem("cap-tuto-"+SESSION.id)}catch(e){}
+  if(vu)return;
+  if(_mdpForce){_tutoEnAttente=true;return}
+  setTimeout(()=>tutoLancer("complet",true),1200);
+}
+function tutoLancer(partie,premiere){
+  const etapes=tutoEtapes(partie);if(!etapes.length)return;
+  if(document.getElementById("sheet").classList.contains("open"))closeSheet();
+  let el=document.getElementById("tuto");
+  if(!el){el=document.createElement("div");el.id="tuto";el.className="tuto";el.innerHTML=`<div class="tuto-spot"></div><div class="tuto-bulle" role="dialog" aria-modal="true" aria-labelledby="tuto-t"><div class="tuto-prog"></div><h4 id="tuto-t"></h4><p></p><div class="tuto-act"><button class="tuto-passer" data-a="fin">Passer</button><span></span><button class="btn ghost mini" data-a="prec">Précédent</button><button class="btn mini" data-a="suiv">Suivant</button></div></div>`;
+    el.addEventListener("click",e=>{const a=e.target.closest("[data-a]");if(a)tutoAction(a.dataset.a)});document.body.appendChild(el)}
+  _tuto={partie,etapes,i:0,premiere:!!premiere};
+  el.classList.add("on");document.addEventListener("keydown",tutoClavier);window.addEventListener("resize",tutoPlacer);
+  tutoMontrer();
+}
+function tutoClavier(e){if(!_tuto)return;if(e.key==="Escape")tutoAction("fin");else if(e.key==="ArrowRight")tutoAction("suiv");else if(e.key==="ArrowLeft")tutoAction("prec")}
+function tutoAction(a){
+  if(!_tuto)return;
+  if(a==="suiv"){if(_tuto.i>=_tuto.etapes.length-1)return tutoFin();_tuto.i++;tutoMontrer()}
+  else if(a==="prec"){if(_tuto.i>0){_tuto.i--;tutoMontrer()}}
+  else tutoFin();
+}
+async function tutoMontrer(){
+  const e=_tuto.etapes[_tuto.i],el=document.getElementById("tuto"),b=el.querySelector(".tuto-bulle");
+  if(e.go&&e.go!==tab){go(e.go);await new Promise(r=>setTimeout(r,450))}
+  b.querySelector("h4").textContent=e.t;b.querySelector("p").textContent=e.x;
+  b.querySelector(".tuto-prog").innerHTML=_tuto.etapes.map((_,k)=>`<i class="${k<=_tuto.i?"on":""}"></i>`).join("");
+  b.querySelector(".tuto-act span").textContent=(_tuto.i+1)+" / "+_tuto.etapes.length;
+  b.querySelector('[data-a="prec"]').style.visibility=_tuto.i?"visible":"hidden";
+  b.querySelector('[data-a="suiv"]').textContent=_tuto.i===_tuto.etapes.length-1?"Terminer":"Suivant";
+  const cible=e.c&&[...document.querySelectorAll(e.c)].find(x=>x.offsetParent!==null||getComputedStyle(x).position==="fixed");
+  _tuto.cible=cible||null;
+  if(cible&&cible.getBoundingClientRect().bottom>innerHeight-40)cible.scrollIntoView({block:"center"});
+  tutoPlacer();b.querySelector('[data-a="suiv"]').focus({preventScroll:true});
+}
+function tutoPlacer(){
+  if(!_tuto)return;
+  const el=document.getElementById("tuto"),spot=el.querySelector(".tuto-spot"),b=el.querySelector(".tuto-bulle"),c=_tuto.cible;
+  const W=innerWidth,H=innerHeight,bw=Math.min(360,W-32);b.style.width=bw+"px";
+  if(!c){el.classList.add("libre");spot.style.cssText="";b.style.left=(W-bw)/2+"px";b.style.top=Math.max(16,(H-b.offsetHeight)/2)+"px";return}
+  el.classList.remove("libre");
+  const r=c.getBoundingClientRect(),m=6;
+  spot.style.cssText=`left:${r.left-m}px;top:${r.top-m}px;width:${r.width+2*m}px;height:${r.height+2*m}px`;
+  const bh=b.offsetHeight,dessous=r.bottom+m+12,dessus=r.top-m-12-bh;
+  const top=dessous+bh<=H-12?dessous:dessus>=12?dessus:Math.max(12,H-bh-12);
+  b.style.top=top+"px";b.style.left=Math.min(Math.max(16,r.left+r.width/2-bw/2),W-bw-16)+"px";
+}
+function tutoFin(){
+  const el=document.getElementById("tuto");if(el)el.classList.remove("on");
+  document.removeEventListener("keydown",tutoClavier);window.removeEventListener("resize",tutoPlacer);
+  if(_tuto&&(_tuto.premiere||_tuto.partie==="complet")&&!SESSION.tutoVu){SESSION.tutoVu=true;try{localStorage.setItem("cap-tuto-"+SESSION.id,"1")}catch(e){}sb.rpc("cap_tuto_vu").then(()=>{},()=>{})}
+  _tuto=null;
+}
+function openAide(){
+  document.getElementById("sheet-content").innerHTML=`<h3>Visite guidée</h3><div class="sheet-sub">Revois tout, ou seulement la partie qui t'intéresse.</div>
+    <div class="set-l"><button class="set-r" onclick="tutoLancer('complet')"><span class="ic">🎓</span><span class="t"><b>Visite complète</b><small>Environ deux minutes</small></span><span class="go">›</span></button>
+    ${TUTO_PARTIES.filter(([k])=>k!=="accueil"&&tutoEtapes(k).length).map(([k,ic,l])=>`<button class="set-r" onclick="tutoLancer('${k}')"><span class="ic">${ic}</span><span class="t"><b>${l}</b><small>${tutoEtapes(k).length} étape${tutoEtapes(k).length>1?"s":""}</small></span><span class="go">›</span></button>`).join("")}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openParametres()">← Paramètres</button></div>`;
+  openSheet();
 }
 /* ── v0.12 : notifications sur le téléphone (web push) ──
    Le service worker (sw.js) affiche la notification ; l'abonnement de chaque appareil est rangé dans
@@ -2221,8 +2339,9 @@ function memberSheet(clubId,id){
       <div class="stp-grid">${cl.steps.map(s=>`<div class="stp ${s[1]?"on":""}"><span class="stp-ic">${s[1]?"✓":"·"}</span><span class="stp-l">${s[0]}</span></div>`).join("")}</div>
       ${m.reorientation?`<div class="drow"><div class="tx"><div class="k">Réorientation</div><div class="v">${esc(m.reorientation)}</div></div></div>`:""}
       ${m.commentaires?`<div class="drow"><div class="tx"><div class="k">Commentaires</div><div class="v" style="font-weight:400">${esc(m.commentaires)}</div></div></div>`:""}
+      ${mbDossierHTML(m,false)}
       <div class="sheet-actions"><button class="btn" onclick="openClub('${clubId}')">Retour</button></div>`;
-    openSheet();return;
+    openSheet();mbDocsCharger(m,false);return;
   }
   document.getElementById("sheet-content").innerHTML=`
     ${editing?ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Suivi d'intégration · "+esc(club(clubId).nom.replace(/^CAP\s+/,""))}):`<h3>Nouveau membre</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>`}
@@ -2233,8 +2352,87 @@ function memberSheet(clubId,id){
     <div class="field" style="margin-top:14px"><label>Réorientation</label><input id="m-reorientation" value="${esc(m.reorientation)}" placeholder="Réorienté vers…"></div>
     <div class="field"><label>Commentaires</label><textarea id="m-commentaires" placeholder="Notes libres">${esc(m.commentaires)}</textarea></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="openClub('${clubId}')">Annuler</button><button class="btn" onclick="saveMembre('${clubId}','${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
+    ${editing?mbDossierHTML(m,true):""}
     ${editing?`<div class="del-link" onclick="delMembre('${clubId}','${id}')">Retirer ce membre</div>`:""}`;
+  openSheet();if(editing)mbDocsCharger(m,true);
+}
+/* ---- Dossier du membre : ses informations (reprises du formulaire d'adhésion ou saisies à la main)
+   et ses documents (formulaire PDF, contrat du national, contrat signé, autres pièces).
+   Fichiers dans le bucket privé « membres », liste dans membre_documents (mêmes droits que les membres). ---- */
+const DOC_TYPES={formulaire:"Formulaire d'adhésion",contrat:"Contrat",contrat_signe:"Contrat signé",autre:"Autre pièce"};
+function mbAdhesion(m){return (DB.adhesions||[]).find(a=>a.membre_id===m.id)}
+function mbInfos(m){if(m.infos&&Object.keys(m.infos).length)return m.infos;const a=mbAdhesion(m);return a?a.data||{}:{}}
+function mbInfosHTML(d){
+  d={...d};if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
+  return ADH_CHAMPS.filter(([t])=>t==="Entreprise"||t==="Membre").map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(d[k])}</div></div>${k==="m_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k==="m_email"?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
+    return r?`<div class="mb-sub">${esc(t)}</div>${r}`:""}).join("");
+}
+function mbDossierHTML(m,canEd){
+  const d=mbInfos(m),vide=!Object.values(d).some(v=>typeof v==="string"&&v.trim());
+  return `<div class="mb-dossier">
+    ${secHead("Informations",undefined,canEd?`<button class="btn ghost mini" onclick="mbInfosForm('${m.clubId}','${m.id}')">${vide?"+ Saisir":"Modifier"}</button>`:"")}
+    ${vide?`<p class="fh-empty">Aucune information. ${canEd?"Elles se remplissent toutes seules quand le membre vient du formulaire d'adhésion, ou à la main.":""}</p>`:mbInfosHTML(d)}
+    ${secHead("Documents",undefined,canEd?`<span class="mb-add"><select id="mb-doc-type"><option value="contrat_signe">Contrat signé</option><option value="contrat">Contrat</option><option value="formulaire">Formulaire</option><option value="autre" selected>Autre pièce</option></select><label class="btn ghost mini">+ Ajouter<input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp" onchange="mbDocAjouter('${m.clubId}','${m.id}',this)"></label></span>`:"")}
+    <div id="mb-docs"><p class="fh-empty">Chargement…</p></div>
+  </div>`;
+}
+async function mbDocsCharger(m,canEd){
+  const a=mbAdhesion(m);
+  let q=sb.from("membre_documents").select("*");
+  q=a?q.or(`membre_id.eq.${m.id},adhesion_id.eq.${a.id}`):q.eq("membre_id",m.id);
+  const {data,error}=await q.order("cree_le",{ascending:false});
+  const el=document.getElementById("mb-docs");if(!el)return;
+  const docs=(data||[]).map(x=>({...x,bucket:"membres"}));
+  if(a&&a.pdf_path)docs.push({id:"",type:"formulaire",nom:"Formulaire d'adhésion signé en ligne",chemin:a.pdf_path,bucket:"adhesions",cree_le:a.created_at,fixe:true});
+  if(error){el.innerHTML=`<p class="fh-empty">Documents indisponibles : ${esc(rlsMsg(error))}</p>`;return}
+  el.innerHTML=docs.length?`<div class="mb-docs">${docs.map(x=>`<div class="mb-doc"><span class="mb-doc-ic">${x.type==="contrat_signe"?"✅":x.type==="contrat"?"✍️":x.type==="formulaire"?"📝":"📎"}</span>
+    <span class="mb-doc-t"><b>${esc(x.nom)}</b><small>${esc(DOC_TYPES[x.type]||"Document")} · ${esc(adhDate(x.cree_le))}</small></span>
+    <button class="btn ghost mini" onclick="mbDocOuvrir('${x.bucket}','${esc(x.chemin)}')">Ouvrir</button>
+    ${canEd&&!x.fixe?`<button class="btn ghost mini" onclick="mbDocRetirer('${m.clubId}','${m.id}','${x.id}','${esc(x.chemin)}')">Retirer</button>`:""}</div>`).join("")}</div>`
+    :`<p class="fh-empty">Aucun document pour l'instant.</p>`;
+}
+async function mbDocOuvrir(bucket,chemin){
+  const w=window.open("","_blank"); // ouvert avant l'attente réseau, sinon le téléphone bloque la fenêtre
+  const {data,error}=await sb.storage.from(bucket).createSignedUrl(chemin,600);
+  if(error||!data){if(w)w.close();toast("Document introuvable");return}
+  if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+}
+async function mbDocAjouter(clubId,id,input){
+  const f=input.files&&input.files[0];if(!f)return;
+  if(f.size>20*1024*1024){toast("Fichier trop lourd (20 Mo au plus)");input.value="";return}
+  const type=(document.getElementById("mb-doc-type")||{}).value||"autre";
+  const propre=f.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9._-]+/g,"_").slice(-80);
+  const chemin=`${id}/${Date.now()}-${propre}`;
+  toast("Envoi du document…","s");
+  const up=await sb.storage.from("membres").upload(chemin,f,{contentType:f.type||"application/pdf"});
+  if(up.error){toast("Envoi impossible : "+rlsMsg(up.error));input.value="";return}
+  const {error}=await sb.from("membre_documents").insert({membre_id:id,type,nom:f.name,chemin});
+  if(error){await sb.storage.from("membres").remove([chemin]);toast("Envoi impossible : "+rlsMsg(error));input.value="";return}
+  if(type==="contrat_signe"){const m=DB.membres.find(x=>x.id===id);if(m&&!m.contrat){const r=await sb.from("membres").update({contrat:true}).eq("id",id);if(!r.error){m.contrat=true}}}
+  toast("Document ajouté au dossier");memberSheet(clubId,id);
+}
+async function mbDocRetirer(clubId,id,docId,chemin){
+  const rm=await sb.storage.from("membres").remove([chemin]);
+  if(rm.error){toast("Retrait impossible : "+rlsMsg(rm.error));return}
+  const {error}=await sb.from("membre_documents").delete().eq("id",docId);
+  if(error){toast("Retrait impossible : "+rlsMsg(error));return}
+  toast("Document retiré");memberSheet(clubId,id);
+}
+function mbInfosForm(clubId,id){
+  const m=DB.membres.find(x=>x.id===id),d=mbInfos(m);
+  const champ=([k,l])=>`<div class="field"><label>${esc(l)}</label><input id="mi-${k}" value="${esc(d[k]||"")}" ${k==="m_naissance"?'type="date"':k.endsWith("email")?'type="email"':k.endsWith("tel")||k==="m_tel2"?'type="tel"':""}></div>`;
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Informations du membre"})}
+    ${ADH_CHAMPS.filter(([t])=>t==="Entreprise"||t==="Membre").map(([t,ch])=>`<div class="mb-sub">${esc(t)}</div>${ch.map(champ).join("")}`).join("")}
+    <div class="sheet-actions"><button class="btn ghost" onclick="memberSheet('${clubId}','${id}')">Annuler</button><button class="btn" onclick="mbInfosSave('${clubId}','${id}')">Enregistrer</button></div>`;
   openSheet();
+}
+async function mbInfosSave(clubId,id){
+  const m=DB.membres.find(x=>x.id===id),infos={...mbInfos(m)};
+  ADH_CHAMPS.filter(([t])=>t==="Entreprise"||t==="Membre").forEach(([,ch])=>ch.forEach(([k])=>{const el=document.getElementById("mi-"+k);if(el)infos[k]=el.value.trim()}));
+  const {error}=await sb.from("membres").update({infos}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  m.infos=infos;toast("Informations enregistrées");memberSheet(clubId,id);
 }
 async function saveMembre(clubId,id){
   const nom=document.getElementById("m-nom").value.trim();if(!nom){toast("Nom requis");return}
@@ -2583,7 +2781,7 @@ function adhNationalBloc(a){
   return `<div class="nat-box">
     <div class="nat-t">Envoi au CRM national</div>
     ${n.contrat_id?`<div class="nat-ok">✓ ${esc(NAT_STATUTS[n.statut]||"Contrat créé")} · contrat n° ${esc(n.contrat_id)}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Pas encore envoyée.</div>`}
-    ${lien?`<a class="btn" href="${esc(lien)}" target="_blank" rel="noopener">📄 Ouvrir le contrat à signer</a>`:""}
+    ${n.contrat_pdf?`<button class="btn" onclick="mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📄 Ouvrir le contrat à signer</button><div class="nat-v">Rangé dans le dossier du membre.</div>`:lien?`<button class="btn" onclick="adhRangerContrat('${a.id}')">📥 Ranger le contrat dans le dossier</button>`:""}
     ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
     ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
     <button class="btn ${n.contrat_id?"ghost":""}" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>
@@ -2607,6 +2805,14 @@ async function adhNational(id){
     <p class="fh-note">La signature électronique n'est pas lancée d'ici : elle enverrait le contrat au membre et au siège.</p>
     <div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${id}')">Annuler</button><button class="btn" id="nat-go" onclick="adhNationalEnvoyer('${id}')">Confirmer l'envoi</button></div>`;
   pillify(sc);
+}
+async function adhRangerContrat(id){
+  toast("Récupération du contrat au national…","s");
+  const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"contrat",adhesion_id:id}});
+  const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error);
+  const {data:row}=await sb.from("adhesions").select("*").eq("id",id).single();
+  if(row){const i=DB.adhesions.findIndex(x=>x.id===id);if(i>=0)DB.adhesions[i]=row}
+  toast(err?"Contrat non rangé : "+err:"Contrat rangé dans le dossier du membre",err?"e":"s");adhDetail(id);
 }
 async function adhNationalEnvoyer(id){
   const v=x=>document.getElementById(x).value,b=document.getElementById("nat-go");
@@ -2663,11 +2869,12 @@ async function adhIntegrer(id){
   if(DB.membres.some(x=>x.clubId===clubId&&x.nom.toLowerCase()===nom.toLowerCase())){toast(nom+" est déjà membre de ce club");return}
   const num=DB.membres.filter(x=>x.clubId===clubId).reduce((m,b)=>Math.max(m,b.num||0),0)+1;
   const com=[d.ent_nom,d.m_fonction,d.m_tel,d.m_email].filter(Boolean).join(" · ")+" — formulaire d'adhésion en ligne";
-  const {data,error}=await sb.from("membres").insert({club_id:clubId,num,nom,specialite:d.metier||"",formulaire:true,commentaires:com}).select().single();
+  const {data,error}=await sb.from("membres").insert({club_id:clubId,num,nom,specialite:d.metier||"",formulaire:true,commentaires:com,infos:d}).select().single();
   if(error){toast(rlsMsg(error));return}
   DB.membres.push(mapMembre(data));
   const up=await sb.from("adhesions").update({statut:"integree",membre_id:data.id,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
   if(up.error){toast("Membre créé, mais l'adhésion n'a pas pu être marquée : "+rlsMsg(up.error));return}
+  await sb.from("membre_documents").update({membre_id:data.id}).eq("adhesion_id",id); // le contrat déjà rangé rejoint le dossier
   a.statut="integree";a.membre_id=data.id;toast(nom+" intégré(e) — membre n°"+num);adhDetail(id);
 }
 function exportMembres(){
@@ -2691,6 +2898,7 @@ async function changePassword(){
   if(b){b.disabled=false;b.textContent="Enregistrer"}
   if(error){toast("Erreur : "+error.message);return}
   _mdpForce=false;toast("Mot de passe modifié");closeSheet();
+  if(_tutoEnAttente){_tutoEnAttente=false;setTimeout(()=>tutoLancer("complet",true),900)}
 }
 function openMyPassword(force){
   document.getElementById("sheet-content").innerHTML=`
@@ -3286,6 +3494,8 @@ async function openParametres(){
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
     ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    <div class="set-sec">Aide</div>
+    <div class="set-l">${r("🎓","Visite guidée","Revoir l'utilisation du CRM, en entier ou par partie","openAide()")}</div>
     <div class="set-sec">Application</div>
     <div class="set-l">${r("📝","Notes de version","Version "+APP_VERSION,"openChangelog()")}${r("↻","Recharger les données","Récupère les dernières saisies","rechargerDonnees()")}</div>
     <button class="btn ghost set-out" onclick="logout()">Se déconnecter</button>`;

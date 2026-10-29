@@ -104,6 +104,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Essai réel du 29/10 : adhésion fictive de Nawar Mounchit (PURPLE BIRDGE, prospect 629, entreprise 552) → contrat papier n° 119, « En attente de signature » au national. Données fictives dans le national et dans notre base (adhésion `c056ad2a…`, note « ESSAI ») : à nettoyer avec JB.
 - Robot Playwright de secours : `outils/saisie-proteine/saisir.mjs` (`--essai` = répétition à blanc).
 
+**🗂 Dossier membre + visite guidée (v0.19.0, 29/10/2026)** :
+- `membres.infos` (jsonb, mêmes clés que `adhesions.data`) + table `membre_documents` (membre_id et/ou adhesion_id, type formulaire|contrat|contrat_signe|autre, chemin unique) + bucket privé `membres` (20 Mo, PDF/images). Droits = ceux des membres (`cap_peut_voir_document` / `cap_peut_ecrire_document`). Migration `20261029140000_dossier_membre.sql`.
+- Fiche membre (`memberSheet`) : sections Informations (`mbInfosForm`) et Documents (`mbDocsCharger`, `mbDocAjouter`, `mbDocRetirer`) ; le formulaire PDF de l'adhésion liée apparaît d'office. Intégration d'une adhésion : copie `data` dans `infos` et rattache ses documents.
+- Fonction `national-adhesion` v2 : action `contrat` (et fin d'`envoyer`) copie le PDF du contrat national dans `membres/adh-<id>/contrat-<n>.pdf`. Le contrat de Nawar (n° 119) n'est pas encore rangé : JB doit cliquer « Ranger le contrat dans le dossier » sur son adhésion (il faut sa session de superadmin).
+- Visite guidée (`tutoLancer`, `TUTO_PARTIES`, `tutoEtapes(partie)`) : lancée une fois par compte (`profiles.tuto_vu_le`, RPC `cap_tuto_vu`, migration `20261029150000_profiles_tuto.sql`), après le changement du mot de passe initial ; rejouable dans Paramètres → Aide (`openAide`). Bancs `scratchpad/tools/tuto.mjs` 28/28, `nat.mjs`.
+- Nawar Mounchit intégrée le 29/10 comme membre n° 4 de Rabat Prévilège (données fictives d'essai, note « ESSAI ») : compte dans les statistiques tant qu'elle n'est pas retirée.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

@@ -1013,6 +1013,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .reu-mem input{margin-top:2px;accent-color:var(--crimson)}
 @media(max-width:899px){.nav button{font-size:9.5px}}
 /*v029*/
+.mb-code{margin:8px 0 4px;padding:14px;border-radius:14px;background:var(--crimson-tint);display:flex;flex-direction:column;gap:6px}.mb-code span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--crimson)}.mb-code b{font:800 34px "Bricolage Grotesque",sans-serif;letter-spacing:.18em;color:var(--ink)}.mb-code small{color:var(--muted);font-size:12.5px}.mb-code-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.mb-code-act a{text-decoration:none}
 .mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
 </style>
 </head>
@@ -1089,8 +1090,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.23.0";
+const APP_VERSION="0.24.0";
 const CHANGELOG=[
+  {v:"0.24.0",date:"30 octobre 2026",notes:{
+    "Changé":["Espace membre : plus besoin de WhatsApp ni de Twilio pour se connecter. Dans la fiche d'un membre, « Créer son code » fabrique un code d'accès à 6 chiffres, affiché une seule fois, avec un bouton pour l'envoyer par WhatsApp (lien, mobile et code dans le message). Le membre entre son mobile et ce code, et peut le changer dans « Mon profil ». Code oublié : « Nouveau code »."]}},
   {v:"0.23.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Espace membre (membre.html) : chaque membre se connecte avec son mobile et un code reçu par WhatsApp, sans mot de passe. Il y trouve l'annuaire du réseau (recherche par métier, nom ou ville, filtre Mon club), la fiche de chaque membre, et des messages directs entre membres (pas de groupes). Dans Mon profil, il indique ce qu'il cherche et choisit de montrer ou non son téléphone.",
@@ -2881,11 +2884,27 @@ const ESPACE_MEMBRE_URL=location.origin+"/membre.html";
 function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
 function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
-  const etat=m.inscrit?`<span class="mb-esp on">✓ Connecté à l'espace membre</span>`:tel?`<span class="mb-esp">Pas encore connecté</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
-  const msg="Bonjour "+String(m.nom).split(/\s+/)[0]+", ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres. Connecte-toi avec ce numéro, tu recevras un code par WhatsApp : "+ESPACE_MEMBRE_URL;
+  const etat=m.inscrit?`<span class="mb-esp on">✓ Accès créé</span>`:tel?`<span class="mb-esp">Pas encore d'accès</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
   return `${secHead("Espace membre")}
-    <div class="drow"><div class="tx"><div class="k">Accès</div><div class="v">${etat}</div></div>${tel&&canEd&&!m.inscrit?`<a href="https://wa.me/${mbWa(tel)}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Inviter</a>`:""}</div>
-    ${!tel?`<p class="fh-note">Il se connecte avec son mobile : ${canEd?"ajoute-le dans « Informations » (champ mobile).":"il doit être renseigné dans ses informations."}</p>`:""}`;
+    <div class="drow"><div class="tx"><div class="k">Accès à l'annuaire et aux messages</div><div class="v">${etat}</div></div>${tel&&canEd?`<a href="#" onclick="mbCodeAcces('${m.id}');return false">${m.inscrit?"Nouveau code":"Créer son code"}</a>`:""}</div>
+    <div id="mb-code-${m.id}"></div>
+    ${!tel?`<p class="fh-note">Il se connecte avec son mobile et un code d'accès : ${canEd?"ajoute d'abord son mobile dans « Informations ».":"son mobile doit être renseigné dans ses informations."}</p>`:""}`;
+}
+/* Crée (ou remplace) le code d'accès du membre par la fonction serveur membre-acces. Le code n'est montré
+   qu'ici, une seule fois : il n'est stocké nulle part en clair. */
+async function mbCodeAcces(id){
+  const m=DB.membres.find(x=>x.id===id),box=document.getElementById("mb-code-"+id);if(!m||!box)return;
+  if(m.inscrit&&!confirm("Créer un nouveau code ? L'ancien ne marchera plus."))return;
+  box.innerHTML=`<p class="fh-note">Création du code…</p>`;
+  const {data:r,error}=await sb.functions.invoke("membre-acces",{body:{membre_id:id}});
+  if(error||!r||r.error){let msg=r&&r.error;if(!msg&&error&&error.context)try{msg=(await error.context.json()).error}catch(e){}box.innerHTML=`<p class="fh-note" style="color:var(--crimson)">${esc(msg||(error&&error.message)||"Erreur")}</p>`;return}
+  m.inscrit=true;
+  const prenom=String(m.nom).split(/\s+/)[0];
+  const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${r.telephone.replace(/^212/,"0")}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».`;
+  box.innerHTML=`<div class="mb-code"><span>Code d'accès de ${esc(prenom)}</span><b>${esc(r.code)}</b><small>À transmettre au membre. Il ne s'affichera plus : en cas d'oubli, crée un nouveau code.</small>
+    <div class="mb-code-act"><a class="btn mini" href="https://wa.me/${r.telephone}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="navigator.clipboard&&navigator.clipboard.writeText(${esc(JSON.stringify(msg))}).then(()=>toast('Message copié'))">Copier le message</button></div></div>`;
+  const etat=box.parentElement&&box.parentElement.querySelector(".mb-esp");if(etat){etat.className="mb-esp on";etat.textContent="✓ Accès créé"}
+  const lien=box.previousElementSibling&&box.previousElementSibling.querySelector("a");if(lien)lien.textContent="Nouveau code";
 }
 async function mbDocsCharger(m,canEd){
   const a=mbAdhesion(m);

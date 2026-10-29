@@ -141,8 +141,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Migrations `20261029220000_espace_membre.sql` + `espace_membre_lier_adhesion` (appliquées) : `membres.user_id/tel_visible/annuaire_visible/cherche`, `cap_tel_norm`, `cap_membre_id`, table `messages_membres` (RLS : lecture par l'expéditeur et le destinataire, écriture par l'expéditeur vers un membre inscrit ; l'équipe du CRM ne les lit pas), `cap_messages_lus`, publication realtime.
 - ⚠ **Sécurité** : `cap_est_equipe()` (une ligne dans profiles) remplace « authentifié » pour lire clubs, réunions, invités, membres, animateurs, lieux, zones et écrire le bucket lieux. Un compte membre ne voit rien du CRM (vérifié en base). Toute nouvelle table du CRM doit exiger `cap_est_equipe()` ou un rôle, jamais `auth.uid() is not null`.
 - CRM : section « Espace membre » dans la fiche membre et dans la demande d'adhésion (connecté ou non, bouton « Inviter » = message WhatsApp avec le lien).
-- ⏳ **À activer par JB** : Supabase → Authentication → Providers → Phone, fournisseur Twilio Verify, canal WhatsApp (compte Twilio). Tant que ce n'est pas fait, la page dit « connexion par WhatsApp pas encore activée ». Seuls les membres dont le mobile est renseigné peuvent entrer.
+- ~~Connexion par code WhatsApp (Twilio)~~ : remplacée en v0.24.0 par le code d'accès donné par l'animateur.
 - Bancs `membre.mjs` 51/51, `crm-espace.mjs` 6/6.
+
+**🔑 Accès membre par code (v0.24.0, 30/10/2026)** — JB : « on peut pas faire une messagerie interne ? » (la messagerie l'était déjà ; c'est la connexion par WhatsApp qui demandait Twilio). Clic JB : « code donné par l'animateur ». **Remplace la connexion WhatsApp de la v0.23 : plus besoin de Twilio.**
+- Fonction serveur `membre-acces` (verify_jwt, droit = `cap_can_edit_club` du club du membre, appelé avec la session de l'appelant) : crée ou met à jour un compte Supabase Auth dont l'e-mail est fabriqué à partir du mobile (`212661234567@membres.cap-proteine.ma`, jamais d'e-mail envoyé), mot de passe = code à 6 chiffres tiré au hasard, pose `membres.user_id`. Le code n'est stocké nulle part en clair : il s'affiche une fois dans la fiche (`mbCodeAcces`), avec « Envoyer par WhatsApp » (lien, mobile, code) et « Copier le message ». Oubli = « Nouveau code ». Un mobile déjà pris par un autre membre est refusé.
+- `membre.html` : mobile + code → `signInWithPassword`. Le membre change son code dans « Mon profil » (`updateUser`, 6 caractères minimum).
+- Aucun profil d'équipe n'est créé : le compte ne voit rien du CRM. Pas de trigger sur `auth.users` (vérifié).
+- Bancs `membre.mjs` 53/53, `crm-espace.mjs` 8/8.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

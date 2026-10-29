@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Espace membre Protéine</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png">
+<meta name="theme-color" content="#B0122E">
+<meta name="description" content="Espace membre du Club d'affaires Protéine Maroc : annuaire et messages entre membres">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Espace membre (v0.23.0) — charte Protéine, reprise du CRM */
+:root{--crimson:#B0122E;--deep:#5C0A18;--darker:#3E0710;--tint:#F8E9EC;--or:#C8A24C;--ink:#1B1416;--muted:#5E5054;--soft:#7A6A6E;
+  --paper:#FAF6F4;--card:#FFFFFF;--line:#EADDE0;--line2:#EFE5E7;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+h1,h2,.bri{font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.01em;margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--crimson)}
+[hidden]{display:none!important}
+.app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.page{flex:1;padding:calc(16px + var(--safe-t)) 18px calc(96px + var(--safe-b));display:flex;flex-direction:column;gap:12px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--crimson);text-transform:uppercase}
+.label{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--soft);text-transform:uppercase}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.head h1{font-size:26px;font-weight:800}
+.sub{font-size:13px;color:var(--muted);margin:2px 0 0}
+.card{background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:16px}
+.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.search input{border:0;outline:0;background:transparent;font-size:15px;flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:600}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--card);border:1px solid var(--line2);animation:rise .35s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*30ms)}
+.row .who{display:flex;align-items:center;gap:12px;flex:1;min-width:0;border:0;background:none;padding:0;text-align:left}
+.row .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.row .t b{font-size:15px}
+.row .t span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t small{font-size:12px;color:var(--soft)}
+.av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
+.ico{width:44px;height:44px;border-radius:14px;border:0;background:var(--tint);color:var(--crimson);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ico:disabled{background:#F2EDEE;color:#B9AAAE;cursor:default}
+.btn{height:50px;border-radius:14px;border:0;background:var(--crimson);color:#fff;font-weight:700;font-size:15px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.55;cursor:default}
+.badge{min-width:20px;height:20px;border-radius:10px;background:var(--crimson);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.vide{text-align:center;color:var(--muted);font-size:14px;padding:28px 12px}
+nav.bas{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--card);border-top:1px solid var(--line2);padding:6px 12px calc(8px + var(--safe-b));z-index:5}
+nav.bas .in{display:flex;justify-content:space-around;width:100%;max-width:560px}
+nav.bas button{position:relative;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:76px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted)}
+nav.bas button.on{color:var(--crimson);font-weight:700}
+nav.bas .badge{position:absolute;top:0;right:12px}
+/* connexion */
+.login{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:calc(24px + var(--safe-t)) 22px calc(24px + var(--safe-b));max-width:440px;margin:0 auto;width:100%}
+.login img{height:54px;width:auto;align-self:flex-start}
+.login h1{font-size:30px;font-weight:800}
+.tel{display:flex;align-items:center;height:56px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);overflow:hidden}
+.tel:focus-within,.code:focus{border-color:var(--crimson)}
+.tel span{padding:0 12px 0 16px;font-weight:700;color:var(--muted);border-right:1px solid var(--line);height:100%;display:flex;align-items:center}
+.tel input{border:0;outline:0;background:none;font-size:18px;padding:0 14px;flex:1;min-width:0;letter-spacing:.04em}
+.code{height:60px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:26px;letter-spacing:.5em;text-align:center;outline:0;width:100%;font-weight:700}
+.msg{font-size:14px;border-radius:12px;padding:12px 14px;background:var(--tint);color:var(--darker)}
+.msg.ok{background:#EAF2EA;color:#24502A}
+.note{font-size:12.5px;color:var(--muted)}
+.lien{border:0;background:none;color:var(--crimson);font-weight:600;padding:8px 0;align-self:flex-start}
+/* fiche */
+.fiche-top{background:var(--deep);color:#fff;margin:calc(-16px - var(--safe-t)) -18px 4px;padding:calc(12px + var(--safe-t)) 18px 24px;display:flex;flex-direction:column;gap:16px}
+.retour{border:0;background:none;color:var(--tint);display:flex;align-items:center;gap:4px;height:44px;padding:0;font-weight:600;align-self:flex-start}
+.fiche-top .av{width:72px;height:72px;font-size:24px;border:3px solid var(--or)}
+.fiche-top h2{font-size:24px;font-weight:800}
+.pill-or{align-self:flex-start;margin-top:6px;padding:4px 10px;border-radius:10px;background:var(--or);color:var(--darker);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px}.kv span:first-child{color:var(--muted)}.kv b{text-align:right}
+/* messages */
+.conv-top{display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--paper);z-index:2;margin:calc(-16px - var(--safe-t)) -18px 0;padding:calc(8px + var(--safe-t)) 12px 8px;border-bottom:1px solid var(--line2)}
+.conv-top .who{border:0;background:none;display:flex;align-items:center;gap:10px;padding:0;text-align:left;min-width:0}
+.conv-top .av{width:40px;height:40px;font-size:14px}
+.fil{display:flex;flex-direction:column;gap:6px;padding-bottom:84px}
+.bulle{max-width:80%;padding:10px 13px;border-radius:18px 18px 18px 6px;background:var(--card);border:1px solid var(--line2);font-size:14.5px;white-space:pre-wrap;word-wrap:break-word;align-self:flex-start}
+.bulle.moi{align-self:flex-end;background:var(--crimson);color:#fff;border-color:var(--crimson);border-radius:18px 18px 6px 18px}
+.heure{font-size:11px;color:var(--soft);align-self:flex-start;margin:-2px 4px 4px}
+.heure.moi{align-self:flex-end}
+.jour{align-self:center;font-size:11px;font-weight:600;color:var(--soft);padding:4px 10px;border-radius:10px;background:#F1E8EA;margin:6px 0}
+.saisie{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line2);padding:10px 12px calc(10px + var(--safe-b));display:flex;justify-content:center;z-index:5}
+.saisie form{display:flex;align-items:flex-end;gap:8px;width:100%;max-width:560px}
+.saisie textarea{flex:1;min-height:44px;max-height:140px;resize:none;border:0;border-radius:22px;background:#F4EEEF;padding:11px 16px;outline:0;font-size:15px}
+.saisie button{width:44px;height:44px;border-radius:22px;border:0;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.conv-row .t b.nl{font-weight:800}.conv-row .t span.nl{font-weight:600;color:var(--ink)}
+.conv-row .quand{font-size:12px;color:var(--soft);flex-shrink:0}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;cursor:pointer}
+.switch input{width:22px;height:22px;accent-color:var(--crimson);flex-shrink:0}
+textarea.champ{width:100%;min-height:90px;border-radius:12px;border:1px solid var(--line);padding:10px 12px;resize:vertical;outline:0}
+textarea.champ:focus{border-color:var(--crimson)}
+.toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw;animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+.toast{animation-name:toastIn}@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<nav class="bas" id="nav" hidden><div class="in">
+  <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Annuaire</button>
+  <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
+  <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon profil</button>
+</div></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
+const DEMO=location.hash==="#demo";
+/* Clé de session distincte du CRM : se connecter ici ne déconnecte pas le CRM ouvert dans le même navigateur. */
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
+const S={moi:null,annuaire:[],msgs:[],onglet:"annuaire",fiche:null,conv:null,q:"",filtre:"tous",tel:"",etape:"tel",canal:null};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const COUL=[["#F8E9EC","#8A0E24"],["#F4ECD8","#6B5420"],["#E8EEF6","#2C4A73"],["#EAF2EA","#2F5B33"],["#F1E8F4","#5B2F6B"]];
+function coul(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return COUL[h%COUL.length]}
+function ini(n){const p=String(n||"").replace(/[^\p{L}\s-]/gu," ").trim().split(/\s+/).filter(Boolean);return ((p[0]||"")[0]||"").toUpperCase()+((p[1]||"")[0]||"").toUpperCase()}
+function av(m,cls=""){const [f,e]=coul(m.id);return `<span class="av ${cls}" style="background:${f};color:${e}">${esc(ini(m.nom))}</span>`}
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+const ICO={envoi:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
+  loupe:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A6E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  retour:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+  tel:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>'};
+
+/* ---------- Connexion : numéro de téléphone + code WhatsApp ---------- */
+function telE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("212"))return "+"+d;if(d.startsWith("0"))d=d.slice(1);return d.length===9?"+212"+d:null}
+function telLisible(e){const d=String(e||"").replace(/\D/g,"").replace(/^212/,"0");return d.replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
+function vueLogin(msg){
+  $("nav").hidden=true;
+  const tel=S.etape==="tel";
+  $("app").innerHTML=`<div class="login">
+    <img src="logo-proteine.png" alt="Club d'affaires Protéine Maroc">
+    <div><div class="eyebrow">Espace membre</div><h1>${tel?"Bienvenue dans le réseau":"Ton code"}</h1>
+      <p class="sub">${tel?"Entre ton numéro de mobile : tu reçois un code par WhatsApp. Pas de mot de passe à retenir.":`On vient de l'envoyer par WhatsApp au ${esc(telLisible(S.tel))}.`}</p></div>
+    ${msg?`<div class="msg ${msg.ok?"ok":""}">${esc(msg.t)}</div>`:""}
+    <form id="f-login" style="display:flex;flex-direction:column;gap:12px">
+      ${tel?`<label class="tel"><span>+212</span><input id="l-tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="6 61 23 45 67" aria-label="Numéro de mobile" value="${esc(S.telSaisi||"")}"></label>`
+        :`<input class="code" id="l-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······" aria-label="Code reçu par WhatsApp">`}
+      <button class="btn" id="l-go" type="submit">${tel?"Recevoir mon code WhatsApp":"Entrer"}</button>
+    </form>
+    ${tel?`<p class="note">C'est le numéro que tu as donné dans ton formulaire d'adhésion. S'il a changé, demande à ton animateur de le mettre à jour.</p>`
+      :`<button class="lien" id="l-autre" type="button">Changer de numéro</button><button class="lien" id="l-renvoi" type="button" style="margin-top:-12px">Renvoyer le code</button>`}
+  </div>`;
+  $("f-login").onsubmit=e=>{e.preventDefault();tel?demanderCode():verifierCode()};
+  if(!tel){$("l-autre").onclick=()=>{S.etape="tel";vueLogin()};$("l-renvoi").onclick=()=>demanderCode(true);
+    const c=$("l-code");c.focus();c.oninput=()=>{c.value=c.value.replace(/\D/g,"").slice(0,6);if(c.value.length===6)verifierCode()}}
+  else $("l-tel").focus();
+}
+async function demanderCode(renvoi){
+  const v=renvoi?S.tel:telE164($("l-tel").value);
+  if(!renvoi)S.telSaisi=$("l-tel").value;
+  if(!v){vueLogin({t:"Ce numéro ne ressemble pas à un mobile marocain. Exemple : 06 61 23 45 67."});return}
+  const b=$("l-go");if(b){b.disabled=true;b.textContent="Envoi…"}
+  S.tel=v;
+  if(DEMO){S.etape="code";vueLogin({ok:true,t:"Démonstration : tape 123456."});return}
+  const {error}=await sb.auth.signInWithOtp({phone:v,options:{channel:"whatsapp"}});
+  if(error){S.etape="tel";vueLogin({t:errLogin(error)});return}
+  S.etape="code";vueLogin(renvoi?{ok:true,t:"Nouveau code envoyé."}:null);
+}
+async function verifierCode(){
+  const c=$("l-code").value.trim();if(c.length!==6)return;
+  const b=$("l-go");b.disabled=true;b.textContent="Vérification…";
+  if(DEMO){if(c!=="123456"){vueLogin({t:"Code incorrect. En démonstration, c'est 123456."});return}return demarrer()}
+  const {error}=await sb.auth.verifyOtp({phone:S.tel,token:c,type:"sms"});
+  if(error){vueLogin({t:/expired|invalid/i.test(error.message)?"Code incorrect ou expiré. Réessaie, ou demande un nouveau code.":errLogin(error)});return}
+  demarrer();
+}
+function errLogin(e){const m=String(e&&e.message||e);
+  if(/provider|unsupported|disabled|not enabled/i.test(m))return "La connexion par WhatsApp n'est pas encore activée. Réessaie dans quelques jours, ou contacte ton animateur.";
+  if(/rate|too many|seconds/i.test(m))return "Trop de demandes d'un coup. Attends une minute avant de redemander un code.";
+  return "Impossible d'envoyer le code pour l'instant ("+m+").";}
+
+/* ---------- Démarrage ---------- */
+async function demarrer(){
+  $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
+  if(DEMO){Object.assign(S,demo());return lancer()}
+  const {data:moi,error}=await sb.rpc("cap_membre_lier");
+  if(error){S.etape="tel";await sb.auth.signOut();return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
+  if(moi.statut!=="ok"){
+    await sb.auth.signOut();S.etape="tel";
+    return vueLogin({t:moi.statut==="en_cours"?"Ta demande d'adhésion est bien reçue. Ton espace s'ouvrira dès que ton animateur t'aura intégré à ton club : tu pourras alors te connecter avec ce même numéro."
+      :moi.statut==="ambigu"?"Ce numéro est inscrit sur plusieurs fiches. Ton animateur doit corriger la fiche en double avant que tu puisses entrer."
+      :"Ce numéro n'est relié à aucune fiche membre. Demande à ton animateur de l'ajouter dans ta fiche (mobile), puis réessaie."});
+  }
+  S.moi=moi;
+  await Promise.all([chargerAnnuaire(),chargerMessages()]);
+  ecouter();lancer();
+}
+function lancer(){$("nav").hidden=false;rendu()}
+async function chargerAnnuaire(){const {data,error}=await sb.rpc("cap_annuaire");if(!error)S.annuaire=data||[]}
+async function chargerMessages(){
+  const {data,error}=await sb.from("messages_membres").select("id,de,a,texte,cree_le,lu_le").order("cree_le",{ascending:true}).limit(2000);
+  if(!error)S.msgs=data||[];
+}
+let _canal=null;
+function ecouter(){
+  if(DEMO||_canal)return;
+  _canal=sb.channel("msgs-"+S.moi.id).on("postgres_changes",{event:"*",schema:"public",table:"messages_membres"},p=>{
+    const r=p.new;if(!r||!r.id)return;
+    const i=S.msgs.findIndex(x=>x.id===r.id);if(i>=0)S.msgs[i]=r;else{S.msgs.push(r);if(r.a===S.moi.id&&!(S.conv===r.de&&S.onglet==="conv"))toast("Nouveau message de "+(membre(r.de)?.nom||"un membre"))}
+    if(S.onglet==="conv"&&S.conv&&r.de===S.conv&&!r.lu_le)marquerLus(S.conv);
+    rendu(true);
+  }).subscribe();
+}
+const membre=id=>S.annuaire.find(m=>m.id===id);
+
+/* ---------- Navigation ---------- */
+function aller(o,extra){Object.assign(S,{onglet:o},extra||{});window.scrollTo(0,0);rendu()}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>aller(b.dataset.o));
+function rendu(garderDefilement){
+  const y=window.scrollY;
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||(S.onglet==="conv"&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
+  const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
+  $("nav").hidden=S.onglet==="conv";
+  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil}[S.onglet];
+  $("app").innerHTML=v();
+  brancher();
+  if(S.onglet==="conv"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
+  else if(garderDefilement)window.scrollTo(0,y);
+}
+
+/* ---------- Annuaire ---------- */
+function filtrer(){
+  const mots=norm(S.q).split(/\s+/).filter(Boolean);
+  return S.annuaire.filter(m=>!m.moi).filter(m=>S.filtre==="tous"||(S.filtre==="club"?m.club===S.moi.club:m.ville===S.filtre))
+    .filter(m=>{const t=norm([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.cherche].join(" "));return mots.every(w=>t.includes(w))});
+}
+function carteMembre(m,i){
+  return `<div class="row" style="--i:${Math.min(i,14)}">
+    <button class="who" data-fiche="${m.id}">${av(m)}<span class="t"><b>${esc(m.nom)}</b><span>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</span><small>${esc([m.club&&m.club.replace(/^CAP\s+/,""),m.ville].filter(Boolean).join(" · "))}</small></span></button>
+    <button class="ico" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"} aria-label="${m.inscrit?"Écrire à "+esc(m.nom):esc(m.nom)+" n'a pas encore activé son espace"}" title="${m.inscrit?"Écrire":"Pas encore inscrit à l'espace membre"}">${ICO.envoi}</button></div>`;
+}
+function listeAnnuaire(){const l=filtrer();return l.length?l.map(carteMembre).join(""):`<p class="vide">Aucun membre ne correspond.${S.q?" Essaie un autre mot.":""}</p>`}
+function vueAnnuaire(){
+  const autres=S.annuaire.filter(m=>!m.moi),villes=[...new Set(autres.map(m=>m.ville).filter(Boolean))].sort();
+  const nClub=autres.filter(m=>m.club===S.moi.club).length;
+  const chip=(k,l)=>`<button class="chip ${S.filtre===k?"on":""}" data-filtre="${esc(k)}">${esc(l)}</button>`;
+  return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Bonjour ${esc(String(S.moi.nom).split(/\s+/)[0])}</h1></div></div>
+    <label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Un métier, un nom, une ville…" aria-label="Chercher un membre" value="${esc(S.q)}"></label>
+    <div class="chips">${chip("tous","Tous · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${villes.map(v=>chip(v,v)).join("")}</div>
+    <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):"Le réseau"}</div>
+    <div id="res" style="display:flex;flex-direction:column;gap:10px">${listeAnnuaire()}</div></div>`;
+}
+
+/* ---------- Fiche d'un membre ---------- */
+function vueFiche(){
+  const m=membre(S.fiche);if(!m)return vueAnnuaire();
+  const tel=m.telephone?String(m.telephone).replace(/[^\d+]/g,""):"";
+  return `<div class="page">
+    <div class="fiche-top"><button class="retour" data-aller="annuaire">${ICO.retour}Annuaire</button>
+      <div style="display:flex;align-items:center;gap:16px">${av(m)}<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><h2>${esc(m.nom)}</h2><span style="color:var(--tint);font-size:14px">${esc(m.metier||"Membre du réseau")}</span>${m.club?`<span class="pill-or">Membre · ${esc(m.club.replace(/^CAP\s+/,""))}</span>`:""}</div></div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="flex:1" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"}>${ICO.envoi}${m.inscrit?"Écrire un message":"Pas encore inscrit"}</button>
+      ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}</div>
+    ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
+    ${m.entreprise||m.activite?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Son entreprise</span>${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.activite?`<span style="font-size:14px">${esc(m.activite)}</span>`:""}</div>`:""}
+    ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Coordonnées</span>
+      <div class="kv"><span>Ville</span><b>${esc(m.ville||"—")}</b></div>
+      <div class="kv"><span>Téléphone</span><b>${tel?esc(m.telephone):"non partagé"}</b></div></div></div>`;
+}
+
+/* ---------- Messages ---------- */
+function conversations(){
+  const par={};
+  for(const x of S.msgs){const o=x.de===S.moi.id?x.a:x.de;(par[o]=par[o]||[]).push(x)}
+  return Object.entries(par).map(([id,l])=>({id,dernier:l[l.length-1],nl:l.filter(x=>x.a===S.moi.id&&!x.lu_le).length})).sort((a,b)=>b.dernier.cree_le.localeCompare(a.dernier.cree_le));
+}
+function quand(iso){const d=new Date(iso),n=new Date();const j=Math.round((new Date(n.toDateString())-new Date(d.toDateString()))/864e5);
+  if(j===0)return d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});if(j===1)return "Hier";if(j<7)return d.toLocaleDateString("fr-FR",{weekday:"short"});return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}
+function vueMessages(){
+  const c=conversations();
+  return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mes messages</h1><p class="sub">Entre membres, en direct. Pas de groupes.</p></div></div>
+    ${c.length?c.map((x,i)=>{const m=membre(x.id)||{id:x.id,nom:"Membre"};const de=x.dernier.de===S.moi.id?"Vous : ":"";
+      return `<button class="row conv-row" style="--i:${Math.min(i,14)};width:100%;text-align:left" data-conv="${x.id}">${av(m)}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${x.nl?"nl":""}">${esc(m.nom)}</b><span class="quand">${quand(x.dernier.cree_le)}</span></span>
+        <span style="display:flex;justify-content:space-between;align-items:center;gap:8px;overflow:visible"><span class="${x.nl?"nl":""}" style="overflow:hidden;text-overflow:ellipsis">${esc(de+x.dernier.texte)}</span>${x.nl?`<span class="badge">${x.nl}</span>`:""}</span></span></button>`}).join("")
+      :`<p class="vide">Aucune conversation pour l'instant.<br>Choisis un membre dans l'annuaire et écris-lui.</p>`}
+    <button class="btn ghost" data-aller="annuaire" style="border-style:dashed;color:var(--crimson)">+ Nouveau message : choisir dans l'annuaire</button></div>`;
+}
+function vueConv(){
+  const m=membre(S.conv)||{id:S.conv,nom:"Membre"};
+  const l=S.msgs.filter(x=>(x.de===S.conv&&x.a===S.moi.id)||(x.a===S.conv&&x.de===S.moi.id));
+  let jour="",h="";
+  for(const x of l){const d=new Date(x.cree_le),j=d.toDateString();
+    if(j!==jour){jour=j;const k=Math.round((new Date(new Date().toDateString())-new Date(j))/864e5);h+=`<span class="jour">${k===0?"Aujourd'hui":k===1?"Hier":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}</span>`}
+    const moi=x.de===S.moi.id;
+    h+=`<div class="bulle ${moi?"moi":""}">${esc(x.texte)}</div><span class="heure ${moi?"moi":""}">${d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}${moi&&x.lu_le?" · Lu":""}</span>`}
+  return `<div class="page" style="padding-bottom:0">
+    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="messages" aria-label="Retour aux messages">${ICO.retour}</button>
+      <button class="who" data-fiche="${m.id}">${av(m)}<span class="t" style="display:flex;flex-direction:column;min-width:0"><b style="font-size:15px">${esc(m.nom)}</b><span style="font-size:12px;color:var(--muted)">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</span></span></button></div>
+    <div class="fil">${h||`<p class="vide">Premier message à ${esc(m.nom)}. Présente-toi et dis ce qui t'amène.</p>`}</div></div>
+    <div class="saisie"><form id="f-msg"><textarea id="m-txt" rows="1" placeholder="Écrire à ${esc(String(m.nom).split(/\s+/)[0])}…" aria-label="Message" maxlength="4000"></textarea><button type="submit" aria-label="Envoyer">${ICO.envoi}</button></form></div>`;
+}
+async function envoyer(){
+  const t=$("m-txt"),txt=t.value.trim();if(!txt)return;
+  t.value="";t.style.height="";
+  const r={de:S.moi.id,a:S.conv,texte:txt};
+  if(DEMO){S.msgs.push({...r,id:"d"+Date.now(),cree_le:new Date().toISOString(),lu_le:null});rendu();$("m-txt").focus();return}
+  const {data,error}=await sb.from("messages_membres").insert(r).select().single();
+  if(error){t.value=txt;toast("Message non envoyé : "+(/row-level|policy/i.test(error.message)?"ce membre n'a pas encore activé son espace.":error.message));return}
+  if(!S.msgs.some(x=>x.id===data.id))S.msgs.push(data);
+  rendu();$("m-txt").focus();
+}
+async function marquerLus(avec){
+  const nl=S.msgs.filter(x=>x.de===avec&&x.a===S.moi.id&&!x.lu_le);if(!nl.length)return;
+  const now=new Date().toISOString();nl.forEach(x=>x.lu_le=now);
+  if(!DEMO)await sb.rpc("cap_messages_lus",{p_avec:avec});
+}
+
+/* ---------- Mon profil ---------- */
+function vueProfil(){
+  const m=S.moi;
+  return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mon profil</h1></div></div>
+    <div class="card" style="display:flex;align-items:center;gap:14px">${av(m)}<div style="min-width:0"><b class="bri" style="font-size:18px">${esc(m.nom)}</b><p class="sub">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</p></div></div>
+    <form id="f-profil" class="card" style="display:flex;flex-direction:column;gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ce que je cherche</span>
+        <textarea class="champ" id="p-cherche" maxlength="600" placeholder="Ex. : des promoteurs qui lancent un programme à Rabat, des gérants de franchises…">${esc(m.cherche||"")}</textarea></label>
+      <label class="switch"><span>Montrer mon téléphone aux autres membres</span><input type="checkbox" id="p-tel" ${m.tel_visible?"checked":""}></label>
+      <label class="switch"><span>Apparaître dans l'annuaire</span><input type="checkbox" id="p-annu" ${m.annuaire_visible!==false?"checked":""}></label>
+      <button class="btn" type="submit">Enregistrer</button>
+    </form>
+    <p class="note">Ton nom, ton métier et ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
+    <button class="btn ghost" id="p-out" type="button">Me déconnecter</button></div>`;
+}
+async function enregistrerProfil(){
+  const v={p_cherche:$("p-cherche").value,p_tel_visible:$("p-tel").checked,p_annuaire:$("p-annu").checked};
+  if(!DEMO){const {error}=await sb.rpc("cap_membre_profil",v);if(error){toast("Non enregistré : "+error.message);return}}
+  Object.assign(S.moi,{cherche:v.p_cherche.trim()||null,tel_visible:v.p_tel_visible,annuaire_visible:v.p_annuaire});
+  const me=S.annuaire.find(x=>x.moi);if(me)me.cherche=S.moi.cherche;
+  toast("Profil enregistré");
+}
+
+/* ---------- Écouteurs ---------- */
+function brancher(){
+  const app=$("app");
+  app.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));
+  app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
+  app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
+  app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));
+  app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
+  const q=$("q");if(q)q.oninput=()=>{S.q=q.value;$("res").innerHTML=listeAnnuaire();brancherRes()};
+  const f=$("f-msg");if(f){f.onsubmit=e=>{e.preventDefault();envoyer()};const t=$("m-txt");
+    t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
+    t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyer()}}}
+  const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
+  const o=$("p-out");if(o)o.onclick=async()=>{if(!DEMO)await sb.auth.signOut();location.reload()};
+}
+function brancherRes(){const r=$("res");r.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));r.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire))}
+function ouvrirConv(id){aller("conv",{conv:id});marquerLus(id).then(()=>{const bn=$("nav-nl");const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;bn.hidden=!nl;bn.textContent=nl})}
+
+/* ---------- Démonstration (#demo) : rien n'est envoyé ---------- */
+function demo(){
+  const A=[["d1","Tarek Amar","Expert-comptable","Amar Conseil","CAP Rabat Signature","Rabat",true],["d2","Nawal Mansouri","Architecte d'intérieur","Atelier NM","CAP Rabat Signature","Rabat",true,"Des promoteurs et des gérants de franchises qui ouvrent de nouveaux points de vente."],
+    ["d3","Kamal Idrissi","Assureur","Idrissi Assurances","CAP Casablanca Doyen","Casablanca",true],["d4","Salma Bennani","Photographe","Studio Lumière","CAP Rabat Capital Circle","Rabat",false],["d5","Youssef Alami","Imprimeur","Imprimerie du Bouregreg","CAP Salé Déclic","Salé",true]];
+  const annuaire=A.map(a=>({id:a[0],nom:a[1],metier:a[2],entreprise:a[3],club:a[4],ville:a[5],inscrit:a[6],cherche:a[7]||null,activite:null,telephone:a[0]==="d2"?"06 61 23 45 67":null,moi:a[0]==="d1"}));
+  const t=m=>new Date(Date.now()-m*6e4).toISOString();
+  const msgs=[{id:"m1",de:"d1",a:"d2",texte:"Bonjour Nawal, un client à moi ouvre une deuxième agence à Agdal. Il cherche quelqu'un pour l'aménagement.",cree_le:t(40),lu_le:t(35)},
+    {id:"m2",de:"d2",a:"d1",texte:"Bonjour Tarek ! Avec plaisir. Quelle surface, et pour quand ?",cree_le:t(30),lu_le:null},
+    {id:"m3",de:"d2",a:"d1",texte:"Je peux passer voir les locaux jeudi.",cree_le:t(28),lu_le:null},
+    {id:"m4",de:"d3",a:"d1",texte:"Tu as le contact du gérant de la franchise ?",cree_le:t(1500),lu_le:t(1400)}];
+  return {moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs};
+}
+
+(async()=>{
+  if(DEMO)return vueLogin({ok:true,t:"Démonstration : entre n'importe quel numéro, puis le code 123456. Rien n'est envoyé."});
+  const {data:{session}}=await sb.auth.getSession();
+  if(session)demarrer();else vueLogin();
+})();
+</script>
+</body>
+</html>

@@ -1012,6 +1012,8 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .reu-mem{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);margin:4px 0 6px;cursor:pointer}
 .reu-mem input{margin-top:2px;accent-color:var(--crimson)}
 @media(max-width:899px){.nav button{font-size:9.5px}}
+/*v029*/
+.mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -1087,8 +1089,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.22.0";
+const APP_VERSION="0.23.0";
 const CHANGELOG=[
+  {v:"0.23.0",date:"29 octobre 2026",notes:{
+    "Ajouté":[
+      "Espace membre (membre.html) : chaque membre se connecte avec son mobile et un code reçu par WhatsApp, sans mot de passe. Il y trouve l'annuaire du réseau (recherche par métier, nom ou ville, filtre Mon club), la fiche de chaque membre, et des messages directs entre membres (pas de groupes). Dans Mon profil, il indique ce qu'il cherche et choisit de montrer ou non son téléphone.",
+      "Dans la fiche d'un membre du CRM, une section « Espace membre » : connecté ou non, et un bouton « Inviter » qui prépare le message WhatsApp avec le lien."],
+    "Sécurité":["Un compte membre ne voit rien du CRM : la lecture des clubs, réunions, membres, animateurs, lieux et zones exige désormais un compte d'équipe."]}},
   {v:"0.22.0",date:"29 octobre 2026",notes:{
     "Ajouté":[
       "Nouvel onglet « Mes réunions » : l'espace de l'animateur pour ses clubs. Les réunions à venir avec « Changer le jour » (+1 semaine, +2 semaines, ou une date au choix, avec l'heure et le lieu) et « Confirmer » ; les comptes rendus à écrire ; puis le rythme de chaque club.",
@@ -1395,7 +1402,7 @@ function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||""}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -2866,7 +2873,19 @@ function mbDossierHTML(m,canEd){
     ${vide?`<p class="fh-empty">Aucune information. ${canEd?"Elles se remplissent toutes seules quand le membre vient du formulaire d'adhésion, ou à la main.":""}</p>`:mbInfosHTML(d)}
     ${secHead("Documents",undefined,canEd?`<span class="mb-add"><select id="mb-doc-type"><option value="contrat_signe">Contrat signé</option><option value="contrat">Contrat</option><option value="formulaire">Formulaire</option><option value="autre" selected>Autre pièce</option></select><label class="btn ghost mini">+ Ajouter<input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp" onchange="mbDocAjouter('${m.clubId}','${m.id}',this)"></label></span>`:"")}
     <div id="mb-docs"><p class="fh-empty">Chargement…</p></div>
+    ${mbEspaceHTML(m,d,canEd)}
   </div>`;
+}
+/* Espace membre (v0.23) : le membre se connecte sur membre.html avec son mobile (infos.m_tel) et un code WhatsApp. */
+const ESPACE_MEMBRE_URL=location.origin+"/membre.html";
+function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
+function mbEspaceHTML(m,d,canEd){
+  const tel=d.m_tel;
+  const etat=m.inscrit?`<span class="mb-esp on">✓ Connecté à l'espace membre</span>`:tel?`<span class="mb-esp">Pas encore connecté</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
+  const msg="Bonjour "+String(m.nom).split(/\s+/)[0]+", ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres. Connecte-toi avec ce numéro, tu recevras un code par WhatsApp : "+ESPACE_MEMBRE_URL;
+  return `${secHead("Espace membre")}
+    <div class="drow"><div class="tx"><div class="k">Accès</div><div class="v">${etat}</div></div>${tel&&canEd&&!m.inscrit?`<a href="https://wa.me/${mbWa(tel)}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Inviter</a>`:""}</div>
+    ${!tel?`<p class="fh-note">Il se connecte avec son mobile : ${canEd?"ajoute-le dans « Informations » (champ mobile).":"il doit être renseigné dans ses informations."}</p>`:""}`;
 }
 async function mbDocsCharger(m,canEd){
   const a=mbAdhesion(m);
@@ -3167,6 +3186,7 @@ function adhDetail(id){
     ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
     <div class="drow" style="margin-top:10px"><div class="tx"><div class="k">CRM national Protéine</div><div class="v">${a.saisie_proteine_le?"Saisie faite le "+adhDate(a.saisie_proteine_le):"Pas encore saisie"}</div></div>${peut?`<a href="#" onclick="adhSaisie('${a.id}',${!a.saisie_proteine_le});return false">${a.saisie_proteine_le?"Annuler":"Marquer saisie"}</a>`:""}</div>
     ${SESSION.role==="superadmin"&&a.statut!=="rejetee"?adhNationalBloc(a):""}
+    ${mb?mbEspaceHTML(mb,mbInfos(mb),peut):a.statut!=="rejetee"?`${secHead("Espace membre")}<p class="fh-note">L'accès à l'espace membre (annuaire et messages) s'ouvre dès l'intégration dans un club, avec le mobile de cette demande${a.data.m_tel?" ("+esc(a.data.m_tel)+")":""}.</p>`:""}
     ${blocs}
     ${peut&&a.statut!=="integree"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>

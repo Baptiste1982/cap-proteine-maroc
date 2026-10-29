@@ -134,7 +134,15 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `changerJour(id)` (décalages rapides, case « retenir ce lieu et cette heure » → club), `openRythme(clubId)`, `prochaineDate(c)` (après la dernière réunion non annulée et pas avant aujourd'hui), `planifierSuivante(clubId)` (pré-remplit `meetingForm`), `openCR(id)` / `crEnregistrer` (passe la réunion en réalisée), `crBloc` dans la fiche réunion.
 - Le canevas du compte rendu (`CR_CHAMPS` : déroulé, décisions, suivi) est PROVISOIRE : JB doit fournir celui du national. Le jsonb évite une migration le jour où il change.
 - Barre du bas : 7 onglets (54 px chacun sur iPhone 13). Banc `scratchpad/tools/reunions.mjs` 53/53.
-- **Messages entre membres** : demande confirmée (« espace membre à part », messages directs, sans groupe). Maquette d'abord, rien de codé.
+
+**💬 Espace membre (v0.23.0, 29/10/2026)** — maquette https://claude.ai/artifact/7MmSB7EDmLcqC1npF8z6GQ, clic JB « téléphone + code WhatsApp » :
+- Page `membre.html` (à part du CRM, session sous la clé `cap-membre-auth` : se connecter ici ne déconnecte pas le CRM). Connexion `signInWithOtp({phone:'+212…', options:{channel:'whatsapp'}})` puis `verifyOtp({type:'sms'})`, puis RPC `cap_membre_lier()` qui rattache le compte à la fiche dont le mobile correspond (`infos.m_tel`, ou celui de la demande d'adhésion rattachée). Statuts : ok, inconnu, ambigu, en_cours (demande d'adhésion pas encore intégrée). `#demo` = démonstration, code 123456.
+- Écrans : annuaire (RPC `cap_annuaire`, champs choisis seulement), fiche, messages, conversation (temps réel), mon profil (RPC `cap_membre_profil` : ce qu'il cherche, téléphone visible, présence dans l'annuaire).
+- Migrations `20261029220000_espace_membre.sql` + `espace_membre_lier_adhesion` (appliquées) : `membres.user_id/tel_visible/annuaire_visible/cherche`, `cap_tel_norm`, `cap_membre_id`, table `messages_membres` (RLS : lecture par l'expéditeur et le destinataire, écriture par l'expéditeur vers un membre inscrit ; l'équipe du CRM ne les lit pas), `cap_messages_lus`, publication realtime.
+- ⚠ **Sécurité** : `cap_est_equipe()` (une ligne dans profiles) remplace « authentifié » pour lire clubs, réunions, invités, membres, animateurs, lieux, zones et écrire le bucket lieux. Un compte membre ne voit rien du CRM (vérifié en base). Toute nouvelle table du CRM doit exiger `cap_est_equipe()` ou un rôle, jamais `auth.uid() is not null`.
+- CRM : section « Espace membre » dans la fiche membre et dans la demande d'adhésion (connecté ou non, bouton « Inviter » = message WhatsApp avec le lien).
+- ⏳ **À activer par JB** : Supabase → Authentication → Providers → Phone, fournisseur Twilio Verify, canal WhatsApp (compte Twilio). Tant que ce n'est pas fait, la page dit « connexion par WhatsApp pas encore activée ». Seuls les membres dont le mobile est renseigné peuvent entrer.
+- Bancs `membre.mjs` 51/51, `crm-espace.mjs` 6/6.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

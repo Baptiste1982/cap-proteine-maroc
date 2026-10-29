@@ -156,7 +156,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `sw.js` : au clic sur une notification, une fenêtre déjà ouverte sur la même page (CRM ou espace membre) est réutilisée ; une notification du CRM ne détourne jamais l'onglet de l'espace membre.
 - CRM : invité marqué « espace membre » dans la réunion (entreprise, métier, mot du membre) ; notification à l'animateur du club + superadmin + directeur national, qui ouvre la réunion (`?reunion=<id>`, `ouvrirLienReunion`).
 - ⚠ Aucune réunion à venir en base (la dernière date du 31/07) : tant qu'aucune n'est planifiée, l'onglet Inviter dit « pas de réunion planifiée ».
-- Bancs `membre.mjs` 63/63, `crm-espace.mjs` 9/9.
+- Ajouts dans la même version (JB : « pas mal de choses qu'on a oubliées ») : RPC `cap_membres_connexions()` (migration `20261030100000`, équipe seulement, lit `auth.users.last_sign_in_at`) chargée par `loadDB` dans un try (jamais bloquante) → `m.vuLe` : fiche « Connecté, dernière fois le … » / « Code créé, jamais connecté », repère `.mb-acc` dans l'annuaire du CRM ; texte de la fenêtre Notifications (adhésions + invités proposés) ; étape « L'espace membre » dans la visite guidée (partie Clubs : 5 étapes).
+- Bancs `membre.mjs` 63/63, `crm-espace.mjs` 9/9, `tuto.mjs` 28/28.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

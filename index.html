@@ -1015,6 +1015,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 /*v029*/
 .mb-code{margin:8px 0 4px;padding:14px;border-radius:14px;background:var(--crimson-tint);display:flex;flex-direction:column;gap:6px}.mb-code span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--crimson)}.mb-code b{font:800 34px "Bricolage Grotesque",sans-serif;letter-spacing:.18em;color:var(--ink)}.mb-code small{color:var(--muted);font-size:12.5px}.mb-code-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.mb-code-act a{text-decoration:none}
 .guest{flex-wrap:wrap}.guest .gi{flex:1 1 180px}.guest .gi small{display:block}.g-mb{white-space:nowrap;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);background:var(--crimson-tint);padding:2px 6px;border-radius:6px;vertical-align:middle}
+.mb-acc{font-size:10.5px;font-weight:700;color:var(--muted);white-space:nowrap;margin-left:4px}.mb-acc.on{color:#2E7D4F}
 .mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
 </style>
 </head>
@@ -1097,7 +1098,8 @@ const CHANGELOG=[
     "Ajouté":[
       "Espace membre : notifications sur le téléphone à chaque nouveau message (la notification ouvre la conversation). À activer dans « Mon profil » ou dans « Mes messages ». Sur iPhone, l'espace membre s'installe d'abord sur l'écran d'accueil (icône « Protéine »).",
       "Espace membre : nouvel onglet « Inviter ». Le membre voit la prochaine réunion de son club et y propose un invité (nom, entreprise, métier, mobile, un mot pour l'animateur), puis suit ce qu'il devient (en attente, intéressé, membre…).",
-      "CRM : l'invité proposé arrive directement dans la réunion, marqué « espace membre », avec son entreprise, son métier et le mot du membre. L'animateur du club et la direction reçoivent une notification qui ouvre la réunion."]}},
+      "CRM : l'invité proposé arrive directement dans la réunion, marqué « espace membre », avec son entreprise, son métier et le mot du membre. L'animateur du club et la direction reçoivent une notification qui ouvre la réunion.",
+      "CRM : la fiche d'un membre dit s'il s'est déjà connecté à son espace (et quand), et l'annuaire le signale par un petit repère. La visite guidée présente l'espace membre."]}},
   {v:"0.24.0",date:"30 octobre 2026",notes:{
     "Changé":["Espace membre : plus besoin de WhatsApp ni de Twilio pour se connecter. Dans la fiche d'un membre, « Créer son code » fabrique un code d'accès à 6 chiffres, affiché une seule fois, avec un bouton pour l'envoyer par WhatsApp (lien, mobile et code dans le message). Le membre entre son mobile et ce code, et peut le changer dans « Mon profil ». Code oublié : « Nouveau code »."]}},
   {v:"0.23.0",date:"29 octobre 2026",notes:{
@@ -1437,6 +1439,8 @@ async function loadDB(){
   };
   const adh=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
   DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
+  try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
+    if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
   (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
 }
@@ -1541,7 +1545,8 @@ function tutoEtapes(partie){
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
       {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
       {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`},
-      {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`}],
+      {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`},
+      {go:"membres",c:'#nav [data-tab="membres"]',t:"L'espace membre",x:`Chaque membre a son propre espace (annuaire, messages entre membres, invités à proposer). Dans sa fiche, section « Espace membre » : « Créer son code » donne un code d'accès à lui envoyer par WhatsApp. Il se connecte avec son mobile et ce code. La fiche te dit ensuite s'il s'est connecté.`}],
     adhesions:ed?[
       {go:"dash",c:'#view button[onclick="openAdhesions()"]',t:"Les adhésions en ligne",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent ici. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
       ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
@@ -1656,12 +1661,12 @@ async function notifCouper(){
 async function openNotifs(){
   const e=await notifEtat();majBoutonNotif(e);
   const corps={
-    actif:`<div class="ck-act ok" style="cursor:default"><span class="ic">✓</span><span class="tx">Activées sur cet appareil</span></div><p class="fh-note">Tu reçois une notification à chaque adhésion envoyée par le lien${SESSION.role==="animateur"?" pour tes clubs":""}.</p><div class="sheet-actions"><button class="btn ghost" onclick="notifCouper()">Couper sur cet appareil</button></div>`,
-    inactif:`<p class="fh-note" style="margin-bottom:12px">Sois prévenu dès qu'un futur membre envoie son formulaire d'adhésion${SESSION.role==="animateur"?" pour un de tes clubs":""}.</p><div class="sheet-actions"><button class="btn" onclick="notifActiver()">🔔 Activer sur cet appareil</button></div>`,
+    actif:`<div class="ck-act ok" style="cursor:default"><span class="ic">✓</span><span class="tx">Activées sur cet appareil</span></div><p class="fh-note">Tu reçois une notification à chaque adhésion envoyée par le lien, et quand un membre propose un invité depuis l'espace membre${SESSION.role==="animateur"?" (pour tes clubs)":""}.</p><div class="sheet-actions"><button class="btn ghost" onclick="notifCouper()">Couper sur cet appareil</button></div>`,
+    inactif:`<p class="fh-note" style="margin-bottom:12px">Sois prévenu dès qu'un futur membre envoie son formulaire d'adhésion, ou qu'un membre propose un invité${SESSION.role==="animateur"?" pour un de tes clubs":""}.</p><div class="sheet-actions"><button class="btn" onclick="notifActiver()">🔔 Activer sur cet appareil</button></div>`,
     refuse:`<div class="ck-act urgent" style="cursor:default"><span class="ic">⛔</span><span class="tx">Notifications bloquées pour ce site</span></div><p class="fh-note">Réautorise-les dans les réglages du navigateur (cadenas à côté de l'adresse), puis reviens ici.</p>`,
     ios:`<div class="ck-act todo" style="cursor:default"><span class="ic">📱</span><span class="tx">Une étape avant, sur iPhone</span></div><ol class="notif-ios"><li>Touche <b>Partager</b> (le carré avec la flèche) en bas de Safari.</li><li>Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li><li>Ouvre le CRM depuis l'icône, puis la cloche 🔔 en haut.</li></ol>`,
     non:`<p class="fh-note">Ce navigateur ne gère pas les notifications.</p>`};
-  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:"Nouvelles adhésions, sur ce téléphone ou cet ordinateur"})}${corps[e]||corps.non}<div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:"Adhésions et invités proposés, sur ce téléphone ou cet ordinateur"})}${corps[e]||corps.non}<div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
 }
 /* Lien d'une notification (?adh=<id>) : ouvre directement la fiche de l'adhésion. */
@@ -1797,7 +1802,7 @@ function mbCarte(m,i){
   const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
   return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <span class="mb-av">${esc(initiales(m.nom))}</span>
-    <span class="mb-t"><b>${esc(m.nom)}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    <span class="mb-t"><b>${esc(m.nom)}${m.inscrit?` <span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"● espace membre":"○ code envoyé"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
     ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
   </div>`;
 }
@@ -2896,7 +2901,7 @@ const ESPACE_MEMBRE_URL=location.origin+"/membre.html";
 function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
 function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
-  const etat=m.inscrit?`<span class="mb-esp on">✓ Accès créé</span>`:tel?`<span class="mb-esp">Pas encore d'accès</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
+  const etat=m.inscrit?(m.vuLe?`<span class="mb-esp on">✓ Connecté, dernière fois le ${esc(adhDate(m.vuLe))}</span>`:`<span class="mb-esp">Code créé, jamais connecté</span>`):tel?`<span class="mb-esp">Pas encore d'accès</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
   return `${secHead("Espace membre")}
     <div class="drow"><div class="tx"><div class="k">Accès à l'annuaire et aux messages</div><div class="v">${etat}</div></div>${tel&&canEd?`<a href="#" onclick="mbCodeAcces('${m.id}');return false">${m.inscrit?"Nouveau code":"Créer son code"}</a>`:""}</div>
     <div id="mb-code-${m.id}"></div>
@@ -2915,7 +2920,7 @@ async function mbCodeAcces(id){
   const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${r.telephone.replace(/^212/,"0")}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».`;
   box.innerHTML=`<div class="mb-code"><span>Code d'accès de ${esc(prenom)}</span><b>${esc(r.code)}</b><small>À transmettre au membre. Il ne s'affichera plus : en cas d'oubli, crée un nouveau code.</small>
     <div class="mb-code-act"><a class="btn mini" href="https://wa.me/${r.telephone}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="navigator.clipboard&&navigator.clipboard.writeText(${esc(JSON.stringify(msg))}).then(()=>toast('Message copié'))">Copier le message</button></div></div>`;
-  const etat=box.parentElement&&box.parentElement.querySelector(".mb-esp");if(etat){etat.className="mb-esp on";etat.textContent="✓ Accès créé"}
+  const etat=box.parentElement&&box.parentElement.querySelector(".mb-esp");if(etat&&!m.vuLe){etat.className="mb-esp";etat.textContent="Code créé, jamais connecté"}
   const lien=box.previousElementSibling&&box.previousElementSibling.querySelector("a");if(lien)lien.textContent="Nouveau code";
 }
 async function mbDocsCharger(m,canEd){

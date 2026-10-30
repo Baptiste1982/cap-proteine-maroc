@@ -1502,6 +1502,65 @@ html.dark .vb-or{background:#3A3020;--enc:#4A3C22}html.dark .vb-or .vb-n{color:#
 .emb-go{width:100%;margin-top:10px}
 .emb-ok{margin-top:10px;padding:10px;border-radius:12px;background:var(--ok-tint);font-size:13px;animation:dmEntre .4s ease both}.emb-ok b{font-family:ui-monospace,monospace;font-size:14px}
 .emb-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.emb-2 .btn{text-align:center;text-decoration:none}
+/*v034 — calendrier de l'agenda */
+.cal-modes{display:inline-flex;gap:4px;background:var(--soft);border-radius:12px;padding:4px;margin:2px 0 12px}
+.cal-modes button{border:0;background:none;border-radius:9px;padding:7px 12px;font:700 13px Inter,sans-serif;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.cal-modes button.on{background:var(--card);color:var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.cal{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;overflow:hidden;margin-bottom:12px}
+.cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.cal-t{flex:1;margin:0;text-align:center;font:800 19px "Bricolage Grotesque",sans-serif;text-transform:capitalize;display:flex;flex-direction:column;align-items:center}
+.cal-t small{font:600 12px Inter,sans-serif;color:var(--muted);text-transform:none}
+.cal-fl{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--crimson);display:grid;place-items:center;cursor:pointer;position:relative;overflow:hidden;transition:background .2s,border-color .2s}
+.cal-fl:hover{background:var(--crimson-tint);border-color:var(--crimson)}
+.cal-fl.g:hover svg{animation:calTape .7s ease infinite;--sx:-3px}.cal-fl.d:hover svg{animation:calTape .7s ease infinite;--sx:3px}
+@keyframes calTape{50%{transform:translateX(var(--sx))}}
+.cal-fl.pousse svg{animation:calPousse .45s cubic-bezier(.3,1.6,.5,1)}
+.cal-fl.g.pousse svg{--px:-12px}.cal-fl.d.pousse svg{--px:12px}
+@keyframes calPousse{0%{transform:none}35%{transform:translateX(var(--px));opacity:0}36%{transform:translateX(calc(var(--px)*-1));opacity:0}100%{transform:none;opacity:1}}
+.cal-fl.pousse::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--crimson);opacity:.18;animation:calFlash .45s ease-out forwards}
+@keyframes calFlash{from{transform:scale(.3);opacity:.35}to{transform:scale(1.4);opacity:0}}
+.cal-auj{border:0;background:var(--crimson-tint);color:var(--crimson);font:700 12.5px Inter,sans-serif;border-radius:10px;padding:8px 10px;cursor:pointer}
+.slide-g{animation:calEntreG .38s cubic-bezier(.2,.9,.3,1)}.slide-d{animation:calEntreD .38s cubic-bezier(.2,.9,.3,1)}.slide-z{animation:calEntreZ .35s ease}
+@keyframes calEntreG{from{opacity:0;transform:translateX(36px)}}@keyframes calEntreD{from{opacity:0;transform:translateX(-36px)}}@keyframes calEntreZ{from{opacity:0;transform:scale(.97)}}
+.cal-tete,.cal-mois{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-tete span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding-bottom:4px}
+.cal-c{min-height:104px;border-radius:12px;background:var(--paper);padding:5px;display:flex;flex-direction:column;gap:3px;min-width:0;transition:background .2s}
+.cal-c:hover{background:var(--crimson-tint)}
+.cal-c.hors{opacity:.4}.cal-c.auj{box-shadow:inset 0 0 0 2px var(--crimson)}.cal-c.auj .cal-n{background:var(--crimson);color:#fff}
+.cal-n{font-size:12px;font-weight:800;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
+.cal-ev{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%;min-width:0;border:0;border-left:3px solid var(--vc);border-radius:7px;padding:3px 6px;background:color-mix(in srgb,var(--vc) 12%,var(--card));cursor:pointer;transition:transform .2s cubic-bezier(.2,1.4,.4,1),box-shadow .2s}
+.cal-ev:hover{transform:translateY(-2px);box-shadow:0 6px 14px -8px rgba(0,0,0,.35)}
+.cal-ev b{font-size:11.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cal-ev small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cal-ev.rl{border-left-style:dashed}.cal-ev.annulee{opacity:.5;text-decoration:line-through}.cal-ev.realisee b::after{content:" ✓";color:var(--ok)}
+.cal-plus{border:0;background:none;color:var(--crimson);font-weight:800;font-size:11.5px;cursor:pointer;text-align:left;padding:0 4px}
+.cal-sem{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-j{background:var(--paper);border-radius:14px;padding:6px;min-height:200px;display:flex;flex-direction:column;gap:6px;min-width:0;animation:dmEntre .35s ease calc(var(--i)*35ms) backwards}
+.cal-j.auj{box-shadow:inset 0 0 0 2px var(--crimson)}
+.cal-jh{display:flex;flex-direction:column;align-items:center;padding:2px 0 4px;border-bottom:1px dashed var(--line)}
+.cal-jh span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.cal-jh b{font:800 20px "Bricolage Grotesque",sans-serif}
+.cal-j.auj .cal-jh b{color:var(--crimson)}
+.cal-jl{display:flex;flex-direction:column;gap:5px}
+.cal-rien{font-size:12px;color:var(--muted);text-align:center;margin:4px 0}
+.cal-ajout{border:1.5px dashed var(--line);background:none;border-radius:9px;color:var(--muted);font-size:16px;font-weight:700;cursor:pointer;padding:2px;opacity:0;transition:opacity .2s,color .2s,border-color .2s}
+.cal-j:hover .cal-ajout{opacity:1}.cal-ajout:hover{color:var(--crimson);border-color:var(--crimson)}
+.cal-astuce{font-size:12px;color:var(--muted);text-align:center;margin:10px 0 0}
+.cal-det{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:6px;animation:dmEntre .3s ease both}
+.cal-det-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.cal-det-h b{font-size:14px}
+.cal-det .cal-ev{padding:8px 10px}.cal-det .cal-ev b{font-size:13.5px}.cal-det .cal-ev small{font-size:12px}
+.cal-c.sel{background:var(--crimson-tint);box-shadow:inset 0 0 0 2px var(--crimson)}
+@media(max-width:899px){
+  .cal{padding:10px;border-radius:18px}
+  .cal-c{min-height:52px;align-items:center;padding:4px 2px;cursor:pointer}
+  .cal-pts{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}.cal-pts i{width:6px;height:6px;border-radius:50%}
+  .cal-sem{grid-template-columns:1fr;gap:6px}
+  .cal-j{min-height:0;flex-direction:row;align-items:flex-start;gap:10px;padding:8px}
+  .cal-jh{flex-direction:column;border-bottom:0;border-right:1px dashed var(--line);padding:0 8px 0 0;min-width:44px}
+  .cal-jl{flex:1;min-width:0}.cal-rien{text-align:left}
+  .cal-ajout{opacity:1;align-self:flex-start;padding:2px 10px}
+  .cal-t{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.cal *{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -1578,8 +1637,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.33.0";
+const APP_VERSION="0.34.0";
 const CHANGELOG=[
+  {v:"0.34.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "L'agenda devient un calendrier : vues Semaine et Mois (la semaine par défaut au téléphone, le mois sur ordinateur, ton choix est retenu), la vue Liste reste disponible. Les flèches ‹ › font glisser d'une semaine ou d'un mois à l'autre, avec une petite animation ; au téléphone on peut aussi balayer du doigt. Le bouton « Aujourd'hui » ramène à la période en cours. Chaque réunion s'ouvre d'un toucher ; au téléphone, toucher un jour du mois montre ses réunions ; sur ordinateur, double-cliquer un jour ou utiliser le + d'une journée planifie une réunion à cette date. Les filtres et la recherche s'appliquent au calendrier."
+    ]}},
   {v:"0.33.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Planifier en série (Mes réunions) : les réunions des 1, 2, 3 ou 6 prochains mois de tous tes groupes, créées en un clic. Le rythme de chaque groupe (jour, rang dans le mois, heure, type) est deviné à partir de ses dernières réunions ; tu le corriges si besoin, tu retires une date d'un toucher, et le rythme est retenu pour la suite.",
@@ -2096,7 +2159,7 @@ function tutoEtapes(partie){
       {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : « Planifier en série » crée d'un coup les réunions des prochains mois de chaque groupe à partir de son rythme. Tu peux aussi changer le jour d'une réunion, écrire le compte rendu, et enchaîner les bilans en retard."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
       ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
-      {go:"agenda",c:'#view [onclick^="openMeeting"]',t:"Une réunion",x:"Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
+      {go:"agenda",c:'#view [onclick^="openMeeting"], #cal .cal-corps',t:"Une réunion",x:"Le calendrier montre la semaine ou le mois : les flèches ‹ › changent de période. Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
     clubs:[
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
       {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
@@ -2701,10 +2764,81 @@ function viewAgenda(){
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
-    ${agendaSemaine(all)}
+    ${calModes()}
+    ${calVue()==="liste"?agendaSemaine(all):""}
     <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Lancements","RL")}${villeChips}</div>
-    ${cards}<div style="height:8px"></div></div>`;
+    ${calVue()==="liste"?cards:calendrier(list.filter(m=>!filter.startsWith("d:")))}<div style="height:8px"></div></div>`;
 }
+/* ============================================================
+   v0.34.0 — CALENDRIER DE L'AGENDA : vues Liste / Semaine / Mois (semaine par défaut au téléphone,
+   mois sur PC, choix mémorisé), flèches ‹ › qui font glisser la période (et balayage au doigt),
+   bouton « Aujourd'hui ». Les filtres et la recherche de l'agenda s'appliquent au calendrier.
+   ============================================================ */
+function calVue(){let v=null;try{v=localStorage.getItem("cap-agvue")}catch(e){}return ["liste","semaine","mois"].includes(v)?v:(isWide()?"mois":"semaine")}
+function calChoisir(v){try{localStorage.setItem("cap-agvue",v)}catch(e){}window._calSens=null;render()}
+function calModes(){const v=calVue(),b=(k,ic,l)=>`<button role="tab" aria-selected="${v===k}" class="${v===k?"on":""}" onclick="calChoisir('${k}')">${ic} ${l}</button>`;
+  return `<div class="cal-modes" role="tablist" aria-label="Affichage de l'agenda">${b("liste","☰","Liste")}${b("semaine","▤","Semaine")}${b("mois","▦","Mois")}</div>`}
+function calCur(){if(!window._calCur)window._calCur=new Date(TODAY);return window._calCur}
+function calLundi(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+function calAller(sens,btn){
+  const v=calVue(),c=new Date(calCur());
+  if(sens===0){window._calCur=new Date(TODAY)}else if(v==="mois"){c.setDate(1);c.setMonth(c.getMonth()+sens);window._calCur=c}else{c.setDate(c.getDate()+7*sens);window._calCur=c}
+  window._calSens=sens>0?"g":sens<0?"d":"z";window._calJour=null;
+  if(btn&&!_calme()){btn.classList.remove("pousse");void btn.offsetWidth;btn.classList.add("pousse")}
+  calMaj();
+}
+/* Ne remplace que le titre et la grille : les flèches restent en place et gardent leur animation. */
+function calMaj(){const z=document.getElementById("cal");if(!z){render();return}
+  const nz=document.createElement("div");nz.innerHTML=calendrier(window._calList||[]);const n=nz.firstElementChild;
+  ["cal-t","cal-corps"].forEach(k=>{const a=z.querySelector("."+k),b=n.querySelector("."+k);if(a&&b)a.replaceWith(b)});
+  window._calSens=null;}
+function calPuce(m){const c=club(m.clubId);return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}" style="--vc:${villeColor(c.ville)}" onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(TYPES[m.type]||m.type)}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))}">
+  <b>${m.heure?esc(m.heure.slice(0,5))+" ":""}${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.type}${m.lieuId?" · "+esc(lieuNom(m.lieuId)):" · lieu à définir"}</small></button>`}
+function calendrier(list){
+  window._calList=list;
+  const v=calVue(),cur=calCur(),auj=isoJour(TODAY),parJour={};
+  list.forEach(m=>{(parJour[m.date]=parJour[m.date]||[]).push(m)});Object.values(parJour).forEach(l=>l.sort((a,b)=>(a.heure||"").localeCompare(b.heure||"")));
+  const peut=!readOnly(),sens=window._calSens?" slide-"+window._calSens:"";
+  let titre,corps;
+  const jt=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+  if(v==="mois"){
+    const p=new Date(cur.getFullYear(),cur.getMonth(),1),deb=calLundi(p),wide=isWide();
+    titre=MOIS_LONG[p.getMonth()]+" "+p.getFullYear();
+    const n=list.filter(m=>m.date.slice(0,7)===isoJour(p).slice(0,7)).length;
+    let cells="";for(let i=0;i<42;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[],hors=d.getMonth()!==p.getMonth();
+      if(i===35&&hors&&d.getDate()<=7)break;
+      cells+=`<div class="cal-c${hors?" hors":""}${iso===auj?" auj":""}${window._calJour===iso?" sel":""}${ev.length?" a":""}" style="--i:${i}" ${wide?(peut?`ondblclick="calNouvelle('${iso}')"`:""):`onclick="calJour('${iso}')"`}>
+        <span class="cal-n">${d.getDate()}</span>${wide?ev.slice(0,3).map(calPuce).join("")+(ev.length>3?`<button type="button" class="cal-plus" onclick="event.stopPropagation();calJour('${iso}')">+${ev.length-3}</button>`:""):`<span class="cal-pts">${ev.slice(0,4).map(m=>`<i style="background:${villeColor(club(m.clubId).ville)}"></i>`).join("")}</span>`}</div>`}
+    corps=`<div class="cal-tete">${jt.map(j=>`<span>${j}</span>`).join("")}</div><div class="cal-mois">${cells}</div>`+(!wide||window._calJour?calDetailJour(window._calJour,parJour):"");
+    titre+=`<small>${n} réunion${n>1?"s":""}</small>`;
+  }else{
+    const deb=calLundi(cur),fin=new Date(deb);fin.setDate(deb.getDate()+6);
+    titre=`${deb.getDate()}${deb.getMonth()!==fin.getMonth()?" "+MOIS[deb.getMonth()]:""} – ${fin.getDate()} ${MOIS_LONG[fin.getMonth()].toLowerCase()}`;
+    let cols="";for(let i=0;i<7;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[];
+      cols+=`<div class="cal-j${iso===auj?" auj":""}${ev.length?" a":""}" style="--i:${i}"><div class="cal-jh"><span>${jt[i]}</span><b>${d.getDate()}</b></div>
+        <div class="cal-jl">${ev.map(calPuce).join("")||`<span class="cal-rien">—</span>`}${peut&&iso>=auj?`<button type="button" class="cal-ajout" onclick="calNouvelle('${iso}')" aria-label="Planifier le ${jourLong(iso)}">+</button>`:""}</div></div>`}
+    const n=list.filter(m=>m.date>=isoJour(deb)&&m.date<=isoJour(fin)).length;
+    titre+=`<small>${n} réunion${n>1?"s":""} · semaine ${calNumSemaine(deb)}</small>`;
+    corps=`<div class="cal-sem">${cols}</div>`;
+  }
+  return `<section class="cal cal-v-${v}" id="cal">
+    <div class="cal-nav"><button type="button" class="cal-fl g" onclick="calAller(-1,this)" aria-label="Période précédente"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h3 class="cal-t${sens}">${titre}</h3>
+      <button type="button" class="cal-auj" onclick="calAller(0,this)">Aujourd'hui</button>
+      <button type="button" class="cal-fl d" onclick="calAller(1,this)" aria-label="Période suivante"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    <div class="cal-corps${sens}" ontouchstart="calTouch(event,1)" ontouchend="calTouch(event,0)">${corps}</div></section>`;
+}
+function calNumSemaine(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const j=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-j);const a=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-a)/864e5+1)/7)}
+function calDetailJour(iso,parJour){
+  if(!iso)return `<p class="cal-astuce">Touche un jour pour voir ses réunions.</p>`;
+  const ev=parJour[iso]||[];
+  return `<div class="cal-det"><div class="cal-det-h"><b>${jourLong(iso)}</b>${!readOnly()&&iso>=isoJour(TODAY)?`<button class="btn mini" onclick="calNouvelle('${iso}')">+ Planifier</button>`:""}</div>${ev.length?ev.map(calPuce).join(""):`<p class="cal-rien">Aucune réunion ce jour-là.</p>`}</div>`;
+}
+function calJour(iso){window._calJour=window._calJour===iso?null:iso;window._calSens=null;calMaj()}
+function calNouvelle(iso){meetingForm(null);const el=document.getElementById("f-date");if(el){el.value=iso;el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}))}}
+let _calTx=null;
+function calTouch(e,deb){const t=e.changedTouches&&e.changedTouches[0];if(!t)return;if(deb){_calTx=[t.clientX,t.clientY];return}if(!_calTx)return;
+  const dx=t.clientX-_calTx[0],dy=t.clientY-_calTx[1];_calTx=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)calAller(dx<0?1:-1,document.querySelector(dx<0?".cal-fl.d":".cal-fl.g"))}
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
 
 function meetingRow(m){

@@ -206,6 +206,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Migration `20261030200000_embarquement_equipe.sql` (appliquée) : `profiles.mdp_provisoire`, `invite_le` ; `cap_mdp_a_changer` vrai aussi si provisoire ; `cap_mdp_change_fait()` (appelée après `changePassword`) ; `cap_marquer_invite(id)` et `cap_equipe_etat()` réservées au superadmin (testé : un animateur est refusé). `openEmbarquer()` : `mdpProvisoire()` (deux mots marocains + 2 chiffres, aléatoire crypto), `adminCall set_password` (edge `admin-users`, vérifie le superadmin), message `embMessage`, mobile enregistré sur `animateurs.tel`. Le mot de passe ne s'affiche qu'une fois. `DB.aEmbarquer` → ligne dans « À traiter ».
 - Bancs `ps.mjs` 22/22, `bil.mjs` 10/10, `emb.mjs` 18/18.
 
+**🗓 Agenda en calendrier (v0.34.0, 30/10/2026)** — JB (capture de l'agenda en liste) : « un grand calendrier mensuel ou hebdomadaire, comme pour Atelier Design, semaine ou mois suivant téléphone ou PC, flèches droite-gauche avec une micro-animation ».
+- `calVue()` (localStorage `cap-agvue` : liste|semaine|mois ; défaut semaine < 900 px, mois au-delà), `calModes()`, `calendrier(list)` (section `#cal.cal-v-<vue>`, ⚠ pas `cal-mois` : c'est la classe de la grille du mois), `calAller(sens,btn)` (période ±1, 0 = aujourd'hui ; flèche `.pousse` + glissade `slide-g/d/z`), `calMaj()` ne remplace que `.cal-t` et `.cal-corps` (sinon la flèche animée est détruite), `calTouch` (balayage > 60 px), `calJour` (détail d'un jour au téléphone), `calNouvelle(iso)` (meetingForm prérempli). Mois : 7 colonnes, puces `calPuce` sur PC (3 par jour + « +N »), points colorés au téléphone. Semaine : 7 colonnes sur PC, une ligne par jour au téléphone, + pour planifier.
+- Banc `cal.mjs` 25/25.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

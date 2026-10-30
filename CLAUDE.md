@@ -159,6 +159,19 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Ajouts dans la même version (JB : « pas mal de choses qu'on a oubliées ») : RPC `cap_membres_connexions()` (migration `20261030100000`, équipe seulement, lit `auth.users.last_sign_in_at`) chargée par `loadDB` dans un try (jamais bloquante) → `m.vuLe` : fiche « Connecté, dernière fois le … » / « Code créé, jamais connecté », repère `.mb-acc` dans l'annuaire du CRM ; texte de la fenêtre Notifications (adhésions + invités proposés) ; étape « L'espace membre » dans la visite guidée (partie Clubs : 5 étapes).
 - Bancs `membre.mjs` 63/63, `crm-espace.mjs` 9/9, `tuto.mjs` 28/28.
 
+**🤝 Recos, présences, renouvellements, relances (v0.26.0, 30/10/2026)** — 4 choix cliqués par JB :
+- Migration `20261030120000_recos_presences_renouvellements.sql` (appliquée). Table `recommandations` (de, a, club_id = club du donneur, contact, besoin, statut envoyee|contact|devis|signee|sans_suite, montant ; lecture : les deux membres + l'équipe ; écriture membre par RPC `cap_membre_reco_donner`, `cap_membre_reco_avancer` réservée au receveur ; `cap_membre_recos_club` = total collectif du club, montant compté à la signature). Notifications `reco` (au receveur) et `reco_suivi` (au donneur) par l'edge `notif-membre` (réservation `notifie_le` / `suivi_notifie`).
+- Présences : `reunions.presence_code` (RPC `cap_reunion_code`, équipe), table `presences` (unique réunion × membre, mode qr|animateur), `cap_membre_pointer(reunion, code)` ouvert à ±1 jour de la date. QR = `membre.html#p=<reunion>.<code>` dessiné par qrcode-generator 1.4.4 (cdnjs, chargé à la demande, repli : le lien en clair). Bilan pré-rempli avec le nombre de présences.
+- Renouvellements : `membres.abonnement_debut` (vide = date d'intégration `created_at`), échéance + 1 an, `relance_renouv_le`. `openRenouvellements()`, section Abonnement de la fiche, ligne dans « À traiter » (≤ 30 jours ou dépassée).
+- Relances : `invites.rappel_le` / `suivi_le`. Rappel si réunion aujourd'hui/demain (À confirmer, Intéressé), suivi dans les 7 jours après (Intéressé, À intégrer) avec `adhLink(club)`. Il faut un téléphone sur l'invité.
+- Espace membre : onglet **Recos** (5 onglets), liens `#r=recues|donnees` et `#p=…`. Bancs `v026.mjs` 28/28 (+ tous les anciens verts).
+
+**✨ Animations + « À traiter » et membres par région (v0.27.0, 30/10/2026)** — maquette https://claude.ai/artifact/HU7uuQYTw81YM62nhr7QWA (lettres A à K), JB : « code le tout ».
+- Régions = `DB.zones` (villes) + « Autres villes » (`regionsDe`). J : `todoRegions(sc)` / `todoClub(c)` remplace la liste des clubs dans `dashATraiter` (filtre `window._todoF`, régions repliées dans `window._todoFerme`). K : `membresRegions(sc)` remplace « Membres par groupe » (état ouvert `window._kOuv`, `kBasculer`) ; billes et fil en pointillés en CSS (`.km-*`), centrées sur l'axe du fil (banc).
+- Pop-ups cliquables : `toast(m, kind, act)` (3e argument = fonction, pop-up cliquable 4,8 s) ; `annonce(ico,titre,sous,act)` (descend du haut) pour les nouvelles demandes et recos dans `adhRafraichir` ; `celebrer(ico,titre,gros,lien,act)` + `pluieConfettis()` pour adhésion intégrée, objectif atteint (`dashFete`), affaire signée.
+- `navPill()` (pastille `#nav-pill`, recalée par ResizeObserver), `morphOuvrir(w)` dans `openSheet` (clip-path depuis l'élément touché, mémorisé au `pointerdown` ; pas en panneau grand écran), relief des `.ck` au survol souris, `skLignes(n)` à la place de « Chargement… ».
+- Bancs `v027.mjs` 33/33 (téléphone + bureau) ; `v09` et `demandes` recalés sur le nouveau dessin.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

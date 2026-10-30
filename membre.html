@@ -105,6 +105,34 @@ textarea.champ:focus{border-color:var(--crimson)}
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw;animation:rise .25s ease}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}}
 .toast{animation-name:toastIn}@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}}
+/* recommandations + présence (v0.26.0) */
+.club-tot{display:flex;flex-direction:column;gap:4px;background:var(--deep);color:var(--tint);border-color:transparent;font-size:14px}
+.club-tot .gros{font-size:30px;color:#fff;font-weight:800}.club-tot small{color:var(--or);font-size:12.5px;font-weight:600}
+.seg{display:flex;background:#EFE6E8;border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;height:40px;border:0;border-radius:10px;background:none;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(27,20,22,.12)}
+.reco{display:flex;flex-direction:column;gap:10px;animation:rise .35s cubic-bezier(.2,.8,.2,1) backwards}
+.reco .t{display:flex;flex-direction:column;gap:2px}.reco .t b{font-size:16px}.reco .t span{font-size:13px;color:var(--muted)}
+.besoin{margin:0;font-size:14px;color:var(--ink);white-space:pre-line}
+.reco .de{font-size:12.5px;color:var(--soft)}.montant{color:#2F5B33}
+.chip-st{flex-shrink:0;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:10px;background:#F1E8EA;color:var(--muted)}
+.chip-st.contact,.chip-st.devis{background:#E8EEF6;color:#2C4A73}.chip-st.signee{background:#EAF2EA;color:#24502A}.chip-st.envoyee{background:var(--tint);color:var(--crimson)}
+.frise{display:flex;gap:4px}
+.frise span{flex:1;display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;color:var(--soft);min-width:0}
+.frise span i{height:5px;border-radius:3px;background:#EFE6E8;transition:background .4s}
+.frise span.ok i{background:var(--crimson)}.frise span.cur{color:var(--crimson)}
+.frise .fin{font-size:12px;color:var(--soft)}
+.r-acts{display:flex;flex-wrap:wrap;gap:8px}
+.btn.mini{height:40px;font-size:13.5px;padding:0 14px;border-radius:12px}.btn.sobre{color:var(--soft)}
+.montant-in{display:flex;gap:8px}.montant-in input{flex:1}
+.dests{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
+.dest{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1.5px solid var(--line2);background:var(--card);text-align:left;width:100%}
+.dest.on{border-color:var(--crimson);background:var(--tint)}.dest .t{display:flex;flex-direction:column;min-width:0}.dest .t span{font-size:12.5px;color:var(--muted)}
+.dest .av{width:36px;height:36px;font-size:13px;flex-shrink:0}
+.presence{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:28px 18px;margin-top:12vh}
+.presence .ico{width:64px;height:64px;border-radius:32px;background:#EAF2EA;color:#24502A;font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:center;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.presence.ko .ico{background:var(--tint);color:var(--crimson)}.presence b{font-size:22px}.presence p{margin:0}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
@@ -114,6 +142,7 @@ textarea.champ:focus{border-color:var(--crimson)}
   <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Annuaire</button>
   <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
   <button data-o="inviter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>Inviter</button>
+  <button data-o="recos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11l4-4 3 3 5-5"/><path d="M14 5h5v5"/><path d="M4 20h16"/><path d="M6 16v4M11 13v7M16 15v5"/></svg>Recos<span class="badge" id="nav-rc" hidden></span></button>
   <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon profil</button>
 </div></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -183,15 +212,22 @@ async function demarrer(){
       :"Ce numéro n'est relié à aucune fiche membre. Demande à ton animateur de l'ajouter dans ta fiche (mobile), puis réessaie."});
   }
   S.moi=moi;
-  await Promise.all([chargerAnnuaire(),chargerMessages()]);
+  await Promise.all([chargerAnnuaire(),chargerMessages(),chargerRecos()]);
   ecouter();lancer();
 }
 function lancer(){$("nav").hidden=false;
-  const c=(location.hash.match(/^#c=([0-9a-z-]+)$/i)||[])[1];
-  if(c&&membre(c)){history.replaceState(null,"",location.pathname);ouvrirConv(c)}else rendu();
+  if(!lienHash())rendu();
   notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil"].includes(S.onglet))rendu(true)});
-  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const m=u&&String(u).match(/#c=([0-9a-z-]+)/i);if(m)ouvrirConv(m[1])});}
-window.addEventListener("hashchange",()=>{const c=(location.hash.match(/^#c=([0-9a-z-]+)$/i)||[])[1];if(c&&S.moi&&membre(c)){history.replaceState(null,"",location.pathname);ouvrirConv(c)}});
+  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#[cpr]=.+$/i);if(h){location.hash=h[0]}});}
+// Liens entrants : #c=<membre> (conversation), #r=recues|donnees (recommandations), #p=<réunion>.<code> (QR de présence)
+function lienHash(){
+  const h=location.hash;let m;
+  if((m=h.match(/^#c=([0-9a-z-]+)$/i))&&membre(m[1])){history.replaceState(null,"",location.pathname);ouvrirConv(m[1]);return true}
+  if((m=h.match(/^#r=(recues|donnees)$/))){history.replaceState(null,"",location.pathname);aller("recos",{recoTab:m[1],recoForm:false});return true}
+  if((m=h.match(/^#p=([0-9a-f-]{36})\.([0-9a-z]{4,32})$/i))){history.replaceState(null,"",location.pathname);pointer(m[1],m[2]);return true}
+  return false;
+}
+window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
 async function chargerAnnuaire(){const {data,error}=await sb.rpc("cap_annuaire");if(!error)S.annuaire=data||[]}
 async function chargerMessages(){
   const {data,error}=await sb.from("messages_membres").select("id,de,a,texte,cree_le,lu_le").order("cree_le",{ascending:true}).limit(2000);
@@ -205,6 +241,11 @@ function ecouter(){
     const i=S.msgs.findIndex(x=>x.id===r.id);if(i>=0)S.msgs[i]=r;else{S.msgs.push(r);if(r.a===S.moi.id&&!(S.conv===r.de&&S.onglet==="conv"))toast("Nouveau message de "+(membre(r.de)?.nom||"un membre"))}
     if(S.onglet==="conv"&&S.conv&&r.de===S.conv&&!r.lu_le)marquerLus(S.conv);
     rendu(true);
+  }).on("postgres_changes",{event:"*",schema:"public",table:"recommandations"},p=>{
+    const r=p.new;if(!r||!r.id||(r.de!==S.moi.id&&r.a!==S.moi.id))return;
+    const i=(S.recos||[]).findIndex(x=>x.id===r.id);
+    if(i>=0)S.recos[i]=r;else{(S.recos=S.recos||[]).unshift(r);if(r.a===S.moi.id)toast("Nouvelle recommandation de "+(membre(r.de)?.nom||"un membre"))}
+    S.recosClub=undefined;if(["recos","annuaire","profil","messages"].includes(S.onglet))rendu(true);
   }).subscribe();
 }
 const membre=id=>S.annuaire.find(m=>m.id===id);
@@ -217,7 +258,8 @@ function rendu(garderDefilement){
   document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||(S.onglet==="conv"&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
   const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
   $("nav").hidden=S.onglet==="conv";
-  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter}[S.onglet];
+  const rc=(S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee").length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
+  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence}[S.onglet];
   $("app").innerHTML=v();
   brancher();
   if(S.onglet==="conv"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
@@ -258,6 +300,7 @@ function vueFiche(){
     <div style="display:flex;gap:10px">
       <button class="btn" style="flex:1" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"}>${ICO.envoi}${m.inscrit?"Écrire un message":"Pas encore inscrit"}</button>
       ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}</div>
+    <button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>
     ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
     ${m.entreprise||m.activite?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Son entreprise</span>${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.activite?`<span style="font-size:14px">${esc(m.activite)}</span>`:""}</div>`:""}
     ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
@@ -431,6 +474,117 @@ async function proposerInvite(){
     await chargerInviter()}
   toast("Invité proposé : ton animateur est prévenu");rendu();
 }
+/* ---------- Recommandations d'affaires (v0.26.0) ---------- */
+const ETAPES_RECO=[["envoyee","Envoyée"],["contact","Contact pris"],["devis","Devis envoyé"],["signee","Affaire signée"]];
+const LIB_RECO={envoyee:"Envoyée",contact:"Contact pris",devis:"Devis envoyé",signee:"Affaire signée 🎉",sans_suite:"Sans suite"};
+const mad=n=>new Intl.NumberFormat("fr-FR").format(Math.round(Number(n)||0)).replace(/ | /g," ")+" MAD";
+async function chargerRecos(){
+  if(DEMO)return;
+  const {data,error}=await sb.from("recommandations").select("id,de,a,contact_nom,contact_tel,contact_entreprise,besoin,statut,montant,cree_le,maj_le").order("cree_le",{ascending:false}).limit(500);
+  if(!error)S.recos=data||[];
+}
+async function chargerRecosClub(){
+  if(DEMO){S.recosClub=S.recosClub||{club:S.moi.club,mois_montant:120000,mois_affaires:3,mois_recos:11,annee_montant:640000,annee_affaires:14,annee_recos:58};return}
+  const {data,error}=await sb.rpc("cap_membre_recos_club");S.recosClub=error?null:data;
+}
+function frise(st){
+  if(st==="sans_suite")return `<div class="frise"><span class="fin ko">Sans suite</span></div>`;
+  const k=ETAPES_RECO.findIndex(e=>e[0]===st);
+  return `<div class="frise" role="img" aria-label="Étape : ${esc(LIB_RECO[st]||st)}">${ETAPES_RECO.map((e,i)=>`<span class="${i<=k?"ok":""}${i===k?" cur":""}"><i></i>${esc(e[1])}</span>`).join("")}</div>`;
+}
+function carteReco(r,recue){
+  const autre=membre(recue?r.de:r.a);
+  const prochaines=recue&&!["signee","sans_suite"].includes(r.statut)?ETAPES_RECO.slice(ETAPES_RECO.findIndex(e=>e[0]===r.statut)+1):[];
+  return `<div class="card reco" data-reco="${r.id}">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+      <span class="t" style="min-width:0"><b>${esc(r.contact_nom)}</b><span>${esc([r.contact_entreprise,r.contact_tel&&recue?r.contact_tel:""].filter(Boolean).join(" · ")||"—")}</span></span>
+      <span class="chip-st ${r.statut}">${esc(LIB_RECO[r.statut]||r.statut)}</span></div>
+    ${r.besoin?`<p class="besoin">« ${esc(r.besoin)} »</p>`:""}
+    <small class="de">${recue?"De":"Pour"} <b>${esc(autre?.nom||"un membre")}</b> · ${esc(new Date(r.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}${r.statut==="signee"&&r.montant!=null?` · <b class="montant">${esc(mad(r.montant))}</b>`:""}</small>
+    ${frise(r.statut)}
+    ${recue&&r.contact_tel&&r.statut==="envoyee"?`<a class="btn ghost" href="tel:${esc(r.contact_tel.replace(/\s/g,""))}">Appeler ${esc(r.contact_nom.split(" ")[0])}</a>`:""}
+    ${prochaines.length?`<div class="r-acts">${prochaines.map(e=>`<button class="btn ${e[0]==="signee"?"":"ghost"} mini" data-ravance="${r.id}" data-st="${e[0]}">${esc(e[1])}</button>`).join("")}<button class="btn ghost mini sobre" data-ravance="${r.id}" data-st="sans_suite">Sans suite</button></div>
+      <div class="montant-in" id="mt-${r.id}" hidden><input class="champ1" type="number" inputmode="numeric" min="0" step="100" placeholder="Montant de l'affaire (MAD HT)" aria-label="Montant de l'affaire"><button class="btn mini" data-ravance="${r.id}" data-st="signee_ok">Valider</button></div>`:""}
+  </div>`;
+}
+function vueRecos(){
+  if(S.recosClub===undefined){chargerRecosClub().then(()=>{if(S.onglet==="recos")rendu(true)});}
+  if(S.recoForm)return vueDonnerReco();
+  const tab=S.recoTab||"recues",l=(S.recos||[]).filter(r=>tab==="recues"?r.a===S.moi.id:r.de===S.moi.id);
+  const nr=(S.recos||[]).filter(r=>r.a===S.moi.id).length,nd=(S.recos||[]).filter(r=>r.de===S.moi.id).length;
+  const c=S.recosClub;const mois=new Date().toLocaleDateString("fr-FR",{month:"long"});
+  return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recommandations</h1><p class="sub">Tu passes un contact qui a un besoin à un membre. Il te dit où ça en est.</p></div></div>
+    <div class="card club-tot">${c?`<span class="label" style="color:var(--or)">${esc(String(c.club||"").replace(/^CAP\s+/,""))} · ${esc(mois)}</span>
+      <b class="bri gros">${esc(mad(c.mois_montant))}</b><span>d'affaires générées par le club ce mois-ci · ${c.mois_affaires} signée${c.mois_affaires>1?"s":""} · ${c.mois_recos} reco${c.mois_recos>1?"s":""}</span>
+      <small>Depuis janvier : ${esc(mad(c.annee_montant))} · ${c.annee_affaires} affaire${c.annee_affaires>1?"s":""}</small>`:`<span>Chargement du total du club…</span>`}</div>
+    <button class="btn" data-rdonner="">Donner une recommandation</button>
+    <div class="seg" role="tablist"><button role="tab" aria-selected="${tab==="recues"}" class="${tab==="recues"?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${tab==="donnees"}" class="${tab==="donnees"?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
+    ${l.length?l.map(r=>carteReco(r,tab==="recues")).join(""):`<p class="vide" style="padding:12px">${tab==="recues"?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
+  </div>`;
+}
+function listeDestinataires(){
+  const mots=norm(S.recoQ||"").split(/\s+/).filter(Boolean);
+  const l=S.annuaire.filter(m=>!m.moi).filter(m=>{const t=norm([m.nom,m.metier,m.entreprise,m.club,m.ville].join(" "));return mots.every(w=>t.includes(w))}).slice(0,40);
+  return l.length?l.map(m=>`<button type="button" class="dest ${S.recoPour===m.id?"on":""}" data-dest="${m.id}" aria-pressed="${S.recoPour===m.id}">${av(m)}<span class="t"><b>${esc(m.nom)}</b><span>${esc([m.metier,String(m.club||"").replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</span></span></button>`).join(""):`<p class="vide">Aucun membre ne correspond.</p>`;
+}
+function brancherDest(){const z=$("r-liste");if(!z)return;z.querySelectorAll("[data-dest]").forEach(b=>b.onclick=()=>{S.recoPour=b.dataset.dest;z.innerHTML=listeDestinataires();brancherDest();const s=$("r-sel");if(s)s.textContent=membre(S.recoPour)?.nom||""})}
+function vueDonnerReco(){
+  const p=membre(S.recoPour);
+  return `<div class="page">
+    <button class="retour" data-rannuler style="color:var(--crimson)">‹ Recommandations</button>
+    <div class="head"><div><h1>Donner une recommandation</h1><p class="sub">Le membre reçoit le contact et une notification. Tu suis l'avancement dans « Données ».</p></div></div>
+    <form id="f-reco" class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="label">Pour quel membre ? * <b id="r-sel" style="color:var(--crimson);text-transform:none;letter-spacing:0">${esc(p?.nom||"")}</b></span>
+        <input class="champ1" id="r-q" placeholder="Nom, métier, club…" value="${esc(S.recoQ||"")}" autocomplete="off" aria-label="Chercher un membre">
+        <div class="dests" id="r-liste">${listeDestinataires()}</div></div>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Le contact *</span><input class="champ1" id="r-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son entreprise</span><input class="champ1" id="r-ent" maxlength="120"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son mobile</span><input class="champ1" id="r-tel" type="tel" inputmode="tel" maxlength="40" placeholder="06…"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son besoin</span><textarea class="champ" id="r-besoin" maxlength="1000" placeholder="Ce qu'il cherche, le délai, s'il attend l'appel…"></textarea></label>
+      <button class="btn" type="submit">Envoyer la recommandation</button>
+    </form></div>`;
+}
+async function donnerReco(){
+  const g=id=>$(id).value.trim(),nom=g("r-nom");
+  if(!S.recoPour){toast("Choisis le membre à qui tu la donnes");return}
+  if(!nom){toast("Indique au moins le nom du contact");return}
+  const b=$("f-reco").querySelector("button[type=submit]");b.disabled=true;b.textContent="Envoi…";
+  const v={p_a:S.recoPour,p_nom:nom,p_tel:g("r-tel"),p_entreprise:g("r-ent"),p_besoin:g("r-besoin")};
+  if(DEMO){(S.recos=S.recos||[]).unshift({id:"r"+Date.now(),de:S.moi.id,a:v.p_a,contact_nom:nom,contact_tel:v.p_tel,contact_entreprise:v.p_entreprise,besoin:v.p_besoin,statut:"envoyee",montant:null,cree_le:new Date().toISOString()})}
+  else{const {error}=await sb.rpc("cap_membre_reco_donner",v);if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyée : "+error.message);return}await chargerRecos()}
+  toast("Recommandation envoyée à "+(membre(S.recoPour)?.nom||"ce membre"));S.recosClub=undefined;
+  aller("recos",{recoForm:false,recoTab:"donnees",recoPour:"",recoQ:""});
+}
+async function avancerReco(id,st){
+  let montant=null;
+  if(st==="signee"){const z=$("mt-"+id);if(z){z.hidden=false;z.querySelector("input").focus();return}}
+  if(st==="signee_ok"){const i=$("mt-"+id).querySelector("input");montant=Number(i.value);if(!i.value||!(montant>=0)){toast("Indique le montant de l'affaire");i.focus();return}st="signee"}
+  const r=(S.recos||[]).find(x=>x.id===id);if(!r)return;
+  if(!DEMO){const {error}=await sb.rpc("cap_membre_reco_avancer",{p_id:id,p_statut:st,p_montant:montant});if(error){toast("Non enregistré : "+error.message);return}}
+  Object.assign(r,{statut:st,montant:st==="signee"?montant:r.montant,maj_le:new Date().toISOString()});
+  S.recosClub=undefined;
+  toast(st==="signee"?"Bravo ! "+(membre(r.de)?.nom||"Le membre")+" est prévenu.":st==="sans_suite"?"Noté : sans suite.":"Étape enregistrée, "+(membre(r.de)?.nom||"le membre")+" est prévenu.");
+  rendu(true);
+}
+
+/* ---------- Présence par QR code (v0.26.0) ---------- */
+async function pointer(reunion,code){
+  S.presence={etat:"en_cours"};aller("presence");
+  if(DEMO){S.presence={etat:"ok",deja:false,club:S.moi.club,date:new Date().toISOString().slice(0,10),heure:"19:00"};return rendu()}
+  const {data,error}=await sb.rpc("cap_membre_pointer",{p_reunion:reunion,p_code:code});
+  S.presence=error?{etat:"erreur",t:error.message}:{etat:"ok",...data};
+  if(S.onglet==="presence")rendu();
+}
+function vuePresence(){
+  const p=S.presence||{};
+  if(p.etat==="en_cours")return `<div class="page"><p class="vide" style="margin-top:30vh">Pointage en cours…</p></div>`;
+  if(p.etat==="erreur")return `<div class="page"><div class="card presence ko"><span class="ico" aria-hidden="true">!</span><b class="bri">Pointage impossible</b><p>${esc(p.t||"")}</p><p class="sub">Montre ce message à ton animateur : il te coche dans la liste.</p></div><button class="btn ghost" data-aller="annuaire">Aller à l'annuaire</button></div>`;
+  return `<div class="page"><div class="card presence"><span class="ico" aria-hidden="true">✓</span><b class="bri">${p.deja?"Tu es déjà pointé":"Présence enregistrée"}</b>
+    <p>${esc(String(p.club||"").replace(/^CAP\s+/,""))}${p.date?" · "+esc(dateReu(p.date,p.heure)):""}</p><p class="sub">Bonne réunion ! Pense à donner tes recommandations.</p></div>
+    <button class="btn" data-aller="recos">Donner une recommandation</button></div>`;
+}
+
 /* ---------- Écouteurs ---------- */
 function brancher(){
   const app=$("app");
@@ -446,6 +600,13 @@ function brancher(){
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
   app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
   const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
+  app.querySelectorAll("[data-rtab]").forEach(b=>b.onclick=()=>{S.recoTab=b.dataset.rtab;rendu(true)});
+  app.querySelectorAll("[data-rdonner]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:true,recoPour:b.dataset.rdonner||""}));
+  app.querySelectorAll("[data-rannuler]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:false}));
+  app.querySelectorAll("[data-ravance]").forEach(b=>b.onclick=()=>avancerReco(b.dataset.ravance,b.dataset.st));
+  const fr=$("f-reco");if(fr)fr.onsubmit=e=>{e.preventDefault();donnerReco()};
+  const rq=$("r-q");if(rq)rq.oninput=()=>{S.recoQ=rq.value;$("r-liste").innerHTML=listeDestinataires();brancherDest()};
+  brancherDest();
   const fc=$("f-code");if(fc)fc.onsubmit=async e=>{e.preventDefault();const v=$("c-new").value.trim();
     if(v.length<6){toast("Le code doit faire au moins 6 caractères");return}
     if(!DEMO){const {error}=await sb.auth.updateUser({password:v});if(error){toast("Code non changé : "+error.message);return}}
@@ -465,7 +626,10 @@ function demo(){
     {id:"m2",de:"d2",a:"d1",texte:"Bonjour Tarek ! Avec plaisir. Quelle surface, et pour quand ?",cree_le:t(30),lu_le:null},
     {id:"m3",de:"d2",a:"d1",texte:"Je peux passer voir les locaux jeudi.",cree_le:t(28),lu_le:null},
     {id:"m4",de:"d3",a:"d1",texte:"Tu as le contact du gérant de la franchise ?",cree_le:t(1500),lu_le:t(1400)}];
-  return {moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs};
+  const recos=[{id:"r1",de:"d2",a:"d1",contact_nom:"Hicham Berrada",contact_tel:"06 62 11 22 33",contact_entreprise:"Berrada Immobilier",besoin:"Cherche un expert-comptable pour sa nouvelle SARL, dès ce mois.",statut:"envoyee",montant:null,cree_le:t(90)},
+    {id:"r2",de:"d1",a:"d2",contact_nom:"Laila Fassi",contact_tel:null,contact_entreprise:"Franchise Café Doré",besoin:"Aménagement de deux points de vente à Agdal.",statut:"devis",montant:null,cree_le:t(4000)},
+    {id:"r3",de:"d1",a:"d5",contact_nom:"Omar Tazi",contact_tel:null,contact_entreprise:"Tazi Events",besoin:null,statut:"signee",montant:18000,cree_le:t(9000)}];
+  return {moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs,recos};
 }
 
 (async()=>{

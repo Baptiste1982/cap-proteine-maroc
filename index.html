@@ -1017,6 +1017,161 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .guest{flex-wrap:wrap}.guest .gi{flex:1 1 180px}.guest .gi small{display:block}.g-mb{white-space:nowrap;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);background:var(--crimson-tint);padding:2px 6px;border-radius:6px;vertical-align:middle}
 .mb-acc{font-size:10.5px;font-weight:700;color:var(--muted);white-space:nowrap;margin-left:4px}.mb-acc.on{color:#2E7D4F}
 .mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
+
+/*v026 recos · présences · renouvellements · relances*/
+.dash-recos{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--deep),var(--darker));color:#fff;border-radius:16px;padding:14px 16px;margin:10px 0;cursor:pointer;transition:transform .2s}
+.dash-recos:hover{transform:translateY(-2px)}.dash-recos small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--or)}
+.dash-recos b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:26px;font-weight:800;margin:2px 0}.dash-recos span{font-size:12.5px;color:#F8E9EC}
+.dash-recos i{font-style:normal;font-size:30px}
+.reco-st{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:9px;background:#F1E8EA;color:var(--muted);white-space:nowrap}
+.reco-st.contact,.reco-st.devis{background:#E8EEF6;color:#2C4A73}.reco-st.signee{background:#EAF2EA;color:#24502A}.reco-st.envoyee{background:var(--tint);color:var(--crimson)}
+.renouv-j{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:8px;background:#EAF2EA;color:#24502A;margin-left:4px}.renouv-j.w{background:#FFF3DC;color:#7A5A12}.renouv-j.ko{background:var(--tint);color:var(--crimson)}
+.renouv-act{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.pres-grid{display:flex;flex-wrap:wrap;gap:6px}
+.pres{border:1px solid var(--line,#E6DADD);background:#fff;border-radius:18px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.pres.on{background:#EAF2EA;border-color:#B9D4BB;color:#24502A}.pres small{font-size:10px;font-weight:800;color:var(--or)}.pres:disabled{cursor:default}
+.qr-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0}.qr-box svg{width:min(320px,80vw);height:auto;background:#fff;border-radius:12px}
+.qr-url{font-size:11px;color:var(--muted);word-break:break-all;text-align:center;max-width:340px}
+.gstat.inv-rel{color:#1F7A3A;font-weight:700}.gstat.inv-rel.fait{color:var(--muted);font-weight:600}
+
+#confetti{z-index:85!important}
+/*v027 animations : A vague · B or · C relief · D pastille · E morph · F fête · G poussière · H annonces · I squelettes · J à traiter · K membres*/
+.toast.act{pointer-events:auto;cursor:pointer;padding-right:12px}.toast.act:hover{background:#2A1E20}
+.toast .t-go{font-size:20px;line-height:1;color:var(--gold,#C8A24C);margin-left:2px}
+/* A */
+.rank>*,.dem-l>*,.mb-grid>*,.rl>*{animation:aVague .5s cubic-bezier(.2,.8,.2,1) backwards}
+.rank>*:nth-child(2),.dem-l>*:nth-child(2),.mb-grid>*:nth-child(2),.rl>*:nth-child(2){animation-delay:.05s}
+.rank>*:nth-child(3),.dem-l>*:nth-child(3),.mb-grid>*:nth-child(3),.rl>*:nth-child(3){animation-delay:.1s}
+.rank>*:nth-child(4),.dem-l>*:nth-child(4),.mb-grid>*:nth-child(4),.rl>*:nth-child(4){animation-delay:.15s}
+.rank>*:nth-child(5),.dem-l>*:nth-child(5),.mb-grid>*:nth-child(5),.rl>*:nth-child(5){animation-delay:.2s}
+.rank>*:nth-child(n+6),.dem-l>*:nth-child(n+6),.mb-grid>*:nth-child(n+6),.rl>*:nth-child(n+6){animation-delay:.25s}
+@keyframes aVague{from{opacity:0;transform:translateY(12px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+/* B */
+.bar i,.ck-prog i{position:relative;overflow:hidden}
+.bar i::after,.ck-prog i::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);transform:translateX(-120%);animation:bReflet 1.1s 1s ease-out}
+@keyframes bReflet{to{transform:translateX(120%)}}
+/* C */
+.ck{background-image:radial-gradient(260px circle at var(--gx,50%) var(--gy,0%),rgba(200,162,76,var(--go,0)),transparent 62%);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.ck:hover{box-shadow:0 18px 34px -18px rgba(92,10,24,.45)}
+/* D */
+.nav-pill{position:absolute;left:0;top:0;border-radius:12px;background:var(--crimson-tint);z-index:0;opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.3,1.25,.5,1),width .3s,height .3s,opacity .2s}
+.nav button{z-index:1}
+.nav button.on{background:transparent!important}
+/* E */
+.sheet{will-change:clip-path}
+/* F */
+.celeb{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:rgba(27,20,22,.28);animation:fade .2s;cursor:pointer}
+.celeb.out{opacity:0;transition:opacity .3s}
+.celeb-c{background:var(--card);border-radius:22px;padding:24px 26px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;max-width:min(360px,86vw);box-shadow:0 30px 60px -20px rgba(27,20,22,.5);animation:fPop .55s cubic-bezier(.2,1.4,.4,1)}
+.celeb-s{width:66px;height:66px;border-radius:50%;background:var(--crimson-tint);font-size:34px;display:grid;place-items:center;animation:fPop .6s .08s cubic-bezier(.2,1.7,.4,1) backwards}
+.celeb-c b{font:800 19px/1.2 "Bricolage Grotesque",sans-serif}
+.celeb-g{font:800 28px "Bricolage Grotesque",sans-serif;color:#2F7A44;animation:fDrop .7s .3s cubic-bezier(.2,1.4,.4,1) backwards}
+.celeb-c .btn{margin-top:6px}
+@keyframes fPop{from{transform:scale(.5);opacity:0}}@keyframes fDrop{from{transform:translateY(-18px);opacity:0}}
+/* G */
+.h-dust{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.h-dust i{position:absolute;width:3px;height:3px;border-radius:50%;background:#F3D88E;opacity:0;animation:gMonte linear infinite}
+@keyframes gMonte{0%{transform:translateY(20px);opacity:0}20%{opacity:.75}100%{transform:translateY(-140px);opacity:0}}
+/* H */
+.annonce{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top) + var(--n,0)*74px);z-index:70;width:min(420px,calc(100vw - 24px));transform:translateX(-50%);display:flex;align-items:center;gap:12px;text-align:left;
+  background:var(--ink);color:#fff;border:0;border-radius:18px;padding:12px 14px;box-shadow:0 18px 40px -14px rgba(27,20,22,.55);cursor:pointer;animation:hDescend .5s cubic-bezier(.2,1.25,.4,1)}
+.annonce.out{transition:transform .35s,opacity .35s;transform:translate(-50%,-140%);opacity:0}
+.annonce:hover{background:#2A1E20}
+.an-ic{width:38px;height:38px;flex-shrink:0;border-radius:50%;background:#C8A24C;display:grid;place-items:center;font-size:18px}
+.an-t{display:flex;flex-direction:column;min-width:0;flex:1}.an-t b{font-size:14px}.an-t small{font-size:12.5px;color:#E9DCDF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.an-go{font-size:24px;color:#C8A24C}
+@keyframes hDescend{from{transform:translate(-50%,-140%)}}
+@media(min-width:900px){.annonce{left:auto;right:24px;transform:none}.annonce.out{transform:translateY(-140%)}@keyframes hDescend{from{transform:translateY(-140%)}}}
+.dem-card{animation:aVague .5s cubic-bezier(.2,.8,.2,1) backwards}
+/* I */
+.sk-l{display:flex;flex-direction:column;gap:8px;margin:6px 0}
+.sk-li{display:flex;align-items:center;gap:10px;padding:8px 0}
+.sk-li .sk{margin:0;height:auto}.sk-av{width:34px;height:34px!important;border-radius:50%!important;flex-shrink:0}
+.sk-tx{flex:1;display:flex;flex-direction:column;gap:6px}.sk-1{height:11px!important;width:60%;border-radius:6px!important}.sk-2{height:9px!important;width:38%;border-radius:6px!important}
+.qr-sk{width:min(320px,80vw);height:min(320px,80vw);border-radius:12px}
+/* J */
+.tj-tot{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.tj-tot button{display:flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:7px 12px;font-size:12.5px;color:var(--muted);font-weight:600;cursor:pointer;transition:background .2s,border-color .2s,transform .15s}
+.tj-tot button b{font:800 20px "Bricolage Grotesque",sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.tj-tot button.on{border-color:var(--crimson);background:var(--crimson-tint);color:var(--crimson)}.tj-tot button.on b{color:var(--crimson)}.tj-tot button:active{transform:scale(.96)}
+.tj-regs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px;align-items:start;margin-bottom:12px}
+.tj-reg{background:var(--card);border:1px solid var(--line);border-radius:var(--r,16px);box-shadow:var(--shadow);overflow:hidden}
+.tj-reg summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.tj-reg summary::-webkit-details-marker{display:none}
+.tj-t{display:flex;justify-content:space-between;align-items:center;gap:8px}.tj-t b{font:800 16px "Bricolage Grotesque",sans-serif}
+.tj-chev{color:var(--muted);transition:transform .45s cubic-bezier(.3,1.6,.5,1)}.tj-reg:not([open]) .tj-chev{transform:rotate(-90deg)}
+.tj-c{display:flex;flex-wrap:wrap;gap:6px}.tj-c span{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:8px}
+.k-plan{background:var(--crimson-tint);color:var(--crimson)}.k-bil{background:#F4ECD8;color:#6B5420}.k-anim{background:#2A1E20;color:#fff}.k-ok{background:#EAF2EA;color:#24502A}
+.tj-tab{width:100%;border-collapse:collapse;font-size:13px}
+.tj-tab th{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 10px 4px;border-top:1px solid var(--line)}
+.tj-tab th:not(:first-child),.tj-tab td:not(:first-child){text-align:center;width:64px}
+.tj-tab td{padding:6px 10px;border-top:1px solid var(--line)}
+.tj-tab tr{animation:aVague .45s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*45ms)}
+.tj-n{border:0;background:none;padding:2px 0;text-align:left;cursor:pointer;color:var(--ink);font:inherit}.tj-n b{display:block;font-size:13.5px}.tj-n small{color:var(--muted);font-size:11.5px}
+.tj-n:hover b{color:var(--crimson)}
+.cel{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0 8px;border-radius:9px;font-weight:700;font-size:12.5px;border:0;font-family:inherit}
+button.cel{cursor:pointer;transition:transform .15s}button.cel:hover{transform:scale(1.08)}button.cel:active{transform:scale(.92)}
+.cel-vide{color:#C9BBBE}
+.tj-ok{background:#EAF2EA;color:#24502A;border-radius:14px;padding:12px 14px;font-weight:600;margin-bottom:12px}
+/* K */
+.km{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.km-reg{background:var(--card);border:1px solid var(--line);border-radius:var(--r,16px);box-shadow:var(--shadow);overflow:hidden}
+.km-h,.km-gh{width:100%;border:0;background:none;cursor:pointer;font:inherit;color:var(--ink);text-align:left;display:grid;align-items:center;gap:12px}
+.km-h{grid-template-columns:minmax(0,1fr) auto 20px;padding:13px 15px}
+.km-h b{display:block;font:800 17px "Bricolage Grotesque",sans-serif}.km-h small,.km-gh small{display:block;font-size:12px;color:var(--muted);margin-top:1px}
+.km-nb{font:800 26px "Bricolage Grotesque",sans-serif;color:var(--crimson);font-variant-numeric:tabular-nums}.km-nb em{font:600 12px Inter,sans-serif;font-style:normal;color:var(--muted);margin-left:4px}
+.km-chev{color:var(--muted);transition:transform .5s cubic-bezier(.3,1.7,.5,1),color .3s}
+.ouvert>button>.km-chev{transform:rotate(90deg) translateX(2px);color:var(--crimson)}
+.km-h:active .km-chev,.km-gh:active .km-chev{transform:scale(.8)}
+.km-tir{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1)}
+.ouvert>.km-tir{grid-template-rows:1fr}.km-tir>div{overflow:hidden;min-height:0}
+.km-grps{position:relative;display:flex;flex-direction:column;gap:8px;padding:0 12px 12px 34px}
+.km-grp{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .35s;transition-delay:calc(var(--i,0)*55ms + .15s)}
+.ouvert>.km-tir .km-grp{opacity:1;transform:none}
+.km-gh{grid-template-columns:minmax(0,1fr) 90px auto 18px;padding:9px 12px}.km-gh b{font-size:14px}
+.km-j{height:6px;border-radius:4px;background:#EFE6E8;overflow:hidden}.km-j i{display:block;height:100%;width:0;border-radius:4px;background:var(--crimson);transition:width .7s .2s cubic-bezier(.2,.8,.2,1)}
+.ouvert>.km-tir .km-j i{width:var(--w)}
+.km-n{font-weight:800;min-width:20px;text-align:right;font-variant-numeric:tabular-nums}
+.km-mbs{position:relative;display:flex;flex-direction:column;gap:6px;padding:0 10px 10px 28px}
+.km-mb{position:relative;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;color:var(--ink);text-align:left;cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s,border-color .2s;transition-delay:calc(var(--i,0)*45ms + .15s)}
+.km-mb:hover{border-color:rgba(176,18,46,.4)}
+.ouvert>.km-tir .km-mb{opacity:1;transform:none}
+.km-mb b{display:block;font-size:13px}.km-mb small{font-size:11.5px;color:var(--muted)}
+.km-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--crimson-tint);color:var(--crimson);font-size:11.5px;font-weight:700;display:grid;place-items:center}
+.km-ok{margin-left:auto;color:#2F7A44;font-weight:800}
+.km-rien{font-size:12.5px;color:var(--muted);margin:0;padding:0 12px 10px 28px}
+.km-lien{border:0;background:none;color:var(--crimson);font:600 12.5px Inter,sans-serif;cursor:pointer;padding:4px 0;text-align:left}
+/* fil en pointillés + points qui s'allument */
+.km-grps::before,.km-mbs::before{content:"";position:absolute;left:17px;top:-6px;bottom:24px;width:2px;background:radial-gradient(circle,#C8A24C 1.2px,transparent 1.6px) 0 0/2px 7px repeat-y;transform:scaleY(0);transform-origin:top;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.km-mbs::before{left:13px;background-image:radial-gradient(circle,var(--crimson) 1.1px,transparent 1.5px)}
+.ouvert>.km-tir>div>.km-grps::before,.ouvert>.km-tir>div>.km-mbs::before{transform:scaleY(1)}
+.km-grp::before,.km-mb::before{content:"";position:absolute;left:-16px;top:19px;width:13px;height:2px;background:radial-gradient(circle,#C8A24C 1.2px,transparent 1.6px) 0 0/6px 2px repeat-x;transform:scaleX(0);transform-origin:left;transition:transform .3s;transition-delay:calc(var(--i,0)*55ms + .3s)}
+.km-grp::after,.km-mb::after{content:"";position:absolute;left:-22px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid #C8A24C;transform:scale(0);transition:transform .35s cubic-bezier(.3,1.8,.5,1),background .3s;transition-delay:calc(var(--i,0)*55ms + .2s)}
+.km-mb::before{left:-14px;top:17px;width:11px;background-image:radial-gradient(circle,var(--crimson) 1.1px,transparent 1.5px)}
+.km-mb::after{left:-19px;top:13px;width:9px;height:9px;border-color:var(--crimson)}
+.ouvert>.km-tir .km-grp::before,.ouvert>.km-tir .km-mb::before{transform:scaleX(1)}
+.ouvert>.km-tir .km-grp::after,.ouvert>.km-tir .km-mb::after{transform:scale(1)}
+.km-grp.ouvert::after{background:#C8A24C}
+/* billes alignées : centre de la bille = axe du fil, au milieu de la ligne ; survol = bille pleine qui pulse, pointillés qui défilent vers la carte */
+.km-grp::after,.km-mb::after{box-sizing:border-box;width:12px;height:12px;left:-22px;top:25px;transform:translateY(-50%) scale(0)}
+.km-mb::after{left:-20px;top:50%;width:12px;height:12px}
+.km-grp::before{left:-15px;top:25px;width:15px;margin-top:-1px}
+.km-mb::before{left:-13px;top:50%;width:13px;margin-top:-1px}
+.ouvert>.km-tir .km-grp::after,.ouvert>.km-tir .km-mb::after{transform:translateY(-50%) scale(1)}
+.km-mb{transition:opacity .3s,transform .3s cubic-bezier(.2,.8,.2,1),border-color .2s,box-shadow .2s}
+.km-grp>.km-gh{transition:background .2s}
+.km-grp>.km-gh:hover{background:rgba(200,162,76,.08)}
+.ouvert>.km-tir .km-mb:hover,.ouvert>.km-tir .km-mb:focus-visible{transform:translateX(4px);border-color:rgba(176,18,46,.45);box-shadow:0 6px 16px -10px rgba(92,10,24,.5)}
+.ouvert>.km-tir .km-mb:hover::after,.ouvert>.km-tir .km-mb:focus-visible::after{background:var(--crimson);transform:translateY(-50%) scale(1.35);animation:kBille 1.1s ease-out infinite}
+.ouvert>.km-tir .km-grp:hover::after{background:#C8A24C;transform:translateY(-50%) scale(1.3);animation:kBilleOr 1.1s ease-out infinite}
+.ouvert>.km-tir .km-mb:hover::before,.ouvert>.km-tir .km-grp:hover::before{animation:kFil .6s linear infinite}
+.km-mb:hover .km-av{background:var(--crimson);color:#fff;transition:background .2s,color .2s}
+@keyframes kBille{0%{box-shadow:0 0 0 0 rgba(176,18,46,.45)}100%{box-shadow:0 0 0 9px rgba(176,18,46,0)}}
+@keyframes kBilleOr{0%{box-shadow:0 0 0 0 rgba(200,162,76,.55)}100%{box-shadow:0 0 0 9px rgba(200,162,76,0)}}
+@keyframes kFil{to{background-position:6px 0}}
+@media (prefers-reduced-motion:reduce){.km-mb::after,.km-grp::after,.km-mb::before,.km-grp::before{animation:none!important}}
+@media(max-width:520px){.km-gh{grid-template-columns:minmax(0,1fr) 54px auto 18px}}
+@media (prefers-reduced-motion:reduce){.rank>*,.dem-l>*,.mb-grid>*,.rl>*,.dem-card,.tj-tab tr,.annonce,.celeb-c,.celeb-s,.celeb-g,.h-dust i,.bar i::after,.ck-prog i::after{animation:none!important}.h-dust{display:none}.nav-pill,.km-tir,.km-grp,.km-mb,.km-j i,.km-chev,.tj-chev,.ck{transition:none!important}.km-grp,.km-mb{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -1062,7 +1217,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
   <div id="view"></div>
 </div>
 
-<nav id="nav" class="nav hidden">
+<nav id="nav" class="nav hidden"><span class="nav-pill" id="nav-pill" aria-hidden="true"></span>
   <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
   <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
   <button data-tab="reunions" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg>Réunions</button>
@@ -1092,8 +1247,25 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.25.0";
+const APP_VERSION="0.27.0";
 const CHANGELOG=[
+  {v:"0.27.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "« À traiter » rangé par région : en haut, les totaux par type d'action (réunions à planifier, bilans à saisir, groupes sans animateur), cliquables pour filtrer ; puis un tableau par région avec ses groupes, où chaque case est l'action à faire (＋ planifier, nombre de bilans, animateur à nommer).",
+      "Membres par région, en accordéon : un clic sur la région déroule ses groupes (avec une jauge), un clic sur un groupe déroule ses membres. Un fil en pointillés se trace et une bille s'allume à chaque ligne ; au survol, la bille se remplit, pulse et les pointillés défilent vers la carte.",
+      "Les pop-ups mènent quelque part : une nouvelle demande d'adhésion ou une recommandation descend en haut de l'écran et ouvre la demande ou la liste au toucher ; « Membre ajouté », « Abonnement renouvelé » ouvrent la fiche du membre.",
+      "Fête pour les vraies victoires : adhésion intégrée, objectif de club atteint, affaire signée grâce à une recommandation, avec un bouton qui ouvre la fiche concernée."
+    ],
+    "Amélioré":[
+      "Animations : les listes arrivent en vague, la pastille du menu glisse sous l'onglet choisi, les fiches s'ouvrent depuis l'élément touché, les cartes de club s'inclinent vers la souris, les barres prennent un reflet doré, le montant des affaires défile, des grains d'or montent dans le bandeau d'accueil, et les chargements montrent la forme du contenu au lieu de « Chargement… ». Tout se coupe chez ceux qui ont demandé à réduire les animations."
+    ]}},
+  {v:"0.26.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Recommandations d'affaires : dans leur espace, les membres se passent des contacts qui ont un besoin. Celui qui la reçoit la fait avancer (contact pris, devis envoyé, affaire signée avec le montant) ; celui qui l'a donnée est prévenu à chaque étape. Le club voit le total des affaires générées du mois, sans détail par personne. Dans le CRM : carte « Affaires générées » sur la Synthèse, liste complète, et les recos de chacun dans sa fiche.",
+      "Présences par QR code : dans une réunion du jour, « QR de pointage » affiche un code que les membres scannent avec leur téléphone pour se pointer. L'animateur coche les autres. Le total pré-remplit le bilan.",
+      "Renouvellements : chaque membre a une date de début d'abonnement (modifiable, par défaut sa date d'intégration) et une échéance un an plus tard. Les échéances à 30 jours apparaissent dans « À traiter », avec la relance WhatsApp prête et le bouton « Renouvelé ».",
+      "Relance des invités : la veille et le jour de la réunion, un bouton « Rappel WhatsApp » prépare le message ; dans la semaine qui suit, « Suivi WhatsApp » envoie aux intéressés le lien d'adhésion du club. Les envois sont notés et comptés dans « À traiter »."
+    ]}},
   {v:"0.25.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Espace membre : notifications sur le téléphone à chaque nouveau message (la notification ouvre la conversation). À activer dans « Mon profil » ou dans « Mes messages ». Sur iPhone, l'espace membre s'installe d'abord sur l'écran d'accueil (icône « Protéine »).",
@@ -1411,9 +1583,9 @@ function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||""}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null}}
-function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null}}
+function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -1441,6 +1613,10 @@ async function loadDB(){
   DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
   try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
+  // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
+  DB.recos=[];DB.presences=[];
+  try{const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
+    if(!rr.error){DB.recos=rr.data||[];DB._recosVus=true}if(!pp.error)DB.presences=pp.data||[];}catch(e){console.warn(e)}
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
   (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
 }
@@ -1463,9 +1639,11 @@ function dObj(iso){const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1
 function isPast(iso){return dObj(iso)<TODAY}
 function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function toastKind(m){m=String(m||"");if(/erreur|impossible|non autoris|échec|refus|incorrect/i.test(m))return"e";if(/requis|obligatoire|choisis d'abord|déjà|attention|hors ligne/i.test(m))return"w";return"s"}
-function toast(m,kind){const t=document.getElementById("toast");const k=kind||toastKind(m);
-  t.className="toast "+k;t.innerHTML=`<i aria-hidden="true">${k==="e"?"!":k==="w"?"…":"✓"}</i><span>${esc(m)}</span>`;
-  void t.offsetWidth;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),k==="e"?3200:2200)}
+/* v0.27 : un pop-up peut porter une action (fonction) : il devient cliquable et mène à la page concernée. */
+function toast(m,kind,act){const t=document.getElementById("toast");const k=kind||toastKind(m);
+  t.className="toast "+k+(act?" act":"");t.innerHTML=`<i aria-hidden="true">${k==="e"?"!":k==="w"?"…":"✓"}</i><span>${esc(m)}</span>${act?'<b class="t-go" aria-hidden="true">›</b>':""}`;
+  t.onclick=act?()=>{t.classList.remove("show");act()}:null;t.setAttribute("role",act?"button":"status");
+  void t.offsetWidth;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),act?4800:k==="e"?3200:2200)}
 
 /* ---- périmètre selon rôle ---- */
 function readOnly(){return SESSION.role==="visiteur"}
@@ -1725,7 +1903,7 @@ function render(){const v=document.getElementById("view");
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
+  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);navPill();const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -1862,7 +2040,7 @@ function quiConnecteHTML(){
     +(jamais.length?secHead("Jamais connectés",jamais.length)+`<div class="rank">${jamais.map(u=>row(u,"jamais connecté")).join("")}</div>`:"");
 }
 async function openQuiConnecte(){
-  document.getElementById("sheet-content").innerHTML=`<h3>Qui est connecté</h3><div class="sheet-sub">Mis à jour chaque minute · en ligne = actif dans les 3 dernières minutes</div><div id="qui-co"><div class="rail-vide">Chargement…</div></div>
+  document.getElementById("sheet-content").innerHTML=`<h3>Qui est connecté</h3><div class="sheet-sub">Mis à jour chaque minute · en ligne = actif dans les 3 dernières minutes</div><div id="qui-co">${skLignes(4)}</div>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();await presenceMaj();
 }
@@ -2380,24 +2558,251 @@ function dashBlock(s,sc,sansTodo){
     </div>
     ${dashObjectif(sc)}
     ${dashActivite(sc)}
+    ${dashRecos(sc)}
     ${sansTodo?"":dashATraiter(sc)}
     ${dashCourbe(sc)}
-    <div style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">Membres par groupe</div>
-    <div class="rank" style="--i:6">${ranks||`<div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div>`}</div>`;
+    <div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Membres par région</div>
+    ${membresRegions(sc)||`<div class="rank"><div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div></div>`}`;
 }
 /* Ce qui attend une action, club par club (même règle que la fiche du club) : urgent d'abord. */
+/* ============================================================
+   v0.26.0 — RECOMMANDATIONS · PRÉSENCES · RENOUVELLEMENTS · RELANCE DES INVITÉS
+   ============================================================ */
+const madFmt=n=>new Intl.NumberFormat("fr-FR").format(Math.round(Number(n)||0)).replace(/ | /g," ")+" MAD";
+const RECO_LIB={envoyee:"Envoyée",contact:"Contact pris",devis:"Devis envoyé",signee:"Affaire signée",sans_suite:"Sans suite"};
+function membreNom(id){const m=DB.membres.find(x=>x.id===id);return m?m.nom:"—"}
+/* Recos d'un périmètre (club de celui qui donne). Montant compté à la date de signature (maj_le). */
+function recosStats(ids,depuis){const l=(DB.recos||[]).filter(r=>ids.has(r.club_id));
+  const s=l.filter(r=>r.statut==="signee"&&(!depuis||r.maj_le>=depuis));
+  return {l,recos:l.filter(r=>!depuis||r.cree_le>=depuis).length,signees:s.length,montant:s.reduce((a,r)=>a+Number(r.montant||0),0)}}
+function dashRecos(sc){
+  const ids=new Set(_dashScope[sc]||[]);if(!(DB.recos||[]).some(r=>ids.has(r.club_id)))return"";
+  const d=new Date(TODAY.getFullYear(),TODAY.getMonth(),1).toISOString(),y=new Date(TODAY.getFullYear(),0,1).toISOString();
+  const m=recosStats(ids,d),a=recosStats(ids,y);
+  return `<div class="dash-recos link" role="button" tabindex="0" onclick="openRecos('${sc}')" onkeydown="if(event.key==='Enter')openRecos('${sc}')">
+    <div><small>Affaires générées par les recos · ${MOIS_LONG[TODAY.getMonth()].toLowerCase()}</small><b data-count="${Math.round(m.montant)}" data-fmt="mad">${esc(madFmt(m.montant))}</b>
+    <span>${m.signees} signée${m.signees>1?"s":""} · ${m.recos} reco${m.recos>1?"s":""} ce mois · depuis janvier ${esc(madFmt(a.montant))}</span></div><i aria-hidden="true">🤝</i></div>`;
+}
+function openRecos(sc,filtre){
+  const ids=new Set(_dashScope[sc]||DB.clubs.map(c=>c.id));
+  const l=(DB.recos||[]).filter(r=>ids.has(r.club_id)&&(!filtre||r.statut===filtre));
+  const chip=(k,t)=>`<button class="chip ${filtre===k||(!filtre&&!k)?"on":""}" onclick="openRecos('${sc}'${k?`,'${k}'`:""})">${t}</button>`;
+  document.getElementById("sheet-content").innerHTML=`<h3>Recommandations d'affaires</h3>
+    <div class="sheet-sub">Données entre membres depuis leur espace. Celui qui la reçoit la fait avancer.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${chip("","Toutes")}${chip("envoyee","Envoyées")}${chip("contact","Contact")}${chip("devis","Devis")}${chip("signee","Signées")}${chip("sans_suite","Sans suite")}</div>
+    ${l.length?`<div class="rank">${l.map(r=>`<div class="rank-row"><div class="rn">${esc(r.contact_nom)}${r.contact_entreprise?` · ${esc(r.contact_entreprise)}`:""}<small>${esc(membreNom(r.de))} → ${esc(membreNom(r.a))} · ${esc(adhDate(r.cree_le))}${r.besoin?" · « "+esc(r.besoin)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Aucune recommandation${filtre?" à cette étape":""}.</p>`}
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function mbRecosHTML(m){
+  const l=(DB.recos||[]).filter(r=>r.de===m.id||r.a===m.id);if(!l.length)return "";
+  const don=l.filter(r=>r.de===m.id),rec=l.filter(r=>r.a===m.id);
+  const sig=x=>x.filter(r=>r.statut==="signee").reduce((a,r)=>a+Number(r.montant||0),0);
+  return `${secHead("Recommandations",l.length)}
+    <div class="drow"><div class="tx"><div class="k">Données</div><div class="v">${don.length} · ${esc(madFmt(sig(don)))} d'affaires signées</div></div></div>
+    <div class="drow"><div class="tx"><div class="k">Reçues</div><div class="v">${rec.length} · ${esc(madFmt(sig(rec)))} d'affaires signées</div></div></div>
+    ${l.slice(0,6).map(r=>`<div class="drow"><div class="tx"><div class="k">${r.de===m.id?"Pour "+esc(membreNom(r.a)):"De "+esc(membreNom(r.de))}</div><div class="v" style="font-weight:500">${esc(r.contact_nom)} · <span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut])}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div></div></div>`).join("")}`;
+}
+
+/* ---- Renouvellements : échéance = début d'abonnement (à défaut, date d'intégration) + 1 an ---- */
+function abDebut(m){return m.abDebut||(m.createdAt?isoJour(new Date(m.createdAt)):"")}
+function abPlus1an(iso){if(!iso)return "";const d=dObj(iso);d.setFullYear(d.getFullYear()+1);return isoJour(d)}
+function abEcheance(m){return abPlus1an(abDebut(m))}
+function abJours(m){const e=abEcheance(m);return e?Math.round((dObj(e)-TODAY)/864e5):null}
+function abEchTxt(debut){const e=abPlus1an(debut);if(!e)return "";const d=dObj(e);return "Échéance : "+d.getDate()+" "+MOIS_LONG[d.getMonth()].toLowerCase()+" "+d.getFullYear()+" (formule annuelle 9 000 MAD HT)"}
+function abDuree(j){return j<0?`dépassée de ${-j} jour${j<-1?"s":""}`:j===0?"aujourd'hui":`dans ${j} jour${j>1?"s":""}`}
+function renouvAFaire(ids){return DB.membres.filter(m=>(!ids||ids.has(m.clubId))&&abJours(m)!==null&&abJours(m)<=30).sort((a,b)=>abJours(a)-abJours(b))}
+function mbAbonnementHTML(m,d,canEd){
+  const j=abJours(m);if(j===null)return "";
+  const e=dObj(abEcheance(m)),txt=e.getDate()+" "+MOIS_LONG[e.getMonth()].toLowerCase()+" "+e.getFullYear();
+  return `${secHead("Abonnement")}
+    <div class="drow"><div class="tx"><div class="k">Échéance${m.abDebut?"":" (calculée sur la date d'intégration)"}</div><div class="v">${esc(txt)} <span class="renouv-j ${j<0?"ko":j<=30?"w":""}">${esc(abDuree(j))}</span></div></div>${canEd&&j<=30?`<a href="#" onclick="renouvMarquer('${m.id}');return false">Renouvelé</a>`:""}</div>
+    ${canEd&&j<=30?`<div class="mb-code-act"><button class="btn mini" onclick="renouvRelancer('${m.id}')">Relancer par WhatsApp</button>${m.relanceRenouvLe?`<small class="fh-note">Relancé le ${esc(adhDate(m.relanceRenouvLe))}</small>`:""}</div>`:""}`;
+}
+function openRenouvellements(){
+  const ids=new Set(scopedClubIds().length?scopedClubIds():DB.clubs.map(c=>c.id)),l=renouvAFaire(ids);
+  document.getElementById("sheet-content").innerHTML=`<h3>Renouvellements à venir</h3>
+    <div class="sheet-sub">Abonnements qui arrivent à échéance dans les 30 jours, ou dépassés. Formule annuelle 9 000 MAD HT.</div>
+    ${l.length?`<div class="rank">${l.map(m=>{const j=abJours(m),tel=mbInfos(m).m_tel,ed=canEditClubId(m.clubId);return `<div class="rank-row"><div class="rn link" onclick="memberSheet('${m.clubId}','${m.id}')">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))} · échéance ${esc(abDuree(j))}${m.relanceRenouvLe?" · relancé le "+esc(adhDate(m.relanceRenouvLe)):""}</small></div>
+      ${ed?`<span class="renouv-act">${tel?`<button class="btn ghost mini" onclick="renouvRelancer('${m.id}',true)">Relancer</button>`:`<small class="fh-note">mobile manquant</small>`}<button class="btn mini" onclick="renouvMarquer('${m.id}',true)">Renouvelé</button></span>`:""}</div>`}).join("")}</div>`:`<p class="fh-empty">✓ Aucun renouvellement dans les 30 prochains jours.</p>`}
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+function waOuvrir(tel,msg){window.open(`https://wa.me/${mbWa(tel)}?text=${encodeURIComponent(msg)}`,"_blank","noopener")}
+async function renouvRelancer(id,depuisListe){
+  const m=DB.membres.find(x=>x.id===id),tel=mbInfos(m).m_tel;if(!tel){toast("Mobile manquant : ajoute-le dans ses informations","w");return}
+  const e=dObj(abEcheance(m)),c=(club(m.clubId).nom||"ton club").replace(/^CAP\s+/,"");
+  waOuvrir(tel,`Bonjour ${String(m.nom).split(/\s+/)[0]}, ton abonnement au club ${c} arrive à échéance le ${e.getDate()} ${MOIS_LONG[e.getMonth()].toLowerCase()}. On fait le point ensemble pour le renouveler ? Formule annuelle : 9 000 MAD HT. Merci !`);
+  const now=new Date().toISOString();const {error}=await sb.from("membres").update({relance_renouv_le:now}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}m.relanceRenouvLe=now;
+  depuisListe?openRenouvellements():memberSheet(m.clubId,m.id);
+}
+async function renouvMarquer(id,depuisListe){
+  const m=DB.membres.find(x=>x.id===id),nv=abEcheance(m);
+  if(!confirm(`Renouvelé ? Le nouvel abonnement démarre le ${nv.split("-").reverse().join("/")}, échéance un an plus tard.`))return;
+  const {error}=await sb.from("membres").update({abonnement_debut:nv,relance_renouv_le:null}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(m,{abDebut:nv,relanceRenouvLe:null});pluieConfettis();toast("Abonnement de "+m.nom+" renouvelé","s",()=>memberSheet(m.clubId,m.id));render();
+  depuisListe?openRenouvellements():memberSheet(m.clubId,m.id);
+}
+
+/* ---- Présences : QR de pointage (le membre scanne) + coche par l'animateur ---- */
+function presDe(rid){return (DB.presences||[]).filter(p=>p.reunion_id===rid)}
+function presCompte(rid){return presDe(rid).length}
+function presencesBloc(m,editable){
+  const auj=Math.abs(Math.round((dObj(m.date)-TODAY)/864e5))<=1;
+  if(m.statut==="annulee"||(!isPast(m.date)&&!auj))return "";
+  const mb=DB.membres.filter(x=>x.clubId===m.clubId).sort((a,b)=>a.nom.localeCompare(b.nom)),pres=new Set(presDe(m.id).map(p=>p.membre_id));
+  const autres=presDe(m.id).filter(p=>!mb.some(x=>x.id===p.membre_id));
+  return `<div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-size:16px">Présences <span style="color:var(--muted);font-weight:500">(${pres.size}${mb.length?" / "+mb.length:""})</span></h3>
+      ${editable&&auj?`<button class="btn ghost mini" onclick="openQR('${m.id}')">QR de pointage</button>`:""}</div>
+    ${mb.length?`<div class="pres-grid">${mb.map(x=>{const p=presDe(m.id).find(y=>y.membre_id===x.id);return `<button class="pres ${p?"on":""}" ${editable?`onclick="presBasculer('${m.id}','${x.id}')"`:"disabled"} aria-pressed="${!!p}">${p?"✓":""} ${esc(x.nom)}${p&&p.mode==="qr"?` <small>QR</small>`:""}</button>`}).join("")}</div>`:`<p class="fh-empty">Aucun membre dans ce club.</p>`}
+    ${autres.length?`<p class="fh-note">+ ${autres.length} membre${autres.length>1?"s":""} d'autres clubs pointé${autres.length>1?"s":""} : ${autres.map(p=>esc(membreNom(p.membre_id))).join(", ")}</p>`:""}
+    ${editable?`<p class="fh-note">Les membres qui ont leur espace scannent le QR à l'entrée ; coche les autres. Le total pré-remplit le bilan.</p>`:""}`;
+}
+async function presBasculer(rid,mid){
+  const p=presDe(rid).find(x=>x.membre_id===mid);
+  if(p){const {error}=await sb.from("presences").delete().eq("id",p.id);if(error){toast(rlsMsg(error));return}DB.presences=DB.presences.filter(x=>x.id!==p.id)}
+  else{const {data,error}=await sb.from("presences").insert({reunion_id:rid,membre_id:mid,mode:"animateur",pointe_par:SESSION.id||null}).select().single();if(error){toast(rlsMsg(error));return}DB.presences.push(data)}
+  meetingDetail(DB.reunions.find(x=>x.id===rid),true);
+}
+let _qrLib=null;
+function qrLib(){return _qrLib||(_qrLib=new Promise((ok,ko)=>{if(window.qrcode)return ok(window.qrcode);const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";s.onload=()=>ok(window.qrcode);s.onerror=()=>{_qrLib=null;ko(new Error("qr"))};document.head.appendChild(s)}))}
+async function openQR(rid){
+  const m=DB.reunions.find(x=>x.id===rid),c=club(m.clubId);
+  document.getElementById("sheet-content").innerHTML=`<h3>Pointage · ${esc((c.nom||"").replace(/^CAP\s+/,""))}</h3><div class="sheet-sub">Les membres scannent ce code avec l'appareil photo de leur téléphone, puis se connectent à leur espace : leur présence s'enregistre.</div><div class="qr-box" id="qr-box"><div class="sk qr-sk"></div></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="meetingDetail(DB.reunions.find(x=>x.id==='${rid}'),true)">Retour à la réunion</button></div>`;
+  openSheet();
+  const {data:code,error}=await sb.rpc("cap_reunion_code",{p_reunion:rid});
+  const box=document.getElementById("qr-box");if(!box)return;
+  if(error){box.innerHTML=`<p class="fh-note" style="color:var(--crimson)">${esc(rlsMsg(error))}</p>`;return}
+  m.pcode=code;const url=ESPACE_MEMBRE_URL+"#p="+rid+"."+code;
+  try{const qrcode=await qrLib(),q=qrcode(0,"M");q.addData(url);q.make();box.innerHTML=q.createSvgTag({cellSize:8,margin:2,scalable:true})+`<small class="qr-url">${esc(url)}</small>`}
+  catch(e){box.innerHTML=`<p class="fh-note">Le dessin du QR n'a pas pu se charger. Lien de pointage à partager :</p><small class="qr-url">${esc(url)}</small>`}
+}
+
+/* ---- Relance des invités : rappel la veille, suivi le lendemain (messages WhatsApp prêts) ---- */
+function joursAvant(iso){return Math.round((dObj(iso)-TODAY)/864e5)}
+function invRelance(m,g){
+  if(!g.tel||g.statut==="Membre"||g.statut==="Non intéressé"||m.statut==="annulee")return null;
+  const j=joursAvant(m.date);
+  if(j>=0&&j<=1&&g.statut==="À confirmer"||j>=0&&j<=1&&g.statut==="Intéressé")return {k:"rappel",fait:g.rappelLe};
+  if(j<0&&j>=-7&&(g.statut==="Intéressé"||g.statut==="À intégrer"))return {k:"suivi",fait:g.suiviLe};
+  return null;
+}
+function invRelanceBtn(m,g,i){const r=invRelance(m,g);if(!r)return "";
+  return `<button class="gstat inv-rel ${r.fait?"fait":""}" onclick="invRelancer('${m.id}',${i})" title="${r.k==="rappel"?"Rappel de la réunion":"Suivi après la réunion"}">${r.fait?"✓ ":""}${r.k==="rappel"?"Rappel":"Suivi"} WhatsApp</button>`}
+async function invRelancer(rid,i){
+  const m=DB.reunions.find(x=>x.id===rid),g=m.guests[i],r=invRelance(m,g);if(!r)return;
+  const c=club(m.clubId),d=dObj(m.date),pr=String(g.nom).split(/\s+/)[0],quand=joursAvant(m.date)===0?"ce soir":"demain";
+  const msg=r.k==="rappel"
+    ?`Bonjour ${pr}, petit rappel : la réunion du club d'affaires Protéine ${(c.nom||"").replace(/^CAP\s+/,"")} a lieu ${quand}${m.heure?" à "+m.heure:""}, ${lieuNom(m.lieuId)}${lieu(m.lieuId)&&lieu(m.lieuId).ville?" ("+lieu(m.lieuId).ville+")":""}. Au plaisir de vous y accueillir !`
+    :`Bonjour ${pr}, merci d'être venu à la réunion du club Protéine ${(c.nom||"").replace(/^CAP\s+/,"")} le ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Si vous souhaitez nous rejoindre, le formulaire d'adhésion se remplit en 3 minutes ici : ${adhLink(m.clubId)}`;
+  waOuvrir(g.tel,msg);
+  const col=r.k==="rappel"?"rappel_le":"suivi_le",now=new Date().toISOString();
+  const {error}=await sb.from("invites").update({[col]:now}).eq("id",g._id);
+  if(error){toast(rlsMsg(error));return}
+  g[r.k==="rappel"?"rappelLe":"suiviLe"]=now;meetingDetail(m,true);
+}
+function suiviListe(ids){const l=[];DB.reunions.filter(r=>ids.has(r.clubId)&&canEditClubId(r.clubId)).forEach(m=>(m.guests||[]).forEach(g=>{const r=invRelance(m,g);if(r&&!r.fait)l.push({m,g,k:r.k})}));return l}
+function suiviCompte(ids){const r=renouvAFaire(new Set([...ids].filter(id=>canEditClubId(id)))).length,l=suiviListe(ids);return (r?1:0)+(l.some(x=>x.k==="rappel")?1:0)+(l.some(x=>x.k==="suivi")?1:0)}
+function suiviRows(ids){
+  const r=renouvAFaire(new Set([...ids].filter(id=>canEditClubId(id)))).length,l=suiviListe(ids),nr=l.filter(x=>x.k==="rappel"),ns=l.filter(x=>x.k==="suivi");
+  const meet=x=>x.length?`openMeeting('${x[0].m.id}')`:"";
+  return (nr.length?`<div class="rank-row link" onclick="${meet(nr)}"><span class="dt-ic urgent">📣</span><div class="rn">${nr.length} invité${nr.length>1?"s":""} à rappeler<small>Réunion aujourd'hui ou demain · message WhatsApp prêt</small></div></div>`:"")
+    +(ns.length?`<div class="rank-row link" onclick="${meet(ns)}"><span class="dt-ic">💬</span><div class="rn">${ns.length} invité${ns.length>1?"s":""} à suivre<small>Venus à la réunion, intéressés · lien d'adhésion prêt</small></div></div>`:"")
+    +(r?`<div class="rank-row link" onclick="openRenouvellements()"><span class="dt-ic">🔁</span><div class="rn">${r} renouvellement${r>1?"s":""} d'abonnement<small>Échéance dans les 30 jours ou dépassée</small></div></div>`:"");
+}
+
+/* ---- Régions : les zones de la base (villes), plus « Autres villes » pour un club hors zone ---- */
+function regionsDe(clubs){
+  const out=DB.zones.map(z=>({k:z.id,nom:z.nom,clubs:clubs.filter(c=>z.villes.includes(c.ville))}));
+  const pris=new Set(out.flatMap(r=>r.clubs.map(c=>c.id)));const reste=clubs.filter(c=>!pris.has(c.id));
+  if(reste.length)out.push({k:"autres",nom:"Autres villes",clubs:reste});
+  return out.filter(r=>r.clubs.length);
+}
+/* J — « À traiter » rangé par région : totaux cliquables (filtre), puis un tableau par région (une case = une action). */
+function todoClub(c){const up=DB.reunions.some(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee");
+  const bil=reunionsSansBilan().filter(r=>r.clubId===c.id);return {c,plan:!up,bil,anim:!c.animId,ed:canEditClubId(c.id)}}
+function todoRegions(sc){
+  const ids=new Set(_dashScope[sc]||[]),cl=DB.clubs.filter(c=>ids.has(c.id));if(!cl.length)return "";
+  const f=window._todoF||"",all=cl.map(todoClub),nP=all.filter(x=>x.plan).length,nB=all.reduce((a,x)=>a+x.bil.length,0),nA=all.filter(x=>x.anim).length;
+  if(!nP&&!nB&&!nA)return `<div class="tj-ok">✓ Tous les groupes ont leur prochaine réunion, leurs bilans et leur animateur.</div>`;
+  const tb=(k,n,l)=>n?`<button type="button" class="${f===k?"on":""}" onclick="window._todoF=window._todoF==='${k}'?'':'${k}';render()" aria-pressed="${f===k}"><b>${n}</b>${l}</button>`:"";
+  const ferme=window._todoFerme||(window._todoFerme=new Set());
+  const reg=regionsDe(cl).map(r=>{
+    const l=r.clubs.map(todoClub).filter(x=>x.plan||x.bil.length||x.anim).filter(x=>!f||(f==="plan"&&x.plan)||(f==="bil"&&x.bil.length)||(f==="anim"&&x.anim));
+    const P=l.filter(x=>x.plan).length,B=l.reduce((a,x)=>a+x.bil.length,0),A=l.filter(x=>x.anim).length;
+    if(!l.length)return "";
+    return `<details class="tj-reg" ${ferme.has(r.k)?"":"open"} ontoggle="(this.open?window._todoFerme.delete('${r.k}'):window._todoFerme.add('${r.k}'))">
+      <summary><span class="tj-t"><b>${esc(r.nom)}</b><svg class="tj-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        <span class="tj-c">${P?`<span class="k-plan">${P} à planifier</span>`:""}${B?`<span class="k-bil">${B} bilan${B>1?"s":""}</span>`:""}${A?`<span class="k-anim">${A} sans animateur</span>`:""}</span></summary>
+      <table class="tj-tab"><thead><tr><th>Groupe</th><th>Réunion</th><th>Bilans</th><th>Animateur</th></tr></thead><tbody>${l.map((x,i)=>{const c=x.c,a=anim(c.animId),der=DB.reunions.filter(m=>m.clubId===c.id&&isPast(m.date)&&m.statut!=="annulee").sort((p,q)=>q.date.localeCompare(p.date))[0];
+        return `<tr style="--i:${i}"><td><button type="button" class="tj-n" onclick="openClub('${c.id}')"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${der?"dernière le "+dObj(der.date).getDate()+" "+MOIS[dObj(der.date).getMonth()]:"jamais réunie"}</small></button></td>
+          <td>${x.plan?(x.ed?`<button type="button" class="cel k-plan" title="Planifier la prochaine réunion" aria-label="Planifier une réunion pour ${esc(c.nom)}" onclick="meetingForm('','${c.id}')">＋</button>`:`<span class="cel k-plan">!</span>`):`<span class="cel k-ok" title="Réunion planifiée">✓</span>`}</td>
+          <td>${x.bil.length?`<button type="button" class="cel k-bil" title="Saisir ${x.bil.length} bilan${x.bil.length>1?"s":""}" onclick="openBilan('${x.bil[0].id}')">${x.bil.length}</button>`:'<span class="cel-vide">—</span>'}</td>
+          <td>${a?`<span class="cel k-ok" title="${esc(a.nom)}">${esc(initiales(a.nom))}</span>`:`<button type="button" class="cel k-anim" title="Nommer un animateur" onclick="openClub('${c.id}')">!</button>`}</td></tr>`}).join("")}</tbody></table></details>`}).join("");
+  return `<div class="tj-tot">${tb("plan",nP,"réunion"+(nP>1?"s":"")+" à planifier")}${tb("bil",nB,"bilan"+(nB>1?"s":"")+" à saisir")}${tb("anim",nA,"groupe"+(nA>1?"s":"")+" sans animateur")}</div>
+    <div class="tj-regs">${reg||`<p class="fh-empty">Aucun groupe pour ce filtre.</p>`}</div>`;
+}
+/* K — Membres par région : région → groupes (jauge) → membres, en accordéon ; fil en pointillés qui se trace. */
+function membresRegions(sc){
+  const ids=new Set(_dashScope[sc]||[]),cl=DB.clubs.filter(c=>ids.has(c.id));if(!cl.length)return "";
+  const ouv=window._kOuv||(window._kOuv=new Set());
+  const nb=c=>DB.membres.filter(m=>m.clubId===c.id).length,max=Math.max(1,...cl.map(nb));
+  const chev=`<svg class="km-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>`;
+  return `<div class="km">${regionsDe(cl).map(r=>{const n=r.clubs.reduce((a,c)=>a+nb(c),0),vides=r.clubs.filter(c=>!nb(c)).length,cs=[...r.clubs].sort((a,b)=>nb(b)-nb(a)||a.nom.localeCompare(b.nom));
+    return `<div class="km-reg${ouv.has(r.k)?" ouvert":""}" data-k="${r.k}"><button type="button" class="km-h" aria-expanded="${ouv.has(r.k)}" onclick="kBasculer(this)"><span><b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}${vides?" · "+vides+" sans membre":""}</small></span><span class="km-nb">${n}<em>membre${n>1?"s":""}</em></span>${chev}</button>
+      <div class="km-tir"><div><div class="km-grps">${cs.map((c,gi)=>{const mb=DB.membres.filter(m=>m.clubId===c.id).sort((a,b)=>(a.num||0)-(b.num||0)),k=r.k+":"+c.id;
+        return `<div class="km-grp${ouv.has(k)?" ouvert":""}" data-k="${k}" style="--i:${gi}"><button type="button" class="km-gh" aria-expanded="${ouv.has(k)}" onclick="kBasculer(this)"><span><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.objectif?" · objectif "+c.objectif:""}</small></span><span class="km-j"><i style="--w:${mb.length/max*100}%"></i></span><span class="km-n">${mb.length}</span>${chev}</button>
+          <div class="km-tir"><div>${mb.length?`<div class="km-mbs">${mb.map((m,i)=>`<button type="button" class="km-mb" style="--i:${i}" onclick="memberSheet('${c.id}','${m.id}')"><span class="km-av">${esc(initiales(m.nom))}</span><span><b>${esc(m.nom)}</b><small>${esc((m.infos&&m.infos.metier)||m.specialite||"métier à renseigner")}</small></span>${m.paiement?'<span class="km-ok" title="À jour">✓</span>':""}</button>`).join("")}<button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></div>`:`<p class="km-rien">Aucun membre pour l'instant. <button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></p>`}</div></div></div>`}).join("")}</div></div></div></div>`}).join("")}</div>`;
+}
+function kBasculer(b){const p=b.parentElement,o=p.classList.toggle("ouvert");b.setAttribute("aria-expanded",o);const s=window._kOuv||(window._kOuv=new Set());o?s.add(p.dataset.k):s.delete(p.dataset.k)}
+/* D — la pastille glisse sous l'onglet actif (barre du bas au téléphone, colonne à gauche sur ordinateur). */
+function navPill(){const nav=document.getElementById("nav"),pl=document.getElementById("nav-pill");if(!nav||!pl)return;
+  const b=nav.querySelector("button.on");if(!b||nav.classList.contains("hidden")){pl.style.opacity=0;return}
+  const premier=!pl.dataset.vu;pl.dataset.vu=1;if(premier)pl.style.transition="none";
+  const nr=nav.getBoundingClientRect(),br=b.getBoundingClientRect(),sv=getComputedStyle(b).transform;
+  Object.assign(pl.style,{opacity:1,width:br.width+"px",height:br.height+"px",transform:`translate(${br.left-nr.left-nav.clientLeft}px,${br.top-nr.top-nav.clientTop}px)`});
+  if(sv&&sv!=="none")setTimeout(navPill,400);
+  if(premier){void pl.offsetWidth;pl.style.transition=""}}
+addEventListener("resize",()=>{clearTimeout(window._npT);window._npT=setTimeout(navPill,120)});
+/* La barre change de mise en page juste après un rendu (pastilles, onglets masqués) : on recale à chaque mouvement. */
+if(window.ResizeObserver)addEventListener("DOMContentLoaded",()=>{const nav=document.getElementById("nav");if(!nav)return;const ro=new ResizeObserver(()=>{clearTimeout(window._npR);window._npR=setTimeout(navPill,30)});nav.querySelectorAll("button").forEach(b=>ro.observe(b))});
+/* C — les cartes de club s'inclinent vers la souris et une lueur or la suit (ordinateur seulement). */
+document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"||_calme())return;const c=e.target.closest&&e.target.closest(".ck");
+  if(window._ckOn&&window._ckOn!==c){window._ckOn.style.transform="";window._ckOn.style.setProperty("--go",0);window._ckOn=null}
+  if(!c)return;window._ckOn=c;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  c.style.setProperty("--gx",x*100+"%");c.style.setProperty("--gy",y*100+"%");c.style.setProperty("--go",.3);
+  c.style.transform=`perspective(800px) rotateX(${((.5-y)*6).toFixed(2)}deg) rotateY(${((x-.5)*8).toFixed(2)}deg) translateY(-2px)`},{passive:true});
+/* E — la fiche s'ouvre depuis l'élément touché : elle « grandit » à partir de sa place. */
+let _morph=null;
+document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest(".rl-row,.ck,.row[onclick],.rank-row.link,.mb-card,.dem-card,.stat.link,.lieu-card,.cc,.tj-n,.km-mb,.reu-card,.meet,.dash-recos,.goal");
+  if(el&&!el.closest("#sheet"))_morph={r:el.getBoundingClientRect(),t:Date.now()}},true);
+function morphOuvrir(w){const m=_morph;_morph=null;if(!m||Date.now()-m.t>1500||isRail()||_calme()||w.classList.contains("force"))return;
+  const sh=w.querySelector(".sheet");if(!sh||!sh.animate)return;
+  requestAnimationFrame(()=>{const R=sh.getBoundingClientRect(),r=m.r;
+    // l'élément touché est souvent au-dessus de la fiche (qui monte du bas) : on part d'une bande de sa hauteur, en haut de la fiche
+    const h=Math.min(Math.max(r.height,48),R.height-40),t=Math.min(Math.max(0,r.top-R.top),R.height-h),b=Math.max(0,R.height-t-h);
+    const l=Math.min(Math.max(0,r.left-R.left),R.width-60),ri=Math.min(Math.max(0,R.right-r.right),R.width-l-60);
+    sh.style.animation="none";
+    sh.animate([{clipPath:`inset(${t}px ${ri}px ${b}px ${l}px round 16px)`,opacity:.6},{clipPath:"inset(0px 0px 0px 0px round 24px)",opacity:1}],{duration:440,easing:"cubic-bezier(.2,.8,.2,1)"}).onfinish=()=>{sh.style.animation=""}})}
+function skLignes(n){return `<div class="sk-l">${Array.from({length:n},(_,i)=>`<div class="sk-li" style="--i:${i}"><span class="sk sk-av"></span><span class="sk-tx"><span class="sk sk-1"></span><span class="sk sk-2"></span></span></div>`).join("")}</div>`}
+
 function dashATraiter(sc){
   const ids=new Set(_dashScope[sc]||[]);
-  const l=DB.clubs.filter(c=>ids.has(c.id)).map(c=>({c,t:clubTone(c),na:clubNextAction(c)})).filter(x=>x.t!=="ok").sort((a,b)=>(a.t==="urgent"?0:1)-(b.t==="urgent"?0:1)||a.c.nom.localeCompare(b.c.nom));
   const nI=SESSION.role==="visiteur"?0:adhAIntegrer().length,nS=SESSION.role==="visiteur"?0:adhASaisir().length;
   const adhRows=(nI?`<div class="rank-row link" onclick="openAdhesions('todo')"><span class="dt-ic urgent">📝</span><div class="rn">${nI} adhésion${nI>1?"s":""} à intégrer<small>Formulaires reçus par le lien</small></div></div>`:"")
-    +(nS?`<div class="rank-row link" onclick="openAdhesions('saisie')"><span class="dt-ic">🗂</span><div class="rn">${nS} à saisir dans le CRM national<small>Contrat membre à préparer</small></div></div>`:"");
-  if(!l.length&&!adhRows)return `<div class="dash-todo ok" id="dash-todo">✓ Rien n'attend d'action.</div>`;
-  if(!l.length)return `<div id="dash-todo" style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter</div><div class="rank dash-todo">${adhRows}</div>`;
-  const vis=l.slice(0,4);
-  return `<div id="dash-todo" style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${l.length+(nI?1:0)+(nS?1:0)}</span></div>
-    <div class="rank dash-todo">${adhRows}${vis.map(x=>`<div class="rank-row link" onclick="clubCardAction('${x.c.id}')"><span class="dt-ic ${x.t}">${clubIco(x.c,x.t)}</span><div class="rn">${esc(x.na.label)}<small>${esc(x.c.nom.replace(/^CAP\s+/,""))}</small></div></div>`).join("")}
-    ${l.length>vis.length?`<div class="rank-row link" onclick="filter='todo';go2('clubs')"><div class="rn" style="color:var(--crimson)">Voir les ${l.length} clubs à traiter</div></div>`:""}</div>`;
+    +(nS?`<div class="rank-row link" onclick="openAdhesions('saisie')"><span class="dt-ic">🗂</span><div class="rn">${nS} à saisir dans le CRM national<small>Contrat membre à préparer</small></div></div>`:"")
+    +(SESSION.role==="visiteur"?"":suiviRows(ids));
+  const reg=todoRegions(sc),nX=SESSION.role==="visiteur"?0:suiviCompte(ids);
+  const nC=DB.clubs.filter(c=>ids.has(c.id)).map(todoClub).filter(x=>x.plan||x.bil.length||x.anim).length;
+  const tot=nC+(nI?1:0)+(nS?1:0)+nX;
+  if(!tot)return `<div class="dash-todo ok" id="dash-todo">✓ Rien n'attend d'action.</div>`;
+  return `<div id="dash-todo" style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${tot}</span></div>
+    ${adhRows?`<div class="rank dash-todo">${adhRows}</div>`:""}${nC?reg+`<button type="button" class="km-lien" style="margin:-4px 2px 12px" onclick="go2('clubs')">Voir les ${nC} groupe${nC>1?"s":""} à traiter dans l'onglet Clubs ›</button>`:""}`;
 }
 function go2(t){go(t);if(t==="clubs"){filter="todo";render()}}
 /* Entonnoir des invités : une colonne par étape, hauteur proportionnelle, clic = la liste. */
@@ -2476,8 +2881,9 @@ function dashCountUp(root){
   root.querySelectorAll("[data-count]").forEach((el,i)=>{
     const fin=+el.dataset.count;if(!fin)return;
     const t0=performance.now()+i*45,dur=Math.min(900,350+fin*25);
-    el.textContent="0";
-    const pas=t=>{const k=Math.max(0,Math.min(1,(t-t0)/dur));el.textContent=Math.round(fin*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(pas)};
+    const f=el.dataset.fmt==="mad"?madFmt:(x=>x);const d2=el.dataset.fmt==="mad"?1300:dur;
+    el.textContent=f(0);
+    const pas=t=>{const k=Math.max(0,Math.min(1,(t-t0)/d2));el.textContent=f(Math.round(fin*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(pas)};
     requestAnimationFrame(pas);
   });
 }
@@ -2611,6 +3017,7 @@ function meetingDetail(m,editable){
       <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
       ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson);font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
+      ${editable?invRelanceBtn(m,g,i):""}
     </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${dt.getDate()}</b><small>${MOIS[dt.getMonth()]}</small></span>`,title:(c.nom||"—").replace(/^CAP\s+/,""),sub:`<span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span>${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" · "+m.heure:""}`,right:`<span class="st ${m.statut}">${STATUTS[m.statut]}</span>`})}
@@ -2622,6 +3029,7 @@ function meetingDetail(m,editable){
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
     ${bilanBloc(m,editable)}
+    ${presencesBloc(m,editable)}
     ${crBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -2868,7 +3276,8 @@ function memberSheet(clubId,id){
     <div class="field"><label>Spécialité</label><input id="m-specialite" value="${esc(m.specialite)}" placeholder="Métier / secteur"></div>
     <div style="margin:6px 0 4px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--crimson)">Étapes d'intégration</div>
     <div class="stp-grid">${chk("formulaire","Formulaire","📝")}${chk("contrat","Contrat","✍️")}${chk("facture","Facture","🧾")}${chk("paiement","Paiement","💳")}</div>
-    <div class="field" style="margin-top:14px"><label>Réorientation</label><input id="m-reorientation" value="${esc(m.reorientation)}" placeholder="Réorienté vers…"></div>
+    <div class="field" style="margin-top:14px"><label>Début d'abonnement</label><input id="m-abdebut" type="date" value="${esc(editing?abDebut(m):isoJour(TODAY))}" oninput="document.getElementById('m-abech').textContent=abEchTxt(this.value)"><small class="fh-note" id="m-abech">${esc(abEchTxt(editing?abDebut(m):isoJour(TODAY)))}</small></div>
+    <div class="field"><label>Réorientation</label><input id="m-reorientation" value="${esc(m.reorientation)}" placeholder="Réorienté vers…"></div>
     <div class="field"><label>Commentaires</label><textarea id="m-commentaires" placeholder="Notes libres">${esc(m.commentaires)}</textarea></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="openClub('${clubId}')">Annuler</button><button class="btn" onclick="saveMembre('${clubId}','${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?mbDossierHTML(m,true):""}
@@ -2892,8 +3301,10 @@ function mbDossierHTML(m,canEd){
     ${secHead("Informations",undefined,canEd?`<button class="btn ghost mini" onclick="mbInfosForm('${m.clubId}','${m.id}')">${vide?"+ Saisir":"Modifier"}</button>`:"")}
     ${vide?`<p class="fh-empty">Aucune information. ${canEd?"Elles se remplissent toutes seules quand le membre vient du formulaire d'adhésion, ou à la main.":""}</p>`:mbInfosHTML(d)}
     ${secHead("Documents",undefined,canEd?`<span class="mb-add"><select id="mb-doc-type"><option value="contrat_signe">Contrat signé</option><option value="contrat">Contrat</option><option value="formulaire">Formulaire</option><option value="autre" selected>Autre pièce</option></select><label class="btn ghost mini">+ Ajouter<input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp" onchange="mbDocAjouter('${m.clubId}','${m.id}',this)"></label></span>`:"")}
-    <div id="mb-docs"><p class="fh-empty">Chargement…</p></div>
+    <div id="mb-docs">${skLignes(2)}</div>
     ${mbEspaceHTML(m,d,canEd)}
+    ${mbAbonnementHTML(m,d,canEd)}
+    ${mbRecosHTML(m)}
   </div>`;
 }
 /* Espace membre (v0.23) : le membre se connecte sur membre.html avec son mobile (infos.m_tel) et un code WhatsApp. */
@@ -2989,16 +3400,17 @@ async function saveMembre(clubId,id){
   const dupSpec=spec&&DB.membres.some(m=>m.clubId===clubId&&m.id!==id&&(m.specialite||"").toLowerCase()===spec.toLowerCase());
   const row={club_id:clubId,nom,specialite:document.getElementById("m-specialite").value.trim(),
     formulaire:chk("formulaire"),contrat:chk("contrat"),facture:chk("facture"),paiement:chk("paiement"),
-    reorientation:document.getElementById("m-reorientation").value.trim(),commentaires:document.getElementById("m-commentaires").value.trim()};
+    reorientation:document.getElementById("m-reorientation").value.trim(),commentaires:document.getElementById("m-commentaires").value.trim(),
+    abonnement_debut:document.getElementById("m-abdebut").value||null};
   if(id){
     const {error}=await sb.from("membres").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}
-    Object.assign(DB.membres.find(x=>x.id===id),mapMembre({id,...row}));toast("Membre mis à jour");
+    {const old=DB.membres.find(x=>x.id===id);Object.assign(old,mapMembre({id,created_at:old.createdAt,user_id:old.inscrit?"x":null,infos:old.infos,relance_renouv_le:old.relanceRenouvLe,...row}),{vuLe:old.vuLe});}toast("Membre mis à jour");
   }else{
     const nextNum=(DB.membres.filter(x=>x.clubId===clubId).reduce((a,b)=>Math.max(a,b.num||0),0))+1;
     const {data,error}=await sb.from("membres").insert({...row,num:nextNum}).select().single();
     if(error){toast(rlsMsg(error));return}
-    DB.membres.push(mapMembre(data));toast("Membre ajouté");
+    DB.membres.push(mapMembre(data));const nid=data.id;setTimeout(()=>toast("Membre ajouté : "+nom,"s",()=>memberSheet(clubId,nid)),400);
   }
   openClub(clubId);
   if(dupSpec)setTimeout(()=>toast("⚠️ Spécialité « "+spec+" » déjà présente dans ce club"),1400);
@@ -3424,7 +3836,8 @@ async function adhIntegrer(id){
   const up=await sb.from("adhesions").update({statut:"integree",membre_id:data.id,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
   if(up.error){toast("Membre créé, mais l'adhésion n'a pas pu être marquée : "+rlsMsg(up.error));return}
   await sb.from("membre_documents").update({membre_id:data.id}).eq("adhesion_id",id); // le contrat déjà rangé rejoint le dossier
-  a.statut="integree";a.membre_id=data.id;toast(nom+" intégré(e) — membre n°"+num);adhDetail(id);
+  a.statut="integree";a.membre_id=data.id;adhDetail(id);
+  celebrer("🎉",nom+" rejoint "+(club(clubId).nom||"le club").replace(/^CAP\s+/,""),"Membre n°"+num,"Ouvrir sa fiche",()=>memberSheet(clubId,data.id));
 }
 function exportMembres(){
   const oui=b=>b?"Oui":"Non";
@@ -3584,7 +3997,7 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");morphOuvrir(w);filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
 function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null;_fil=[];filFicheRendu()}
 
 
@@ -3665,7 +4078,7 @@ function dashBonjour(){
   const ids=new Set(_dashScope.nat||[]);
   const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
   return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">
-    <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span>
+    <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span><span class="h-dust" aria-hidden="true">${Array.from({length:12},(_,i)=>`<i style="left:${(i*37+11)%100}%;bottom:${(i*17)%45}%;animation-duration:${6+(i%5)}s;animation-delay:${(i*.7)%6}s"></i>`).join("")}</span>
     <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`:"Rien ne presse aujourd'hui ✓"}</small></span>
     <span class="h-clock"><span class="h-time" data-hor="t">${horlogeTxt().h}</span><span class="h-date" data-hor="d">${horlogeTxt().d}</span></span>
     <span class="h-n"><b data-count="${n}">${n||"✓"}</b><small>${n?"à faire":"à jour"}</small></span></button>`;
@@ -3694,11 +4107,30 @@ function dashFete(){
   let neuf=null;
   atteints.forEach(c=>{const k="cap-fete-"+c.id;try{if(!localStorage.getItem(k)){localStorage.setItem(k,"1");if(!neuf)neuf=c}}catch(e){}});
   if(!neuf)return;
-  toast("🏆 "+neuf.nom.replace(/^CAP\s+/,"")+" a atteint son objectif !","s");
-  if(_calme())return;
+  celebrer("🏆",neuf.nom.replace(/^CAP\s+/,"")+" a atteint son objectif !",neuf.objectif+" membres","Voir le club",()=>openClub(neuf.id));
+}
+function pluieConfettis(){if(_calme())return;
   const box=document.getElementById("confetti");const col=["#B0122E","#C8A24C","#F3D88E","#2E7D5B","#5C0A18"];
-  box.innerHTML=Array.from({length:60},(_,i)=>`<i style="left:${Math.random()*100}%;background:${col[i%col.length]};animation-delay:${Math.random()*.4}s;--dx:${Math.round(Math.random()*160-80)}px;--r:${Math.round(Math.random()*720-360)}deg"></i>`).join("");
+  box.innerHTML=Array.from({length:70},(_,i)=>`<i style="left:${Math.random()*100}%;background:${col[i%col.length]};animation-delay:${Math.random()*.4}s;--dx:${Math.round(Math.random()*160-80)}px;--r:${Math.round(Math.random()*720-360)}deg"></i>`).join("");
   setTimeout(()=>box.innerHTML="",2600);
+}
+/* F — Célébration des vraies victoires : carte au centre + confettis. Un clic mène à la page concernée. */
+function celebrer(ico,titre,gros,lien,act){
+  document.querySelectorAll(".celeb").forEach(x=>x.remove());
+  const d=document.createElement("div");d.className="celeb";d.setAttribute("role","alertdialog");d.setAttribute("aria-label",titre);
+  d.innerHTML=`<div class="celeb-c"><span class="celeb-s">${ico}</span><b>${esc(titre)}</b>${gros?`<span class="celeb-g">${esc(gros)}</span>`:""}${act?`<button class="btn mini">${esc(lien||"Voir")} ›</button>`:""}</div>`;
+  const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),300)};
+  d.onclick=e=>{fin();if(act&&e.target.closest(".celeb-c"))act()};
+  document.body.appendChild(d);pluieConfettis();setTimeout(fin,5200);
+}
+/* H — Ce qui arrive de l'extérieur (adhésion, recommandation…) descend du haut ; un clic ouvre la page concernée. */
+function annonce(ico,titre,sous,act){
+  const d=document.createElement("button");d.type="button";d.className="annonce";
+  d.innerHTML=`<span class="an-ic">${ico}</span><span class="an-t"><b>${esc(titre)}</b>${sous?`<small>${esc(sous)}</small>`:""}</span>${act?'<span class="an-go" aria-hidden="true">›</span>':""}`;
+  const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),350)};
+  d.onclick=()=>{fin();if(act)act()};
+  const prev=document.querySelectorAll(".annonce:not(.out)");d.style.setProperty("--n",prev.length);
+  document.body.appendChild(d);setTimeout(fin,6500);
 }
 
 /* ============================================================
@@ -3731,7 +4163,7 @@ let _bil=null;
 function openBilan(id){
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
-  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:m.presents??0,inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:""};
+  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:""};
   renderBilan();openSheet();
 }
 function renderBilan(){
@@ -4110,12 +4542,20 @@ let _adhRafr=false;
 async function adhRafraichir(){
   if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
   try{
+    const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
+    if(!rr.error){const av=new Map((DB.recos||[]).map(r=>[r.id,r.statut]));const prem=!DB._recosVus;DB._recosVus=true;
+      DB.recos=rr.data||[];
+      if(!prem)DB.recos.forEach(r=>{const o=av.get(r.id);
+        if(o===undefined)annonce("🤝","Recommandation : "+membreNom(r.de)+" → "+membreNom(r.a),[r.contact_nom,r.contact_entreprise].filter(Boolean).join(" · "),()=>openRecos("nat"));
+        else if(o!=="signee"&&r.statut==="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),r.montant!=null?"+ "+madFmt(r.montant):"","Voir les recos",()=>openRecos("nat","signee"));})}
+    if(!pp.error)DB.presences=pp.data||[];
     const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
     if(error||!data)return;
     const avant=new Set((DB.adhesions||[]).map(a=>a.id)),nouv=data.filter(a=>!avant.has(a.id)&&a.statut==="recue");
     const change=data.length!==(DB.adhesions||[]).length||data.some(a=>{const o=(DB.adhesions||[]).find(x=>x.id===a.id);return !o||o.statut!==a.statut||o.membre_id!==a.membre_id});
     DB.adhesions=data;
-    if(nouv.length)toast(nouv.length>1?"📥 "+nouv.length+" nouvelles demandes d'adhésion":"📥 Nouvelle demande d'adhésion : "+adhNom(nouv[0]));
+    if(nouv.length>1)annonce("📥",nouv.length+" nouvelles demandes d'adhésion","Touche pour les voir",()=>openDemandes());
+    else if(nouv.length)annonce("📥","Nouvelle demande d'adhésion",adhNom(nouv[0])+(nouv[0].data&&nouv[0].data.ent_nom?" · "+nouv[0].data.ent_nom:""),()=>adhDetail(nouv[0].id));
     if(change){const sh=document.getElementById("sheet");if(!(sh&&sh.classList.contains("open")&&!isRail()))render();else demBadge()}
   }catch(e){console.warn(e)}finally{_adhRafr=false}
 }

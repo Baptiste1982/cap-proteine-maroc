@@ -1,6 +1,8 @@
 // Notifications de l'espace membre (v0.25.0), appelée par les déclencheurs de la base.
 //   type "message" : nouveau message direct → appareils du destinataire (ouvre la conversation).
 //   type "invite"  : invité proposé par un membre → appareils de l'animateur du club et de la direction.
+//   type "reco"    : recommandation d'affaires reçue (v0.26.0) → appareils de celui qui la reçoit.
+//   type "reco_suivi" : la recommandation avance (contact, devis, signée…) → appareils de celui qui l'a donnée.
 // verify_jwt:false — la fonction ne fait confiance qu'à la base : la ligne doit exister, dater de moins de
 // 15 min et ne pas avoir été notifiée (réservation atomique de notifie_le).
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -36,11 +38,41 @@ async function envoyer(userIds: string[], payload: Record<string, string>) {
   return n;
 }
 
+const ETAPE: Record<string, string> = { envoyee: "envoyée", contact: "contact pris", devis: "devis envoyé", signee: "affaire signée 🎉", sans_suite: "sans suite" };
+const mad = (n: number) => new Intl.NumberFormat("fr-FR").format(Math.round(n)).replace(/\u202f|\u00a0/g, " ") + " MAD";
+
+async function reco(type: string, id: string, depuis: string) {
+  let r: Record<string, any> | undefined;
+  if (type === "reco") {
+    const { data, error } = await sb.from("recommandations").update({ notifie_le: new Date().toISOString() })
+      .eq("id", id).is("notifie_le", null).gt("cree_le", depuis).select("id, de, a, contact_nom, contact_entreprise, besoin");
+    if (error) throw new Error(error.message);
+    r = data?.[0];
+  } else {
+    const { data: cur } = await sb.from("recommandations").select("statut").eq("id", id).gt("maj_le", depuis).maybeSingle();
+    if (!cur || cur.statut === "envoyee") return { ok: true, envoyes: 0 };
+    const { data, error } = await sb.from("recommandations").update({ suivi_notifie: cur.statut })
+      .eq("id", id).eq("statut", cur.statut).or(`suivi_notifie.is.null,suivi_notifie.neq.${cur.statut}`)
+      .select("id, de, a, contact_nom, statut, montant");
+    if (error) throw new Error(error.message);
+    r = data?.[0];
+  }
+  if (!r) return { ok: true, envoyes: 0, raison: "deja_notifie_ou_ancien" };
+  const { data: gens } = await sb.from("membres").select("id, nom, user_id").in("id", [r.de, r.a]);
+  const de = gens?.find((g) => g.id === r!.de), a = gens?.find((g) => g.id === r!.a);
+  const cible = type === "reco" ? a : de, autre = type === "reco" ? de : a;
+  if (!cible?.user_id) return { ok: true, envoyes: 0 };
+  const n = await envoyer([cible.user_id], type === "reco"
+    ? { title: "🤝 Recommandation de " + (autre?.nom || "un membre"), body: court([r.contact_nom, r.contact_entreprise, r.besoin].filter(Boolean).join(" · "), 140), url: "/membre.html#r=recues", tag: "reco-" + r.id }
+    : { title: "🤝 " + r.contact_nom + " : " + (ETAPE[r.statut] || r.statut), body: (autre?.nom || "Le membre") + " a fait avancer ta recommandation" + (r.statut === "signee" && r.montant ? " — " + mad(Number(r.montant)) : "") + ".", url: "/membre.html#r=donnees", tag: "reco-" + r.id });
+  return { ok: true, envoyes: n };
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "methode" }, 405);
   let type = "", id = "";
   try { const b = await req.json(); type = String(b.type || ""); id = String(b.id || ""); } catch { return json({ error: "corps" }, 400); }
-  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite"].includes(type)) return json({ error: "parametres" }, 400);
+  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite", "reco", "reco_suivi"].includes(type)) return json({ error: "parametres" }, 400);
   const depuis = new Date(Date.now() - 15 * 60e3).toISOString();
   try {
     if (type === "message") {
@@ -60,6 +92,7 @@ Deno.serve(async (req) => {
       });
       return json({ ok: true, envoyes: n });
     }
+    if (type === "reco" || type === "reco_suivi") return json(await reco(type, id, depuis));
     // invite
     const { data: rows, error } = await sb.from("invites")
       .update({ notifie_le: new Date().toISOString() })

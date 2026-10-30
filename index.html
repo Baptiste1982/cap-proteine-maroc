@@ -1470,6 +1470,97 @@ html.dark .vb-or{background:#3A3020;--enc:#4A3C22}html.dark .vb-or .vb-n{color:#
 .h-curseur{display:inline-block;width:2px;height:1em;background:#F6D9A0;vertical-align:-2px;margin-left:2px;animation:vbClig 1s steps(1) infinite}
 @keyframes vbClig{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.vb-t,.vb-dots i,.vb-courbe,.vb-bille,.vb-t>.vb-point,.hello.vivant,.h-curseur{animation:none!important}.vb-courbe{stroke-dashoffset:0}.vb-t>.vb-encre{display:none}}
+/*v033 — planifier en série */
+.ps-hz{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;font-weight:600;color:var(--muted);margin:4px 0 12px}
+.ps-l{display:flex;flex-direction:column;gap:10px}
+.ps-c{border:1px solid var(--line);border-left:4px solid var(--vc);border-radius:14px;padding:11px 12px;background:var(--card);animation:dmEntre .4s ease calc(var(--i)*40ms) backwards;transition:opacity .25s}
+.ps-c.off{opacity:.5}
+.ps-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;cursor:pointer}.ps-h input{accent-color:var(--crimson);width:17px;height:17px;align-self:center}
+.ps-h b{font-size:14.5px}.ps-h small{font-size:12px;color:var(--muted)}.ps-h i{color:var(--warn);font-style:normal;font-weight:600}
+.ps-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px;margin:9px 0}
+.ps-f select,.ps-f input{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:7px 8px;font:inherit;font-size:12.5px;background:var(--card);color:var(--ink)}
+.ps-d{display:flex;flex-wrap:wrap;gap:5px}
+.ps-j{border:1px solid color-mix(in srgb,var(--vc) 40%,var(--line));background:color-mix(in srgb,var(--vc) 8%,var(--card));color:var(--ink);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;transition:transform .2s,opacity .2s}
+.ps-j:hover{transform:translateY(-2px)}.ps-j.x{opacity:.45;text-decoration:line-through;background:none}
+.ps-vide{font-size:12px;color:var(--muted)}
+.ps-go{position:sticky;bottom:0;background:var(--card);padding-top:10px;margin-top:12px}
+.ps-appel{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:16px;border:1.5px dashed var(--crimson);border-radius:16px;background:color-mix(in srgb,var(--crimson) 4%,var(--card))}
+.ps-appel span{font-size:13px;color:var(--muted)}
+/*v033 — bilans express */
+.bil-prog{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px}
+.bil-prog i{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}.bil-prog b{display:block;height:100%;background:var(--crimson);border-radius:3px;transition:width .5s cubic-bezier(.2,1,.4,1)}
+.bil-in{width:58px;text-align:center;border:0;background:transparent;font:800 22px "Bricolage Grotesque",sans-serif;color:var(--ink);-moz-appearance:textfield;padding:0}
+.bil-in::-webkit-outer-spin-button,.bil-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.bil-in:focus{outline:2px solid var(--crimson-tint);border-radius:8px}
+/*v033 — embarquer l'équipe */
+.emb-l{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.emb-c{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);animation:dmEntre .4s ease calc(var(--i)*40ms) backwards}
+.emb-h{display:flex;gap:10px;align-items:flex-start}.emb-h .av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
+.emb-h div{display:flex;flex-direction:column;min-width:0}.emb-h b{font-size:14px}.emb-h small{font-size:12px;color:var(--muted)}.emb-h code{font-size:12px;background:var(--soft);padding:0 5px;border-radius:5px}
+.emb-e{font-size:12px;font-weight:700;margin-top:3px}.emb-e.r{color:var(--crimson)}.emb-e.w{color:var(--warn)}.emb-e.ok{color:var(--ok)}
+.emb-tel{margin:10px 0 0}
+.emb-go{width:100%;margin-top:10px}
+.emb-ok{margin-top:10px;padding:10px;border-radius:12px;background:var(--ok-tint);font-size:13px;animation:dmEntre .4s ease both}.emb-ok b{font-family:ui-monospace,monospace;font-size:14px}
+.emb-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.emb-2 .btn{text-align:center;text-decoration:none}
+/*v034 — calendrier de l'agenda */
+.cal-modes{display:inline-flex;gap:4px;background:var(--soft);border-radius:12px;padding:4px;margin:2px 0 12px}
+.cal-modes button{border:0;background:none;border-radius:9px;padding:7px 12px;font:700 13px Inter,sans-serif;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.cal-modes button.on{background:var(--card);color:var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.cal{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;overflow:hidden;margin-bottom:12px}
+.cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.cal-t{flex:1;margin:0;text-align:center;font:800 19px "Bricolage Grotesque",sans-serif;text-transform:capitalize;display:flex;flex-direction:column;align-items:center}
+.cal-t small{font:600 12px Inter,sans-serif;color:var(--muted);text-transform:none}
+.cal-fl{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--crimson);display:grid;place-items:center;cursor:pointer;position:relative;overflow:hidden;transition:background .2s,border-color .2s}
+.cal-fl:hover{background:var(--crimson-tint);border-color:var(--crimson)}
+.cal-fl.g:hover svg{animation:calTape .7s ease infinite;--sx:-3px}.cal-fl.d:hover svg{animation:calTape .7s ease infinite;--sx:3px}
+@keyframes calTape{50%{transform:translateX(var(--sx))}}
+.cal-fl.pousse svg{animation:calPousse .45s cubic-bezier(.3,1.6,.5,1)}
+.cal-fl.g.pousse svg{--px:-12px}.cal-fl.d.pousse svg{--px:12px}
+@keyframes calPousse{0%{transform:none}35%{transform:translateX(var(--px));opacity:0}36%{transform:translateX(calc(var(--px)*-1));opacity:0}100%{transform:none;opacity:1}}
+.cal-fl.pousse::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--crimson);opacity:.18;animation:calFlash .45s ease-out forwards}
+@keyframes calFlash{from{transform:scale(.3);opacity:.35}to{transform:scale(1.4);opacity:0}}
+.cal-auj{border:0;background:var(--crimson-tint);color:var(--crimson);font:700 12.5px Inter,sans-serif;border-radius:10px;padding:8px 10px;cursor:pointer}
+.slide-g{animation:calEntreG .38s cubic-bezier(.2,.9,.3,1)}.slide-d{animation:calEntreD .38s cubic-bezier(.2,.9,.3,1)}.slide-z{animation:calEntreZ .35s ease}
+@keyframes calEntreG{from{opacity:0;transform:translateX(36px)}}@keyframes calEntreD{from{opacity:0;transform:translateX(-36px)}}@keyframes calEntreZ{from{opacity:0;transform:scale(.97)}}
+.cal-tete,.cal-mois{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-tete span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding-bottom:4px}
+.cal-c{min-height:104px;border-radius:12px;background:var(--paper);padding:5px;display:flex;flex-direction:column;gap:3px;min-width:0;transition:background .2s}
+.cal-c:hover{background:var(--crimson-tint)}
+.cal-c.hors{opacity:.4}.cal-c.auj{box-shadow:inset 0 0 0 2px var(--crimson)}.cal-c.auj .cal-n{background:var(--crimson);color:#fff}
+.cal-n{font-size:12px;font-weight:800;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
+.cal-ev{display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%;min-width:0;border:0;border-left:3px solid var(--vc);border-radius:7px;padding:3px 6px;background:color-mix(in srgb,var(--vc) 12%,var(--card));cursor:pointer;transition:transform .2s cubic-bezier(.2,1.4,.4,1),box-shadow .2s}
+.cal-ev:hover{transform:translateY(-2px);box-shadow:0 6px 14px -8px rgba(0,0,0,.35)}
+.cal-ev b{font-size:11.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cal-ev small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cal-ev.rl{border-left-style:dashed}.cal-ev.annulee{opacity:.5;text-decoration:line-through}.cal-ev.realisee b::after{content:" ✓";color:var(--ok)}
+.cal-plus{border:0;background:none;color:var(--crimson);font-weight:800;font-size:11.5px;cursor:pointer;text-align:left;padding:0 4px}
+.cal-sem{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-j{background:var(--paper);border-radius:14px;padding:6px;min-height:200px;display:flex;flex-direction:column;gap:6px;min-width:0;animation:dmEntre .35s ease calc(var(--i)*35ms) backwards}
+.cal-j.auj{box-shadow:inset 0 0 0 2px var(--crimson)}
+.cal-jh{display:flex;flex-direction:column;align-items:center;padding:2px 0 4px;border-bottom:1px dashed var(--line)}
+.cal-jh span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.cal-jh b{font:800 20px "Bricolage Grotesque",sans-serif}
+.cal-j.auj .cal-jh b{color:var(--crimson)}
+.cal-jl{display:flex;flex-direction:column;gap:5px}
+.cal-rien{font-size:12px;color:var(--muted);text-align:center;margin:4px 0}
+.cal-ajout{border:1.5px dashed var(--line);background:none;border-radius:9px;color:var(--muted);font-size:16px;font-weight:700;cursor:pointer;padding:2px;opacity:0;transition:opacity .2s,color .2s,border-color .2s}
+.cal-j:hover .cal-ajout{opacity:1}.cal-ajout:hover{color:var(--crimson);border-color:var(--crimson)}
+.cal-astuce{font-size:12px;color:var(--muted);text-align:center;margin:10px 0 0}
+.cal-det{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:6px;animation:dmEntre .3s ease both}
+.cal-det-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.cal-det-h b{font-size:14px}
+.cal-det .cal-ev{padding:8px 10px}.cal-det .cal-ev b{font-size:13.5px}.cal-det .cal-ev small{font-size:12px}
+.cal-c.sel{background:var(--crimson-tint);box-shadow:inset 0 0 0 2px var(--crimson)}
+@media(max-width:899px){
+  .cal{padding:10px;border-radius:18px}
+  .cal-c{min-height:52px;align-items:center;padding:4px 2px;cursor:pointer}
+  .cal-pts{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}.cal-pts i{width:6px;height:6px;border-radius:50%}
+  .cal-sem{grid-template-columns:1fr;gap:6px}
+  .cal-j{min-height:0;flex-direction:row;align-items:flex-start;gap:10px;padding:8px}
+  .cal-jh{flex-direction:column;border-bottom:0;border-right:1px dashed var(--line);padding:0 8px 0 0;min-width:44px}
+  .cal-jl{flex:1;min-width:0}.cal-rien{text-align:left}
+  .cal-ajout{opacity:1;align-self:flex-start;padding:2px 10px}
+  .cal-t{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.cal *{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -1546,8 +1637,21 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.32.0";
+const APP_VERSION="0.34.0";
 const CHANGELOG=[
+  {v:"0.34.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "L'agenda devient un calendrier : vues Semaine et Mois (la semaine par défaut au téléphone, le mois sur ordinateur, ton choix est retenu), la vue Liste reste disponible. Les flèches ‹ › font glisser d'une semaine ou d'un mois à l'autre, avec une petite animation ; au téléphone on peut aussi balayer du doigt. Le bouton « Aujourd'hui » ramène à la période en cours. Chaque réunion s'ouvre d'un toucher ; au téléphone, toucher un jour du mois montre ses réunions ; sur ordinateur, double-cliquer un jour ou utiliser le + d'une journée planifie une réunion à cette date. Les filtres et la recherche s'appliquent au calendrier."
+    ]}},
+  {v:"0.33.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Planifier en série (Mes réunions) : les réunions des 1, 2, 3 ou 6 prochains mois de tous tes groupes, créées en un clic. Le rythme de chaque groupe (jour, rang dans le mois, heure, type) est deviné à partir de ses dernières réunions ; tu le corriges si besoin, tu retires une date d'un toucher, et le rythme est retenu pour la suite.",
+      "Bilans express : une barre de progression (« Bilan 3 sur 13 »), un bouton « Passer » pour revenir plus tard à une réunion, et les nombres (présents, invités, adhésions) se tapent au clavier.",
+      "Embarquer l'équipe (superadmin, depuis « À traiter » ou Comptes) : l'état de chaque compte (mot de passe de départ, jamais connecté, connecté le…), son mobile, et en un clic un mot de passe provisoire propre à chacun avec le message WhatsApp prêt (lien, identifiant, mot de passe). Le mot de passe provisoire impose d'en choisir un autre à la première connexion, comme « cap2026 »."
+    ],
+    "Corrigé":[
+      "La date proposée « Nième jour du mois » ne passait pas de décembre à janvier : les réunions de janvier n'étaient jamais proposées."
+    ]}},
   {v:"0.32.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Synthèse « vivante », au choix dans Paramètres → Apparence : les chiffres du réseau deviennent des cartes de tailles et de couleurs différentes (les membres en grande carte rouge avec leur courbe, les clubs en gris avec une pastille par club, l'alerte « aucune réunion » encadrée de rouge, le paiement en or avec son anneau, les groupes sans animateur avec leurs noms). Les chiffres roulent comme un compteur mécanique, l'encre de la carte se répand sous la souris, et le bandeau d'accueil s'anime avec un message du jour tiré des vrais chiffres. L'affichage classique reste celui par défaut."
@@ -1945,6 +2049,8 @@ async function loadDB(){
   DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
   try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
+  DB.aEmbarquer=0; // v0.33.0 : comptes d'équipe à embarquer (superadmin seulement, jamais bloquant)
+  if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.recos=[];DB.presences=[];
   try{const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
@@ -2050,10 +2156,10 @@ function tutoEtapes(partie){
       {go:"dash",c:'#view .tools button[onclick="openConstellation()"]',t:"Le réseau en constellation",x:"Pour présenter le réseau : une carte animée en plein écran. Les régions sont en orbite, chaque groupe est un astre dont la taille dit les membres et la couleur l'état. Passe sur un astre pour le mettre en avant, touche-le pour sa fiche. « ▶ Présenter » lance le diaporama."},
       {go:"dash",t:"Les notifications",x:"Nouvelles demandes, recommandations, objectifs atteints : elles s'empilent en bas à droite de l'écran. Touche-en une pour ouvrir la page concernée."}],
     agenda:[
-      {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : changer le jour d'une réunion, écrire le compte rendu, et planifier la suivante en un clic avec le lieu, le jour et l'heure habituels du club."},
+      {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : « Planifier en série » crée d'un coup les réunions des prochains mois de chaque groupe à partir de son rythme. Tu peux aussi changer le jour d'une réunion, écrire le compte rendu, et enchaîner les bilans en retard."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
       ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
-      {go:"agenda",c:'#view [onclick^="openMeeting"]',t:"Une réunion",x:"Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
+      {go:"agenda",c:'#view [onclick^="openMeeting"], #cal .cal-corps',t:"Une réunion",x:"Le calendrier montre la semaine ou le mois : les flèches ‹ › changent de période. Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
     clubs:[
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
       {go:"clubs",c:'#view [onclick^="openClub"]',t:"La fiche d'un club",x:`Ouvre un club pour voir ses réunions, ses membres et son lien d'adhésion, à envoyer aux futurs membres par WhatsApp ou à copier.`},
@@ -2393,6 +2499,7 @@ function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)re
 function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&r.statut!=="annulee"&&!r.crLe&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
 function rythmeTexte(c){if(!c.rJour)return"";const r=c.rRang??0;return (r===0?"Chaque "+JOURS_LONG[c.rJour]:"Le "+RANGS[r]+" "+JOURS_LONG[c.rJour]+" du mois")+(c.heureHab?" à "+c.heureHab:"")}
 function nthJour(y,m,jour,rang){ // jour 1=lundi..7 ; rang 1..4 ou -1
+  const b=new Date(y,m,1);y=b.getFullYear();m=b.getMonth(); // mois au-delà de décembre : on passe à l'année suivante
   const js=jour%7;
   if(rang===-1){const d=new Date(y,m+1,0);while(d.getDay()!==js)d.setDate(d.getDate()-1);return d}
   const d=new Date(y,m,1);while(d.getDay()!==js)d.setDate(d.getDate()+1);d.setDate(d.getDate()+7*(rang-1));return d.getMonth()===m?d:null;
@@ -2429,11 +2536,11 @@ function viewReunions(){
       <small>${rt?esc(rt):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · "+esc(lieuNom(c.lieuHab)):""}</small>
       ${nd?`<em>Prochaine date proposée : ${dateLongue(nd)}</em>`:""}</div>
       <div class="reu-act">${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">${rt?"Régler":"Définir le rythme"}</button><button class="btn mini" onclick="planifierSuivante('${c.id}')">Planifier la suivante</button>`:""}</div></div>`}).join("");
-  return `<div class="page reu"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mes réunions</h2><p>${clubs.length} club${clubs.length>1?"s":""} · ${avenir.length} réunion${avenir.length>1?"s":""} à venir${acr.length?` · <b style="color:var(--crimson)">${acr.length} compte${acr.length>1?"s":""} rendu${acr.length>1?"s":""} à écrire</b>`:""}</p></div></div>
+  return `<div class="page reu"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mes réunions</h2><p>${clubs.length} club${clubs.length>1?"s":""} · ${avenir.length} réunion${avenir.length>1?"s":""} à venir${acr.length?` · <b style="color:var(--crimson)">${acr.length} compte${acr.length>1?"s":""} rendu${acr.length>1?"s":""} à écrire</b>`:""}</p></div><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>
     ${bascule}
     ${acr.length?`<div class="month-label">Comptes rendus à écrire <span style="color:var(--crimson);font-weight:700">${acr.length}</span></div><div class="reu-l">${acr.map(reuCarte).join("")}</div>`:""}
     <div class="month-label">À venir <span style="color:var(--crimson);font-weight:700">${avenir.length}</span></div>
-    <div class="reu-l">${avenir.length?avenir.map(reuCarte).join(""):`<p class="fh-empty">Aucune réunion à venir. Planifie la suivante depuis le rythme d'un club ci-dessous.</p>`}</div>
+    <div class="reu-l">${avenir.length?avenir.map(reuCarte).join(""):`<div class="ps-appel"><b>Aucune réunion à venir.</b><span>Planifie d'un coup les prochains mois de tous tes groupes.</span><button class="btn" onclick="openPlanSerie()">📆 Planifier en série</button></div>`}</div>
     <div class="month-label">Rythme de ${mine.length&&!window._reuTous?"mes ":""}clubs</div>
     <div class="reu-l">${rythmes||`<p class="fh-empty">Aucun club rattaché à ton compte.</p>`}</div>
     ${hist.length?`<div class="month-label">Derniers comptes rendus</div><div class="reu-l">${hist.map(reuCarte).join("")}</div>`:""}
@@ -2469,6 +2576,77 @@ async function cjEnregistrer(id){
     const e2=await sb.from("clubs").update(up).eq("id",c.id);if(!e2.error){if(up.lieu_habituel_id)c.lieuHab=up.lieu_habituel_id;if(up.heure_habituelle)c.heureHab=up.heure_habituelle}
   }
   toast("Réunion déplacée au "+dateLongue(dObj(date)));await okPuis();closeSheet();render();
+}
+/* ============================================================
+   v0.33.0 — PLANIFIER EN SÉRIE : toutes les réunions des prochains mois, groupe par groupe, en un clic.
+   Le rythme est deviné depuis les dernières réunions du groupe (jour, rang dans le mois, heure, type)
+   quand il n'est pas encore enregistré ; il est enregistré sur le club à la création.
+   ============================================================ */
+function psDeviner(c){
+  const h=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").sort((a,b)=>b.date.localeCompare(a.date));
+  const der=h[0],o={jour:c.rJour||null,rang:c.rRang??null,heure:c.heureHab||"",lieu:c.lieuHab||"",type:der?der.type:"SI",devine:false};
+  if(!o.jour&&der){const d=dObj(der.date);o.jour=d.getDay()||7;o.devine=true;
+    const fin=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    const ecart=h[1]?Math.round((dObj(h[0].date)-dObj(h[1].date))/864e5):30;
+    o.rang=ecart<=10?0:(d.getDate()+7>fin&&d.getDate()>21?-1:Math.min(4,Math.ceil(d.getDate()/7)))}
+  if(!o.heure&&der&&der.heure)o.heure=der.heure;
+  if(!o.lieu&&der&&der.lieuId)o.lieu=der.lieuId;
+  if(o.rang===null)o.rang=1;if(!o.heure)o.heure="19:00";
+  return o;
+}
+function psDates(c,o,mois){
+  if(!o.jour)return[];
+  const der=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").map(r=>r.date).sort().pop();
+  const min=new Date(TODAY);if(der){const d=dObj(der);d.setDate(d.getDate()+1);if(d>min)min.setTime(d.getTime())}
+  const max=new Date(TODAY);max.setMonth(max.getMonth()+mois);
+  const out=[];
+  if(o.rang===0){const d=new Date(min);while(d.getDay()!==o.jour%7)d.setDate(d.getDate()+1);for(;d<=max;d.setDate(d.getDate()+7))out.push(new Date(d))}
+  else for(let k=0;k<=mois+1;k++){const d=nthJour(min.getFullYear(),min.getMonth()+k,o.jour,o.rang);if(d&&d>=min&&d<=max)out.push(d)}
+  return out.map(isoJour);
+}
+function openPlanSerie(){
+  const clubs=DB.clubs.filter(c=>canEditClubId(c.id)).sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  if(!clubs.length){toast("Aucun club modifiable avec ton compte");return}
+  const ps=window._ps={mois:(window._ps&&window._ps.mois)||3,c:{}};
+  clubs.forEach(c=>{const o=psDeviner(c);ps.c[c.id]={...o,inc:!!o.jour,exclus:new Set()}});
+  psRendu();openSheet();
+}
+function psRendu(){
+  const ps=window._ps,clubs=Object.keys(ps.c).map(club);let total=0;
+  const rangs=[[0,"Chaque semaine"],[1,"1er du mois"],[2,"2e du mois"],[3,"3e du mois"],[4,"4e du mois"],[-1,"Dernier du mois"]];
+  const cartes=clubs.map((c,i)=>{const o=ps.c[c.id],dates=psDates(c,o,ps.mois),gard=dates.filter(d=>!o.exclus.has(d));if(o.inc)total+=gard.length;
+    const sel=(id,opts,v)=>`<select onchange="psSet('${c.id}','${id}',this.value)">${opts.map(([k,l])=>`<option value="${k}" ${String(v)===String(k)?"selected":""}>${esc(l)}</option>`).join("")}</select>`;
+    return `<div class="ps-c${o.inc?"":" off"}" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,12)}">
+      <label class="ps-h"><input type="checkbox" ${o.inc?"checked":""} onchange="psSet('${c.id}','inc',this.checked)"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.animId?" · "+esc(animNom(c.animId)):" · <span class=\"reu-warn\">sans animateur</span>"}${o.devine?" · <i>rythme deviné</i>":""}</small></label>
+      <div class="ps-f">${sel("rang",rangs,o.rang)}${sel("jour",[["","Jour…"],...[1,2,3,4,5,6,7].map(j=>[j,JOURS_LONG[j].replace(/^./,x=>x.toUpperCase())])],o.jour||"")}
+        <input type="time" value="${esc(o.heure)}" onchange="psSet('${c.id}','heure',this.value)">${sel("type",[["SI","SI · information"],["RL","RL · lancement"]],o.type)}
+        <select onchange="psSet('${c.id}','lieu',this.value)">${lieuOptions(o.lieu,c.ville)}</select></div>
+      <div class="ps-d">${!o.jour?`<span class="ps-vide">Choisis un jour pour voir les dates</span>`:dates.length?dates.map(d=>`<button type="button" class="ps-j${o.exclus.has(d)?" x":""}" onclick="psBasc('${c.id}','${d}')" title="${o.exclus.has(d)?"Remettre":"Retirer"} cette date">${dateCourte(d)}</button>`).join(""):`<span class="ps-vide">Aucune date dans la période</span>`}</div></div>`}).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:"📆",title:"Planifier en série",sub:"Toutes les réunions des prochains mois, groupe par groupe. Touche une date pour la retirer."})}
+    <div class="ps-hz">Sur ${[1,2,3,6].map(m=>`<button class="chip ${ps.mois===m?"on":""}" onclick="window._ps.mois=${m};psRendu()">${m} mois</button>`).join("")}</div>
+    <div class="ps-l">${cartes}</div>
+    <div class="sheet-actions ps-go"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" id="ps-ok" ${total?"":"disabled"} onclick="psCreer()">Créer ${total} réunion${total>1?"s":""}</button></div>`;
+  pillify(document.getElementById("sheet-content"));
+}
+function dateCourte(iso){const d=dObj(iso);return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]}
+function psSet(id,k,v){const o=window._ps.c[id];if(k==="inc")o.inc=v;else if(k==="rang")o.rang=+v;else if(k==="jour"){o.jour=v?+v:null;if(o.jour)o.inc=true}else o[k]=v;o.exclus=k==="inc"||k==="type"||k==="lieu"||k==="heure"?o.exclus:new Set();o.devine=false;psRendu()}
+function psBasc(id,d){const o=window._ps.c[id];o.exclus.has(d)?o.exclus.delete(d):o.exclus.add(d);psRendu()}
+async function psCreer(){
+  const ps=window._ps,b=document.getElementById("ps-ok");if(b){b.disabled=true;b.textContent="Création…"}
+  let n=0,err=0;
+  for(const id of Object.keys(ps.c)){const o=ps.c[id],c=club(id);if(!o.inc||!o.jour)continue;
+    const dates=psDates(c,o,ps.mois).filter(d=>!o.exclus.has(d));if(!dates.length)continue;
+    const up={rythme_jour:o.jour,rythme_rang:o.rang,heure_habituelle:o.heure||null,lieu_habituel_id:o.lieu||null};
+    const e1=await sb.from("clubs").update(up).eq("id",id);if(!e1.error)Object.assign(c,{rJour:o.jour,rRang:o.rang,heureHab:o.heure||"",lieuHab:o.lieu||null});
+    const rows=dates.map(date=>({type:o.type,club_id:id,date,heure:o.heure||null,lieu_id:o.lieu||null,animateur_id:c.animId||null,statut:"planifiee"}));
+    const {data,error}=await sb.from("reunions").insert(rows).select();
+    if(error){err++;console.error(error);continue}
+    (data||[]).forEach(r=>DB.reunions.push(mapReunion(r)));n+=(data||rows).length;
+  }
+  if(err&&!n){toast("Création impossible : vérifie tes droits sur ces clubs");if(b){b.disabled=false;b.textContent="Réessayer"}return}
+  closeSheet();render();
+  celebrer("📆",n+" réunion"+(n>1?"s":"")+" planifiée"+(n>1?"s":""),err?err+" groupe"+(err>1?"s":"")+" en erreur":"sur "+ps.mois+" mois","Voir l'agenda",()=>go("agenda"));
 }
 function openRythme(clubId){
   const c=club(clubId);
@@ -2586,10 +2764,81 @@ function viewAgenda(){
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
-    ${agendaSemaine(all)}
+    ${calModes()}
+    ${calVue()==="liste"?agendaSemaine(all):""}
     <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Lancements","RL")}${villeChips}</div>
-    ${cards}<div style="height:8px"></div></div>`;
+    ${calVue()==="liste"?cards:calendrier(list.filter(m=>!filter.startsWith("d:")))}<div style="height:8px"></div></div>`;
 }
+/* ============================================================
+   v0.34.0 — CALENDRIER DE L'AGENDA : vues Liste / Semaine / Mois (semaine par défaut au téléphone,
+   mois sur PC, choix mémorisé), flèches ‹ › qui font glisser la période (et balayage au doigt),
+   bouton « Aujourd'hui ». Les filtres et la recherche de l'agenda s'appliquent au calendrier.
+   ============================================================ */
+function calVue(){let v=null;try{v=localStorage.getItem("cap-agvue")}catch(e){}return ["liste","semaine","mois"].includes(v)?v:(isWide()?"mois":"semaine")}
+function calChoisir(v){try{localStorage.setItem("cap-agvue",v)}catch(e){}window._calSens=null;render()}
+function calModes(){const v=calVue(),b=(k,ic,l)=>`<button role="tab" aria-selected="${v===k}" class="${v===k?"on":""}" onclick="calChoisir('${k}')">${ic} ${l}</button>`;
+  return `<div class="cal-modes" role="tablist" aria-label="Affichage de l'agenda">${b("liste","☰","Liste")}${b("semaine","▤","Semaine")}${b("mois","▦","Mois")}</div>`}
+function calCur(){if(!window._calCur)window._calCur=new Date(TODAY);return window._calCur}
+function calLundi(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+function calAller(sens,btn){
+  const v=calVue(),c=new Date(calCur());
+  if(sens===0){window._calCur=new Date(TODAY)}else if(v==="mois"){c.setDate(1);c.setMonth(c.getMonth()+sens);window._calCur=c}else{c.setDate(c.getDate()+7*sens);window._calCur=c}
+  window._calSens=sens>0?"g":sens<0?"d":"z";window._calJour=null;
+  if(btn&&!_calme()){btn.classList.remove("pousse");void btn.offsetWidth;btn.classList.add("pousse")}
+  calMaj();
+}
+/* Ne remplace que le titre et la grille : les flèches restent en place et gardent leur animation. */
+function calMaj(){const z=document.getElementById("cal");if(!z){render();return}
+  const nz=document.createElement("div");nz.innerHTML=calendrier(window._calList||[]);const n=nz.firstElementChild;
+  ["cal-t","cal-corps"].forEach(k=>{const a=z.querySelector("."+k),b=n.querySelector("."+k);if(a&&b)a.replaceWith(b)});
+  window._calSens=null;}
+function calPuce(m){const c=club(m.clubId);return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}" style="--vc:${villeColor(c.ville)}" onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(TYPES[m.type]||m.type)}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))}">
+  <b>${m.heure?esc(m.heure.slice(0,5))+" ":""}${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.type}${m.lieuId?" · "+esc(lieuNom(m.lieuId)):" · lieu à définir"}</small></button>`}
+function calendrier(list){
+  window._calList=list;
+  const v=calVue(),cur=calCur(),auj=isoJour(TODAY),parJour={};
+  list.forEach(m=>{(parJour[m.date]=parJour[m.date]||[]).push(m)});Object.values(parJour).forEach(l=>l.sort((a,b)=>(a.heure||"").localeCompare(b.heure||"")));
+  const peut=!readOnly(),sens=window._calSens?" slide-"+window._calSens:"";
+  let titre,corps;
+  const jt=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+  if(v==="mois"){
+    const p=new Date(cur.getFullYear(),cur.getMonth(),1),deb=calLundi(p),wide=isWide();
+    titre=MOIS_LONG[p.getMonth()]+" "+p.getFullYear();
+    const n=list.filter(m=>m.date.slice(0,7)===isoJour(p).slice(0,7)).length;
+    let cells="";for(let i=0;i<42;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[],hors=d.getMonth()!==p.getMonth();
+      if(i===35&&hors&&d.getDate()<=7)break;
+      cells+=`<div class="cal-c${hors?" hors":""}${iso===auj?" auj":""}${window._calJour===iso?" sel":""}${ev.length?" a":""}" style="--i:${i}" ${wide?(peut?`ondblclick="calNouvelle('${iso}')"`:""):`onclick="calJour('${iso}')"`}>
+        <span class="cal-n">${d.getDate()}</span>${wide?ev.slice(0,3).map(calPuce).join("")+(ev.length>3?`<button type="button" class="cal-plus" onclick="event.stopPropagation();calJour('${iso}')">+${ev.length-3}</button>`:""):`<span class="cal-pts">${ev.slice(0,4).map(m=>`<i style="background:${villeColor(club(m.clubId).ville)}"></i>`).join("")}</span>`}</div>`}
+    corps=`<div class="cal-tete">${jt.map(j=>`<span>${j}</span>`).join("")}</div><div class="cal-mois">${cells}</div>`+(!wide||window._calJour?calDetailJour(window._calJour,parJour):"");
+    titre+=`<small>${n} réunion${n>1?"s":""}</small>`;
+  }else{
+    const deb=calLundi(cur),fin=new Date(deb);fin.setDate(deb.getDate()+6);
+    titre=`${deb.getDate()}${deb.getMonth()!==fin.getMonth()?" "+MOIS[deb.getMonth()]:""} – ${fin.getDate()} ${MOIS_LONG[fin.getMonth()].toLowerCase()}`;
+    let cols="";for(let i=0;i<7;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[];
+      cols+=`<div class="cal-j${iso===auj?" auj":""}${ev.length?" a":""}" style="--i:${i}"><div class="cal-jh"><span>${jt[i]}</span><b>${d.getDate()}</b></div>
+        <div class="cal-jl">${ev.map(calPuce).join("")||`<span class="cal-rien">—</span>`}${peut&&iso>=auj?`<button type="button" class="cal-ajout" onclick="calNouvelle('${iso}')" aria-label="Planifier le ${jourLong(iso)}">+</button>`:""}</div></div>`}
+    const n=list.filter(m=>m.date>=isoJour(deb)&&m.date<=isoJour(fin)).length;
+    titre+=`<small>${n} réunion${n>1?"s":""} · semaine ${calNumSemaine(deb)}</small>`;
+    corps=`<div class="cal-sem">${cols}</div>`;
+  }
+  return `<section class="cal cal-v-${v}" id="cal">
+    <div class="cal-nav"><button type="button" class="cal-fl g" onclick="calAller(-1,this)" aria-label="Période précédente"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h3 class="cal-t${sens}">${titre}</h3>
+      <button type="button" class="cal-auj" onclick="calAller(0,this)">Aujourd'hui</button>
+      <button type="button" class="cal-fl d" onclick="calAller(1,this)" aria-label="Période suivante"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    <div class="cal-corps${sens}" ontouchstart="calTouch(event,1)" ontouchend="calTouch(event,0)">${corps}</div></section>`;
+}
+function calNumSemaine(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const j=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-j);const a=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-a)/864e5+1)/7)}
+function calDetailJour(iso,parJour){
+  if(!iso)return `<p class="cal-astuce">Touche un jour pour voir ses réunions.</p>`;
+  const ev=parJour[iso]||[];
+  return `<div class="cal-det"><div class="cal-det-h"><b>${jourLong(iso)}</b>${!readOnly()&&iso>=isoJour(TODAY)?`<button class="btn mini" onclick="calNouvelle('${iso}')">+ Planifier</button>`:""}</div>${ev.length?ev.map(calPuce).join(""):`<p class="cal-rien">Aucune réunion ce jour-là.</p>`}</div>`;
+}
+function calJour(iso){window._calJour=window._calJour===iso?null:iso;window._calSens=null;calMaj()}
+function calNouvelle(iso){meetingForm(null);const el=document.getElementById("f-date");if(el){el.value=iso;el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}))}}
+let _calTx=null;
+function calTouch(e,deb){const t=e.changedTouches&&e.changedTouches[0];if(!t)return;if(deb){_calTx=[t.clientX,t.clientY];return}if(!_calTx)return;
+  const dx=t.clientX-_calTx[0],dy=t.clientY-_calTx[1];_calTx=null;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)calAller(dx<0?1:-1,document.querySelector(dx<0?".cal-fl.d":".cal-fl.g"))}
 function chip(l,v){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}</button>`}
 
 function meetingRow(m){
@@ -2895,13 +3144,13 @@ function dashBento(s,sc){
   const now=new Date(),pts=[];for(let i=5;i>=0;i--){const fin=isoJour(new Date(now.getFullYear(),now.getMonth()-i+1,1));pts.push(mb.filter(m=>!m.createdAt||m.createdAt.slice(0,10)<fin).length)}
   const mx=Math.max(1,...pts),xy=pts.map((v,i)=>[i*60,95-(v/mx)*80]),dl=xy.map((p,i)=>(i?"L":"M")+p[0]+","+p[1].toFixed(1)).join(" ");
   const sans=DB.clubs.filter(c=>ids.has(c.id)&&!c.animId),clubsT=DB.clubs.filter(c=>ids.has(c.id));
-  const pct=s.membres?s.payes/s.membres:0,t=(cls,kind,i,inner)=>`<article class="vb-t ${cls}" style="--i:${i}" role="button" tabindex="0" onclick="dashDrill('${kind}','${sc}')" onkeydown="if(event.key==='Enter')dashDrill('${kind}','${sc}')"><span class="vb-encre"></span>${inner}</article>`;
+  const pct=s.membres?s.payes/s.membres:0,t=(cls,kind,i,inner)=>{const fn=kind==="plan"?"openPlanSerie()":`dashDrill('${kind}','${sc}')`;return `<article class="vb-t ${cls}" style="--i:${i}" role="button" tabindex="0" onclick="${fn}" onkeydown="if(event.key==='Enter')${fn.replace(/"/g,"&quot;")}"><span class="vb-encre"></span>${inner}</article>`};
   const go=`<span class="vb-go" aria-hidden="true">↗</span>`;
   return `<div class="vb">
     ${t("vb-big","membres",0,`${go}<span class="vb-l">Membres</span><span class="vb-n">${vbOdo(s.membres)}</span>${s.membresMois?`<span class="vb-badge">▲ +${s.membresMois} ce mois</span>`:""}<span class="vb-s">dans ${s.clubs} groupe${s.clubs>1?"s":""}</span>
       <svg viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true"><path d="${dl} L300,100 L0,100Z" fill="rgba(255,255,255,.1)"/><path class="vb-courbe" d="${dl}" fill="none" stroke="#F6D9A0" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle class="vb-bille" r="4" style="offset-path:path('${dl}')"/></svg>`)}
     ${t("vb-gris","clubs",1,`${go}<span class="vb-l">Clubs</span><span class="vb-n">${vbOdo(s.clubs)}</span><span class="vb-s">${s.actifs} actif${s.actifs>1?"s":""} · ${s.creation} en création</span><span class="vb-dots">${clubsT.map((c,i)=>`<i class="${c.statut==="actif"?"":"off"}" style="--d:${i}" title="${esc(c.nom.replace(/^CAP\s+/,""))}"></i>`).join("")}</span>`)}
-    ${t(s.reunionsAvenir?"vb-blanc":"vb-alerte","reunions",2,`${s.reunionsAvenir?go:'<span class="vb-point"></span>'}<span class="vb-l">Réunions à venir</span><span class="vb-n">${vbOdo(s.reunionsAvenir)}</span>${s.reunionsAvenir?`<span class="vb-s">planifiées</span>`:`<span class="vb-cta">Aucune date · planifier ›</span>`}`)}
+    ${t(s.reunionsAvenir?"vb-blanc":"vb-alerte",s.reunionsAvenir||readOnly()?"reunions":"plan",2,`${s.reunionsAvenir?go:'<span class="vb-point"></span>'}<span class="vb-l">Réunions à venir</span><span class="vb-n">${vbOdo(s.reunionsAvenir)}</span>${s.reunionsAvenir?`<span class="vb-s">planifiées</span>`:`<span class="vb-cta">Aucune date · planifier ›</span>`}`)}
     ${t("vb-or","payes",3,`${go}<span class="vb-l">À jour du paiement</span><span class="vb-n">${vbOdo(s.payes)}</span><span class="vb-s">sur ${s.membres} membre${s.membres>1?"s":""}</span>
       <svg class="vb-anneau" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(138,101,22,.18)" stroke-width="6"/><circle cx="23" cy="23" r="18" fill="none" stroke="#8A6516" stroke-width="6" stroke-dasharray="113" stroke-dashoffset="${(113-113*pct).toFixed(1)}" transform="rotate(-90 23 23)" stroke-linecap="round"/></svg>`)}
     ${t(s.invites?"vb-blanc":"vb-vide","invites",4,`${s.invites?go:""}<span class="vb-l">Invités suivis</span><span class="vb-n">${vbOdo(s.invites)}</span>${s.invites?`<span class="vb-s">${s.invitesMembre} devenu${s.invitesMembre>1?"s":""} membre${s.invitesMembre>1?"s":""}</span>`:`<span class="vb-plus">+ Ajouter les invités d'une réunion</span>`}`)}
@@ -3227,10 +3476,11 @@ function dashATraiter(sc){
   const nI=SESSION.role==="visiteur"?0:adhAIntegrer().length,nS=SESSION.role==="visiteur"?0:adhASaisir().length;
   const adhRows=(nI?`<div class="rank-row link" onclick="openAdhesions('todo')"><span class="dt-ic urgent">📝</span><div class="rn">${nI} adhésion${nI>1?"s":""} à intégrer<small>Formulaires reçus par le lien</small></div></div>`:"")
     +(nS?`<div class="rank-row link" onclick="openAdhesions('saisie')"><span class="dt-ic">🗂</span><div class="rn">${nS} à saisir dans le CRM national<small>Contrat membre à préparer</small></div></div>`:"")
-    +(SESSION.role==="visiteur"?"":suiviRows(ids));
+    +(SESSION.role==="visiteur"?"":suiviRows(ids))
+    +(SESSION.role==="superadmin"&&DB.aEmbarquer?`<div class="rank-row link" onclick="openEmbarquer()"><span class="dt-ic urgent">🚀</span><div class="rn">${DB.aEmbarquer} compte${DB.aEmbarquer>1?"s":""} d'équipe à embarquer<small>Mot de passe de départ ou jamais connecté · accès à envoyer par WhatsApp</small></div></div>`:"");
   const reg=todoRegions(sc),nX=SESSION.role==="visiteur"?0:suiviCompte(ids);
   const nC=DB.clubs.filter(c=>ids.has(c.id)).map(todoClub).filter(x=>x.plan||x.bil.length||x.anim).length;
-  const tot=nC+(nI?1:0)+(nS?1:0)+nX;
+  const tot=nC+(nI?1:0)+(nS?1:0)+nX+(SESSION.role==="superadmin"&&DB.aEmbarquer?1:0);
   if(!tot)return `<div class="dash-todo ok">✓ Rien n'attend d'action.</div>`;
   return `<div class="dash-h dash-todo-h">À traiter <span style="color:var(--crimson);font-weight:700">${tot}</span></div>
     ${adhRows?`<div class="rank dash-todo">${adhRows}</div>`:""}${nC?reg+`<button type="button" class="km-lien" style="margin:-4px 2px 12px" onclick="go2('clubs')">Voir les ${nC} groupe${nC>1?"s":""} à traiter dans l'onglet Clubs ›</button>`:""}`;
@@ -4337,13 +4587,13 @@ async function changePassword(){
   const {error}=await sb.auth.updateUser({password:p1});
   if(b){b.disabled=false;b.textContent="Enregistrer"}
   if(error){toast("Erreur : "+error.message);return}
-  _mdpForce=false;toast("Mot de passe modifié");closeSheet();
+  _mdpForce=false;sb.rpc("cap_mdp_change_fait").then(()=>{},()=>{});toast("Mot de passe modifié");closeSheet();
   if(_tutoEnAttente){_tutoEnAttente=false;setTimeout(()=>tutoLancer("complet",true),900)}
 }
 function openMyPassword(force){
   document.getElementById("sheet-content").innerHTML=`
     <h3>${force?"Choisis ton mot de passe":"Mon mot de passe"}</h3>
-    <div class="sheet-sub">${force?"Ton compte utilise encore le mot de passe de départ, commun à toute l'équipe. Choisis le tien pour continuer : 8 caractères minimum.":"Change ton mot de passe de connexion (8 caractères minimum)."}</div>
+    <div class="sheet-sub">${force?"Ton compte utilise un mot de passe de départ ou provisoire. Choisis le tien pour continuer : 8 caractères minimum.":"Change ton mot de passe de connexion (8 caractères minimum)."}</div>
     <div class="field"><label>Nouveau mot de passe</label><input id="cp-1" type="password" autocomplete="new-password" placeholder="••••••••"></div>
     <div class="field"><label>Confirmer</label><input id="cp-2" type="password" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')changePassword()"></div>
     <div class="sheet-actions">${force?`<button class="btn ghost" onclick="_mdpForce=false;logout();closeSheet()">Se déconnecter</button>`:`<button class="btn ghost" onclick="closeSheet()">Annuler</button>`}<button class="btn" id="cp-go" onclick="changePassword()">Enregistrer</button></div>`;
@@ -4372,7 +4622,7 @@ async function openAccounts(){
   document.getElementById("sheet-content").innerHTML=`
     <h3>Comptes <span style="color:var(--muted);font-weight:500">(${_accounts.length})</span></h3>
     <div class="sheet-sub">Gestion des accès — réservé au superadmin.</div>
-    <button class="btn" style="margin-bottom:14px" onclick="accountForm()">+ Nouveau compte</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button class="btn" onclick="openEmbarquer()">🚀 Embarquer l'équipe</button><button class="btn ghost" onclick="accountForm()">+ Nouveau compte</button></div>
     ${rows}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
 }
@@ -4441,6 +4691,55 @@ async function acDelete(id){
   toast("Compte supprimé");openAccounts();
 }
 
+/* ============================================================
+   v0.33.0 — EMBARQUER L'ÉQUIPE (superadmin) : état de chaque compte, mot de passe provisoire propre
+   à chacun (remplace « cap2026 »), message WhatsApp prêt avec le lien et les accès.
+   Le mot de passe n'est stocké nulle part en clair : il s'affiche une fois, ici.
+   ============================================================ */
+const MDP_MOTS=["Atlas","Cedre","Medina","Oasis","Zellige","Argan","Riad","Safran","Jasmin","Kasbah","Souk","Menthe","Dune","Ifrane","Chellah","Oudaya"];
+function mdpProvisoire(){const a=new Uint32Array(3);crypto.getRandomValues(a);const n=MDP_MOTS.length,i=a[0]%n,j=(i+1+a[1]%(n-1))%n;return MDP_MOTS[i]+"-"+MDP_MOTS[j]+"-"+String(10+a[2]%90)}
+let _emb={l:[],res:{},conf:{}};
+async function openEmbarquer(){
+  if(SESSION.role!=="superadmin")return;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🚀",title:"Embarquer l'équipe",sub:"Chargement…"})}${skLignes(5)}`;openSheet();
+  const {data,error}=await sb.rpc("cap_equipe_etat");
+  if(error){document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🚀",title:"Embarquer l'équipe",sub:"Indisponible"})}<p class="fh-empty">${esc(rlsMsg(error))}</p>`;return}
+  _emb.l=(data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id);embRendu();
+}
+function embEtat(u){
+  if(u.mdp_initial)return["r","Mot de passe de départ « cap2026 » encore actif"];
+  if(u.mdp_provisoire)return["w","Invité le "+adhDate(u.invite_le)+" · pas encore connecté avec son mot de passe"];
+  if(u.derniere_connexion)return["ok","Connecté le "+adhDate(u.derniere_connexion)];
+  return["w","Jamais connecté"];
+}
+function embRendu(){
+  const l=_emb.l,nR=l.filter(u=>u.mdp_initial).length,nJ=l.filter(u=>!u.derniere_connexion).length;
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:"🚀",title:"Embarquer l'équipe",sub:"Un mot de passe provisoire propre à chacun, et ses accès envoyés par WhatsApp. Il choisira le sien à la première connexion."})}
+    ${ficheKpis([[l.length,"comptes"],[nR,"avec « cap2026 »",nR?"warn":""],[nJ,"jamais connectés",nJ?"warn":""]])}
+    <div class="emb-l">${l.map((u,i)=>{const [t,txt]=embEtat(u),a=u.animateur_id&&anim(u.animateur_id),r=_emb.res[u.id];
+      return `<div class="emb-c" style="--i:${Math.min(i,12)}"><div class="emb-h"><span class="av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.email))}</span>
+        <div><b>${esc(u.nom||u.email)}</b><small>${esc(ROLES[u.role]||u.role)} · identifiant <code>${esc((u.email||"").split("@")[0])}</code></small><span class="emb-e ${t}">${esc(txt)}</span></div></div>
+        ${a?`<div class="field emb-tel"><label>Mobile WhatsApp</label><input type="tel" inputmode="tel" value="${esc(a.tel||"")}" placeholder="06 …" onchange="embTel('${a.id}',this.value)"></div>`:""}
+        ${r?`<div class="emb-ok"><div>Mot de passe provisoire : <b>${esc(r.pwd)}</b></div><div class="emb-2"><a class="btn" href="${esc(embWa(u,r.pwd))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost" onclick="embCopier('${u.id}')">Copier le message</button></div></div>`
+          :`<button class="btn ${u.mdp_initial||!u.derniere_connexion?"":"ghost"} emb-go" onclick="embInviter('${u.id}')">${_emb.conf[u.id]?"Confirmer : remplacer son mot de passe actuel ?":u.mdp_initial||!u.derniere_connexion?"🔑 Créer ses accès et préparer le message":"🔑 Nouveau mot de passe"}</button>`}</div>`}).join("")}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+}
+function embMessage(u,pwd){const pr=(u.nom||"").split(/\s+/)[0];
+  return `Bonjour ${pr} 👋\nVoici ton accès au CRM du Club d'Affaires Protéine Maroc :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+function embWa(u,pwd){const a=u.animateur_id&&anim(u.animateur_id);const t=a&&a.tel?String(a.tel).replace(/[^\d]/g,"").replace(/^0/,"212"):"";return "https://wa.me/"+t+"?text="+encodeURIComponent(embMessage(u,pwd))}
+async function embCopier(id){const u=_emb.l.find(x=>x.id===id),r=_emb.res[id];try{await navigator.clipboard.writeText(embMessage(u,r.pwd));toast("Message copié")}catch(e){prompt("Message :",embMessage(u,r.pwd))}}
+async function embTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();toast("Mobile enregistré")}
+async function embInviter(id){
+  const u=_emb.l.find(x=>x.id===id);
+  if(!u.mdp_initial&&u.derniere_connexion&&!_emb.conf[id]){_emb.conf[id]=true;embRendu();return}
+  const pwd=mdpProvisoire();
+  const {error}=await adminCall({action:"set_password",id,password:pwd});
+  if(error){toast(error);return}
+  const e2=await sb.rpc("cap_marquer_invite",{p_id:id});if(e2.error)console.warn(e2.error);
+  Object.assign(u,{mdp_initial:false,mdp_provisoire:true,invite_le:new Date().toISOString()});
+  _emb.res[id]={pwd};delete _emb.conf[id];DB.aEmbarquer=_emb.l.filter(x=>x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire)).length;embRendu();toast("Accès prêts : envoie-les maintenant, le mot de passe ne sera plus affiché ensuite");
+}
 /* ============================================================
    VERSION — notes de mise à jour + alerte nouvelle version
    ============================================================ */
@@ -4639,7 +4938,9 @@ function dashActivite(sc){
   return `<div class="act90" title="90 derniers jours"><div><b>${t.length}</b><span>réunion${t.length>1?"s":""} tenue${t.length>1?"s":""} (90 j)</span></div><div><b>${moy??"—"}</b><span>présents en moyenne</span></div><div><b>${cv==null?"—":cv+" %"}</b><span>invités devenus membres</span></div></div>`;
 }
 let _bil=null;
+let _bilSerie={total:0,faits:0,passes:new Set()};
 function openBilan(id){
+  if(!id||!document.getElementById("sheet").classList.contains("open"))_bilSerie={total:reunionsSansBilan().length,faits:0,passes:new Set()};
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
   _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:""};
@@ -4649,19 +4950,23 @@ function renderBilan(){
   const m=DB.reunions.find(x=>x.id===_bil.id),c=club(m.clubId),d=dObj(m.date);
   const reste=reunionsSansBilan().filter(x=>x.id!==m.id).length;
   const st=(k,l)=>`<button type="button" class="pill ${_bil.statut===k?"on":""}" role="radio" aria-checked="${_bil.statut===k}" onclick="bilStatut('${k}')">${l}</button>`;
-  const step=(k,l)=>`<div class="bstep"><small>${l}</small><div><button type="button" onclick="bilStep('${k}',-1)" aria-label="${l} : moins">−</button><b id="bil-${k}">${_bil[k]}</b><button type="button" onclick="bilStep('${k}',1)" aria-label="${l} : plus">+</button></div></div>`;
+  const step=(k,l)=>`<div class="bstep"><small>${l}</small><div><button type="button" onclick="bilStep('${k}',-1)" aria-label="${l} : moins">−</button><input class="bil-in" id="bil-${k}" type="number" inputmode="numeric" min="0" value="${_bil[k]}" aria-label="${l}" onfocus="this.select()" oninput="bilSaisie('${k}',this.value)"><button type="button" onclick="bilStep('${k}',1)" aria-label="${l} : plus">+</button></div></div>`;
+  const tot=Math.max(_bilSerie.total,_bilSerie.faits+reste+1),pos=_bilSerie.faits+1;
   document.getElementById("sheet-content").innerHTML=`
+    ${tot>1?`<div class="bil-prog"><span>Bilan ${pos} sur ${tot}</span><i><b style="width:${Math.round((pos-1)/tot*100)}%"></b></i></div>`:""}
     <h3>Comment s'est passée la réunion ?</h3>
     <div class="sheet-sub">${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${TYPES[m.type]||m.type} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
     <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}</div></div>
     ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>`:""}
     ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
-    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer le bilan"}</button></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer le bilan"}</button></div>
     ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}`;
 }
 function bilConv(){const c=pct(_bil.adh,_bil.inv);return c==null?"Ajoute les invités venus pour voir le taux de conversion":`Invités devenus membres : <b>${c} %</b>`}
 function bilStatut(k){_bil.statut=k;renderBilan()}
-function bilStep(k,d){_bil[k]=Math.max(0,_bil[k]+d);document.getElementById("bil-"+k).textContent=_bil[k];const cv=document.getElementById("bil-conv");if(cv)cv.innerHTML=bilConv()}
+function bilSaisie(k,v){_bil[k]=Math.max(0,parseInt(v,10)||0);const cv=document.getElementById("bil-conv");if(cv)cv.innerHTML=bilConv()}
+function bilPasser(){_bilSerie.passes.add(_bil.id);const n=reunionsSansBilan().find(x=>!_bilSerie.passes.has(x.id));if(n){_bilSerie.faits++;openBilan(n.id)}else closeSheet()}
+function bilStep(k,d){_bil[k]=Math.max(0,_bil[k]+d);const e=document.getElementById("bil-"+k);if(e){if("value" in e&&e.tagName==="INPUT")e.value=_bil[k];else e.textContent=_bil[k]}const cv=document.getElementById("bil-conv");if(cv)cv.innerHTML=bilConv()}
 async function saveBilan(){
   const m=DB.reunions.find(x=>x.id===_bil.id);let row;
   if(_bil.statut==="reportee"){
@@ -4674,9 +4979,10 @@ async function saveBilan(){
   if(_bil.statut!=="reportee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
   await okPuis();
   toast(_bil.statut==="reportee"?"Réunion reportée":"Bilan enregistré");
-  const next=reunionsSansBilan()[0];
+  _bilSerie.faits++;
+  const next=reunionsSansBilan().find(x=>!_bilSerie.passes.has(x.id));
   render();
-  if(next)openBilan(next.id);else closeSheet();
+  if(next)openBilan(next.id);else{closeSheet();if(_bilSerie.faits>2)celebrer("✅",_bilSerie.faits+" bilans enregistrés","Merci !","Voir la Synthèse",()=>go("dash"))}
 }
 function bilanBloc(m,editable){
   if(!isPast(m.date))return"";
@@ -5245,7 +5551,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

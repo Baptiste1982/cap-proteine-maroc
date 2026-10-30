@@ -1172,6 +1172,26 @@ button.cel{cursor:pointer;transition:transform .15s}button.cel:hover{transform:s
 @media (prefers-reduced-motion:reduce){.km-mb::after,.km-grp::after,.km-mb::before,.km-grp::before{animation:none!important}}
 @media(max-width:520px){.km-gh{grid-template-columns:minmax(0,1fr) 54px auto 18px}}
 @media (prefers-reduced-motion:reduce){.rank>*,.dem-l>*,.mb-grid>*,.rl>*,.dem-card,.tj-tab tr,.annonce,.celeb-c,.celeb-s,.celeb-g,.h-dust i,.bar i::after,.ck-prog i::after{animation:none!important}.h-dust{display:none}.nav-pill,.km-tir,.km-grp,.km-mb,.km-j i,.km-chev,.tj-chev,.ck{transition:none!important}.km-grp,.km-mb{opacity:1;transform:none}}
+
+/*v028 repli auto + plein écran*/
+.repli-l{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.repli-t b{display:block;font-size:14px}.repli-t small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.repli-g{display:flex;gap:6px;flex-wrap:wrap}
+.repli-g button{flex:1;min-width:56px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.repli-g button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.sheet-max{display:none}
+@media(min-width:900px){
+  .sheet-max{display:grid;place-items:center;position:sticky;top:0;float:right;margin:-8px -10px 0 8px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:3;transition:color .2s,border-color .2s,transform .15s}
+  .sheet-max:hover{color:var(--crimson);border-color:rgba(176,18,46,.4)}.sheet-max:active{transform:scale(.92)}
+  .sheet-max .i-min{display:none}.plein .sheet-max .i-max{display:none}.plein .sheet-max .i-min{display:inline}
+  .sheet-wrap.plein,html.rail-on .sheet-wrap.plein:not(.force){inset:0 0 0 216px;width:auto;z-index:45}
+  .sheet-wrap.plein .sheet-bg{display:none}
+  .sheet-wrap.plein .sheet,html.rail-on .sheet-wrap.plein:not(.force) .sheet{position:absolute;inset:0;width:auto;max-width:none;height:auto;border-left:1px solid var(--line);border-radius:0;box-shadow:none;
+    padding:26px max(32px,calc((100% - 1040px)/2)) 40px;animation:pleinIn .32s cubic-bezier(.2,.8,.2,1)}
+  .sheet-wrap.plein #sheet-content .sheet-actions{max-width:520px}
+  @keyframes pleinIn{from{opacity:.4;transform:translateX(24px)}}
+}
+@media (prefers-reduced-motion:reduce){.sheet-wrap.plein .sheet{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1231,7 +1251,7 @@ button.cel{cursor:pointer;transition:transform .15s}button.cel:hover{transform:s
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
 <aside id="rail" class="rail" aria-label="Aperçu"></aside>
-<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
+<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><button type="button" class="sheet-max" id="sheet-max" onclick="sheetPlein()" aria-label="Afficher en plein écran" title="Plein écran"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path class="i-max" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/><path class="i-min" d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></button><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
 <div id="confetti" class="confetti"></div>
@@ -1247,8 +1267,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.27.0";
+const APP_VERSION="0.28.0";
 const CHANGELOG=[
+  {v:"0.28.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Repli automatique : une région de « À traiter » ou de « Membres par région » se referme toute seule 3 secondes après qu'on l'a quittée. Le délai se règle dans Paramètres → Apparence (Jamais, 3, 5, 10 ou 30 secondes), sur chaque appareil. Tant que la souris est dessus, rien ne se referme.",
+      "Plein écran sur ordinateur : le bouton ⤢ en haut d'une fiche l'affiche sur toute la largeur pour naviguer et agir à l'aise ; le même bouton (ou Échap) la ramène dans le panneau. Le plein écran reste actif d'une fiche à l'autre."
+    ]}},
   {v:"0.27.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "« À traiter » rangé par région : en haut, les totaux par type d'action (réunions à planifier, bilans à saisir, groupes sans animateur), cliquables pour filtrer ; puis un tableau par région avec ses groupes, où chaque case est l'action à faire (＋ planifier, nombre de bilans, animateur à nommer).",
@@ -1903,7 +1928,7 @@ function render(){const v=document.getElementById("view");
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);navPill();const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
+  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -2731,12 +2756,12 @@ function todoRegions(sc){
   const f=window._todoF||"",all=cl.map(todoClub),nP=all.filter(x=>x.plan).length,nB=all.reduce((a,x)=>a+x.bil.length,0),nA=all.filter(x=>x.anim).length;
   if(!nP&&!nB&&!nA)return `<div class="tj-ok">✓ Tous les groupes ont leur prochaine réunion, leurs bilans et leur animateur.</div>`;
   const tb=(k,n,l)=>n?`<button type="button" class="${f===k?"on":""}" onclick="window._todoF=window._todoF==='${k}'?'':'${k}';render()" aria-pressed="${f===k}"><b>${n}</b>${l}</button>`:"";
-  const ferme=window._todoFerme||(window._todoFerme=new Set());
+  const ouvJ=window._todoOuv||(window._todoOuv=new Set());
   const reg=regionsDe(cl).map(r=>{
     const l=r.clubs.map(todoClub).filter(x=>x.plan||x.bil.length||x.anim).filter(x=>!f||(f==="plan"&&x.plan)||(f==="bil"&&x.bil.length)||(f==="anim"&&x.anim));
     const P=l.filter(x=>x.plan).length,B=l.reduce((a,x)=>a+x.bil.length,0),A=l.filter(x=>x.anim).length;
     if(!l.length)return "";
-    return `<details class="tj-reg" ${ferme.has(r.k)?"":"open"} ontoggle="(this.open?window._todoFerme.delete('${r.k}'):window._todoFerme.add('${r.k}'))">
+    return `<details class="tj-reg" data-k="${r.k}" ${ouvJ.has(r.k)?"open":""} ontoggle="todoBasculer(this)">
       <summary><span class="tj-t"><b>${esc(r.nom)}</b><svg class="tj-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>
         <span class="tj-c">${P?`<span class="k-plan">${P} à planifier</span>`:""}${B?`<span class="k-bil">${B} bilan${B>1?"s":""}</span>`:""}${A?`<span class="k-anim">${A} sans animateur</span>`:""}</span></summary>
       <table class="tj-tab"><thead><tr><th>Groupe</th><th>Réunion</th><th>Bilans</th><th>Animateur</th></tr></thead><tbody>${l.map((x,i)=>{const c=x.c,a=anim(c.animId),der=DB.reunions.filter(m=>m.clubId===c.id&&isPast(m.date)&&m.statut!=="annulee").sort((p,q)=>q.date.localeCompare(p.date))[0];
@@ -2759,7 +2784,34 @@ function membresRegions(sc){
         return `<div class="km-grp${ouv.has(k)?" ouvert":""}" data-k="${k}" style="--i:${gi}"><button type="button" class="km-gh" aria-expanded="${ouv.has(k)}" onclick="kBasculer(this)"><span><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.objectif?" · objectif "+c.objectif:""}</small></span><span class="km-j"><i style="--w:${mb.length/max*100}%"></i></span><span class="km-n">${mb.length}</span>${chev}</button>
           <div class="km-tir"><div>${mb.length?`<div class="km-mbs">${mb.map((m,i)=>`<button type="button" class="km-mb" style="--i:${i}" onclick="memberSheet('${c.id}','${m.id}')"><span class="km-av">${esc(initiales(m.nom))}</span><span><b>${esc(m.nom)}</b><small>${esc((m.infos&&m.infos.metier)||m.specialite||"métier à renseigner")}</small></span>${m.paiement?'<span class="km-ok" title="À jour">✓</span>':""}</button>`).join("")}<button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></div>`:`<p class="km-rien">Aucun membre pour l'instant. <button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></p>`}</div></div></div>`}).join("")}</div></div></div></div>`}).join("")}</div>`;
 }
-function kBasculer(b){const p=b.parentElement,o=p.classList.toggle("ouvert");b.setAttribute("aria-expanded",o);const s=window._kOuv||(window._kOuv=new Set());o?s.add(p.dataset.k):s.delete(p.dataset.k)}
+function kBasculer(b){const p=b.parentElement,o=p.classList.toggle("ouvert");b.setAttribute("aria-expanded",o);const s=window._kOuv||(window._kOuv=new Set());o?s.add(p.dataset.k):s.delete(p.dataset.k);if(o)repliArmer(p,()=>kFermer(p));else clearTimeout(p._rt)}
+function kFermer(p){if(!p.classList.contains("ouvert"))return;p.classList.remove("ouvert");const b=p.querySelector(":scope>button");if(b)b.setAttribute("aria-expanded","false");(window._kOuv||new Set()).delete(p.dataset.k)}
+function todoBasculer(d){const s=window._todoOuv||(window._todoOuv=new Set());if(d.open){s.add(d.dataset.k);repliArmer(d,()=>{d.open=false})}else{s.delete(d.dataset.k);clearTimeout(d._rt)}}
+/* Repli automatique (réglable dans Paramètres, mémorisé sur l'appareil) : une région ou un groupe déplié se replie
+   après N secondes sans y toucher. Le minuteur s'arrête tant que la souris est dessus et repart à chaque toucher. */
+const REPLI_CHOIX=[0,3,5,10,30];
+function repliDelai(){try{const v=localStorage.getItem("cap-repli");return v===null?3:Math.max(0,+v||0)}catch(e){return 3}}
+function repliArmer(el,fermer){
+  clearTimeout(el._rt);el._fermer=fermer;const d=repliDelai();if(!d)return;
+  if(!el._rw){el._rw=1;
+    el.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse"){el._survol=1;clearTimeout(el._rt)}});
+    el.addEventListener("pointermove",e=>{if(e.pointerType==="mouse"&&!el._survol){el._survol=1;clearTimeout(el._rt)}});
+    el.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse"){el._survol=0;repliArmer(el,el._fermer)}});
+    el.addEventListener("pointerdown",()=>{if(!el._survol)repliArmer(el,el._fermer)});
+    el.addEventListener("keydown",()=>repliArmer(el,el._fermer));}
+  if(!el._survol&&matchMedia("(hover:hover)").matches&&el.matches(":hover"))el._survol=1;
+  if(el._survol)return;
+  el._rt=setTimeout(()=>{if(!el.isConnected)return;if(el._survol||el.querySelector(":focus-visible")){repliArmer(el,el._fermer);return}el._fermer()},d*1000);
+}
+function repliRearmer(v){v.querySelectorAll("details.tj-reg[open]").forEach(d=>repliArmer(d,()=>{d.open=false}));v.querySelectorAll(".km-reg.ouvert,.km-grp.ouvert").forEach(p=>repliArmer(p,()=>kFermer(p)))}
+function choisirRepli(n){try{localStorage.setItem("cap-repli",String(n))}catch(e){}toast(n?"Les listes se replient après "+n+" secondes":"Les listes restent dépliées");openParametres()}
+/* Panneau des fiches en plein écran (ordinateur) : on y navigue et on y agit comme sur une page. Reste en plein écran
+   d'une fiche à l'autre, jusqu'au bouton ou à Échap. */
+function sheetPlein(force){const w=document.getElementById("sheet"),on=force===undefined?!w.classList.contains("plein"):force;
+  w.classList.toggle("plein",on);document.documentElement.classList.toggle("sheet-plein",on);
+  const b=document.getElementById("sheet-max");if(b){b.setAttribute("aria-label",on?"Revenir au panneau":"Afficher en plein écran");b.title=on?"Revenir au panneau":"Plein écran"}
+  try{sessionStorage.setItem("cap-plein",on?"1":"")}catch(e){}}
+addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("sheet").classList.contains("plein")&&document.getElementById("sheet").classList.contains("open")){e.stopImmediatePropagation();sheetPlein(false)}},true);
 /* D — la pastille glisse sous l'onglet actif (barre du bas au téléphone, colonne à gauche sur ordinateur). */
 function navPill(){const nav=document.getElementById("nav"),pl=document.getElementById("nav-pill");if(!nav||!pl)return;
   const b=nav.querySelector("button.on");if(!b||nav.classList.contains("hidden")){pl.style.opacity=0;return}
@@ -3997,7 +4049,7 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");morphOuvrir(w);filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");try{if(sessionStorage.getItem("cap-plein")&&!w.classList.contains("plein"))sheetPlein(true)}catch(e){}if(!w.classList.contains("plein"))morphOuvrir(w);filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
 function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null;_fil=[];filFicheRendu()}
 
 
@@ -4474,6 +4526,8 @@ async function openParametres(){
     <div class="set-who"><span class="av" style="background:${roleCouleur(role)}">${esc(initiales(SESSION.name))}</span><span><b>${esc(SESSION.name)}</b><small>${esc(ROLES[role]||role)} · ${esc(document.getElementById("tb-region").textContent)}</small></span></div>
     <div class="set-sec">Apparence</div>
     <div class="set-l"><div class="theme3" role="group" aria-label="Thème">${th("clair","Clair","#FAF6F4","#FFFFFF")}${th("sombre","Sombre","#1A1214","#241A1D")}${th("auto","Comme le téléphone","#FAF6F4","#1A1214")}</div></div>
+    <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique des listes</b><small>Une région ou un groupe déplié se referme tout seul après ce délai sans y toucher.</small></div>
+      <div class="repli-g" role="radiogroup" aria-label="Repli automatique">${REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${repliDelai()===n}" class="${repliDelai()===n?"on":""}" onclick="choisirRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}

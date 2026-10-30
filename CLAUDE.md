@@ -172,6 +172,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `navPill()` (pastille `#nav-pill`, recalée par ResizeObserver), `morphOuvrir(w)` dans `openSheet` (clip-path depuis l'élément touché, mémorisé au `pointerdown` ; pas en panneau grand écran), relief des `.ck` au survol souris, `skLignes(n)` à la place de « Chargement… ».
 - Bancs `v027.mjs` 33/33 (téléphone + bureau) ; `v09` et `demandes` recalés sur le nouveau dessin.
 
+**↕ Repli auto + plein écran (v0.28.0, 30/10/2026)** — demandes JB :
+- `repliArmer(el, fermer)` : une région J (`details.tj-reg`, repliées par défaut, ouvertes dans `window._todoOuv`) ou K (`.km-reg`, `.km-grp`) se referme après `repliDelai()` secondes (localStorage `cap-repli`, défaut 3, 0 = jamais) ; le minuteur s'arrête tant que la souris est dessus (pointerenter/move), repart au toucher ; `repliRearmer(v)` après chaque `render()`. Réglage dans Paramètres → Apparence (`REPLI_CHOIX`, `choisirRepli`).
+- `sheetPlein()` : bouton `#sheet-max` (≥ 900 px) passe `#sheet` en `.plein` (de 216 px à droite, contenu centré 1040 px) ; mémorisé pour la session (`sessionStorage cap-plein`), Échap revient au panneau sans fermer.
+- Banc `v028.mjs` 21/21 ; `v027` recalé (régions repliées par défaut).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

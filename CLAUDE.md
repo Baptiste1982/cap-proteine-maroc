@@ -150,6 +150,15 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Aucun profil d'équipe n'est créé : le compte ne voit rien du CRM. Pas de trigger sur `auth.users` (vérifié).
 - Bancs `membre.mjs` 53/53, `crm-espace.mjs` 8/8.
 
+**🔔 Notifications des messages + invités proposés par les membres (v0.25.0, 30/10/2026)** — clic JB sur ces deux pistes :
+- Migration `20261030090000_membres_notifs_invites.sql` (appliquée) : `messages_membres.notifie_le` ; `invites.entreprise/metier/note/propose_par/notifie_le` ; déclencheurs `messages_membres_notifier` et `invites_proposes_notifier` (seulement si `propose_par`) → `membres_notifier(type)` → pg_net vers l'edge **`notif-membre`** (verify_jwt:false, même patron que `notif-adhesion` : ligne < 15 min, réservation atomique de `notifie_le`). RPC `cap_membre_prochaine_reunion`, `cap_membre_proposer_invite` (prochaine réunion non annulée du club, statut « À confirmer », 20 par jour max), `cap_membre_mes_invites`. Vérifié en base dans une transaction annulée.
+- `membre.html` : onglet **Inviter** (prochaine réunion, formulaire, « Mes invités » avec statut traduit `STATUT_INV`) ; notifications (carte dans Mon profil, bandeau dans Mes messages, mêmes `sw.js` et clé VAPID que le CRM, abonnement dans `push_abonnements`) ; manifeste `membre.webmanifest` pour l'installer sur l'iPhone (obligatoire pour les notifications iOS). Lien `#c=<membre>` ouvre la conversation.
+- `sw.js` : au clic sur une notification, une fenêtre déjà ouverte sur la même page (CRM ou espace membre) est réutilisée ; une notification du CRM ne détourne jamais l'onglet de l'espace membre.
+- CRM : invité marqué « espace membre » dans la réunion (entreprise, métier, mot du membre) ; notification à l'animateur du club + superadmin + directeur national, qui ouvre la réunion (`?reunion=<id>`, `ouvrirLienReunion`).
+- ⚠ Aucune réunion à venir en base (la dernière date du 31/07) : tant qu'aucune n'est planifiée, l'onglet Inviter dit « pas de réunion planifiée ».
+- Ajouts dans la même version (JB : « pas mal de choses qu'on a oubliées ») : RPC `cap_membres_connexions()` (migration `20261030100000`, équipe seulement, lit `auth.users.last_sign_in_at`) chargée par `loadDB` dans un try (jamais bloquante) → `m.vuLe` : fiche « Connecté, dernière fois le … » / « Code créé, jamais connecté », repère `.mb-acc` dans l'annuaire du CRM ; texte de la fenêtre Notifications (adhésions + invités proposés) ; étape « L'espace membre » dans la visite guidée (partie Clubs : 5 étapes).
+- Bancs `membre.mjs` 63/63, `crm-espace.mjs` 9/9, `tuto.mjs` 28/28.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

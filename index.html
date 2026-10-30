@@ -1282,6 +1282,30 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .cst-leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:#E9D5DA}.cst-leg span{display:flex;align-items:center;gap:6px}
 .cst-leg i{width:12px;height:12px;border-radius:50%;display:inline-block}.cst-leg i.pip{background:#B0122E;box-shadow:0 0 0 2px #1A060C}
 @media (prefers-reduced-motion:reduce){.cst-o *,.cst-o{animation:none!important;transition:none!important}.cst-l{stroke-dashoffset:0}}
+/*v0291 — notifications en bas à droite (pile commune) */
+#notifs{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(84px + env(safe-area-inset-bottom));z-index:75;width:min(400px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px;align-items:stretch;pointer-events:none}
+#notifs>*{pointer-events:auto}
+#notifs .annonce{position:relative;left:auto;right:auto;top:auto;width:100%;transform:none;animation:nGlisse .5s cubic-bezier(.2,1.2,.4,1) both}
+#notifs .annonce.out,#notifs .celeb.out{transition:transform .35s,opacity .35s;transform:translateX(115%);opacity:0}
+#notifs .celeb{position:relative;inset:auto;display:block;background:none;animation:nGlisse .5s cubic-bezier(.2,1.2,.4,1) both}
+#notifs .celeb-c{max-width:none;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;text-align:left;gap:4px 12px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);box-shadow:0 18px 40px -14px rgba(27,20,22,.45);animation:none}
+#notifs .celeb-s{width:44px;height:44px;font-size:22px;flex-shrink:0}
+#notifs .celeb-c b{font-size:15px;flex:1;min-width:0}
+#notifs .celeb-g{font-size:20px;margin:0;flex-basis:100%;padding-left:56px}
+#notifs .celeb-c .btn{margin:2px 0 0 56px}
+@keyframes nGlisse{from{transform:translateX(115%);opacity:0}}
+@media(min-width:900px){.toast{left:auto;right:max(20px,env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));transform:translateY(20px)}.toast.show{transform:none;animation:tinD .35s var(--ease)}}
+@keyframes tinD{from{opacity:0;transform:translateX(30px)}}
+@media(max-width:899px){#notifs{left:12px;right:12px;width:auto;bottom:calc(150px + env(safe-area-inset-bottom))}}
+@media (prefers-reduced-motion:reduce){#notifs>*{animation:none!important}}
+/*v030 — localisation Google Maps / Waze */
+.lien-aide{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin-top:6px;font-size:12px;color:var(--muted)}
+.lien-aide span.ok{color:var(--ok);font-weight:600}.lien-aide span.w{color:var(--warn)}
+.lien-cherche{border:0;background:none;color:var(--crimson);font-weight:700;font-size:12.5px;cursor:pointer;padding:2px 0}
+.iti{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.iti-b{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:14px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink);transition:transform .15s,box-shadow .15s}
+.iti-b:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.iti-b span{font-size:18px}.iti-b.gm{border-color:#C6DAF7}.iti-b.wz{border-color:#BEE9F6}
 </style>
 </head>
 <body>
@@ -1357,8 +1381,18 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.29.0";
+const APP_VERSION="0.30.0";
 const CHANGELOG=[
+  {v:"0.30.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Localisation Google Maps ou Waze dans la fiche d'un lieu : colle le lien partagé depuis l'une ou l'autre appli (même un lien court maps.app.goo.gl), la latitude et la longitude se remplissent toutes seules. Un lien collé par erreur dans l'adresse passe dans le bon champ. Le bouton « Chercher sur Google Maps » ouvre la recherche du lieu.",
+      "Deux boutons d'itinéraire, Google Maps et Waze, dans la fiche d'un lieu et dans celle de chaque réunion qui a un lieu."
+    ]}},
+  {v:"0.29.1",date:"30 octobre 2026",notes:{
+    "Modifié":[
+      "Les notifications s'affichent en bas à droite de l'écran et s'empilent : nouvelle demande, recommandation, objectif atteint, messages de confirmation. La célébration d'un objectif ne recouvre plus la page (les confettis restent).",
+      "La visite guidée présente les nouveautés : les quatre chapitres de la Synthèse, le repli automatique des régions, la constellation du réseau, les notifications et le plein écran des fiches."
+    ]}},
   {v:"0.29.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Le réseau en constellation : le bouton ✦ Le réseau de la Synthèse ouvre en plein écran une carte vivante du réseau, faite pour le présenter. Au centre les membres, autour les régions en orbite, et chaque groupe est un astre (sa taille dit ses membres, sa couleur son état). Au survol, l'astre grossit, une onde part, son lien s'allume et le reste s'efface ; un toucher affiche sa fiche et mène au groupe.",
@@ -1706,7 +1740,7 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||""}}
-function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||""}}
+function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null}}
@@ -1834,10 +1868,13 @@ function tutoEtapes(partie){
   const P={
     accueil:[
       {t:`Bienvenue ${prenom} 👋`,x:`Voici le CRM du réseau CAP Maroc : réunions, clubs, membres et adhésions au même endroit. La visite prend deux minutes${r==="visiteur"?" ; ton accès est en lecture seule":""}. Tu peux la revoir à tout moment dans Paramètres.`},
-      {go:"dash",c:"#nav",t:"La navigation",x:"Cinq espaces : Synthèse, Agenda, Clubs, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
+      {go:"dash",c:"#nav",t:"La navigation",x:"Sept espaces : Synthèse, Agenda, Réunions, Clubs, Membres, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
     synthese:[
-      {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte. L'interrupteur National / Régional change le périmètre."},
-      {go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action : club sans animateur, club sans réunion, adhésions à intégrer ou à saisir au national. Touche une ligne pour agir."}],
+      {go:"dash",c:"#view .dsec-chiffres",t:"Quatre chapitres",x:"La Synthèse se lit en quatre blocs, chacun avec sa couleur : le réseau en chiffres, à traiter, croissance, l'équipe. L'interrupteur National / Régional au-dessus change le périmètre de tous les blocs."},
+      {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte."},
+      {go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action, rangé par région : réunions à planifier, bilans à saisir, groupes sans animateur, adhésions, invités à relancer. Une région s'ouvre au toucher et se replie toute seule après quelques secondes (délai réglable dans Paramètres)."},
+      {go:"dash",c:'#view .tools button[onclick="openConstellation()"]',t:"Le réseau en constellation",x:"Pour présenter le réseau : une carte animée en plein écran. Les régions sont en orbite, chaque groupe est un astre dont la taille dit les membres et la couleur l'état. Passe sur un astre pour le mettre en avant, touche-le pour sa fiche. « ▶ Présenter » lance le diaporama."},
+      {go:"dash",t:"Les notifications",x:"Nouvelles demandes, recommandations, objectifs atteints : elles s'empilent en bas à droite de l'écran. Touche-en une pour ouvrir la page concernée."}],
     agenda:[
       {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : changer le jour d'une réunion, écrire le compte rendu, et planifier la suivante en un clic avec le lieu, le jour et l'heure habituels du club."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
@@ -1856,7 +1893,7 @@ function tutoEtapes(partie){
       {go:"lieux",c:'#nav [data-tab="lieux"]',t:"Les lieux",x:"Hôtels et salles de réunion : photo, adresse, capacité et carte."},
       {go:"team",c:'#nav [data-tab="team"]',t:"L'équipe",x:`Les animateurs, ${mes} qu'ils animent et leurs réunions à venir.`}],
     reglages:[
-      {go:"dash",c:"#set-btn",t:"Paramètres",x:"Thème clair ou sombre, notifications, mot de passe. C'est aussi ici que tu revois cette visite, en entier ou une partie seulement."},
+      {go:"dash",c:"#set-btn",t:"Paramètres",x:"Thème clair ou sombre, notifications, délai de repli des régions, mot de passe. C'est aussi ici que tu revois cette visite, en entier ou une partie seulement. Astuce sur ordinateur : le bouton ⤢ en haut d'une fiche l'affiche en plein écran."},
       {t:"C'est à toi ✨",x:"Bonne animation ! En cas de doute, la visite reste à portée de main dans Paramètres → Aide."}],
   };
   return partie==="complet"?TUTO_PARTIES.flatMap(([k])=>P[k]):(P[partie]||[]);
@@ -1894,7 +1931,7 @@ async function tutoMontrer(){
   b.querySelector('[data-a="suiv"]').textContent=_tuto.i===_tuto.etapes.length-1?"Terminer":"Suivant";
   const cible=e.c&&[...document.querySelectorAll(e.c)].find(x=>x.offsetParent!==null||getComputedStyle(x).position==="fixed");
   _tuto.cible=cible||null;
-  if(cible&&cible.getBoundingClientRect().bottom>innerHeight-40)cible.scrollIntoView({block:"center"});
+  if(cible&&(cible.getBoundingClientRect().bottom>innerHeight-40||cible.getBoundingClientRect().top<60))cible.scrollIntoView({block:"center"});
   tutoPlacer();b.querySelector('[data-a="suiv"]').focus({preventScroll:true});
 }
 function tutoPlacer(){
@@ -3175,7 +3212,7 @@ function meetingDetail(m,editable){
     ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${dt.getDate()}</b><small>${MOIS[dt.getMonth()]}</small></span>`,title:(c.nom||"—").replace(/^CAP\s+/,""),sub:`<span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span>${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" · "+m.heure:""}`,right:`<span class="st ${m.statut}">${STATUTS[m.statut]}</span>`})}
     ${guests.length?`<div class="fh-funnel">${GUEST_STATUTS.map(s=>{const n=guests.filter(g=>g.statut===s).length;return n?`<span class="rl-fact ${s==="Membre"?"g":s==="Non intéressé"?"":"y"}">${esc(s)} · ${n}</span>`:""}).join("")}</div>`:""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-      <div class="tx"><div class="k">Lieu</div><div class="v">${esc(lieuNom(m.lieuId))}</div></div>${l?`<a href="#" onclick="event.stopPropagation();openLieu('${l.id}');return false">Fiche</a>`:""}</div>
+      <div class="tx"><div class="k">Lieu</div><div class="v">${esc(lieuNom(m.lieuId))}</div></div>${l?`<a href="#" onclick="event.stopPropagation();openLieu('${l.id}');return false">Fiche</a>`:""}</div>${l?lieuItineraire(l):""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div>
       <div class="tx"><div class="k">Animateur</div><div class="v">${esc(animNom(m.animId))}</div></div></div>
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
@@ -3280,6 +3317,54 @@ async function convertGuest(mid,i){
 /* ============================================================
    SHEET — LIEU
    ============================================================ */
+/* v0.30.0 — Localisation d'un lieu par un lien Google Maps ou Waze : on lit la position dans le lien,
+   les liens courts (maps.app.goo.gl, goo.gl) sont dépliés par la fonction serveur « lien-carte ». */
+const GH32="0123456789bcdefghjkmnpqrstuvwxyz";
+function geohashDec(h){let ev=true,la=[-90,90],lo=[-180,180];for(const ch of h){const v=GH32.indexOf(ch);if(v<0)return null;for(let b=4;b>=0;b--){const bit=(v>>b)&1,r=ev?lo:la,m=(r[0]+r[1])/2;r[bit?0:1]=m;ev=!ev}}return{lat:(la[0]+la[1])/2,lng:(lo[0]+lo[1])/2}}
+function carteCoords(url){
+  const u=String(url||"");let d;try{d=decodeURIComponent(u)}catch(e){d=u}
+  const ok=(a,b)=>{a=+a;b=+b;return Math.abs(a)<=90&&Math.abs(b)<=180&&(a||b)?{lat:+a.toFixed(6),lng:+b.toFixed(6)}:null};
+  let m=d.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m)return ok(m[1],m[2]);
+  m=d.match(/[?&](?:q|query|ll|destination|daddr|center)=(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);if(m)return ok(m[1],m[2]);
+  m=d.match(/ll\.(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/);if(m)return ok(m[1],m[2]);
+  m=d.match(/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/);if(m)return ok(m[1],m[2]);
+  m=d.match(/waze\.com\/ul\/h([0-9b-hjkmnp-z]{5,12})/i);if(m){const g=geohashDec(m[1]);return g&&ok(g.lat,g.lng)}
+  m=d.match(/^\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/);if(m)return ok(m[1],m[2]);
+  return null;
+}
+const estLienCarte=t=>/^\s*https?:\/\/\S*(google\.|goo\.gl|g\.co\/|waze\.com)/i.test(t||"");
+const lienCourt=t=>/^\s*https?:\/\/(maps\.app\.goo\.gl|goo\.gl|g\.co)\//i.test(t||"");
+function lieuAdresseLien(inp){if(!estLienCarte(inp.value))return;const l=document.getElementById("l-lien");l.value=inp.value.trim();inp.value="";lieuLienLu()}
+function lieuPoser(c,src){
+  document.getElementById("l-lat").value=c.lat;document.getElementById("l-lng").value=c.lng;
+  const st=document.getElementById("l-lien-st");if(st){st.textContent="📍 Position trouvée : "+c.lat+", "+c.lng+(src?" ("+src+")":"");st.className="ok"}
+}
+let _lienJeton=0;
+async function lieuLienLu(){
+  const inp=document.getElementById("l-lien"),st=document.getElementById("l-lien-st");if(!inp)return;
+  const v=inp.value.trim(),j=++_lienJeton;
+  if(!v){st.textContent="La latitude et la longitude se remplissent toutes seules.";st.className="";return}
+  const c=carteCoords(v);if(c){lieuPoser(c,/waze/i.test(v)?"Waze":"Google Maps");return}
+  if(!lienCourt(v)&&!/google\./i.test(v)){st.textContent=estLienCarte(v)?"Lien gardé. La position n'y figure pas : utilise « Partager » dans Waze ou Google Maps.":"Colle un lien Google Maps ou Waze.";st.className="w";return}
+  st.textContent="⏳ Lecture du lien…";st.className="";
+  try{
+    const {data,error}=await sb.functions.invoke("lien-carte",{body:{url:v}});if(j!==_lienJeton)return;
+    if(error||!data||data.error)throw 0;
+    const c2=(data.lat!=null&&data.lng!=null)?{lat:data.lat,lng:data.lng}:carteCoords(data.url);
+    if(c2){lieuPoser(c2,data.approx?"approximative, vérifie sur la carte":(/waze/i.test(data.url||"")?"Waze":"Google Maps"));return}
+    st.textContent="Lien gardé, mais la position n'a pas pu être lue. Tu peux saisir la latitude et la longitude à la main.";st.className="w";
+  }catch(e){if(j!==_lienJeton)return;st.textContent="Lien gardé. Lecture impossible pour l'instant : la position reste à saisir.";st.className="w"}
+}
+function lieuChercherCarte(){
+  const q=[document.getElementById("l-nom").value,document.getElementById("l-ville").value,"Maroc"].filter(Boolean).join(" ");
+  window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank","noopener");
+}
+function lieuItineraire(l){
+  const q=encodeURIComponent([l.adresse||l.nom,l.ville,"Maroc"].filter(Boolean).join(", "));
+  const gm=l.lat?`https://www.google.com/maps/dir/?api=1&destination=${l.lat},${l.lng}`:(l.lien&&/google|goo\.gl/i.test(l.lien)?l.lien:`https://www.google.com/maps/search/?api=1&query=${q}`);
+  const wz=l.lat?`https://waze.com/ul?ll=${l.lat},${l.lng}&navigate=yes`:(l.lien&&/waze/i.test(l.lien)?l.lien:`https://waze.com/ul?q=${q}&navigate=yes`);
+  return `<div class="iti"><a class="iti-b gm" href="${esc(gm)}" target="_blank" rel="noopener"><span>🗺</span>Google Maps</a><a class="iti-b wz" href="${esc(wz)}" target="_blank" rel="noopener"><span>🚗</span>Waze</a></div>`;
+}
 let _photoBuffer=null;
 function openLieu(id){
   const editing=!!id;const l=editing?lieu(id):null;
@@ -3289,12 +3374,12 @@ function openLieu(id){
 function lieuDetail(l){
   const nbUp=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
   const mapUrl=l.lat?`https://www.openstreetmap.org/export/embed.html?bbox=${l.lng-0.008}%2C${l.lat-0.006}%2C${l.lng+0.008}%2C${l.lat+0.006}&layer=mapnik&marker=${l.lat}%2C${l.lng}`:"";
-  const navUrl=l.lat?`https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.adresse||l.nom)}`;
   document.getElementById("sheet-content").innerHTML=`
     ${l.photo?`<img class="photo-prev" src="${l.photo}" alt="">`:""}
     ${ficheHead({vc:villeColor(l.ville),lead:`<span class="rl-thumb fh-emb" style="--vc:${villeColor(l.ville)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>`,title:l.nom,sub:esc(l.ville)+(l.adresse?" · "+esc(l.adresse):"")})}
     ${ficheKpis([[l.capacite||"—","places"],[nbUp,"réunion"+(nbUp>1?"s":"")+" à venir"],[l.lat?"📍":"—",l.lat?"géolocalisé":"sans GPS",l.lat?"":"warn"]])}
-    ${l.adresse?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="tx"><div class="k">Adresse</div><div class="v">${esc(l.adresse)}</div></div><a href="${navUrl}" target="_blank">Y aller</a></div>`:""}
+    ${l.adresse?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="tx"><div class="k">Adresse</div><div class="v">${esc(l.adresse)}</div></div></div>`:""}
+    ${lieuItineraire(l)}
     ${l.contactNom||l.contactTel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Contact sur place</div><div class="v">${esc(l.contactNom||"—")}${l.contactTel?" · "+esc(l.contactTel):""}</div></div>${l.contactTel?`<a href="tel:${esc(l.contactTel)}">Appeler</a>`:""}</div>`:""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="tx"><div class="k">Réunions à venir</div><div class="v">${nbUp}</div></div></div>
     ${l.notes?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="tx"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(l.notes)}</div></div></div>`:""}
@@ -3312,7 +3397,9 @@ function lieuForm(id){
     <img id="l-photo-prev" class="photo-prev ${l.photo?"":"hidden"}" src="${l.photo||""}" alt="">
     <div class="field"><label>Nom du lieu</label><input id="l-nom" value="${esc(l.nom)}" placeholder="Ex. Royal Golf Dar Essalam"></div>
     <div class="field"><label>Ville</label><select data-pills id="l-ville">${villeOpt}</select></div>
-    <div class="field"><label>Adresse</label><input id="l-adresse" value="${esc(l.adresse)}" placeholder="Rue, quartier, ville"></div>
+    <div class="field"><label>Adresse</label><input id="l-adresse" value="${esc(l.adresse)}" placeholder="Rue, quartier, ville" oninput="lieuAdresseLien(this)"></div>
+    <div class="field"><label>Localisation Google Maps ou Waze</label><input id="l-lien" type="url" inputmode="url" value="${esc(l.lien||"")}" placeholder="Colle le lien partagé depuis Google Maps ou Waze" oninput="lieuLienLu()">
+      <div class="lien-aide"><span id="l-lien-st">${l.lat?"📍 Position enregistrée":"La latitude et la longitude se remplissent toutes seules."}</span><button type="button" class="lien-cherche" onclick="lieuChercherCarte()">🔎 Chercher sur Google Maps</button></div></div>
     <div class="frow"><div class="field"><label>Latitude</label><input id="l-lat" type="number" step="any" value="${l.lat}" placeholder="33.97"></div><div class="field"><label>Longitude</label><input id="l-lng" type="number" step="any" value="${l.lng}" placeholder="-6.85"></div></div>
     <div class="frow"><div class="field"><label>Capacité</label><input id="l-cap" type="number" value="${l.capacite}" placeholder="120"></div><div class="field"><label>Contact tél.</label><input id="l-ctel" value="${esc(l.contactTel)}" placeholder="05 …"></div></div>
     <div class="field"><label>Contact sur place</label><input id="l-cnom" value="${esc(l.contactNom)}" placeholder="Nom du référent"></div>
@@ -3334,7 +3421,7 @@ function handlePhoto(e){
 async function saveLieu(id){
   const g=x=>document.getElementById(x).value;const nom=g("l-nom").trim();if(!nom){toast("Nom requis");return}
   const existing=id?lieu(id):null;
-  const row={nom,ville:g("l-ville"),adresse:g("l-adresse").trim(),lat:parseFloat(g("l-lat"))||null,lng:parseFloat(g("l-lng"))||null,
+  const row={nom,ville:g("l-ville"),adresse:g("l-adresse").trim(),lat:parseFloat(g("l-lat"))||null,lng:parseFloat(g("l-lng"))||null,lien_carte:g("l-lien").trim()||null,
     capacite:parseInt(g("l-cap"))||null,contact_nom:g("l-cnom").trim(),contact_tel:g("l-ctel").trim(),notes:g("l-notes").trim(),
     photo_url:_photoBuffer!==null?_photoBuffer:(existing?existing.photo:"")};
   if(id){
@@ -4267,13 +4354,15 @@ function pluieConfettis(){if(_calme())return;
   setTimeout(()=>box.innerHTML="",2600);
 }
 /* F — Célébration des vraies victoires : carte au centre + confettis. Un clic mène à la page concernée. */
+/* v0.29.1 — toutes les notifications (annonces, célébrations) s'empilent en bas à droite, la plus récente en bas. */
+function notifPile(){let p=document.getElementById("notifs");if(!p){p=document.createElement("div");p.id="notifs";p.setAttribute("aria-live","polite");document.body.appendChild(p)}return p}
 function celebrer(ico,titre,gros,lien,act){
   document.querySelectorAll(".celeb").forEach(x=>x.remove());
   const d=document.createElement("div");d.className="celeb";d.setAttribute("role","alertdialog");d.setAttribute("aria-label",titre);
   d.innerHTML=`<div class="celeb-c"><span class="celeb-s">${ico}</span><b>${esc(titre)}</b>${gros?`<span class="celeb-g">${esc(gros)}</span>`:""}${act?`<button class="btn mini">${esc(lien||"Voir")} ›</button>`:""}</div>`;
-  const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),300)};
-  d.onclick=e=>{fin();if(act&&e.target.closest(".celeb-c"))act()};
-  document.body.appendChild(d);pluieConfettis();setTimeout(fin,5200);
+  const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),350)};
+  d.onclick=()=>{fin();if(act)act()};
+  notifPile().appendChild(d);pluieConfettis();setTimeout(fin,6500);
 }
 /* H — Ce qui arrive de l'extérieur (adhésion, recommandation…) descend du haut ; un clic ouvre la page concernée. */
 function annonce(ico,titre,sous,act){
@@ -4281,8 +4370,7 @@ function annonce(ico,titre,sous,act){
   d.innerHTML=`<span class="an-ic">${ico}</span><span class="an-t"><b>${esc(titre)}</b>${sous?`<small>${esc(sous)}</small>`:""}</span>${act?'<span class="an-go" aria-hidden="true">›</span>':""}`;
   const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),350)};
   d.onclick=()=>{fin();if(act)act()};
-  const prev=document.querySelectorAll(".annonce:not(.out)");d.style.setProperty("--n",prev.length);
-  document.body.appendChild(d);setTimeout(fin,6500);
+  notifPile().appendChild(d);setTimeout(fin,6500);
 }
 
 /* ============================================================

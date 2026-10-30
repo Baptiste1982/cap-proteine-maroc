@@ -183,6 +183,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - ⚠ Piège corrigé : `var(--deep)`, `--darker`, `--or`, `--tint` n'existent pas (tokens réels : `--crimson-deep`, `--crimson-darker`, `--gold`, `--crimson-tint`) → la carte des recos était blanche sur blanc depuis la v0.26.
 - Bancs `cst.mjs` 18/18 (téléphone + bureau), tous les anciens verts.
 
+**🔔 Notifications en bas à droite + visite guidée à jour (v0.29.1, 30/10/2026)** — `notifPile()` crée `#notifs` (fixe, bas droite ; sur téléphone pleine largeur au-dessus de la barre). `annonce()` et `celebrer()` y empilent leurs cartes (plus de voile plein écran pour la célébration, les confettis restent). Le toast passe aussi en bas à droite à partir de 900 px. Visite guidée : étapes « Quatre chapitres », « Le réseau en constellation », « Les notifications » ; la visite fait défiler vers le haut si la cible est au-dessus (`top<60`). Bancs `notifs.mjs` 14/14, `tuto.mjs` 28/28.
+
+**📍 Localisation Google Maps / Waze (v0.30.0, 30/10/2026)** — JB a collé un lien Google dans le champ Adresse d'un lieu.
+- Colonne `lieux.lien_carte` (migration `20261030170000_lieux_lien_carte.sql`, appliquée). Champ « Localisation Google Maps ou Waze » (`#l-lien`) : `carteCoords(url)` lit `!3d…!4d…`, `q=/ll=/destination=`, `ll.` (Waze live-map), `@lat,lng`, le geohash des liens `waze.com/ul/h…` et « lat, lng » nu. Lien collé dans Adresse → déplacé (`lieuAdresseLien`).
+- Liens courts (maps.app.goo.gl…) et pages Google sans coordonnées → fonction serveur **`lien-carte`** (verify_jwt:true, v1 déployée) qui suit les redirections (consentement Google compris) sur une liste d'hôtes de cartes, et renvoie l'adresse finale + lat/lng (`approx:true` si lu dans l'état initial de la carte : à vérifier). Non testée en réel d'ici (supabase.co bloqué).
+- `lieuItineraire(l)` : boutons Google Maps (`/maps/dir/?api=1&destination=`) et Waze (`waze.com/ul?ll=…&navigate=yes`, sinon recherche par adresse) dans la fiche lieu et la fiche réunion. Banc `lieu.mjs` 18/18.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

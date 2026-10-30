@@ -195,6 +195,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `openAdhesions(f)` mène désormais à l'onglet (l'ancienne fenêtre reste sous `openAdhesionsFiche`, utilisée pour « Rejetées ») ; `adhCharger()` relit la table ; `adhDetail` ouvre lui-même la fiche (avant, il comptait sur la fenêtre déjà ouverte).
 - Menu : animations CSS par icône au survol (`icDash`, `icFeuille`, `icEnveloppe` sur `.i-env`…), trait or au survol (≥ 900 px), clic = `.clic` + `.nav-anneau` + 7 `.nav-gerbe` (écouteur en capture). Pastille de l'onglet qui saute quand le nombre change (`.nav-badge.pop`). Banc `dmd.mjs` 22/22.
 
+**✨ Synthèse vivante, affichage au choix (v0.32.0, 30/10/2026)** — maquette validée par JB (https://claude.ai/artifact/AaoDzhXutkYQg3ENBtnjcX, « intègre-le comme un affichage optionnel »). Après deux refus (« standard », « plat ») et un rejet du fond sombre.
+- Réglage Paramètres → Apparence « Affichage de la Synthèse » (`synthMode()`, localStorage `cap-synth`, défaut classique, `choisirSynth`). En vivante, `dashBlock` remplace les 6 tuiles par `dashBento(s,sc)` (classes `vb-*` : grande carte rouge membres sur 3 rangs avec courbe 6 mois + bille, gris clubs avec pastilles, alerte encadrée si 0 réunion, or paiement avec anneau, pointillés si 0 invité, rose sans animateur avec noms / vert si aucun). Chaque carte ouvre `dashDrill`.
+- `vbBrancher(v)` (appelé dans `render` sur la Synthèse) : compteurs mécaniques `vbOdo`/`vbRouler` (rejoués au survol souris), encre `.vb-encre` partie du point d'entrée de la souris (`--ex/--ey`), bandeau `.hello.vivant` (lumière mobile via `@property --hax/--hbx`, message du jour `vbMessages()` tapé par `vbEcrire`). Banc `vive.mjs` 19/19.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

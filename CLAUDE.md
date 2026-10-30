@@ -190,6 +190,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Liens courts (maps.app.goo.gl…) et pages Google sans coordonnées → fonction serveur **`lien-carte`** (verify_jwt:true, v1 déployée) qui suit les redirections (consentement Google compris) sur une liste d'hôtes de cartes, et renvoie l'adresse finale + lat/lng (`approx:true` si lu dans l'état initial de la carte : à vérifier). Non testée en réel d'ici (supabase.co bloqué).
 - `lieuItineraire(l)` : boutons Google Maps (`/maps/dir/?api=1&destination=`) et Waze (`waze.com/ul?ll=…&navigate=yes`, sinon recherche par adresse) dans la fiche lieu et la fiche réunion. Banc `lieu.mjs` 18/18.
 
+**📥 Onglet Demandes + menu animé (v0.31.0, 30/10/2026)** — JB : « les demandes de postulations dans un nouveau menu, rends l'interface smart », « animation au passage et au clic inventive ».
+- Onglet `demandes` (`viewDemandes`, entre Membres et Lieux, masqué pour `visiteur` dans `demBadge`, masqué sous 900 px : le bouton `#dem-btn` du haut y mène). `dmCols()` : à intégrer (`adhEtape`=1), à saisir au national (2), terminées (3, 12 dernières) ; `dmProchaine()` = la plus ancienne en retard sinon la plus ancienne ; recherche `window._dmQ` (`dmChercher` ne rerend que `#dm-pipe`) ; filtre `window._dmF==="retard"` ; colonne active au téléphone `window._dmCol`. Clic carte = `dmOuvrir` (onde + enfoncement puis `adhDetail`).
+- `openAdhesions(f)` mène désormais à l'onglet (l'ancienne fenêtre reste sous `openAdhesionsFiche`, utilisée pour « Rejetées ») ; `adhCharger()` relit la table ; `adhDetail` ouvre lui-même la fiche (avant, il comptait sur la fenêtre déjà ouverte).
+- Menu : animations CSS par icône au survol (`icDash`, `icFeuille`, `icEnveloppe` sur `.i-env`…), trait or au survol (≥ 900 px), clic = `.clic` + `.nav-anneau` + 7 `.nav-gerbe` (écouteur en capture). Pastille de l'onglet qui saute quand le nombre change (`.nav-badge.pop`). Banc `dmd.mjs` 22/22.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

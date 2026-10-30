@@ -1306,6 +1306,118 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .iti-b{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:14px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink);transition:transform .15s,box-shadow .15s}
 .iti-b:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 .iti-b span{font-size:18px}.iti-b.gm{border-color:#C6DAF7}.iti-b.wz{border-color:#BEE9F6}
+/*v031 — onglet Demandes */
+@media(max-width:899px){.nav button[data-tab="demandes"]{display:none}}
+.dm-next{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:18px;padding:14px 16px;margin:0 0 14px;cursor:pointer;color:#fff;background:linear-gradient(120deg,var(--crimson-deep),var(--crimson));box-shadow:0 14px 34px -16px rgba(92,10,24,.7);position:relative;overflow:hidden;transition:transform .2s}
+.dm-next::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);transform:translateX(-100%);animation:dmBalaye 3.2s ease-in-out 1s infinite}
+@keyframes dmBalaye{60%,100%{transform:translateX(100%)}}
+.dm-next:hover{transform:translateY(-2px)}.dm-next.late{background:linear-gradient(120deg,#7A3A06,#C77712)}
+.dm-next.ok{background:var(--ok-tint);color:var(--ok);cursor:default;box-shadow:none}.dm-next.ok::after{display:none}
+.dm-next.ok>span{font-size:22px;font-weight:800}
+.dm-next-ic{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:22px;flex-shrink:0;animation:dmTape 2.4s ease-in-out infinite}
+@keyframes dmTape{0%,70%,100%{transform:none}75%{transform:rotate(-12deg) scale(1.08)}85%{transform:rotate(10deg)}}
+.dm-next div{flex:1;min-width:0;display:flex;flex-direction:column}.dm-next small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#F6D9A0}
+.dm-next b{font:800 18px "Bricolage Grotesque",sans-serif}.dm-next em{font-style:normal;font-size:12.5px;opacity:.85}
+.dm-next-go{font-size:28px;color:#F6D9A0;transition:transform .2s}.dm-next:hover .dm-next-go{transform:translateX(5px)}
+.dm-ks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(max-width:700px){.dm-ks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.dm-k{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+.dm-k:disabled{cursor:default}.dm-k:not(:disabled):hover{transform:translateY(-3px);border-color:var(--crimson);box-shadow:var(--shadow)}
+.dm-k b{font:800 24px "Bricolage Grotesque",sans-serif;color:var(--ink)}.dm-k span{font-size:12px;color:var(--muted)}
+.dm-k.w b{color:var(--warn)}.dm-k.r b{color:var(--crimson)}
+.dm-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.dm-q{flex:1 1 260px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:0 12px;transition:border-color .2s,box-shadow .2s}
+.dm-q:focus-within{border-color:var(--crimson);box-shadow:0 0 0 3px var(--crimson-tint)}
+.dm-q input{flex:1;border:0;background:none;padding:11px 0;font:inherit;color:var(--ink);outline:none;min-width:0}
+.dm-main{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
+@media(max-width:1199px){.dm-main{grid-template-columns:minmax(0,1fr)}}
+.dm-seg{display:none}
+.dm-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dm-col{background:color-mix(in srgb,var(--tn,var(--crimson)) 4%,var(--card));border:1px solid color-mix(in srgb,var(--tn,var(--crimson)) 16%,var(--line));border-radius:18px;padding:10px;min-width:0;position:relative}
+.dm-col::before{content:"";position:absolute;inset:0 14px auto;height:3px;border-radius:0 0 3px 3px;background:var(--tn,var(--crimson))}
+.dm-todo{--tn:var(--crimson)}.dm-saisie{--tn:var(--warn)}.dm-fini{--tn:var(--ok)}
+.dm-col header{display:flex;align-items:center;gap:9px;padding:6px 4px 10px}.dm-col header>span{font-size:18px}
+.dm-col header div{flex:1;min-width:0;display:flex;flex-direction:column}.dm-col header b{font:800 15px "Bricolage Grotesque",sans-serif}.dm-col header small{font-size:11.5px;color:var(--muted)}
+.dm-col header em{font-style:normal;font-weight:800;font-size:13px;color:#fff;background:var(--tn);border-radius:99px;min-width:24px;text-align:center;padding:2px 7px}
+.dm-list{display:flex;flex-direction:column;gap:9px}
+.dm-vide{margin:6px 4px 10px;font-size:12.5px;color:var(--muted);text-align:center;padding:16px 6px;border:1.5px dashed var(--line);border-radius:12px}
+.dm-card{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px 10px;cursor:pointer;outline:none;
+  animation:dmEntre .45s cubic-bezier(.2,1.2,.4,1) calc(var(--i)*55ms) both;transition:transform .25s cubic-bezier(.2,1.4,.4,1),box-shadow .25s,border-color .25s}
+@keyframes dmEntre{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.dm-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--vc);transition:width .3s}
+.dm-card:hover,.dm-card:focus-visible{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 16px 30px -18px rgba(92,10,24,.55);border-color:color-mix(in srgb,var(--vc) 45%,var(--line))}
+.dm-card:hover::before{width:7px}
+.dm-card.late{border-color:color-mix(in srgb,var(--crimson) 40%,var(--line))}
+.dm-card.presse{transform:scale(.97)}
+.dm-onde{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--vc);opacity:.35;pointer-events:none;animation:dmOnde .6s ease-out forwards}
+@keyframes dmOnde{to{transform:scale(40);opacity:0}}
+.dm-top{display:flex;align-items:center;gap:10px}
+.dm-av{width:36px;height:36px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;background:var(--vc);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+.dm-card:hover .dm-av{transform:rotate(-8deg) scale(1.1)}
+.dm-id{flex:1;min-width:0;display:flex;flex-direction:column}.dm-id b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-id small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-age{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}.dm-age.late{color:var(--crimson);animation:dmClign 1.6s ease-in-out infinite}
+@keyframes dmClign{50%{opacity:.45}}
+.dm-grp{display:flex;align-items:center;gap:6px;margin:8px 0 9px 46px;font-size:12px;font-weight:600;color:var(--ink)}.dm-grp i{width:7px;height:7px;border-radius:50%;background:var(--vc)}.dm-grp .warn{color:var(--warn)}
+.dm-act{display:flex;align-items:center;gap:6px;margin-left:46px}
+.dm-go{flex:1;border:0;border-radius:10px;padding:7px 10px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--crimson);background:var(--crimson-tint);text-align:left;display:flex;justify-content:space-between;transition:background .2s,color .2s}
+.dm-go span{transition:transform .25s}.dm-card:hover .dm-go{background:var(--crimson);color:#fff}.dm-card:hover .dm-go span{transform:translateX(4px)}
+.dm-ic{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:14px;cursor:pointer;text-decoration:none;transition:transform .3s cubic-bezier(.2,1.8,.4,1)}
+.dm-ic:hover{transform:translateY(-3px) rotate(8deg) scale(1.1)}
+.dm-side{display:flex;flex-direction:column;gap:12px}
+.dm-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.dm-box h3{margin:0 0 4px;font:800 15px "Bricolage Grotesque",sans-serif}.dm-box p{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+.dm-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dm-grps{display:flex;flex-direction:column;gap:7px;font-size:12.5px}.dm-grps div{display:grid;grid-template-columns:minmax(0,1fr) 70px 22px;gap:8px;align-items:center}
+.dm-grps span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-grps i{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.dm-grps i b{display:block;height:100%;background:var(--crimson);border-radius:3px;animation:dmBarre .8s cubic-bezier(.2,1,.4,1) calc(var(--i)*70ms) both}
+@keyframes dmBarre{from{width:0}}.dm-grps em{font-style:normal;font-weight:800;text-align:right}
+.dm-leg{font-size:11.5px;color:var(--muted);margin:0}
+@media(max-width:899px){
+  .dm-seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
+  .dm-seg button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 12px;font-weight:700;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+  .dm-seg button em{font-style:normal;background:var(--line);border-radius:99px;padding:0 7px;color:var(--ink)}
+  .dm-seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}.dm-seg button.on em{background:var(--crimson);color:#fff}
+  .dm-cols{grid-template-columns:1fr}.dm-col{display:none}.dm-col.on{display:block;animation:dmEntre .35s ease both}
+}
+
+/*v031 — menu : une micro-animation propre à chaque icône au survol, une gerbe au clic */
+.nav button svg{transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+.nav button svg *{transform-box:fill-box;transform-origin:center}
+@media(hover:hover){
+  .nav button:hover svg{transform:scale(1.12)}
+  .nav button[data-tab="dash"]:hover svg{animation:icDash .7s ease}
+  .nav button[data-tab="agenda"]:hover svg{animation:icFeuille .7s ease}
+  .nav button[data-tab="reunions"]:hover svg{animation:icTic .6s ease}
+  .nav button[data-tab="clubs"]:hover svg{animation:icSaut .6s cubic-bezier(.3,1.6,.5,1)}
+  .nav button[data-tab="membres"]:hover svg{animation:icCarte .7s ease}
+  .nav button[data-tab="demandes"]:hover .i-env{animation:icEnveloppe .8s cubic-bezier(.3,1.4,.5,1)}
+  .nav button[data-tab="lieux"]:hover svg{animation:icPin .7s cubic-bezier(.3,1.6,.5,1)}
+  .nav button[data-tab="team"]:hover svg{animation:icEquipe .7s ease}
+  .nav-set:hover svg{animation:icRoue .8s ease}
+}
+@media(min-width:900px) and (hover:hover){
+  .nav button:not(.nav-set)::after{content:"";position:absolute;left:14px;right:14px;bottom:5px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--crimson),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.2,1,.4,1)}
+  .nav button:not(.on):hover::after{transform:scaleX(1)}
+  .nav button:not(.on):hover{color:var(--crimson);padding-left:18px;transition:padding .25s,color .2s}
+}
+@keyframes icDash{30%{transform:rotate(90deg) scale(1.1)}60%{transform:rotate(80deg) scale(1.15)}100%{transform:rotate(90deg) scale(1.12)}}
+@keyframes icFeuille{30%{transform:perspective(60px) rotateX(55deg)}60%{transform:perspective(60px) rotateX(-15deg)}100%{transform:scale(1.12)}}
+@keyframes icTic{20%,60%{transform:rotate(-10deg) scale(1.12)}40%,80%{transform:rotate(10deg) scale(1.12)}100%{transform:scale(1.12)}}
+@keyframes icSaut{40%{transform:translateY(-5px) scale(1.12,1.05)}70%{transform:translateY(0) scale(1.2,.9)}100%{transform:scale(1.12)}}
+@keyframes icCarte{40%{transform:perspective(60px) rotateY(180deg)}100%{transform:perspective(60px) rotateY(360deg) scale(1.12)}}
+@keyframes icEnveloppe{0%{transform:translateY(-9px);opacity:0}60%{transform:translateY(2px);opacity:1}100%{transform:none}}
+@keyframes icPin{30%{transform:translateY(-6px) scale(1.1)}55%{transform:translateY(0) scale(1.25,.85)}75%{transform:translateY(-2px)}100%{transform:scale(1.12)}}
+@keyframes icEquipe{25%{transform:translateX(-2px) rotate(-6deg)}50%{transform:translateX(2px) rotate(6deg)}100%{transform:scale(1.12)}}
+@keyframes icRoue{to{transform:rotate(180deg)}}
+.nav-badge.pop{animation:navPop .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes navPop{40%{transform:scale(1.5)}}
+.nav-gerbe{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:2;animation:navGerbe .6s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes navGerbe{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--gx),var(--gy)) scale(.2);opacity:0}}
+.nav-anneau{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:2px solid var(--crimson);pointer-events:none;z-index:2;animation:navAnneau .55s ease-out forwards}
+@keyframes navAnneau{from{transform:scale(.3);opacity:.9}to{transform:scale(1.9);opacity:0}}
+.nav button.clic svg{animation:navClic .45s cubic-bezier(.2,1.8,.4,1)!important}
+@keyframes navClic{30%{transform:scale(.75) rotate(-10deg)}70%{transform:scale(1.25) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){.dm-card,.dm-next::after,.dm-next-ic,.dm-age.late,.dm-grps i b,.nav button svg,.nav button svg *,.nav-badge.pop{animation:none!important;transition:none!important}.nav-gerbe,.nav-anneau{display:none}}
 </style>
 </head>
 <body>
@@ -1357,6 +1469,7 @@ svg.focus .cst-l:not(.lit){opacity:.3}
   <button data-tab="reunions" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg>Réunions</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
   <button data-tab="membres" onclick="go('membres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="18" y2="14"/></svg>Membres</button>
+  <button data-tab="demandes" class="nav-dem" onclick="go('demandes')" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="i-env" d="M8 3h8v7l-4 2.5L8 10z"/><path d="M3 13l2.5-6H8M16 7h2.5L21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>Demandes</button>
   <button data-tab="lieux" onclick="go('lieux')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lieux</button>
   <button data-tab="team" onclick="go('team')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Équipe</button>
   <button class="nav-set" onclick="openParametres()" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Paramètres</button>
@@ -1381,8 +1494,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.30.0";
+const APP_VERSION="0.31.0";
 const CHANGELOG=[
+  {v:"0.31.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Onglet « Demandes » dans le menu : les demandes d'adhésion rangées en trois colonnes (à intégrer, à saisir au national, terminées), la prochaine action en tête, une recherche instantanée (nom, entreprise, métier, groupe, téléphone), le filtre « en retard », l'envoi du lien d'adhésion et la répartition par groupe. Une pastille sur l'onglet compte les demandes à intégrer. Sur téléphone, le bouton « Demandes » du haut ouvre la même page.",
+      "Le menu s'anime : au survol, chaque icône a son geste (le calendrier tourne sa page, l'enveloppe tombe dans le bac, l'épingle rebondit, la carte membre se retourne…) et un trait or souligne l'entrée ; au clic, l'icône rebondit et une gerbe or et rouge en jaillit."
+    ]}},
   {v:"0.30.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Localisation Google Maps ou Waze dans la fiche d'un lieu : colle le lien partagé depuis l'une ou l'autre appli (même un lien court maps.app.goo.gl), la latitude et la longitude se remplissent toutes seules. Un lien collé par erreur dans l'adresse passe dans le bon champ. Le bouton « Chercher sur Google Maps » ouvre la recherche du lieu.",
@@ -1887,7 +2005,7 @@ function tutoEtapes(partie){
       {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`},
       {go:"membres",c:'#nav [data-tab="membres"]',t:"L'espace membre",x:`Chaque membre a son propre espace (annuaire, messages entre membres, invités à proposer). Dans sa fiche, section « Espace membre » : « Créer son code » donne un code d'accès à lui envoyer par WhatsApp. Il se connecte avec son mobile et ce code. La fiche te dit ensuite s'il s'est connecté.`}],
     adhesions:ed?[
-      {go:"dash",c:'#view button[onclick="openAdhesions()"]',t:"Les adhésions en ligne",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent ici. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
+      {go:"dash",c:isWide()?'#nav [data-tab="demandes"]':'#dem-btn',t:"Les demandes d'adhésion",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent dans l'onglet Demandes, rangées en trois colonnes : à intégrer, à saisir au national, terminées. La prochaine action est en tête, la recherche trouve un nom, une entreprise ou un métier. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
       ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
     lieux:[
       {go:"lieux",c:'#nav [data-tab="lieux"]',t:"Les lieux",x:"Hôtels et salles de réunion : photo, adresse, capacité et carte."},
@@ -2054,13 +2172,13 @@ function updateRegionLabel(){
 /* ============================================================
    NAV
    ============================================================ */
-const TAB_ORDER=["dash","agenda","reunions","clubs","membres","lieux","team"];let _navDir=null;
+const TAB_ORDER=["dash","agenda","reunions","clubs","membres","demandes","lieux","team"];let _navDir=null;
 function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewReunions():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="lieux"?viewLieux():viewTeam();
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewReunions():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam();
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete()}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
@@ -2096,7 +2214,7 @@ function railMembresIncomplets(ids,n){
   return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
 }
 function railHTML(){
-  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",demandes:"Demandes",lieux:"Lieux",team:"Équipe"}[tab]||"";
   const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
@@ -3795,7 +3913,10 @@ function adhSuivi(a){const e=adhEtape(a);if(e<0)return `<span class="rl-fact">Re
   return `<span class="adh-steps" title="Reçue → intégrée au club → saisie dans le CRM national">${[1,2,3].map(k=>`<i class="${k<=e?"on":""}"></i>`).join("")}</span>`}
 function adhAIntegrer(){return(DB.adhesions||[]).filter(a=>a.statut==="recue"||a.statut==="traitee")}
 let _adhFiltre="todo";
-async function openAdhesions(f){
+async function adhCharger(){const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});if(!error&&data)DB.adhesions=data;try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}}
+async function openAdhesions(f){const sh=document.getElementById("sheet");if(sh.classList.contains("open"))closeSheet();window._dmF=f==="retard"?"retard":"";window._dmQ="";
+  if(f==="todo"||f==="saisie")window._dmCol=f;if(tab==="demandes")render();else go("demandes");await adhCharger();if(tab==="demandes")render()}
+async function openAdhesionsFiche(f){
   if(f)_adhFiltre=f;
   const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
   if(error){console.error(error);toast(/does not exist|schema cache/i.test(error.message||"")?"Module adhésions pas encore installé":rlsMsg(error));return}
@@ -3879,10 +4000,10 @@ function adhDetail(id){
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
       <button class="btn" onclick="adhIntegrer('${a.id}')">Intégrer dans le club</button>`:""}
     <div class="sheet-actions" style="margin-top:12px">
-      <button class="btn ghost" onclick="openAdhesions()">← Liste</button>
+      <button class="btn ghost" onclick="openAdhesions()">← Toutes les demandes</button>
       ${peut&&a.statut==="recue"?`<button class="btn ghost" onclick="adhStatut('${a.id}','traitee')">Marquer traitée</button>`:""}
       ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhStatut('${a.id}','rejetee')">Rejeter</button>`:""}
-    </div>`;
+    </div>`;  if(!document.getElementById("sheet").classList.contains("open"))ficheOpen();
 }
 /* ---- Classeur des PDF : par mois de réception, puis par groupe, fichiers nommés
    « NOM Prénom - JJ-MM-AAAA - Groupe.pdf ». Les fichiers restent stockés sous leur id
@@ -3912,7 +4033,7 @@ function clsMoisTitre(m){const [y,mm]=m.split("-");return MOIS_FR[+mm-1]+" "+y}
 function clsGrouper(liste,cle){const o={};liste.forEach(a=>{const k=cle(a);(o[k]=o[k]||[]).push(a)});return o}
 async function openClasseur(mode){
   if(mode)_clsMode=mode;
-  if(!DB.adhesions){await openAdhesions();}
+  if(!DB.adhesions){await adhCharger();}
   const liste=adhClasseurListe();
   const triG=(x,y)=>(x==="Sans groupe")-(y==="Sans groupe")||x.localeCompare(y);
   let html="";
@@ -4060,7 +4181,7 @@ function adhExportSaisie(format){
 async function adhStatut(id,statut){
   const {error}=await sb.from("adhesions").update({statut,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
   if(error){toast(rlsMsg(error));return}
-  const a=DB.adhesions.find(x=>x.id===id);a.statut=statut;toast("Adhésion : "+ADH_STATUTS[statut]);adhDetail(id);
+  const a=DB.adhesions.find(x=>x.id===id);a.statut=statut;toast("Adhésion : "+ADH_STATUTS[statut]);adhDetail(id);if(tab==="demandes")render();
 }
 async function adhIntegrer(id){
   const a=DB.adhesions.find(x=>x.id===id),d=a.data;
@@ -4075,7 +4196,7 @@ async function adhIntegrer(id){
   const up=await sb.from("adhesions").update({statut:"integree",membre_id:data.id,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
   if(up.error){toast("Membre créé, mais l'adhésion n'a pas pu être marquée : "+rlsMsg(up.error));return}
   await sb.from("membre_documents").update({membre_id:data.id}).eq("adhesion_id",id); // le contrat déjà rangé rejoint le dossier
-  a.statut="integree";a.membre_id=data.id;adhDetail(id);
+  a.statut="integree";a.membre_id=data.id;adhDetail(id);if(tab==="demandes")render();
   celebrer("🎉",nom+" rejoint "+(club(clubId).nom||"le club").replace(/^CAP\s+/,""),"Membre n°"+num,"Ouvrir sa fiche",()=>memberSheet(clubId,data.id));
 }
 function exportMembres(){
@@ -4842,8 +4963,89 @@ function rolePill(r){return{directeur:"dir",directeur_national:"dir",animateur:"
    ============================================================ */
 function adhResponsable(a){const cid=adhClubId(a),c=cid?club(cid):null;return c&&c.animId?animNom(c.animId):""}
 function demListe(){return SESSION&&SESSION.role!=="visiteur"?adhAIntegrer().slice().sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||"")):[]}
+
+/* v0.31.0 — clic sur une entrée du menu : l'icône rebondit, un anneau et une gerbe or / crimson partent de l'icône. */
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".nav button");if(!b||_calme())return;
+  const svg=b.querySelector("svg");if(!svg)return;b.classList.remove("clic");void b.offsetWidth;b.classList.add("clic");setTimeout(()=>b.classList.remove("clic"),500);
+  const r=svg.getBoundingClientRect(),br=b.getBoundingClientRect(),cx=r.left-br.left+r.width/2,cy=r.top-br.top+r.height/2;
+  const an=document.createElement("span");an.className="nav-anneau";an.style.left=cx+"px";an.style.top=cy+"px";b.appendChild(an);setTimeout(()=>an.remove(),600);
+  for(let k=0;k<7;k++){const g=document.createElement("span"),a=k/7*Math.PI*2+Math.random()*.5,d=16+Math.random()*12;g.className="nav-gerbe";
+    g.style.left=(cx-3)+"px";g.style.top=(cy-3)+"px";g.style.background=k%2?"#C8A24C":"var(--crimson)";g.style.setProperty("--gx",Math.cos(a)*d+"px");g.style.setProperty("--gy",Math.sin(a)*d+"px");
+    b.appendChild(g);setTimeout(()=>g.remove(),650)}
+},true);
+/* ============================================================
+   v0.31.0 — ONGLET « DEMANDES » : les demandes d'adhésion en tableau de suivi
+   Trois colonnes (à intégrer → à saisir au national → terminées), la prochaine action en tête,
+   recherche instantanée, filtre « en retard », envoi du lien et classeur à côté.
+   ============================================================ */
+function dmTexte(a){return mbNorm([adhNom(a),a.data.ent_nom,a.data.metier,a.data.ent_activite,adhGroupe(a),a.data.m_tel,a.data.m_email].filter(Boolean).join(" "))}
+function dmCols(){
+  const q=mbNorm(window._dmQ||"").split(/\s+/).filter(Boolean),late=window._dmF==="retard";
+  const ok=a=>(!late||adhEnRetard(a))&&q.every(w=>dmTexte(a).includes(w));
+  const all=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&ok(a)),par=(x,y)=>(x.created_at||"").localeCompare(y.created_at||"");
+  return [
+    {k:"todo",t:"À intégrer",s:"Choisir le groupe et créer le membre",ico:"📥",l:all.filter(a=>adhEtape(a)===1).sort(par)},
+    {k:"saisie",t:"À saisir au national",s:"Envoyer le contrat dans le CRM Protéine",ico:"🗂",l:all.filter(a=>adhEtape(a)===2).sort(par)},
+    {k:"fini",t:"Terminées",s:"Intégrées et saisies",ico:"✅",l:all.filter(a=>adhEtape(a)===3).sort((x,y)=>par(y,x))}];
+}
+function dmCarte(a,i,col){
+  const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g),late=adhEnRetard(a),tel=a.data.m_tel?String(a.data.m_tel).replace(/[^\d+]/g,""):"";
+  const act=col==="todo"?"Intégrer":col==="saisie"?"Saisir au national":"Voir";
+  return `<article class="dm-card${late?" late":""}" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}" tabindex="0" onclick="dmOuvrir(event,'${a.id}')" onkeydown="if(event.key==='Enter')dmOuvrir(event,'${a.id}')">
+    <div class="dm-top"><span class="dm-av">${esc(initiales(adhNom(a)))}</span><div class="dm-id"><b>${esc(adhNom(a))}</b><small>${esc([a.data.ent_nom,a.data.metier].filter(Boolean).join(" · ")||"—")}</small></div>
+      <span class="dm-age${late?" late":""}" title="Reçue le ${esc(adhDate(a.created_at))}">${late?"⏰ ":""}${adhAge(a.created_at)}</span></div>
+    <div class="dm-grp"><i></i>${g==="Sans groupe"?"<span class=\"warn\">Groupe à choisir</span>":esc(g.replace(/^CAP\s+/,""))}</div>
+    <div class="dm-act"><button class="dm-go" onclick="dmOuvrir(event,'${a.id}')">${act} <span>›</span></button>
+      ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}
+      ${tel?`<a class="dm-ic" title="WhatsApp" aria-label="Écrire sur WhatsApp" href="https://wa.me/${tel.replace(/^\+/,"").replace(/^0/,"212")}" target="_blank" rel="noopener" onclick="event.stopPropagation()">💬</a>`:""}</div></article>`;
+}
+/* Clic : une onde part du point touché, la carte s'enfonce puis la fiche s'ouvre. */
+function dmOuvrir(e,id){
+  const card=e&&e.currentTarget&&e.currentTarget.closest?e.currentTarget.closest(".dm-card"):null;
+  if(card&&!_calme()){const r=card.getBoundingClientRect(),o=document.createElement("span");o.className="dm-onde";
+    o.style.left=((e.clientX||r.left+r.width/2)-r.left)+"px";o.style.top=((e.clientY||r.top+r.height/2)-r.top)+"px";card.appendChild(o);card.classList.add("presse");
+    setTimeout(()=>{o.remove();card.classList.remove("presse")},600)}
+  if(e)e.stopPropagation();setTimeout(()=>adhDetail(id),_calme()?0:140);
+}
+function dmProchaine(){
+  const l=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&(adhEtape(a)===1||adhEtape(a)===2)).sort((x,y)=>(x.created_at||"").localeCompare(y.created_at||""));
+  const a=l.find(adhEnRetard)||l[0];if(!a)return `<div class="dm-next ok"><span>✓</span><div><b>Tout est à jour</b><small>Aucune demande n'attend.</small></div></div>`;
+  const e=adhEtape(a);
+  return `<button class="dm-next${adhEnRetard(a)?" late":""}" onclick="dmOuvrir(event,'${a.id}')"><span class="dm-next-ic">${adhEnRetard(a)?"⏰":"👉"}</span><div><small>Prochaine action</small><b>${e===1?"Intégrer":"Saisir au national"} ${esc(adhNom(a))}</b><em>${esc(a.data.ent_nom||"")}${a.data.ent_nom?" · ":""}reçue ${adhAge(a.created_at)}</em></div><span class="dm-next-go">›</span></button>`;
+}
+function dmChercher(v){window._dmQ=v;const z=document.getElementById("dm-pipe");if(z)z.innerHTML=dmPipeHTML()}
+function dmPipeHTML(){
+  const cols=dmCols(),sel=window._dmCol||"todo";
+  return `<div class="dm-seg" role="tablist">${cols.map(c=>`<button role="tab" aria-selected="${sel===c.k}" class="${sel===c.k?"on":""}" onclick="window._dmCol='${c.k}';dmChercher(window._dmQ||'')">${c.ico} ${c.t}<em>${c.l.length}</em></button>`).join("")}</div>
+    <div class="dm-cols">${cols.map(c=>`<section class="dm-col dm-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
+      <div class="dm-list">${c.l.length?(c.k==="fini"?c.l.slice(0,12):c.l).map((a,i)=>dmCarte(a,i,c.k)).join(""):`<p class="dm-vide">${window._dmQ?"Aucun résultat":c.k==="todo"?"Rien à intégrer ✓":c.k==="saisie"?"Rien à saisir ✓":"Aucune pour l'instant"}</p>`}</div></section>`).join("")}</div>`;
+}
+function viewDemandes(){
+  if(!SESSION||SESSION.role==="visiteur")return `<div class="page"><p class="fh-empty">Accès réservé à l'équipe.</p></div>`;
+  const all=(DB.adhesions||[]),viv=all.filter(a=>a.statut!=="rejetee"),cle=adhMoisCle(new Date().toISOString());
+  const mois=viv.filter(a=>adhMoisCle(a.created_at)===cle).length,nI=adhAIntegrer().length,nS=adhASaisir().length,nL=viv.filter(adhEnRetard).length,nR=all.length-viv.length;
+  const late=window._dmF==="retard";
+  const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
+  const parG={};viv.forEach(a=>{const g=adhGroupe(a);parG[g]=(parG[g]||0)+1});const grp=Object.entries(parG).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...grp.map(x=>x[1]));
+  const k=(n,l,cls,fn)=>`<button class="dm-k ${cls||""}" ${fn?`onclick="${fn}"`:"disabled"}><b data-count="${n}">${n}</b><span>${l}</span></button>`;
+  return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}</div></div>
+    ${dmProchaine()}
+    <div class="dm-ks">${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
+    <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
+      <button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>${nR?`<button class="chip" onclick="openAdhesionsFiche('rejetee')">Rejetées<em>${nR}</em></button>`:""}</div>
+    <div class="dm-main"><div id="dm-pipe">${dmPipeHTML()}</div>
+      <aside class="dm-side">${readOnly()?"":`<section class="dm-box"><h3>✉️ Envoyer le lien d'adhésion</h3><p>Le futur membre remplit le formulaire depuis son téléphone ; sa demande arrive ici.</p>
+        <div class="field"><label>Groupe concerné</label><select id="adh-club"><option value="">— Sans groupe —</option>${clubOpts}</select></div>
+        <div class="dm-2"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">WhatsApp</button></div></section>`}
+        ${grp.length?`<section class="dm-box"><h3>📊 Par groupe</h3><div class="dm-grps">${grp.map(([g,n],i)=>`<div><span>${esc(g.replace(/^CAP\s+/,""))}</span><i><b style="width:${Math.round(n/mx*100)}%;--i:${i}"></b></i><em>${n}</em></div>`).join("")}</div></section>`:""}
+        <p class="dm-leg"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au club · saisie au national</p></aside></div></div>`;
+}
 function demBadge(){
   const b=document.getElementById("dem-btn");if(!b)return;
+  const nb=document.querySelector('.nav button[data-tab="demandes"]');
+  if(nb){nb.hidden=!SESSION||SESSION.role==="visiteur";const n2=demListe().length;let e=nb.querySelector(".nav-badge");
+    if(!n2){if(e)e.remove()}else{if(!e){e=document.createElement("span");e.className="nav-badge";nb.appendChild(e)}if(e.textContent!==String(n2)){e.textContent=n2;e.classList.remove("pop");void e.offsetWidth;e.classList.add("pop")}e.title=n2+" demande"+(n2>1?"s":"")+" à intégrer"}}
   if(!SESSION||SESSION.role==="visiteur"){b.classList.add("hidden");return}
   const n=demListe().length;b.classList.remove("hidden");b.classList.toggle("on",n>0);
   b.innerHTML=`<span aria-hidden="true">📥</span><span class="l">Demandes</span>${n?`<em>${n}</em>`:""}`;

@@ -177,6 +177,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `sheetPlein()` : bouton `#sheet-max` (≥ 900 px) passe `#sheet` en `.plein` (de 216 px à droite, contenu centré 1040 px) ; mémorisé pour la session (`sessionStorage cap-plein`), Échap revient au panneau sans fermer.
 - Banc `v028.mjs` 21/21 ; `v027` recalé (régions repliées par défaut).
 
+**✦ Constellation + Synthèse en chapitres (v0.29.0, 30/10/2026)** — JB a rejeté deux refontes de la Synthèse (« pas original ») puis tranché : « on garde l'affichage actuel et on l'améliore », la constellation sert à PRÉSENTER le réseau, avec des animations au survol des nœuds.
+- Synthèse : `dashSec(ton,ico,titre,sous,html)` encadre quatre chapitres (chiffres crimson, à traiter ocre, croissance vert, équipe bleu ; bloc CSS `/*v029*/`). `dashBlock(st,sc,"chiffres")` ne rend que tuiles + objectif + activité + recos, `dashCroissance` = courbe + membres par région. Les petits titres sont en `.dash-h`. Grand écran : interrupteur National/Régional en pleine largeur, puis `.dash-cols` (gauche chiffres + croissance, droite à traiter + équipe ; `#dash-todo` reste dans la 2e colonne).
+- `openConstellation()` (bouton « ✦ Le réseau » des outils) : plein écran `#cst-o`, régions `regionsDe`, groupes `todoClub` + nb de membres, état `cstEtat` (sans animateur, bilans, ok, a des membres, sans membre). Animations : tracé des liens, astres qui partent du centre de leur région, flottement, comètes vers le centre (une par membre, 6 max par région), survol = astre grossi + onde + lien allumé + reste effacé + fiche qui suit ; toucher = panneau du groupe → `openClub`. Échap ferme ; bouton Diaporama → `openPresentation`.
+- ⚠ Piège corrigé : `var(--deep)`, `--darker`, `--or`, `--tint` n'existent pas (tokens réels : `--crimson-deep`, `--crimson-darker`, `--gold`, `--crimson-tint`) → la carte des recos était blanche sur blanc depuis la v0.26.
+- Bancs `cst.mjs` 18/18 (téléphone + bureau), tous les anciens verts.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** (reset forcé à la première connexion) — priorité sécurité.

@@ -1019,17 +1019,17 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .mb-esp{font-weight:600;color:var(--muted)}.mb-esp.on{color:#2E7D4F}.mb-esp.off{color:var(--warn)}
 
 /*v026 recos · présences · renouvellements · relances*/
-.dash-recos{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--deep),var(--darker));color:#fff;border-radius:16px;padding:14px 16px;margin:10px 0;cursor:pointer;transition:transform .2s}
-.dash-recos:hover{transform:translateY(-2px)}.dash-recos small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--or)}
+.dash-recos{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--crimson-deep),var(--crimson-darker));color:#fff;border-radius:16px;padding:14px 16px;margin:10px 0;cursor:pointer;transition:transform .2s}
+.dash-recos:hover{transform:translateY(-2px)}.dash-recos small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
 .dash-recos b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:26px;font-weight:800;margin:2px 0}.dash-recos span{font-size:12.5px;color:#F8E9EC}
 .dash-recos i{font-style:normal;font-size:30px}
 .reco-st{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:9px;background:#F1E8EA;color:var(--muted);white-space:nowrap}
-.reco-st.contact,.reco-st.devis{background:#E8EEF6;color:#2C4A73}.reco-st.signee{background:#EAF2EA;color:#24502A}.reco-st.envoyee{background:var(--tint);color:var(--crimson)}
-.renouv-j{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:8px;background:#EAF2EA;color:#24502A;margin-left:4px}.renouv-j.w{background:#FFF3DC;color:#7A5A12}.renouv-j.ko{background:var(--tint);color:var(--crimson)}
+.reco-st.contact,.reco-st.devis{background:#E8EEF6;color:#2C4A73}.reco-st.signee{background:#EAF2EA;color:#24502A}.reco-st.envoyee{background:var(--crimson-tint);color:var(--crimson)}
+.renouv-j{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:8px;background:#EAF2EA;color:#24502A;margin-left:4px}.renouv-j.w{background:#FFF3DC;color:#7A5A12}.renouv-j.ko{background:var(--crimson-tint);color:var(--crimson)}
 .renouv-act{display:flex;gap:6px;flex-shrink:0;align-items:center}
 .pres-grid{display:flex;flex-wrap:wrap;gap:6px}
 .pres{border:1px solid var(--line,#E6DADD);background:#fff;border-radius:18px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
-.pres.on{background:#EAF2EA;border-color:#B9D4BB;color:#24502A}.pres small{font-size:10px;font-weight:800;color:var(--or)}.pres:disabled{cursor:default}
+.pres.on{background:#EAF2EA;border-color:#B9D4BB;color:#24502A}.pres small{font-size:10px;font-weight:800;color:var(--gold)}.pres:disabled{cursor:default}
 .qr-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0}.qr-box svg{width:min(320px,80vw);height:auto;background:#fff;border-radius:12px}
 .qr-url{font-size:11px;color:var(--muted);word-break:break-all;text-align:center;max-width:340px}
 .gstat.inv-rel{color:#1F7A3A;font-weight:700}.gstat.inv-rel.fait{color:var(--muted);font-weight:600}
@@ -1192,6 +1192,96 @@ button.cel{cursor:pointer;transition:transform .15s}button.cel:hover{transform:s
   @keyframes pleinIn{from{opacity:.4;transform:translateX(24px)}}
 }
 @media (prefers-reduced-motion:reduce){.sheet-wrap.plein .sheet{animation:none!important}}
+/*v029 — Synthèse en chapitres : chaque bloc a son cadre, sa couleur, son titre */
+.dash-h{font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px}
+.dsec{--tn:var(--crimson);position:relative;background:color-mix(in srgb,var(--tn) 4%,var(--card));border:1px solid color-mix(in srgb,var(--tn) 18%,var(--line));border-radius:20px;padding:16px 16px 14px;margin:0 0 18px;box-shadow:var(--shadow);overflow:hidden}
+.dsec::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--tn),color-mix(in srgb,var(--tn) 25%,transparent))}
+.dsec-todo{--tn:var(--warn)}.dsec-crois{--tn:var(--ok)}.dsec-equipe{--tn:var(--info)}
+.dsec-h{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding-bottom:12px;border-bottom:1px dashed color-mix(in srgb,var(--tn) 30%,var(--line))}
+.dsec-ic{width:40px;height:40px;flex-shrink:0;border-radius:13px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--tn) 14%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tn) 25%,transparent)}
+.dsec-h h3{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;font-weight:800;margin:0;color:var(--ink);letter-spacing:-.01em}
+.dsec-h p{margin:1px 0 0;font-size:12.5px;color:var(--muted)}
+.dsec-b>:first-child,.dsec-b>.dash-h:first-child{margin-top:0}
+.dsec .dash-h{color:color-mix(in srgb,var(--tn) 70%,var(--ink));font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin:18px 2px 10px}
+.dsec .dash-h::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--tn) 22%,var(--line))}
+.dsec .dash-h span{color:var(--tn)!important}
+.dsec-todo .dash-todo-h{display:none}
+.dsec .rank,.dsec .stat{background:var(--card)}
+.dash .seg-sc{margin-bottom:16px}
+@media (max-width:600px){.dsec{padding:14px 12px 12px;border-radius:18px}.dsec-h h3{font-size:17px}.dsec-ic{width:36px;height:36px;font-size:18px}}
+/*v029 — Constellation (mode présentation du réseau) */
+.cst-o{position:fixed;inset:0;z-index:91;background:radial-gradient(1100px 620px at 50% 45%,#3A0C17,#1A060C 72%);color:#F6E9EC;display:flex;flex-direction:column;gap:10px;padding:calc(env(safe-area-inset-top) + 16px) max(20px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 14px) max(20px,env(safe-area-inset-left));overflow:auto;animation:cstIn .5s ease both}
+@keyframes cstIn{from{opacity:0}}
+.cst-top{display:flex;align-items:center;gap:12px}
+.cst-top .mono{width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;overflow:hidden}.cst-top .mono img{width:34px}
+.cst-top small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#E9CF8E}
+.cst-top b{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800}
+.cst-clk{margin-left:auto;font:800 28px "Bricolage Grotesque",sans-serif;color:#E9CF8E;font-variant-numeric:tabular-nums}
+.cst-btn,.cst-x{border:1px solid rgba(233,207,142,.35);background:rgba(255,255,255,.06);color:#fff;border-radius:12px;padding:9px 13px;font-weight:700;cursor:pointer}
+.cst-x{width:40px;padding:9px 0}.cst-btn:hover,.cst-x:hover{background:rgba(233,207,142,.18)}
+.cst-mid{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;min-height:0}
+@media (max-width:900px){.cst-mid{grid-template-columns:1fr}.cst-clk{font-size:20px}.cst-top b{font-size:18px}}
+.cst-ciel{position:relative;min-width:0;display:flex;align-items:center}
+.cst-ciel svg{width:100%;height:auto;max-height:calc(100vh - 170px);display:block;overflow:visible}
+.cst-et circle{fill:#fff;opacity:.35;animation:cstScint 4s ease-in-out infinite}
+@keyframes cstScint{50%{opacity:.06}}
+.cst-l{stroke:rgba(233,207,142,.25);stroke-width:1.4;stroke-dasharray:var(--L);stroke-dashoffset:var(--L);animation:cstTrace 1s cubic-bezier(.6,0,.2,1) both;transition:stroke .3s,stroke-width .3s}
+@keyframes cstTrace{to{stroke-dashoffset:0}}
+.cst-l.lit{stroke:#E9CF8E;stroke-width:2.4;stroke-dasharray:6 6;animation:cstFlux .8s linear infinite}
+@keyframes cstFlux{to{stroke-dashoffset:-12}}
+.cst-com{fill:#E9CF8E;opacity:.8;filter:drop-shadow(0 0 3px #E9CF8E)}
+.cst-reg{animation:cstPop .7s cubic-bezier(.3,1.5,.5,1) var(--d) both;transform-box:fill-box;transform-origin:center;transition:opacity .3s}
+@keyframes cstPop{from{opacity:0;transform:scale(.3)}}
+.cst-orb{fill:none;stroke:rgba(233,207,142,.2);stroke-dasharray:2 7;transition:stroke .3s}
+.cst-reg.lit .cst-orb{stroke:rgba(233,207,142,.6);animation:cstTourne 6s linear infinite}
+@keyframes cstTourne{to{stroke-dashoffset:-90}}
+.cst-rc{fill:rgba(233,207,142,.12);stroke:rgba(233,207,142,.5);transition:fill .3s}.cst-reg.lit .cst-rc{fill:rgba(233,207,142,.3)}
+.cst-rn{fill:#fff;font:800 20px "Bricolage Grotesque",sans-serif;text-anchor:middle}
+.cst-rt{fill:#E9CF8E;font:800 16px "Bricolage Grotesque",sans-serif;text-anchor:middle}
+.cst-rs{fill:#C9AAB1;font:500 11.5px Inter,sans-serif;text-anchor:middle}
+.cst-c{animation:cstPop .8s cubic-bezier(.3,1.5,.5,1) both;transform-box:fill-box;transform-origin:center}
+.cst-cp{fill:none;stroke:rgba(224,66,92,.5);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:cstRespire 3s ease-in-out infinite}
+@keyframes cstRespire{50%{transform:scale(1.18);opacity:.15}}
+.cst-cn{fill:#fff;font:800 30px "Bricolage Grotesque",sans-serif;text-anchor:middle}.cst-cs{fill:#F2DCE1;font:600 11px Inter,sans-serif;text-anchor:middle}
+.cst-a{cursor:pointer;outline:none;animation:cstVol .9s cubic-bezier(.2,.9,.3,1.2) var(--d) both;transition:opacity .3s}
+@keyframes cstVol{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
+.cst-fl{animation:cstFlotte 5s ease-in-out var(--f) infinite}
+@keyframes cstFlotte{50%{transform:translateY(-4px)}}
+.cst-sl{stroke:rgba(233,207,142,.14);stroke-width:1;transition:stroke .3s,stroke-width .3s}
+.cst-halo{opacity:.22;transform-box:fill-box;transform-origin:center;animation:cstSouffle 3.2s ease-in-out infinite}
+.cst-a.alerte .cst-halo{animation-duration:1.5s;opacity:.4}
+@keyframes cstSouffle{50%{transform:scale(1.28);opacity:.06}}
+.cst-onde{fill:none;stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+.cst-corps{transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.3,1.6,.5,1),stroke .2s}
+.cst-n{fill:#1A060C;font:800 13px "Bricolage Grotesque",sans-serif;text-anchor:middle;pointer-events:none;transition:font-size .3s}
+.cst-pip{fill:#B0122E;stroke:#1A060C;stroke-width:1.5}.cst-pt{fill:#fff;font:800 10px Inter,sans-serif;text-anchor:middle;pointer-events:none}
+.cst-gn{fill:#F6E9EC;font:600 11.5px Inter,sans-serif;text-anchor:middle;pointer-events:none;transition:fill .25s,font-size .25s}
+svg.focus .cst-a:not(.lit),svg.focus .cst-reg:not(.lit){opacity:.22}
+svg.focus .cst-l:not(.lit){opacity:.3}
+.cst-a.lit .cst-sl{stroke:rgba(233,207,142,.55);stroke-width:1.6}
+.cst-a.hov .cst-corps,.cst-a:focus-visible .cst-corps{transform:scale(1.28);stroke:#fff;stroke-width:2.5}
+.cst-a.hov .cst-onde,.cst-a.tap .cst-onde{animation:cstOnde 1.1s ease-out infinite}
+.cst-a.tap:not(.hov) .cst-onde{animation-iteration-count:1}
+@keyframes cstOnde{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+.cst-a.hov .cst-gn{fill:#E9CF8E;font-size:13px;font-weight:800}
+.cst-a.hov .cst-fl{animation-play-state:paused}
+.cst-tip{position:absolute;z-index:2;pointer-events:none;background:rgba(26,6,12,.92);border:1px solid rgba(233,207,142,.4);border-radius:12px;padding:9px 12px;font-size:12.5px;display:flex;flex-direction:column;gap:2px;min-width:170px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:cstTip .2s ease both}
+@keyframes cstTip{from{opacity:0;transform:translateY(4px)}}
+.cst-tip[hidden]{display:none}
+@media (max-width:600px){.cst-top small,.cst-clk{display:none}.cst-top b{font-size:17px}.cst-btn{padding:8px 10px;font-size:13px;margin-left:auto}.cst-x{width:36px}.cst-mid{gap:10px}}
+.cst-tip b{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;color:#fff}.cst-tip span{color:#E9D5DA}
+.cst-pan{background:rgba(255,255,255,.06);border:1px solid rgba(233,207,142,.22);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:9px;align-self:start;backdrop-filter:blur(6px)}
+.cst-pan>*{animation:cstTip .3s ease both}
+.cst-pan h3{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-size:19px;color:#fff}.cst-pan p{margin:0 0 4px;font-size:12.5px;color:#C9AAB1}
+.cst-k{display:flex;align-items:center;gap:10px;border:1px solid rgba(233,207,142,.2);border-radius:12px;padding:9px 11px}
+.cst-k b{font:800 22px "Bricolage Grotesque",sans-serif;color:#E9CF8E;min-width:30px}.cst-k.w b{color:#E8A93A}.cst-k.r b{color:#FF8FA0}.cst-k span{font-size:12.5px;color:#E9D5DA}
+.cst-gh{display:flex;align-items:center;gap:9px}.cst-gh i{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.cst-r{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#C9AAB1;border-bottom:1px solid rgba(233,207,142,.12);padding-bottom:6px}.cst-r b{color:#fff}
+.cst-go{margin-top:6px;border:0;border-radius:12px;background:#C8A24C;color:#3E0710;font-weight:800;padding:11px;cursor:pointer}.cst-go:hover{background:#E9CF8E}
+.cst-back{border:0;background:none;color:#E9CF8E;font-weight:700;cursor:pointer;padding:4px}
+.cst-leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:#E9D5DA}.cst-leg span{display:flex;align-items:center;gap:6px}
+.cst-leg i{width:12px;height:12px;border-radius:50%;display:inline-block}.cst-leg i.pip{background:#B0122E;box-shadow:0 0 0 2px #1A060C}
+@media (prefers-reduced-motion:reduce){.cst-o *,.cst-o{animation:none!important;transition:none!important}.cst-l{stroke-dashoffset:0}}
 </style>
 </head>
 <body>
@@ -1267,8 +1357,17 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.28.0";
+const APP_VERSION="0.29.0";
 const CHANGELOG=[
+  {v:"0.29.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Le réseau en constellation : le bouton ✦ Le réseau de la Synthèse ouvre en plein écran une carte vivante du réseau, faite pour le présenter. Au centre les membres, autour les régions en orbite, et chaque groupe est un astre (sa taille dit ses membres, sa couleur son état). Au survol, l'astre grossit, une onde part, son lien s'allume et le reste s'efface ; un toucher affiche sa fiche et mène au groupe.",
+      "La Synthèse se lit en quatre chapitres bien délimités, chacun avec son cadre, sa couleur et son titre : Le réseau en chiffres, À traiter, Croissance, L'équipe."
+    ],
+    "Corrigé":[
+      "La carte des affaires générées par les recommandations s'affichait blanc sur blanc.",
+      "« 1 membres » dans l'annonce d'un objectif atteint."
+    ]}},
   {v:"0.28.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Repli automatique : une région de « À traiter » ou de « Membres par région » se referme toute seule 3 secondes après qu'on l'a quittée. Le délai se règle dans Paramètres → Apparence (Jamais, 3, 5, 10 ou 30 secondes), sur chaque appareil. Tant que la souris est dessus, rien ne se referme.",
@@ -2565,6 +2664,10 @@ function dashStats(clubs){
    sc = périmètre : "nat" (tout le réseau) ou "reg" (Rabat·Salé·Kénitra), mémorisé dans _dashScope. */
 let _dashScope={};
 function dashTile(n,l,kind,sc,i,tr){return `<div class="stat link" style="--i:${i}" role="button" tabindex="0" onclick="dashDrill('${kind}','${sc}')" onkeydown="if(event.key==='Enter')dashDrill('${kind}','${sc}')"><div class="n" data-count="${n}">${n}</div><div class="l">${l}</div>${tr?`<div class="tr">▲ ${tr}</div>`:""}</div>`}
+function dashSec(ton,ico,titre,sous,html,id){
+  if(!html||!html.trim())return "";
+  return `<section class="dsec dsec-${ton}"${id?` id="${id}"`:""}><header class="dsec-h"><span class="dsec-ic" aria-hidden="true">${ico}</span><div><h3>${titre}</h3>${sous?`<p>${sous}</p>`:""}</div></header><div class="dsec-b">${html}</div></section>`;
+}
 function dashBlock(s,sc,sansTodo){
   sc=sc||"nat";
   const maxN=Math.max(1,...s.perClub.map(c=>c.n));
@@ -2584,9 +2687,12 @@ function dashBlock(s,sc,sansTodo){
     ${dashObjectif(sc)}
     ${dashActivite(sc)}
     ${dashRecos(sc)}
-    ${sansTodo?"":dashATraiter(sc)}
-    ${dashCourbe(sc)}
-    <div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Membres par région</div>
+    ${sansTodo==="chiffres"?"":(sansTodo?"":dashATraiter(sc))+dashCroissance(s,sc)}`;
+}
+/* v0.29.0 — la Synthèse se lit en quatre chapitres délimités (dashSec) : chiffres, à traiter, croissance, équipe. */
+function dashCroissance(s,sc){
+  return `${dashCourbe(sc)}
+    <div class="dash-h">Membres par région</div>
     ${membresRegions(sc)||`<div class="rank"><div class="rank-row"><div class="rn" style="color:var(--muted);font-weight:500">Aucun club dans ce périmètre.</div></div></div>`}`;
 }
 /* Ce qui attend une action, club par club (même règle que la fiche du club) : urgent d'abord. */
@@ -2852,8 +2958,8 @@ function dashATraiter(sc){
   const reg=todoRegions(sc),nX=SESSION.role==="visiteur"?0:suiviCompte(ids);
   const nC=DB.clubs.filter(c=>ids.has(c.id)).map(todoClub).filter(x=>x.plan||x.bil.length||x.anim).length;
   const tot=nC+(nI?1:0)+(nS?1:0)+nX;
-  if(!tot)return `<div class="dash-todo ok" id="dash-todo">✓ Rien n'attend d'action.</div>`;
-  return `<div id="dash-todo" style="font-size:12px;font-weight:600;color:var(--muted);margin:6px 2px 8px">À traiter <span style="color:var(--crimson);font-weight:700">${tot}</span></div>
+  if(!tot)return `<div class="dash-todo ok">✓ Rien n'attend d'action.</div>`;
+  return `<div class="dash-h dash-todo-h">À traiter <span style="color:var(--crimson);font-weight:700">${tot}</span></div>
     ${adhRows?`<div class="rank dash-todo">${adhRows}</div>`:""}${nC?reg+`<button type="button" class="km-lien" style="margin:-4px 2px 12px" onclick="go2('clubs')">Voir les ${nC} groupe${nC>1?"s":""} à traiter dans l'onglet Clubs ›</button>`:""}`;
 }
 function go2(t){go(t);if(t==="clubs"){filter="todo";render()}}
@@ -2864,7 +2970,7 @@ function dashFunnel(clubs,sc){
   if(!invites.length)return"";
   const n=GUEST_STATUTS.map(s=>invites.filter(g=>g.statut===s).length),mx=Math.max(1,...n);
   const cols=GUEST_STATUTS.map((s,i)=>`<button class="fn-col" onclick="dashDrill('inv:${s}','${sc||"nat"}')"><b data-count="${n[i]}">${n[i]}</b><i style="height:${Math.max(4,Math.round(n[i]/mx*56))}px;--i:${i}"></i><small>${esc(s)}</small></button>`).join("");
-  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Entonnoir des invités <span style="color:var(--crimson);font-weight:700">${invites.length}</span></div>
+  return `<div class="dash-h">Entonnoir des invités <span style="color:var(--crimson);font-weight:700">${invites.length}</span></div>
     <div class="funnel">${cols}</div>`;
 }
 function dashByAnim(clubs){
@@ -2878,7 +2984,7 @@ function dashByAnim(clubs){
     return{id:a.id,nom:a.nom,c:acl.length,m:nbM,r:nbUp};
   }).sort((x,y)=>y.m-x.m);
   const maxM=Math.max(1,...rows.map(r=>r.m));
-  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">Par animateur</div>
+  return `<div class="dash-h">Par animateur</div>
     <div class="rank">${rows.map(r=>`<div class="rank-row link" onclick="openAnim('${r.id}')"><div class="rn">${esc(r.nom)}<small>${r.c} club${r.c>1?"s":""} · ${r.r} réunion${r.r>1?"s":""} à venir</small></div>
       <div class="bar"><i style="width:${Math.round(r.m/maxM*100)}%"></i></div><div class="rv">${r.m}</div></div>`).join("")}</div>`;
 }
@@ -2886,14 +2992,14 @@ function dashRelancer(clubs){
   const ids=new Set(clubs.map(c=>c.id));
   const flag=[["formulaire","Formulaire"],["contrat","Contrat"],["facture","Facture"],["paiement","Paiement"]];
   const list=DB.membres.filter(m=>ids.has(m.clubId)&&flag.some(f=>!m[f[0]]));
-  if(!list.length)return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">À relancer</div>
+  if(!list.length)return `<div class="dash-h">À relancer</div>
     <div class="rank"><div class="rank-row"><div class="rn" style="color:var(--ok);font-weight:600">✓ Tous les membres sont à jour.</div></div></div>`;
   const rows=list.sort((a,b)=>flag.filter(f=>!a[f[0]]).length-flag.filter(f=>!b[f[0]]).length===0?0:flag.filter(f=>!b[f[0]]).length-flag.filter(f=>!a[f[0]]).length).map(m=>{
     const manque=flag.filter(f=>!m[f[0]]).map(f=>f[1]).join(", ");
     return `<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc(club(m.clubId).nom.replace("CAP ",""))} · manque : ${esc(manque)}</small></div>
       <span class="gstat" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${4-flag.filter(f=>!m[f[0]]).length}/4</span></div>`;
   }).join("");
-  return `<div style="font-size:12px;font-weight:600;color:var(--muted);margin:16px 2px 8px">À relancer <span style="color:var(--warn);font-weight:700">${list.length}</span></div>
+  return `<div class="dash-h">À relancer <span style="color:var(--warn);font-weight:700">${list.length}</span></div>
     <div class="rank">${rows}</div>`;
 }
 function dashDrill(kind,sc){
@@ -2940,8 +3046,6 @@ function dashCountUp(root){
   });
 }
 function viewDashboard(){
-  const seeAll=true; // tout le monde voit le national + régional ; filtrage local par onglet
-  const scope=DB.clubs;
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
   let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
@@ -2950,18 +3054,14 @@ function viewDashboard(){
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
   html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
-  if(large){
-    const sc=window._dashSc==="reg"?"reg":"nat";const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
-    html+=`<div class="dash-cols"><div><div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`
-      +dashBlock(dashStats(per),sc,true)+dashByAnim(per)+`</div><div>`+dashATraiter(sc)+dashFunnel(per,sc)+dashRelancer(per)+`</div></div>`;
-    return html+`<div style="height:8px"></div></div>`;
-  }
-  if(seeAll){
-    html+=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`+dashBlock(dashStats(per),sc);
-  }else{
-    html+=`<div class="dash-band">Mon périmètre</div>`+dashBlock(dashStats(scope));
-  }
-  html+=dashFunnel(per,sc)+dashByAnim(per)+dashRelancer(per);
+  const seg=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
+  const st=dashStats(per),lieu=sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
+  const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
+  const todo=dashSec("todo","⚡","À traiter","Ce qui attend une action, région par région",dashATraiter(sc),"dash-todo");
+  const crois=dashSec("crois","📈","Croissance","Membres et invités : où ils en sont",dashCroissance(st,sc)+dashFunnel(per,sc));
+  const equipe=dashSec("equipe","👥","L'équipe","Animateurs et dossiers des membres",dashByAnim(per)+dashRelancer(per));
+  if(large){html+=seg+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`;return html+`<div style="height:8px"></div></div>`}
+  html+=seg+chiffres+todo+crois+equipe;
   return html+`<div style="height:8px"></div></div>`;
 }
 
@@ -4159,7 +4259,7 @@ function dashFete(){
   let neuf=null;
   atteints.forEach(c=>{const k="cap-fete-"+c.id;try{if(!localStorage.getItem(k)){localStorage.setItem(k,"1");if(!neuf)neuf=c}}catch(e){}});
   if(!neuf)return;
-  celebrer("🏆",neuf.nom.replace(/^CAP\s+/,"")+" a atteint son objectif !",neuf.objectif+" membres","Voir le club",()=>openClub(neuf.id));
+  celebrer("🏆",neuf.nom.replace(/^CAP\s+/,"")+" a atteint son objectif !",neuf.objectif+(neuf.objectif>1?" membres":" membre"),"Voir le club",()=>openClub(neuf.id));
 }
 function pluieConfettis(){if(_calme())return;
   const box=document.getElementById("confetti");const col=["#B0122E","#C8A24C","#F3D88E","#2E7D5B","#5C0A18"];
@@ -4195,7 +4295,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
@@ -4451,6 +4551,95 @@ function showSlides(){
     `<h3>La conversion</h3><div class="sbig"><div><b>${inv.length}</b><span>invités suivis</span></div><div><b>${cv==null?"—":cv+" %"}</b><span>devenus membres</span></div><div><b>${adh30}</b><span>adhésions reçues par le lien</span></div><div><b>${DB.membres.filter(m=>m.paiement).length}</b><span>membres à jour du paiement</span></div></div>`
   ].filter(Boolean);
   return S;
+}
+/* ============================================================
+   v0.29.0 — CONSTELLATION : présenter le réseau (plein écran, animé)
+   Centre = le réseau, régions en orbite, groupes en astres (taille = membres, couleur = état).
+   Survol d'un astre : il grossit, une onde part, son lien s'allume, le reste s'efface ; une fiche suit la souris.
+   ============================================================ */
+const CST_COUL={sans:"#F2E5E8",bil:"#E8A93A",neuf:"#6FB0D2",dor:"#9A8A8E",ok:"#5FC08E"};
+const CST_LIB={sans:"Sans animateur",bil:"Bilans en attente",neuf:"A des membres",dor:"Sans membre pour l'instant",ok:"Tout est à jour"};
+function cstEtat(x){return x.anim?"sans":x.bil.length?"bil":x.nb&&!x.plan?"ok":x.nb?"neuf":"dor"}
+function cstDonnees(){
+  const regs=regionsDe(DB.clubs).map(r=>({...r,g:r.clubs.map(c=>{const t=todoClub(c);const nb=DB.membres.filter(m=>m.clubId===c.id).length;return {...t,nb,nom:c.nom.replace(/^CAP\s+/,"")}})}));
+  regs.forEach(r=>{r.g.forEach(x=>x.e=cstEtat(x));r.nb=r.g.reduce((a,x)=>a+x.nb,0)});
+  return regs;
+}
+let _cst=null;
+function openConstellation(){
+  closeConstellation();
+  const o=document.createElement("div");o.className="cst-o";o.id="cst-o";o.setAttribute("role","dialog");o.setAttribute("aria-label","Constellation du réseau");
+  document.body.appendChild(o);_cst={sel:null};cstRender();
+  try{if(document.documentElement.requestFullscreen&&isWide())document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
+  document.addEventListener("keydown",cstKey);
+}
+function closeConstellation(){const o=document.getElementById("cst-o");if(o)o.remove();document.removeEventListener("keydown",cstKey);clearInterval(_cst&&_cst.clk);try{if(document.fullscreenElement&&!document.getElementById("show-o"))document.exitFullscreen()}catch(e){}}
+function cstKey(e){if(e.key==="Escape")closeConstellation()}
+function cstRender(){
+  const o=document.getElementById("cst-o");if(!o)return;
+  const regs=cstDonnees(),calme=_calme();
+  const W=1000,H=640,cx=W/2,cy=H/2+8,nR=regs.length;
+  const tot=regs.reduce((a,r)=>a+r.nb,0),nG=regs.reduce((a,r)=>a+r.g.length,0);
+  const nBil=regs.reduce((a,r)=>a+r.g.reduce((b,x)=>b+x.bil.length,0),0),nPlan=regs.reduce((a,r)=>a+r.g.filter(x=>x.plan).length,0),nSans=regs.reduce((a,r)=>a+r.g.filter(x=>x.anim).length,0);
+  let et="";for(let i=0;i<90;i++){const x=(i*137.5)%W,y=(i*89.3+i*i*.7)%H;et+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)*.5+.5}" style="animation-delay:${(i%9)*.45}s"/>`}
+  let liens="",orb="",astres="",com="";const pos=[];
+  regs.forEach((r,ri)=>{
+    const a=-Math.PI/2+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:300,ry=nR<=1?0:205;
+    const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a),rr=Math.min(130,58+r.g.length*11);r.x=x;r.y=y;
+    const L=Math.hypot(x-cx,y-cy);
+    liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
+    if(!calme&&r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
+    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-orb" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr}"/><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" x="${x.toFixed(1)}" y="${(y-rr-16).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" x="${x.toFixed(1)}" y="${(y-rr-1).toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} membre${r.nb>1?"s":""}</text></g>`;
+    r.g.forEach((g,gi)=>{
+      const b=-Math.PI/2+(gi+.5)*2*Math.PI/r.g.length,gx=x+rr*Math.cos(b),gy=y+rr*Math.sin(b),sz=11+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
+      const i=pos.length;pos.push({...g,ri,gx,gy,sz});
+      const alerte=g.e==="sans"||g.e==="bil";
+      astres+=`<g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} membre${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--dx:${(x-gx).toFixed(1)}px;--dy:${(y-gy).toFixed(1)}px;--d:${(.45+ri*.12+gi*.06).toFixed(2)}s;--f:${(gi%4)*.7}s">
+        <line class="cst-sl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${gx.toFixed(1)}" y2="${gy.toFixed(1)}"/>
+        <g class="cst-fl"><circle class="cst-halo" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${sz.toFixed(1)}" stroke="${c}"/>
+        <circle class="cst-corps" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${sz.toFixed(1)}" fill="${g.e==="sans"?"#2A0C14":c}" stroke="${g.e==="sans"?"#F2E5E8":"rgba(255,255,255,.25)"}"${g.e==="sans"?' stroke-dasharray="3 3"':""}/>
+        ${g.nb?`<text class="cst-n" x="${gx.toFixed(1)}" y="${(gy+4.5).toFixed(1)}">${g.nb}</text>`:""}
+        ${g.bil.length?`<circle class="cst-pip" cx="${(gx+sz*.72).toFixed(1)}" cy="${(gy-sz*.72).toFixed(1)}" r="8.5"/><text class="cst-pt" x="${(gx+sz*.72).toFixed(1)}" y="${(gy-sz*.72+3.6).toFixed(1)}">${g.bil.length}</text>`:""}
+        <text class="cst-gn" x="${gx.toFixed(1)}" y="${(gy+sz+15).toFixed(1)}">${esc(g.nom)}</text></g></g>`;
+    });
+  });
+  _cst.pos=pos;
+  const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">membre${tot>1?"s":""}</text></g>`;
+  const h=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  o.innerHTML=`<div class="cst-top"><span class="mono"><img src="icone-192.png" alt=""></span><div><small>Club d'Affaires Protéine Maroc</small><b>Le réseau aujourd'hui</b></div><span class="cst-clk" id="cst-clk">${h}</span>
+      <button class="cst-btn" onclick="closeConstellation();openPresentation()">▶ Diaporama</button><button class="cst-x" aria-label="Fermer" onclick="closeConstellation()">✕</button></div>
+    <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} membres"><defs><radialGradient id="cstg"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#5C0A18"/></radialGradient></defs>
+      <g class="cst-et">${et}</g>${liens}${com}${orb}${coeur}${astres}</svg><div class="cst-tip" id="cst-tip" hidden></div></div>
+      <aside class="cst-pan" id="cst-pan">${cstPanneau(null,{tot,nG,nBil,nPlan,nSans,nR})}</aside></div>
+    <div class="cst-leg">${Object.keys(CST_COUL).map(k=>`<span><i style="background:${k==="sans"?"transparent":CST_COUL[k]};${k==="sans"?"border:1.5px dashed #F2E5E8":""}"></i>${CST_LIB[k]}</span>`).join("")}<span><i class="pip"></i>bilans en attente</span></div>`;
+  const svg=o.querySelector("svg"),tip=o.querySelector("#cst-tip"),ciel=o.querySelector("#cst-ciel");
+  const focus=(ri,i)=>{svg.classList.toggle("focus",ri!=null);o.querySelectorAll("[data-r]").forEach(e=>e.classList.toggle("lit",ri!=null&&+e.dataset.r===ri));o.querySelectorAll(".cst-a").forEach(e=>e.classList.toggle("hov",i!=null&&+e.dataset.i===i))};
+  o.querySelectorAll(".cst-a").forEach(a=>{const i=+a.dataset.i,g=pos[i];
+    a.addEventListener("pointerenter",()=>{focus(g.ri,i);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
+    a.addEventListener("pointermove",e=>{const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"});
+    a.addEventListener("pointerleave",()=>{focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel);tip.hidden=true});
+    const choisir=()=>{_cst.sel=i;focus(g.ri,i);o.querySelector("#cst-pan").innerHTML=cstPanneau(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
+    a.addEventListener("click",choisir);a.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choisir()}});
+  });
+  o.querySelectorAll(".cst-reg").forEach(r=>{r.addEventListener("pointerenter",()=>focus(+r.dataset.r,null));r.addEventListener("pointerleave",()=>focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel))});
+  _cst.clk=setInterval(()=>{const c=document.getElementById("cst-clk");if(!c)return clearInterval(_cst.clk);c.textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})},20000);
+}
+function cstPanneau(g,t){
+  if(!g)return `<h3>Ce que le réseau demande</h3><p>Passe sur un groupe pour le voir, touche-le pour sa fiche.</p>
+    <div class="cst-k"><b>${t.tot}</b><span>membre${t.tot>1?"s":""} dans ${t.nG} groupes et ${t.nR} régions</span></div>
+    <div class="cst-k w"><b>${t.nBil}</b><span>bilan${t.nBil>1?"s":""} à saisir</span></div>
+    <div class="cst-k w"><b>${t.nPlan}</b><span>groupe${t.nPlan>1?"s":""} sans prochaine réunion</span></div>
+    <div class="cst-k r"><b>${t.nSans}</b><span>groupe${t.nSans>1?"s":""} sans animateur</span></div>`;
+  const der=DB.reunions.filter(m=>m.clubId===g.c.id&&isPast(m.date)&&m.statut!=="annulee").sort((a,b)=>b.date.localeCompare(a.date))[0];
+  const act=g.anim?"Nommer un animateur":g.bil.length?"Saisir les bilans":g.plan?"Planifier la prochaine réunion":"Ouvrir le groupe";
+  return `<div class="cst-gh"><i style="background:${CST_COUL[g.e]}"></i><h3>${esc(g.nom)}</h3></div><p>${esc(g.c.ville)} · ${esc(CST_LIB[g.e])}</p>
+    <div class="cst-r"><span>Animateur</span><b>${g.c.animId?esc(animNom(g.c.animId)):"à nommer"}</b></div>
+    <div class="cst-r"><span>Membres</span><b>${g.nb}${g.c.objectif?" / "+g.c.objectif:""}</b></div>
+    <div class="cst-r"><span>Bilans en attente</span><b>${g.bil.length}</b></div>
+    <div class="cst-r"><span>Dernière réunion</span><b>${der?esc(dObj(der.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})):"aucune"}</b></div>
+    <div class="cst-r"><span>Prochaine réunion</span><b>${g.plan?"à planifier":"prévue"}</b></div>
+    <button class="cst-go" onclick="closeConstellation();openClub('${g.c.id}')">${act} ›</button>
+    <button class="cst-back" onclick="_cst.sel=null;cstRender()">← Vue d'ensemble</button>`;
 }
 function openPresentation(){
   closePresentation();

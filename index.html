@@ -1561,6 +1561,85 @@ html.dark .vb-or{background:#3A3020;--enc:#4A3C22}html.dark .vb-or .vb-n{color:#
   .cal-t{font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){.cal *{animation:none!important;transition:none!important}}
+
+/*v035 Mon groupe*/
+.grp-choix{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.grp-choix button{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font:600 13px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.grp-choix button i{width:8px;height:8px;border-radius:50%;background:var(--vc)}
+.grp-choix button small{color:var(--muted);font-weight:500}
+.grp-choix button.on{border-color:var(--vc);background:color-mix(in srgb,var(--vc) 10%,var(--card))}
+.grp-choix button:active{transform:scale(.96)}
+.grp-tete{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;display:grid;gap:10px;overflow:hidden}
+.grp-tete::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--vc)}
+.grp-id{display:flex;gap:12px;align-items:center}
+.grp-id h3{margin:0;font:700 21px "Bricolage Grotesque",Inter,sans-serif}
+.grp-id p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.grp-raccourcis{display:flex;gap:6px;flex-wrap:wrap}
+.grp-ong{display:flex;gap:4px;background:var(--soft);border-radius:14px;padding:4px;overflow-x:auto;scrollbar-width:none;margin-bottom:14px}
+.grp-ong button{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;border-radius:10px;padding:9px 12px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.grp-ong button.on{background:var(--card);color:var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.grp-ong button em{font-style:normal;background:var(--crimson);color:#fff;border-radius:999px;font-size:10.5px;padding:1px 6px}
+.grp-corps>*{animation:grpIn .35s ease both}
+@keyframes grpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.grp-stats.petit{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+@media(min-width:900px){.grp-stats:not(.petit){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:899px){.grp-stats,.grp-stats.petit{grid-template-columns:repeat(2,minmax(0,1fr))}.grp-st b{font-size:22px}}
+.grp-st{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;font-family:inherit;color:var(--ink);transition:transform .18s,box-shadow .2s,border-color .2s}
+button.grp-st{cursor:pointer}button.grp-st:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(92,10,24,.09);border-color:var(--crimson-tint)}
+.grp-st b{font:700 26px "Bricolage Grotesque",Inter,sans-serif;line-height:1.1}
+.grp-st{min-width:0;overflow-wrap:anywhere}.grp-st b{white-space:nowrap}
+.grp-st b small{font-size:13px;color:var(--muted);font-weight:600}
+.grp-st span{font-size:12.5px;font-weight:600}
+.grp-st>small{font-size:11.5px;color:var(--muted)}
+.grp-st.or{background:linear-gradient(140deg,var(--gold-tint),var(--card));border-color:color-mix(in srgb,var(--gold) 40%,var(--line))}
+.grp-st.warn b{color:var(--warn)}
+.grp-2col{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.grp-2col>div{min-width:0}
+@media(min-width:900px){.grp-2col{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}}
+.grp-todo{display:grid;gap:6px;margin-bottom:6px}
+.grp-todo button{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px 13px;font:600 13.5px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:transform .15s,border-color .2s}
+.grp-todo button:hover{border-color:var(--crimson);transform:translateX(3px)}
+.grp-todo button span{color:var(--crimson);font-size:18px}
+.grp-bars{display:flex;align-items:flex-end;gap:5px;height:150px;padding:10px 4px 0;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.gb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.gb-c{flex:1;width:100%;max-width:22px;display:flex;flex-direction:column-reverse;border-radius:6px 6px 2px 2px;overflow:hidden;background:var(--soft)}
+.gb-c i{display:block;transform-origin:bottom;animation:gbUp .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*40ms)}
+.gb-c i.f{background:var(--crimson)}.gb-c i.o{background:var(--gold)}
+.gb small{font-size:10px;color:var(--muted);padding-bottom:6px}
+@keyframes gbUp{from{transform:scaleY(0)}}
+.grp-leg{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:6px}
+.grp-leg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.grp-leg i.f{background:var(--crimson)}.grp-leg i.o{background:var(--gold)}
+.grp-calbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.grp-calbar>span{display:flex;gap:6px;flex-wrap:wrap}
+.grp-note{color:var(--muted);font-size:13px;margin:4px 0 10px}
+.grp-met{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.gm{display:inline-flex;align-items:center;gap:5px;background:var(--soft);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.gm em{font-style:normal;color:var(--crimson)}
+.gm.cherche{background:var(--crimson-tint);color:var(--crimson-deep)}
+.gm.cherche.pris{background:var(--ok-tint);color:var(--ok)}
+.gm button{border:0;background:none;color:inherit;cursor:pointer;font-size:11px;padding:0 0 0 2px;opacity:.7}
+.grp-rech-in{display:flex;gap:6px;margin:4px 0 6px}
+.grp-rech-in input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:14px Inter,sans-serif;background:var(--card);color:var(--ink)}
+.cr-prog{height:6px;border-radius:99px;background:var(--soft);overflow:hidden;margin-bottom:12px}
+.cr-prog i{display:block;height:100%;background:var(--ok);border-radius:99px;transition:width .6s}
+.grp-crl{display:grid;gap:8px}
+.grp-cr{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;font-family:inherit;color:var(--ink);cursor:pointer;animation:grpIn .35s ease both;animation-delay:calc(var(--i)*30ms);transition:border-color .2s,transform .15s}
+.grp-cr:hover{border-color:var(--crimson);transform:translateX(2px)}
+.grp-cr .reu-d{flex:0 0 auto}
+.gc-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.gc-t small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gc-s{font-size:12px;font-weight:700;color:var(--ok)}
+.grp-cr.todo .gc-s{color:var(--crimson)}
+.grp-pipe{display:grid;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:6px}
+.gpi{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:8px;font-size:12.5px}
+.gpi>div{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}
+.gpi i{display:block;height:100%;border-radius:99px;background:var(--info);transform-origin:left;animation:gpW .8s ease both}
+.gpi i.signee{background:var(--ok)}.gp i.sans_suite{background:var(--muted)}.gp i.envoyee{background:var(--crimson)}
+.gpi b{text-align:right}
+@keyframes gpW{from{transform:scaleX(0)}}
+@media (prefers-reduced-motion:reduce){.grp-corps>*,.grp-cr,.gb-c i,.gpi i{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1609,7 +1688,7 @@ html.dark .vb-or{background:#3A3020;--enc:#4A3C22}html.dark .vb-or .vb-n{color:#
 <nav id="nav" class="nav hidden"><span class="nav-pill" id="nav-pill" aria-hidden="true"></span>
   <button data-tab="dash" class="on" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Synthèse</button>
   <button data-tab="agenda" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</button>
-  <button data-tab="reunions" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg>Réunions</button>
+  <button data-tab="reunions" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg>Groupe</button>
   <button data-tab="clubs" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>Clubs</button>
   <button data-tab="membres" onclick="go('membres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="18" y2="14"/></svg>Membres</button>
   <button data-tab="demandes" class="nav-dem" onclick="go('demandes')" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="i-env" d="M8 3h8v7l-4 2.5L8 10z"/><path d="M3 13l2.5-6H8M16 7h2.5L21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>Demandes</button>
@@ -1637,8 +1716,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.34.0";
+const APP_VERSION="0.35.0";
 const CHANGELOG=[
+  {v:"0.35.0",date:"30 octobre 2026",notes:{
+    "Ajouté":[
+      "Espace « Mon groupe » (onglet Groupe, à la place de Réunions) : l'animateur pilote son groupe depuis une seule page. En tête, le groupe (santé, animateur, rythme, prochaine action) et le choix du groupe quand on en a plusieurs. Cinq onglets : Tableau de bord (membres et objectif, réunions faites dans l'année, présents en moyenne, invités et adhésions obtenues, affaires échangées en MAD, recommandations, ce qui reste à faire, réunions mois par mois sur 12 mois), Calendrier du groupe (semaine, mois ou liste, rythme, planifier la suivante), Membres & métiers (liste, métiers représentés, métiers recherchés à compléter depuis la liste officielle, ce que cherchent les membres), Comptes rendus (toutes les réunions passées, écrits ou à écrire), Affaires (montant signé, avancement des recommandations, membres les plus actifs, et « Noter une affaire annoncée en réunion »).",
+      "La fiche d'un club propose « Espace du groupe »."
+    ]}},
   {v:"0.34.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "L'agenda devient un calendrier : vues Semaine et Mois (la semaine par défaut au téléphone, le mois sur ordinateur, ton choix est retenu), la vue Liste reste disponible. Les flèches ‹ › font glisser d'une semaine ou d'un mois à l'autre, avec une petite animation ; au téléphone on peut aussi balayer du doigt. Le bouton « Aujourd'hui » ramène à la période en cours. Chaque réunion s'ouvre d'un toucher ; au téléphone, toucher un jour du mois montre ses réunions ; sur ordinateur, double-cliquer un jour ou utiliser le + d'une journée planifie une réunion à cette date. Les filtres et la recherche s'appliquent au calendrier."
@@ -2017,11 +2101,11 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||""}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[]}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -2156,7 +2240,7 @@ function tutoEtapes(partie){
       {go:"dash",c:'#view .tools button[onclick="openConstellation()"]',t:"Le réseau en constellation",x:"Pour présenter le réseau : une carte animée en plein écran. Les régions sont en orbite, chaque groupe est un astre dont la taille dit les membres et la couleur l'état. Passe sur un astre pour le mettre en avant, touche-le pour sa fiche. « ▶ Présenter » lance le diaporama."},
       {go:"dash",t:"Les notifications",x:"Nouvelles demandes, recommandations, objectifs atteints : elles s'empilent en bas à droite de l'écran. Touche-en une pour ouvrir la page concernée."}],
     agenda:[
-      {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mes réunions",x:"Ton espace pour tes clubs : « Planifier en série » crée d'un coup les réunions des prochains mois de chaque groupe à partir de son rythme. Tu peux aussi changer le jour d'une réunion, écrire le compte rendu, et enchaîner les bilans en retard."},
+      {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mon groupe",x:"Ton poste de pilotage, un groupe à la fois : le tableau de bord (membres, réunions faites, présences, affaires échangées), le calendrier du groupe, les membres et les métiers représentés ou recherchés, les comptes rendus et les affaires. « Planifier en série » crée d'un coup les réunions des prochains mois."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
       ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
       {go:"agenda",c:'#view [onclick^="openMeeting"], #cal .cal-corps',t:"Une réunion",x:"Le calendrier montre la semaine ou le mois : les flèches ‹ › changent de période. Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
@@ -2340,7 +2424,7 @@ function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(t
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewReunions():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam();
+  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam();
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v)}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
@@ -2376,7 +2460,7 @@ function railMembresIncomplets(ids,n){
   return DB.membres.filter(m=>ids.has(m.clubId)&&f.some(k=>!m[k])).slice(0,n).map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}</small></div><span class="gstat">${f.filter(k=>m[k]).length}/4</span></div>`);
 }
 function railHTML(){
-  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",demandes:"Demandes",lieux:"Lieux",team:"Équipe"}[tab]||"";
+  const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",demandes:"Demandes",lieux:"Lieux",team:"Équipe"}[tab]||"";
   const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
@@ -2387,8 +2471,8 @@ function railHTML(){
       +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
   }
   if(tab==="reunions"){
-    const cr=reuACompteRendu(),iso=isoJour(new Date(TODAY.getTime()+7*864e5));
-    return head("Cette semaine","Touche une réunion pour la gérer ici.")+railRang("Dans les 7 jours",railReunions(new Set(reuClubs().map(c=>c.id)),10,r=>r.date<=iso),"Rien dans les 7 jours.")
+    const g=grpClub(),gid=new Set(g?[g.id]:[]),cr=reuACompteRendu().filter(r=>gid.has(r.clubId)),iso=isoJour(new Date(TODAY.getTime()+7*864e5));
+    return head(g?g.nom.replace(/^CAP\s+/,""):"Mon groupe","Les prochaines réunions et les comptes rendus du groupe affiché.")+railRang("Prochaines réunions",railReunions(gid,6),"Aucune réunion à venir.")
       +railRang("Comptes rendus à écrire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
   }
   if(tab==="membres"){
@@ -2545,6 +2629,190 @@ function viewReunions(){
     <div class="reu-l">${rythmes||`<p class="fh-empty">Aucun club rattaché à ton compte.</p>`}</div>
     ${hist.length?`<div class="month-label">Derniers comptes rendus</div><div class="reu-l">${hist.map(reuCarte).join("")}</div>`:""}
     <div style="height:8px"></div></div>`;
+}
+
+/* ============================================================
+   v0.35.0 — ESPACE « MON GROUPE » : le poste de pilotage de l'animateur, un groupe à la fois.
+   Tableau de bord (chiffres du groupe), calendrier, membres et métiers, comptes rendus, affaires.
+   Remplace l'ancienne page « Mes réunions » (onglet reunions) ; viewReunions reste pour mémoire.
+   ============================================================ */
+const METIERS_OFF=["- Autre -", "Accompagnement VAE", "Administrateur de biens", "Agence de communication", "Agence de communication par la bande dessinée", "Agence de communication par l’objet", "Agence de communication web", "Agence de marketing sportif", "Agence de naming", "Agence de presse", "Agence de production audiovisuelle", "Agence de publicité print", "Agence de sécurité, surveillance et gardiennage", "Agence de traduction", "Agence de voyages", "Agence de webmarketing", "Agence e-commerce", "Agence intérim", "Agence SEO", "Agence social media", "Agence événementielle", "Agent commercial", "Agent General d'Assurance", "Agent ou mandataire immobilier d'entreprise", "Agent ou mandataire immobilier particulier", "Agent prévoyance et patrimoine", "Animateur", "Architecte", "Architecte d'intérieur", "Artisan conserveur", "Ascensoriste", "Assistance Pare-Brise", "Assistant administratif", "Assistant à maîtrise d'ouvrage AMO", "Assistante sociale", "Assureur des personnes", "Assureur IARD", "Assureur prévoyance", "Audioprothésiste", "Auditeur énergétique", "Avocat en droit bancaire et boursier", "Avocat en droit collaboratif", "Avocat en droit commercial", "Avocat en droit de l'arbitrage", "Avocat en droit de l'environnement", "Avocat en droit de l'urbanisme", "Avocat en droit de la famille, des personnes et de leur patrimoine", "Avocat en droit de la fiducie", "Avocat en droit de la propriété intellectuelle", "Avocat en droit de la santé", "Avocat en droit de la sécurité et de la protection sociale", "Avocat en droit des affaires", "Avocat en droit des associations et des fondations", "Avocat en droit des assurances", "Avocat en droit des garanties, des sûretés et des mesures d'exécution", "Avocat en droit des nouvelles technologies, de l'informatique et de la communication", "Avocat en droit des sociétés", "Avocat en droit des transports", "Avocat en droit des étrangers et de la nationalité", "Avocat en droit du crédit et de la consommation", "Avocat en droit du dommage corporel", "Avocat en droit du sport", "Avocat en droit du travail", "Avocat en droit fiscal et droit douanier", "Avocat en droit immobilier", "Avocat en droit international et de l'Union européenne", "Avocat en droit privé", "Avocat en droit public", "Avocat en droit pénal", "Avocat en droit routier", "Avocat en droit rural", "Avocat en droit social", "Avocat en droit équin", "Avocat en responsabilité civile", "Avocat en risques industriels", "Avocat généraliste", "Banquier", "Barista", "Bijoutier-joaillier", "Bureau d'études Génie civil", "Bureau d'études thermiques", "Bureau d'études VRD", "Bétuliculteur", "Cabinet de portage salarial", "Cabinet de recrutement", "Carreleur", "Carrossier", "Cartomencienne", "Caviste", "CE externalisé", "Centre de beauté", "Centre de réalité virtuelle", "Chargé de recouvrement de créances", "Charpentier", "Chasseur de trésors", "Chasseur immobilier", "Chauffagiste", "Chef de projet agencement", "Chiropracteur", "Chirurgien-dentiste", "Chocolatier", "Climaticien", "Coach", "Coach d'entepreneurs et sportifs haut niveau", "Coach de dirigeants", "Coach de transition professionnelle et carrière", "Coach de vie", "Coach de vie amoureuse", "Coach en organisation", "Coach en rangement", "Coach exécutif", "Coach professionnel", "Coach sportif", "Coach sportif en entreprise", "Coach vocal", "Commercial externalisé", "Commissaire aux comptes", "Commissaires-priseurs", "Community Manager", "Conception et vente de chalets en bois haut de gamme", "Concessionnaire automobile", "Concierge privé", "Conseil en gestion et développement d'entreprise", "Conseil en propriété industrielle", "Conseil en Stratégie et Développement Commercial", "Conseiller d'orientation", "Conseiller en automobile", "Conseiller en entreprise", "Conseiller en financement institutionnel", "Conseiller en formation", "Conseiller en gestion de patrimoine", "Conseiller en image et habillement", "Conseiller en investissements", "Conseiller en nutrition", "Conseiller en économie collaborative et de partage", "Conseiller expert retraite", "Conseiller immobilier", "Conseiller juridique", "Conseillère santé et bien-être", "Constructeur Maisons individuelles", "Consultant commercial", "Consultant en alcools", "Consultant en bilan de compétences", "Consultant en gestion d'entreprise", "Consultant en immobilier d’entreprise", "Consultant en Lean Management", "Consultant en management", "Consultant en marketing", "Consultant en organisation", "Consultant en prévention des risques professionnels", "Consultant en recrutement", "Consultant en relations humaines", "Consultant en relations professionnelles", "Consultant en stratégie de développement", "Consultant en stratégie et en innovation", "Consultant en système d'information et de développement informatique", "Consultant en sécurité et santé au travail", "Consultant en transformation d'entreprise", "Consultant en transformation digitale", "Consultant en transition professionnelle", "Consultant en évolution professionnelle", "Consultant export", "Consultant qualité", "Consultant ressources humaines", "Consultant RSE", "Consultant santé", "Consultante en transition alimentaire durable", "Contractant général", "Contrôle des équipements ludiques et sportifs", "Contrôle technique automobile", "Coordonnateur SPS", "Courtier en assurances", "Courtier en financement", "Courtier en financement immobilier", "Courtier en financement pro", "Courtier en prêt immobilier", "Courtier en travaux", "Courtier en valeurs mobilières", "Courtier en énergie", "Courtier Télécom Professionnel", "Courtier valeurs mobilières", "Couvreur", "Créateur de coffrets cadeaux pour particuliers et entreprises", "Créateur de marque", "Créateur de site internet", "Créateur de visites virtuelles et capture 3D", "Créateur verrier", "Création de Podcast", "Créatrice de couettes en Laine", "Cuisiniste concepteur et installateur", "Dentiste", "Designer d'intérieur", "Designer global", "Designer graphique", "Diagnostiqueur immobilier", "Directeur Commercial Externalisé", "Distributeur / loueur de matériel BTP", "Distributeur / loueur de matériel d'impression", "Distributeur / loueur de matériel de manutention", "Distributeur d'objets publicitaires", "Distributeur de cigarette électronique", "Distributeur de fourniture de bureau", "Distributeur de matériel informatique", "Distributeur de poêles à bois et à granulés", "Distributeur de produits et consommables d'hygiène", "Distributeur de produits et consommables médicaux", "Distributeur de produits pour l'équilibre alimentaire", "Distributeur de solution de café", "Distributeur en peintures", "Distributeur et installateur d'aménagements intérieurs", "Distributeur et installateur de cheminées", "Distributeur et installateur de poêles à granules", "Distributeur et installateur de salle de bains", "Distributeur et installateur de véranda / pergola", "Distributeur textile", "Domoticien", "DRH externalisé", "DSI externalisé", "Débouchage de canalisation et inspection Vidéo", "Décorateur(rice) intérieure", "Délégué à la protection des données RGPD", "Déménageur", "Détective privé", "Développeur d'applications", "Développeur d'applications mobiles", "Développeur de progiciels", "Développeur d’applications web", "Ecole de commerce", "Ecole de musique", "Equicoach", "Espace coworking", "Expert comptable", "Expert en assurance", "Expert en bâtiment", "Expert en cession et reprise d’entreprise", "Expert en gestion de données dématérialisées", "Expert en stratégie d'entreprise et RH", "Expert en stratégie de marque", "Expert en sécurité informatique", "Expert en évaluation d'entreprise", "Expert en évaluation immobilière", "Expert financier d'entreprise", "Fabricant de menuiseries", "Fabricant de supports de communication", "Fabricant et distributeur de produits cosmétiques bio", "Fabricant textile", "Fabrication et livraison de produits frigorigènes", "Facilitateur de travaux de rénovation", "Façadier", "Ferronnier", "Fleuriste", "Formateur", "Formateur art oratoire", "Formateur en anglais", "Formateur en bureautique", "Formateur en communication", "Formateur en cuisine", "Formateur en informatique", "Formateur en management", "Formateur en marketing", "Formateur manutention", "Formation Droit Social", "Fournisseur d'éclairage à led", "Fournisseur d'équipements industriels", "Fournisseur de débit de boisson", "Fournisseur de vêtements professionnels de protection et de sécurité", "Frigoriste - Chauffagiste", "Gestion d’organisme de formation", "Gestionnaire de biens locatifs", "Gestionnaire de copropriété", "Gestionnaire de paie", "Grossiste en vins et spiritueux", "Grossiste Peintures", "Géomètre expert", "Huissier de justice", "Hypnotiseur", "Hébergeur web", "Hôtelier", "Imprimeur", "Incubateur de formateurs", "Kinésithérapeute", "Labellisation d'entreprise", "Loueur d'espace de coliving", "Loueur d'espaces de stockage", "Loueur de bateaux", "Loueur de matériel de réceptions", "Loueur de trottinette", "Loueur de voitures", "Magasin d'ameublement", "Manager de Transition", "Mandataire automobile", "Marchand de biens", "Marketing olfactif", "Masseur", "Maçon", "Maître d'œuvre", "Menuisier (menuiseries extérieures)", "Menuisier (menuiseries intérieures)", "Monteur de mobilier", "Multiservices", "Mutuelle", "Médecin généraliste", "Médiateur", "Médium", "Métallier", "Naturopathe", "Neuropédiatre", "Notaire", "Objets déco et art de la table", "Office manager", "Opticien", "Opérateur de démolition", "Organisation d'événements", "Organisme de formation", "Ostéopathe", "Parc de loisirs", "Parfumeur", "Paysagiste", "Peintre", "Photographe", "Pisciniste", "Plaquiste", "Plombier", "Plâtrier", "Poseur installateur de fermetures pour professionnels et particuliers", "Prestataire de solutions de signature électronique", "Promoteur", "Prospection téléphonique externalisée", "Préventeur QHSE", "Psychologue", "Pâtissier", "Pédiatre", "Ravaleur", "Responsable d'établissement touristique", "Restaurateur", "Restaurateur du patrimoine", "Régie publicitaire", "Rénovation promotion immobilière spéciale riad", "Rénovation tous corps d'état", "Salle de sport", "Secrétariat externalisé", "Serrurier métallier", "Service de Carte Grise", "Services d'aide à domicile", "Social media manager", "Société de nettoyage", "Sophrologue", "Spécialiste coiffure", "Spécialiste de l'agencement intérieur", "Spécialiste de l'assainissement", "Spécialiste de l'entretien de véhicules", "Spécialiste de l'infogérance informatique", "Spécialiste de l'étanchéité", "Spécialiste de la chaîne du froid", "Spécialiste de la garde d'enfants", "Spécialiste de la publicité Google", "Spécialiste de l’entretien de jardin et d’espaces verts", "Spécialiste des fondations", "Spécialiste des systèmes d'encaissement et de monétique", "Spécialiste des travaux acrobatiques", "Spécialiste des travaux d'isolation", "Spécialiste des travaux de revêtement des sols et des murs", "Spécialiste du marquage publicitaire", "Spécialiste du nettoyage de vitres", "Spécialiste du pneumatique", "Spécialiste du sommeil", "Spécialiste du traitement des nuisibles", "Spécialiste d’impressions d’étiquettes", "Spécialiste en automatismes", "Spécialiste en nettoyage de véhicules", "Spécialiste en photovoltaïque", "Spécialiste en produits signalétiques et photoluminescents", "Spécialiste en signalétique", "Spécialiste en systèmes anti-intrusion", "Spécialiste en sécurité et sûreté", "Spécialiste en zinguerie", "Staffeur ornemaniste", "Styliste", "Tapissier d'ameublement", "Tarologue", "Technicien de maintenance informatique", "Technicien réseaux et télécoms", "Terrassier", "Thérapeute bien-être", "Torréfacteur", "Traducteur en anglais", "Traiteur", "Transport de personnes", "Transporteur", "Urbaniste", "Vendeur d'emballages sécurisés et recyclés", "Vendeur de cycles", "Vendeur à domicile indépendant", "Viagériste", "Vidéaste", "Voix off", "Webdesigner", "Ébéniste", "Éditeur", "Électricien", "Éleveur de chevaux", "Épicier"];
+const GRP_ONGLETS=[["bord","📊","Tableau de bord"],["cal","🗓","Calendrier"],["membres","👥","Membres & métiers"],["cr","📝","Comptes rendus"],["affaires","🤝","Affaires"]];
+function grpClub(){const l=reuClubs();if(!l.length)return null;return l.find(c=>c.id===window._grpId)||l[0]}
+function grpOng(){return GRP_ONGLETS.some(o=>o[0]===window._grpOng)?window._grpOng:"bord"}
+function grpAller(id,ong){window._grpId=id;if(ong)window._grpOng=ong;if(tab!=="reunions")go("reunions");else render()}
+function grpOnglet(k){window._grpOng=k;render();const z=document.querySelector(".grp-corps");if(z)z.scrollIntoView({block:"nearest"})}
+function grpDonnees(c){
+  const id=c.id,an=String(TODAY.getFullYear());
+  const reu=DB.reunions.filter(r=>r.clubId===id).sort((a,b)=>a.date.localeCompare(b.date));
+  const vivantes=reu.filter(r=>r.statut!=="annulee");
+  const passees=vivantes.filter(r=>isPast(r.date)),avenir=vivantes.filter(r=>!isPast(r.date));
+  const faites=reu.filter(r=>r.statut==="realisee");
+  const membres=DB.membres.filter(m=>m.clubId===id).sort((x,y)=>(x.num||99)-(y.num||99)||x.nom.localeCompare(y.nom));
+  const avecPres=faites.filter(r=>r.presents!=null);
+  const presMoy=avecPres.length?Math.round(avecPres.reduce((a,r)=>a+Number(r.presents||0),0)/avecPres.length):null;
+  const invites=vivantes.reduce((a,r)=>a+(r.guests||[]).length,0);
+  const invVenus=faites.reduce((a,r)=>a+Number(r.invitesVenus||0),0);
+  const adh=faites.reduce((a,r)=>a+Number(r.adhObt||0),0);
+  const recos=(DB.recos||[]).filter(r=>r.club_id===id);
+  const signees=recos.filter(r=>r.statut==="signee");
+  const ca=signees.reduce((a,r)=>a+Number(r.montant||0),0);
+  const caAn=signees.filter(r=>(r.maj_le||r.cree_le||"").startsWith(an)).reduce((a,r)=>a+Number(r.montant||0),0);
+  const acr=passees.filter(r=>!r.crLe);
+  const sansBilan=passees.filter(r=>r.statut==="planifiee"||r.statut==="confirmee");
+  const incomplets=membres.filter(m=>!membreAJour(m));
+  const renouv=typeof abEcheance==="function"?membres.filter(m=>{const e=abEcheance(m);return e&&(dObj(e)-TODAY)/864e5<=30}):[];
+  return {reu,vivantes,passees,avenir,faites,faitesAn:faites.filter(r=>r.date.startsWith(an)),membres,presMoy,invites,invVenus,adh,recos,signees,ca,caAn,acr,sansBilan,incomplets,renouv};
+}
+function viewGroupe(){
+  if(readOnly())return `<div class="page">${emptyState("Espace réservé","Le groupe se gère depuis un compte animateur ou directeur.")}</div>`;
+  const clubs=reuClubs(),c=grpClub(),mine=reuMesClubs();
+  if(!c)return `<div class="page">${emptyState("Aucun groupe rattaché","Ton compte n'anime encore aucun groupe. Demande au directeur de zone de t'en confier un.")}</div>`;
+  const D=grpDonnees(c),nom=c.nom.replace(/^CAP\s+/,""),a=anim(c.animId),h=clubHealth(c),na=clubNextAction(c),ton=clubTone(c),o=grpOng();
+  const bascule=mine.length&&reuPeutTout()?`<div class="seg-sc" role="tablist" style="max-width:420px"><span class="knob" style="transform:translateX(${window._reuTous?"100%":"0"})"></span><button role="tab" class="${window._reuTous?"":"on"}" onclick="window._reuTous=false;render()">Mes groupes</button><button role="tab" class="${window._reuTous?"on":""}" onclick="window._reuTous=true;render()">Tous mes périmètres</button></div>`:"";
+  const choix=clubs.length>1?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
+  const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l])=>{const n=k==="cr"?D.acr.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span>${l}${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
+  const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):grpBord(c,D);
+  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>
+    ${bascule}${choix}
+    <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
+      <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
+        <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
+      <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
+      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
+    </section>
+    ${onglets}<div class="grp-corps">${corps}</div><div style="height:8px"></div></div>`;
+}
+function grpStat(v,l,sub,cls,act){return `<${act?"button":"div"} class="grp-st ${cls||""}" ${act?`onclick="${act}"`:""}><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</${act?"button":"div"}>`}
+function grpMoisSerie(D){
+  const out=[];for(let i=11;i>=0;i--){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-i,1);const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    const l=D.vivantes.filter(r=>r.date.startsWith(k));out.push({k,lab:MOIS[d.getMonth()],faites:l.filter(r=>r.statut==="realisee").length,autres:l.filter(r=>r.statut!=="realisee").length,pres:l.reduce((a,r)=>a+Number(r.presents||0),0)})}
+  return out}
+function grpBord(c,D){
+  const nb=D.membres.length,obj=Number(c.objectif)||0,ser=grpMoisSerie(D),mx=Math.max(1,...ser.map(x=>x.faites+x.autres));
+  const pro=D.avenir[0],ed=canEditClubId(c.id);
+  const todo=[
+    D.acr.length&&[`📝 ${D.acr.length} compte${D.acr.length>1?"s":""} rendu${D.acr.length>1?"s":""} à écrire`,`grpOnglet('cr')`],
+    D.sansBilan.length&&[`📊 ${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir`,`openBilan('${D.sansBilan[0].id}')`],
+    !D.avenir.length&&[`📅 Aucune réunion à venir : planifie les prochaines`,`openPlanSerie()`],
+    D.incomplets.length&&[`📂 ${D.incomplets.length} dossier${D.incomplets.length>1?"s":""} membre incomplet${D.incomplets.length>1?"s":""}`,`grpOnglet('membres')`],
+    D.renouv.length&&[`🔄 ${D.renouv.length} renouvellement${D.renouv.length>1?"s":""} dans les 30 jours`,`openRenouvellements()`],
+    !(c.metRech||[]).length&&ed&&[`🎯 Indique les métiers que le groupe recherche`,`grpOnglet('membres')`]
+  ].filter(Boolean);
+  return `<div class="grp-stats">
+      ${grpStat(nb+(obj?`<small>/${obj}</small>`:""),"membres",obj?`${Math.round(nb/obj*100)} % de l'objectif`:"objectif non fixé","",`grpOnglet('membres')`)}
+      ${grpStat(D.faitesAn.length,(D.faitesAn.length>1?"réunions faites":"réunion faite")+" en "+TODAY.getFullYear(),`${D.faites.length} au total · ${D.avenir.length} à venir`,"",`grpOnglet('cal')`)}
+      ${grpStat(D.presMoy==null?"—":D.presMoy,"présents en moyenne",D.presMoy==null?"aucun bilan saisi":"par réunion réalisée")}
+      ${grpStat(D.invites,"invités suivis",`${D.invVenus} venu${D.invVenus>1?"s":""} · ${D.adh} adhésion${D.adh>1?"s":""} obtenue${D.adh>1?"s":""}`)}
+      ${grpStat(madFmt(D.ca).replace(" MAD","<small> MAD</small>"),"d'affaires échangées",`${D.signees.length} signée${D.signees.length>1?"s":""} · ${madFmt(D.caAn)} en ${TODAY.getFullYear()}`,"or",`grpOnglet('affaires')`)}
+      ${grpStat(D.recos.length,"recommandations",`${D.recos.filter(r=>r.statut!=="signee"&&r.statut!=="sans_suite").length} en cours`,"",`grpOnglet('affaires')`)}
+    </div>
+    ${obj?`<div class="ck-prog" style="--vc:${villeColor(c.ville)};margin:2px 0 14px"><i style="width:${Math.min(100,Math.round(nb/obj*100))}%"></i></div>`:""}
+    <div class="grp-2col">
+      <div><div class="month-label">À faire pour le groupe</div>
+        ${todo.length?`<div class="grp-todo">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:`<p class="fh-empty">✓ Rien en attente, le groupe est à jour.</p>`}
+        <div class="month-label">Prochaine réunion</div>
+        ${pro?`<div class="reu-l">${reuCarte(pro,0)}</div>`:`<div class="ps-appel"><b>Aucune réunion à venir.</b><span>Planifie d'un coup les prochains mois.</span><button class="btn" onclick="openPlanSerie()">📆 Planifier en série</button></div>`}
+      </div>
+      <div><div class="month-label">Réunions sur 12 mois</div>
+        <div class="grp-bars" role="img" aria-label="Réunions par mois sur les 12 derniers mois">${ser.map((x,i)=>`<div class="gb" title="${x.lab} : ${x.faites} réalisée${x.faites>1?"s":""}${x.autres?`, ${x.autres} autre${x.autres>1?"s":""}`:""}${x.pres?` · ${x.pres} présents`:""}" style="--i:${i}"><div class="gb-c"><i class="o" style="height:${x.autres/mx*100}%"></i><i class="f" style="height:${x.faites/mx*100}%"></i></div><small>${x.lab}</small></div>`).join("")}</div>
+        <div class="grp-leg"><span><i class="f"></i>réalisées</span><span><i class="o"></i>prévues ou sans bilan</span></div>
+      </div>
+    </div>`;
+}
+function grpCal(c,D){
+  const ed=canEditClubId(c.id),v=calVue();
+  const cal=v==="liste"?`<div class="reu-l">${D.avenir.length?D.avenir.map(reuCarte).join(""):`<p class="fh-empty">Aucune réunion à venir.</p>`}</div>`:calendrier(D.vivantes);
+  const nd=prochaineDate(c);
+  return `<div class="grp-calbar">${calModes()}${ed?`<span><button class="btn ghost mini" onclick="openRythme('${c.id}')">${rythmeTexte(c)?"Régler le rythme":"Définir le rythme"}</button><button class="btn mini" onclick="planifierSuivante('${c.id}')">+ Planifier la suivante</button></span>`:""}</div>
+    ${nd?`<p class="grp-note">Prochaine date proposée par le rythme : <b>${dateLongue(nd)}</b></p>`:""}
+    ${cal}
+    <div class="month-label">Bilan du groupe</div>
+    <div class="grp-stats petit">${grpStat(D.faites.length,"réalisées")}${grpStat(D.avenir.length,"à venir")}${grpStat(D.sansBilan.length,"sans bilan",null,D.sansBilan.length?"warn":"")}${grpStat(D.reu.filter(r=>r.statut==="annulee").length,"annulées")}</div>`;
+}
+function grpMetiers(D){const m={};D.membres.forEach(x=>{const k=(mbMetier(x)||"").trim();if(k){const n=k.charAt(0).toUpperCase()+k.slice(1);m[n]=(m[n]||0)+1}});return Object.entries(m).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))}
+function grpMembres(c,D){
+  const ed=canEditClubId(c.id),met=grpMetiers(D),sans=D.membres.filter(m=>!mbMetier(m)).length,rech=c.metRech||[];
+  const pris=new Set(met.map(x=>sansAcc(x[0])));
+  const list=D.membres.length?`<div class="rl">${D.membres.map((m,i)=>`<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}"><button class="rl-h" onclick="memberSheet('${c.id}','${m.id}')">
+      <span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}</b><small>${esc([mbMetier(m)||"Métier non renseigné",mbEntreprise(m)].filter(Boolean).join(" · "))}</small></span>
+      <span class="rl-ind">${dots4(m)}${m.inscrit?`<span class="rl-fact g">espace membre</span>`:""}</span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:`<p class="fh-empty">Aucun membre pour l'instant.</p>`;
+  const cherchent=D.membres.filter(m=>m.cherche);
+  return `<div class="grp-2col">
+    <div>${secHead("Membres",D.membres.length,ed?`<button class="btn ghost mini" onclick="memberSheet('${c.id}')">+ Ajouter</button>`:"")}${list}</div>
+    <div>
+      <div class="month-label">Métiers représentés <span style="color:var(--crimson);font-weight:700">${met.length}</span></div>
+      ${met.length?`<div class="grp-met">${met.map(([k,n])=>`<span class="gm">${esc(k)}${n>1?`<em>×${n}</em>`:""}</span>`).join("")}</div>`:`<p class="fh-empty">Aucun métier renseigné.</p>`}
+      ${sans?`<p class="grp-note">${sans} membre${sans>1?"s":""} sans métier renseigné.</p>`:""}
+      <div class="month-label">Métiers recherchés <span style="color:var(--crimson);font-weight:700">${rech.length}</span></div>
+      <div class="grp-met" id="grp-rech">${rech.length?rech.map(k=>`<span class="gm cherche ${pris.has(sansAcc(k))?"pris":""}" title="${pris.has(sansAcc(k))?"Déjà représenté dans le groupe":"Place à pourvoir"}">${esc(k)}${ed?`<button aria-label="Retirer ${esc(k)}" onclick="grpRechRetirer(${JSON.stringify(k).replace(/"/g,"&quot;")})">✕</button>`:""}</span>`).join(""):`<p class="fh-empty">Aucun métier recherché indiqué.</p>`}</div>
+      ${ed?`<div class="grp-rech-in"><input id="grp-rech-in" list="grp-met-dl" placeholder="Ajouter un métier recherché…" onkeydown="if(event.key==='Enter'){event.preventDefault();grpRechAjouter()}"><button class="btn mini" onclick="grpRechAjouter()">Ajouter</button></div><datalist id="grp-met-dl">${METIERS_OFF.filter(x=>x[0]!=="-").map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`:""}
+      ${rech.length?`<div class="fh-link" style="margin-top:12px"><div><b>Recruter sur ces métiers</b><small>Envoie le lien d'adhésion du groupe à un contact de ces métiers.</small></div><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">WhatsApp</button></div>`:""}
+      ${cherchent.length?`<div class="month-label">Ce que cherchent les membres</div><div class="rank">${cherchent.map(m=>`<div class="rank-row link" onclick="memberSheet('${c.id}','${m.id}')"><div class="rn">${esc(m.nom)}<small>« ${esc(m.cherche)} »</small></div></div>`).join("")}</div>`:""}
+    </div></div>`;
+}
+function sansAcc(t){return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim()}
+async function grpRechSauver(c,l){const {error}=await sb.from("clubs").update({metiers_recherches:l}).eq("id",c.id);if(error){toast(rlsMsg(error));return false}c.metRech=l;render();return true}
+async function grpRechAjouter(){const c=grpClub(),el=document.getElementById("grp-rech-in");if(!c||!el)return;let v=el.value.trim();if(!v){toast("Écris ou choisis un métier");return}
+  const off=METIERS_OFF.find(x=>sansAcc(x)===sansAcc(v));if(off)v=off;
+  if((c.metRech||[]).some(x=>sansAcc(x)===sansAcc(v))){toast("Déjà dans la liste");return}
+  if(await grpRechSauver(c,[...(c.metRech||[]),v]))toast("Métier recherché ajouté")}
+async function grpRechRetirer(k){const c=grpClub();if(c)await grpRechSauver(c,(c.metRech||[]).filter(x=>x!==k))}
+function grpCR(c,D){
+  const l=D.passees.slice().reverse(),ecrits=l.filter(r=>r.crLe).length;
+  return `<p class="grp-note">${ecrits} compte${ecrits>1?"s":""} rendu${ecrits>1?"s":""} écrit${ecrits>1?"s":""} sur ${l.length} réunion${l.length>1?"s":""} passée${l.length>1?"s":""}.</p>
+    ${l.length?`<div class="cr-prog"><i style="width:${l.length?Math.round(ecrits/l.length*100):0}%"></i></div>`:""}
+    ${l.length?`<div class="grp-crl">${l.map((r,i)=>{const d=dObj(r.date),cr=r.cr||{},ext=Object.values(cr).find(x=>x&&String(x).trim());
+      return `<button class="grp-cr ${r.crLe?"ok":"todo"}" style="--i:${Math.min(i,14)}" onclick="${r.crLe||canEditReunion(r)?`openCR('${r.id}')`:`openMeeting('${r.id}')`}">
+        <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]} ${d.getFullYear()!==TODAY.getFullYear()?d.getFullYear():""}</small></span>
+        <span class="gc-t"><b>${esc(TYPES[r.type]||r.type)} · ${esc(STATUTS[r.statut]||"")}</b><small>${r.presents!=null?r.presents+" présent"+(r.presents>1?"s":"")+" · ":""}${r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":"")+" · ":""}${r.crLe?esc(ext?String(ext).slice(0,90):"Compte rendu écrit"):"Compte rendu à écrire"}</small></span>
+        <span class="gc-s">${r.crLe?"✓":"À écrire"}</span></button>`}).join("")}</div>`:`<p class="fh-empty">Aucune réunion passée pour l'instant.</p>`}`;
+}
+function grpAffaires(c,D){
+  const ed=canEditClubId(c.id),etapes=["envoyee","contact","devis","signee","sans_suite"];
+  const cnt=k=>D.recos.filter(r=>r.statut===k).length,mx=Math.max(1,...etapes.map(cnt));
+  const par={};D.recos.forEach(r=>{(par[r.de]=par[r.de]||{d:0,ca:0,r:0}).d++;if(r.statut==="signee")par[r.de].ca+=Number(r.montant||0);(par[r.a]=par[r.a]||{d:0,ca:0,r:0}).r++});
+  const top=Object.entries(par).filter(([id])=>DB.membres.some(m=>m.id===id&&m.clubId===c.id)).sort((a,b)=>b[1].ca-a[1].ca||b[1].d-a[1].d).slice(0,6);
+  return `<div class="grp-stats petit">${grpStat(madFmt(D.ca).replace(" MAD","<small> MAD</small>"),"d'affaires signées",null,"or")}${grpStat(madFmt(D.caAn).replace(" MAD","<small> MAD</small>"),"en "+TODAY.getFullYear())}${grpStat(D.recos.length,"recommandations")}${grpStat(D.recos.length?Math.round(D.signees.length/D.recos.length*100)+" %":"—","transformées")}</div>
+    ${ed?`<button class="btn" style="margin:4px 0 10px" onclick="grpRecoForm()">+ Noter une affaire annoncée en réunion</button>`:""}
+    <div class="grp-2col"><div>
+      <div class="month-label">Où en sont les recommandations</div>
+      <div class="grp-pipe">${etapes.map(k=>`<div class="gpi"><span>${esc(RECO_LIB[k])}</span><div><i class="${k}" style="width:${cnt(k)/mx*100}%"></i></div><b>${cnt(k)}</b></div>`).join("")}</div>
+      <div class="month-label">Membres qui font tourner le groupe</div>
+      ${top.length?`<div class="rank">${top.map(([id,x],i)=>`<div class="rank-row link" onclick="memberSheet('${c.id}','${id}')"><span class="rk">${i+1}</span><div class="rn">${esc(membreNom(id))}<small>${x.d} donnée${x.d>1?"s":""} · ${x.r} reçue${x.r>1?"s":""}</small></div><b>${x.ca?esc(madFmt(x.ca)):""}</b></div>`).join("")}</div>`:`<p class="fh-empty">Pas encore d'affaire dans le groupe.</p>`}
+    </div><div>
+      <div class="month-label">Dernières recommandations</div>
+      ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(r.contact_nom)}${r.contact_entreprise?` · ${esc(r.contact_entreprise)}`:""}<small>${esc(membreNom(r.de))} → ${esc(membreNom(r.a))} · ${esc(adhDate(r.cree_le))}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
+    </div></div>`;
+}
+function grpRecoForm(id){
+  const c=grpClub();if(!c)return;const r=id?(DB.recos||[]).find(x=>x.id===id):null,ms=DB.membres.filter(m=>m.clubId===c.id).sort((a,b)=>a.nom.localeCompare(b.nom));
+  if(ms.length<2&&!r){toast("Il faut au moins deux membres dans le groupe");return}
+  const opt=sel=>ms.map(m=>`<option value="${m.id}" ${m.id===sel?"selected":""}>${esc(m.nom)}</option>`).join("");
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({vc:villeColor(c.ville),ini:"🤝",title:r?"Affaire":"Noter une affaire",sub:esc(c.nom.replace(/^CAP\s+/,""))+" · recommandation entre deux membres"})}
+    <div class="frow"><div class="field"><label>Donnée par</label><select id="rc-de" ${r?"disabled":""}>${opt(r?r.de:ms[0]&&ms[0].id)}</select></div><div class="field"><label>Pour</label><select id="rc-a" ${r?"disabled":""}>${opt(r?r.a:ms[1]&&ms[1].id)}</select></div></div>
+    <div class="frow"><div class="field"><label>Contact recommandé</label><input id="rc-nom" value="${esc(r?r.contact_nom:"")}" ${r?"disabled":""}></div><div class="field"><label>Entreprise</label><input id="rc-ent" value="${esc(r?r.contact_entreprise||"":"")}" ${r?"disabled":""}></div></div>
+    ${r?"":`<div class="field"><label>Besoin</label><input id="rc-bes" placeholder="Ce que cherche le contact"></div>`}
+    <div class="frow"><div class="field"><label>Où en est l'affaire</label><select id="rc-st" onchange="document.getElementById('rc-mt-f').hidden=this.value!=='signee'">${Object.entries(RECO_LIB).map(([k,l])=>`<option value="${k}" ${(r?r.statut:"envoyee")===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+      <div class="field" id="rc-mt-f" ${(r&&r.statut==="signee")?"":"hidden"}><label>Montant signé (MAD HT)</label><input id="rc-mt" type="number" min="0" step="100" value="${r&&r.montant!=null?r.montant:""}"></div></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="grpRecoSauver(${r?`'${r.id}'`:""})">Enregistrer</button></div>`;
+  openSheet();
+}
+async function grpRecoSauver(id){
+  const c=grpClub(),g=x=>{const e=document.getElementById(x);return e?e.value.trim():""};
+  const st=g("rc-st"),mt=st==="signee"&&g("rc-mt")!==""?Number(g("rc-mt")):null;
+  if(id){const r=DB.recos.find(x=>x.id===id),o=r.statut;
+    const {error}=await sb.from("recommandations").update({statut:st,montant:mt,maj_le:new Date().toISOString()}).eq("id",id);
+    if(error){toast(rlsMsg(error));return}Object.assign(r,{statut:st,montant:mt,maj_le:new Date().toISOString()});closeSheet();render();
+    if(st==="signee"&&o!=="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),mt!=null?"+ "+madFmt(mt):"","Voir",()=>grpOnglet("affaires"));else toast("Affaire mise à jour");return}
+  const de=g("rc-de"),a=g("rc-a"),nom=g("rc-nom");
+  if(!nom){toast("Indique le contact recommandé");return}if(de===a){toast("Choisis deux membres différents");return}
+  const row={club_id:c.id,de,a,contact_nom:nom,contact_entreprise:g("rc-ent")||null,besoin:g("rc-bes")||null,statut:st,montant:mt};
+  const {data,error}=await sb.from("recommandations").insert(row).select().single();
+  if(error){toast(rlsMsg(error));return}
+  DB.recos=[data,...(DB.recos||[])];closeSheet();render();
+  if(st==="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(de),mt!=null?"+ "+madFmt(mt):"","Voir",()=>grpOnglet("affaires"));else toast("Affaire notée");
 }
 async function reuConfirmer(id){
   const {error}=await sb.from("reunions").update({statut:"confirmee"}).eq("id",id);
@@ -3976,7 +4244,7 @@ function openClub(id){
     ${secHead("Membres",membres.length,canEd?`<button class="btn ghost mini" onclick="memberSheet('${id}')">+ Ajouter</button>`:"")}
     ${mlist}
     ${readOnly()?"":`<div class="fh-link"><div><b>Lien d'adhésion du club</b><small>${esc(adhLink(id))}</small></div><button class="btn ghost mini" onclick="adhCopyClub('${id}')">Copier</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${id}')">WhatsApp</button></div>`}
-    <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}${!readOnly()&&canEditClubId(id)?`<button class="btn ghost" onclick="closeSheet();grpAller('${id}','bord')">Espace du groupe</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   ficheOpen();
 }
 function memberSheet(clubId,id){
@@ -5570,7 +5838,7 @@ function filFicheRendu(){
   el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
-const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",reunions:"Mes réunions",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
 const FIL_FILTRES={todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}

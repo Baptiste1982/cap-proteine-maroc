@@ -210,6 +210,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `calVue()` (localStorage `cap-agvue` : liste|semaine|mois ; défaut semaine < 900 px, mois au-delà), `calModes()`, `calendrier(list)` (section `#cal.cal-v-<vue>`, ⚠ pas `cal-mois` : c'est la classe de la grille du mois), `calAller(sens,btn)` (période ±1, 0 = aujourd'hui ; flèche `.pousse` + glissade `slide-g/d/z`), `calMaj()` ne remplace que `.cal-t` et `.cal-corps` (sinon la flèche animée est détruite), `calTouch` (balayage > 60 px), `calJour` (détail d'un jour au téléphone), `calNouvelle(iso)` (meetingForm prérempli). Mois : 7 colonnes, puces `calPuce` sur PC (3 par jour + « +N »), points colorés au téléphone. Semaine : 7 colonnes sur PC, une ligne par jour au téléphone, + pour planifier.
 - Banc `cal.mjs` 25/25.
 
+**👥 Espace « Mon groupe » (v0.35.0, 30/10/2026)** — JB : « un panel de gestion de son groupe complet : membres, métiers représentés et recherchés, comptes rendus, calendrier, réunions faites, stats, chiffres d'affaires échangés ».
+- L'onglet `reunions` (libellé « Groupe ») rend `viewGroupe()` ; `viewReunions` reste dans le code, plus appelé. Groupe affiché = `grpClub()` (`window._grpId` parmi `reuClubs()`), sous-onglet `window._grpOng` (`GRP_ONGLETS` : bord, cal, membres, cr, affaires), `grpAller(id,ong)` y mène (bouton « Espace du groupe » de `openClub`). Chiffres calculés par `grpDonnees(c)` (réunions, présences moyennes des bilans, invités, adhésions obtenues, recos et CA signé).
+- Migration `20261030230000_espace_groupe.sql` (appliquée) : `clubs.metiers_recherches` jsonb (liste officielle `METIERS_OFF`, copiée d'`adhesion.html`) ; policy `recos_equipe_ajouter` : l'équipe d'un club peut noter une recommandation (`grpRecoForm`, `grpRecoSauver`), le déclencheur de notification au receveur s'applique.
+- ⚠ La classe `.gp` existait déjà (avatars empilés) : le pipeline utilise `.gpi`. Banc `grp.mjs` 40/40.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

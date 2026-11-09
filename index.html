@@ -1673,6 +1673,77 @@ button.grp-st{cursor:pointer}button.grp-st:hover{transform:translateY(-2px);box-
 .ag-choix .chip.actuel{opacity:.55;cursor:default}
 .dm-grp-ch{margin-left:auto;border:0;background:none;color:var(--crimson);font:600 11.5px Inter,sans-serif;cursor:pointer;padding:2px 4px;border-radius:6px;opacity:.75}
 .dm-grp-ch:hover{opacity:1;background:var(--crimson-tint)}
+
+/*v038 deux vues*/
+.vn-band{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:14px 16px;border-radius:18px;background:linear-gradient(120deg,#2A241D,#3A2F20);color:#F4EBD6;border-bottom:3px solid var(--gold)}
+.vn-band small{width:100%;font:700 11px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.vn-band b{font:800 20px "Bricolage Grotesque",Inter,sans-serif}.vn-band span{font-size:12.5px;opacity:.8;flex:1;min-width:0}
+.vn-band .btn{border-color:rgba(200,162,76,.6);color:#F4EBD6;background:transparent}
+.vue-bas{display:inline-flex;gap:3px;padding:3px;border-radius:12px;background:var(--soft);border:1px solid var(--line)}
+.vue-bas.hidden{display:none}
+.vue-bas button{border:0;background:none;border-radius:9px;padding:6px 11px;font:700 12.5px Inter,sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.vue-bas button.on{color:#fff}
+body.vue-nat .vue-bas button.on{background:linear-gradient(135deg,#C8A24C,#8E6E25)}
+body.vue-reg .vue-bas button.on{background:linear-gradient(135deg,var(--crimson),var(--crimson-deep))}
+.vb-court{display:none}
+@media(max-width:899px){.vb-long{display:none}.vb-court{display:inline}.vue-bas button{padding:6px 9px}}
+@media(max-width:600px){.vue-bas button span{display:none}.vue-bas button{padding:5px 9px;font-size:15px}.tb-row2{min-width:0}}
+body.vue-nat .topbar{box-shadow:inset 0 -3px 0 var(--gold)}
+body.vue-reg .topbar{box-shadow:inset 0 -3px 0 var(--crimson)}
+body.vue-nat .nav button.on{color:#8E6E25}
+body.vue-change .page{animation:vueFlash .6s ease}
+@keyframes vueFlash{0%{opacity:.35;transform:translateY(8px)}100%{opacity:1;transform:none}}
+.vr{display:grid;gap:16px}
+.vr-hero{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);background:linear-gradient(125deg,var(--crimson-darker),var(--crimson));color:#fff;border-radius:22px;padding:20px;position:relative;overflow:hidden}
+.vr-hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(200,162,76,.35),transparent 70%)}
+@media(min-width:900px){.vr-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);align-items:center}}
+.vr-hero small{font:700 11px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.vr-hero h2{margin:4px 0 2px;font:800 28px "Bricolage Grotesque",Inter,sans-serif;color:#fff}
+.vr-hero p{margin:0;opacity:.8;font-size:13px}
+.vr-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;position:relative;z-index:1}
+@media(max-width:600px){.vr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vr-kpis button{text-align:left;border:0;border-radius:14px;padding:12px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;font-family:inherit;transition:background .2s,transform .15s}
+.vr-kpis button:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.vr-kpis button.alerte{background:rgba(242,184,75,.28)}
+.vr-kpis b{display:block;font:800 26px "Bricolage Grotesque",Inter,sans-serif}.vr-kpis span{font-size:12px;opacity:.85}
+.vr-haut{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1100px){.vr-haut{grid-template-columns:minmax(0,.8fr) minmax(0,2fr)}}
+.vr-h{font:700 11.5px Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.vr-todo{display:grid;gap:7px;align-content:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.vr-todo button{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;font:600 13px Inter,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .2s,transform .15s}
+.vr-todo button:hover{border-color:var(--crimson);transform:translateX(3px)}.vr-todo button span{color:var(--crimson);font-size:17px}
+.vr-tab{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-width:0}
+.vr-tw{overflow-x:auto}
+.vr-tab table{width:100%;border-collapse:collapse}
+.vr-tab th{font:600 11px Inter,sans-serif;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.vr-tab td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+.vr-tab tbody tr{cursor:pointer;animation:grpIn .35s ease both;animation-delay:calc(var(--i)*35ms)}
+.vr-tab tbody tr:hover td{background:color-mix(in srgb,var(--vc) 6%,var(--card))}
+.vr-tab tr:last-child td{border-bottom:0}
+.vr-g{display:flex;align-items:center;gap:9px}.vr-g i{width:10px;height:10px;border-radius:50%;background:var(--vc);flex:0 0 auto}
+.vr-g small{display:block;color:var(--muted);font-size:11.5px}
+.vr-n small{color:var(--muted)}
+.vr-etat{font:700 11px Inter,sans-serif;border-radius:99px;padding:3px 9px;white-space:nowrap;display:inline-block}
+.vr-etat.r{background:var(--crimson-tint);color:var(--crimson)}.vr-etat.w{background:var(--warn-tint);color:var(--warn)}.vr-etat.o{background:var(--ok-tint);color:var(--ok)}
+@media(max-width:700px){.vr-an,.vr-pro{display:none}}
+.vr-plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:10px;min-width:0}
+.vr-plan-t{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.vr-plan-t p{margin:-4px 0 0;color:var(--muted);font-size:12.5px}
+.vr-alerte{background:var(--warn-tint);color:var(--warn);border-radius:12px;padding:10px 12px;font-weight:600;font-size:13px}
+.vr-pl{display:grid;grid-template-columns:minmax(150px,190px) repeat(var(--cols),minmax(44px,1fr));min-width:640px}
+.vr-pl>div{border-bottom:1px solid var(--line);padding:8px 4px;display:flex;align-items:center;justify-content:center;min-height:46px}
+.vr-ph{font:600 11px Inter,sans-serif;color:var(--muted);flex-direction:column;min-height:30px!important}.vr-ph small{font-size:9.5px}
+.vr-ph.auj{color:var(--crimson);font-weight:800}
+.vr-pc.auj{background:color-mix(in srgb,var(--crimson) 5%,var(--card))}
+.vr-pn{justify-content:flex-start!important;gap:8px;font-size:12.5px;font-weight:700}.vr-pn i{width:9px;height:9px;border-radius:50%;background:var(--vc);flex:0 0 auto}
+.vr-pn small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.vr-pt{width:26px;height:26px;border-radius:8px;display:inline-grid;place-items:center;font:700 11px Inter,sans-serif;border:0;cursor:pointer;position:relative;font-style:normal;transition:transform .15s}
+button.vr-pt:hover{transform:scale(1.15)}
+.vr-pt sup{position:absolute;top:-6px;right:-6px;background:var(--ink);color:#fff;border-radius:99px;font-size:9px;padding:1px 4px}
+.vr-pt.f{background:var(--ok);color:#fff}.vr-pt.v{background:var(--crimson-tint);color:var(--crimson);border:1.5px solid var(--crimson)}
+.vr-pt.b{background:var(--warn-tint);color:var(--warn);border:1.5px dashed var(--warn)}.vr-pt.x{background:var(--soft);color:var(--muted)}
+.vr-pt.p{background:none;border:1.5px dashed var(--line);color:var(--muted)}.vr-pt.p:hover{border-color:var(--crimson);color:var(--crimson)}
+.vr-leg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}.vr-leg span{display:flex;align-items:center;gap:6px}.vr-leg .vr-pt{width:20px;height:20px;font-size:10px;cursor:default}
+@media (prefers-reduced-motion:reduce){body.vue-change .page,.vr-tab tbody tr{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1704,7 +1775,7 @@ button.grp-st{cursor:pointer}button.grp-st:hover{transform:translateY(-2px);box-
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
+      <div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -1749,8 +1820,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.37.0";
+const APP_VERSION="0.38.0";
 const CHANGELOG=[
+  {v:"0.38.0",date:"9 novembre 2026",notes:{
+    "Ajouté":[
+      "Deux vues dédiées, choisies par un bouton en haut de l'écran (🌍 National / 📍 Rabat · Salé · Kénitra), retenues d'une fois sur l'autre. En vue régionale, tout le CRM ne montre que la région : groupes, agenda, membres, demandes, lieux, équipe et panneau de droite.",
+      "Nouvel accueil « Ma région » : un cockpit (chiffres de la région, ce qu'il reste à faire, tableau des groupes du plus urgent au plus calme) puis le planning de la région, mois par mois, groupe par groupe, de six mois en arrière à trois mois en avant ; chaque case ouvre la réunion, son bilan, ou planifie la suivante.",
+      "Chaque vue a sa couleur : or pour le national (bandeau « Le réseau CAP Maroc » sur la Synthèse), rouge pour la région. La bascule est réservée au superadmin et au directeur national ; un directeur de zone et les animateurs restent sur leur région."
+    ]}},
   {v:"0.37.0",date:"9 novembre 2026",notes:{
     "Ajouté":[
       "Le groupe de destination d'une candidature est affiché en clair en tête de sa fiche (nom du groupe, ville, animateur, et d'où il vient : lien du groupe, intégration, ou aucun groupe). « ⇄ Changer de groupe » (aussi sur la carte de l'onglet Demandes) permet de corriger une erreur : la candidature, et sa fiche membre si elle est déjà intégrée, passent dans le nouveau groupe ; le changement est noté avec la date et la raison."
@@ -2448,12 +2525,110 @@ function enterApp(){
   document.getElementById("ver-pill").textContent="v"+APP_VERSION;
   updateRegionLabel();go("dash");
 }
+
+/* ============================================================
+   v0.38.0 — DEUX VUES : NATIONALE ET RÉGIONALE.
+   Superadmin et directeur national basculent (bouton en haut, mémorisé dans localStorage cap-vue).
+   Directeur de zone et animateurs restent en vue régionale (leur zone, sinon Rabat·Salé·Kénitra).
+   En vue régionale, chaque écran est rendu avec une copie filtrée de DB (avecVue) : groupes de la
+   région, leurs réunions, membres, demandes, recos, présences, lieux et animateurs. Les écritures se
+   font toujours sur le vrai DB (gestionnaires d'événements hors de avecVue).
+   Accueil régional = viewRegion() : cockpit puis planning mois par mois. Accueil national = Synthèse.
+   ============================================================ */
+function vuePeutBasculer(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
+function vueRegion(){const z=SESSION&&SESSION.zoneId&&DB&&DB.zones.find(x=>x.id===SESSION.zoneId);
+  return{nom:z&&z.villes&&z.villes.length?z.nom:"Rabat · Salé · Kénitra",villes:z&&z.villes&&z.villes.length?z.villes:REGION_RSK}}
+function vueMode(){if(!SESSION||SESSION.role==="visiteur")return"nat";if(!vuePeutBasculer())return"reg";
+  let v=null;try{v=localStorage.getItem("cap-vue")}catch(e){}return v==="reg"?"reg":"nat"}
+function vueChoisir(m){if(!vuePeutBasculer()||m===vueMode())return;try{localStorage.setItem("cap-vue",m)}catch(e){}
+  window._dashSc=m;window._grpId=null;updateRegionLabel();closeSheet&&document.getElementById("sheet").classList.contains("open")&&!_mdpForce&&closeSheet();
+  document.body.classList.add("vue-change");setTimeout(()=>document.body.classList.remove("vue-change"),650);
+  render();toast(m==="reg"?"Vue régionale · "+vueRegion().nom:"Vue nationale · tout le réseau")}
+function vueAppliquer(){if(!SESSION)return;const m=vueMode();
+  document.body.classList.toggle("vue-reg",m==="reg");document.body.classList.toggle("vue-nat",m!=="reg");
+  const b=document.getElementById("vue-bascule");
+  if(b){b.classList.toggle("hidden",!vuePeutBasculer());if(vuePeutBasculer()){const r=vueRegion().nom;
+    const h=`<button role="tab" aria-selected="${m==="nat"}" aria-label="Vue nationale" title="Vue nationale" class="${m==="nat"?"on":""}" onclick="vueChoisir('nat')">🌍<span> National</span></button><button role="tab" aria-selected="${m==="reg"}" aria-label="Vue régionale · ${esc(r)}" title="Vue régionale · ${esc(r)}" class="${m==="reg"?"on":""}" onclick="vueChoisir('reg')">📍<span class="vb-long"> ${esc(r)}</span><span class="vb-court"> Ma région</span></button>`;
+    if(b.dataset.h!==h){b.innerHTML=h;b.dataset.h=h}}}
+  const d=document.querySelector('.nav button[data-tab="dash"]');
+  if(d){const t=[...d.childNodes].reverse().find(n=>n.nodeType===3);const lib=m==="reg"&&SESSION.role!=="visiteur"?"Ma région":"Synthèse";if(t&&t.textContent!==lib)t.textContent=lib}}
+function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueRegion();
+  const cl=DB.clubs.filter(c=>villes.includes(c.ville)),ids=new Set(cl.map(c=>c.id));
+  const reu=DB.reunions.filter(r=>ids.has(r.clubId)),rids=new Set(reu.map(r=>r.id)),lieuxUtil=new Set(reu.map(r=>r.lieuId).filter(Boolean));
+  const anims=new Set(cl.map(c=>c.animId).filter(Boolean));
+  return{...DB,clubs:cl,reunions:reu,membres:DB.membres.filter(m=>ids.has(m.clubId)),
+    adhesions:(DB.adhesions||[]).filter(a=>{const c=adhClubId(a);return !c||ids.has(c)}),
+    lieux:DB.lieux.filter(l=>villes.includes(l.ville)||lieuxUtil.has(l.id)),
+    animateurs:DB.animateurs.filter(a=>anims.has(a.id)||villes.includes(a.ville)),
+    recos:(DB.recos||[]).filter(r=>ids.has(r.club_id)),presences:(DB.presences||[]).filter(p=>rids.has(p.reunion_id)),
+    zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v)))}}
+function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB;DB=p;try{return fn()}finally{DB=sv}}
+/* ---------- Accueil régional : cockpit + planning ---------- */
+const VILLE_TEINTE={Rabat:"#B0122E","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
+function vrTeinte(v){return VILLE_TEINTE[v]||villeColor(v)}
+function vrMois(){const l=[];for(let i=-6;i<=3;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()+i,1);l.push({k:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),lab:MOIS[d.getMonth()],an:d.getFullYear(),auj:i===0,futur:i>0})}return l}
+function viewRegion(){
+  const R=vueRegion(),cl=DB.clubs.slice(),ids=new Set(cl.map(c=>c.id));
+  const aVenir=DB.reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee");
+  const sansBil=DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee"));
+  const sansDate=cl.filter(c=>!aVenir.some(r=>r.clubId===c.id));
+  const dem=(DB.adhesions||[]).filter(a=>a.statut==="recue"||a.statut==="traitee");
+  const incomp=DB.membres.filter(m=>!membreAJour(m)),renouv=typeof renouvAFaire==="function"?renouvAFaire(ids):[];
+  const actifs=cl.filter(c=>c.statut==="actif").length,peut=!readOnly();
+  const rangDe=c=>clubTone(c)==="urgent"?0:sansBil.some(r=>r.clubId===c.id)?1:clubTone(c)==="todo"?2:3;
+  const tri=cl.slice().sort((a,b)=>(rangDe(a)-rangDe(b))||a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  const todo=[
+    sansDate.length&&peut&&[`📅 Planifier les réunions de ${sansDate.length} groupe${sansDate.length>1?"s":""}`,`openPlanSerie()`],
+    sansBil.length&&peut&&[`📊 ${sansBil.length} bilan${sansBil.length>1?"s":""} à saisir`,`openBilan('${sansBil.sort((a,b)=>a.date.localeCompare(b.date))[0].id}')`],
+    dem.length&&[`📥 ${dem.length} demande${dem.length>1?"s":""} d'adhésion à traiter`,`go('demandes')`],
+    incomp.length&&[`📂 ${incomp.length} dossier${incomp.length>1?"s":""} membre incomplet${incomp.length>1?"s":""}`,`go('membres')`],
+    renouv.length&&[`🔄 ${renouv.length} renouvellement${renouv.length>1?"s":""} à venir`,`openRenouvellements()`]
+  ].filter(Boolean);
+  const ligne=(c,i)=>{const a=anim(c.animId),nb=DB.membres.filter(m=>m.clubId===c.id).length,pro=aVenir.filter(r=>r.clubId===c.id).sort((x,y)=>x.date.localeCompare(y.date))[0],ton=clubTone(c),na=clubNextAction(c);
+    const bil=sansBil.filter(r=>r.clubId===c.id).length,etat=bil?{t:bil+" bilan"+(bil>1?"s":"")+" à saisir",c:"w"}:ton==="ok"?{t:"À jour",c:"o"}:{t:na.label,c:ton==="urgent"?"r":"w"};
+    const ouvre=canEditClubId(c.id)?`grpAller('${c.id}','bord')`:`openClub('${c.id}')`;
+    return `<tr style="--vc:${vrTeinte(c.ville)};--i:${Math.min(i,12)}" onclick="${ouvre}" tabindex="0" onkeydown="if(event.key==='Enter')${ouvre}">
+      <td><span class="vr-g"><i></i><span><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)} · ${c.statut==="actif"?"actif":"en création"}</small></span></span></td>
+      <td class="vr-an">${a?esc(a.nom):`<span class="reu-warn">À pourvoir</span>`}</td>
+      <td class="vr-n">${nb}${c.objectif?`<small>/${c.objectif}</small>`:""}</td>
+      <td class="vr-pro">${pro?esc(dateCourte?dateCourte(pro.date):pro.date):"—"}</td>
+      <td><span class="vr-etat ${etat.c}">${esc(etat.t)}</span></td></tr>`};
+  const M=vrMois();
+  const cellule=(c,mo)=>{const l=DB.reunions.filter(r=>r.clubId===c.id&&r.date.startsWith(mo.k)).sort((a,b)=>a.date.localeCompare(b.date));
+    if(!l.length)return mo.futur||mo.auj?(peut&&canEditClubId(c.id)?`<button class="vr-pt p" title="Planifier une réunion" aria-label="Planifier une réunion de ${esc(c.nom)}" onclick="planifierSuivante('${c.id}')">+</button>`:""):"";
+    const r=l[0],passe=isPast(r.date),j=dObj(r.date).getDate();
+    const cls=r.statut==="annulee"?"x":r.statut==="realisee"?"f":passe?"b":"v";
+    const sym=cls==="f"?"✓":cls==="b"?"!":cls==="x"?"✕":j;
+    return `<button class="vr-pt ${cls}" title="${esc(dateLongue(dObj(r.date)))} · ${esc(STATUTS[r.statut]||"")}${cls==="b"?" · bilan à saisir":""}${l.length>1?" · "+l.length+" réunions ce mois":""}" onclick="${cls==="b"&&peut?`openBilan('${r.id}')`:`openMeeting('${r.id}')`}">${sym}${l.length>1?`<sup>${l.length}</sup>`:""}</button>`};
+  const grille=`<div class="vr-pl" style="--cols:${M.length}"><div class="vr-ph"></div>${M.map(m=>`<div class="vr-ph ${m.auj?"auj":""}">${m.lab}${m.lab==="janv."?`<small>${m.an}</small>`:""}</div>`).join("")}
+    ${tri.map(c=>`<div class="vr-pn" style="--vc:${vrTeinte(c.ville)}"><i></i><span>${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(c.ville)}</small></span></div>${M.map(m=>`<div class="vr-pc ${m.auj?"auj":""}">${cellule(c,m)}</div>`).join("")}`).join("")}</div>`;
+  const dernier=DB.reunions.filter(r=>r.statut!=="annulee"&&isPast(r.date)).map(r=>r.date).sort().pop();
+  return `<div class="page vr">
+    <section class="vr-hero"><div class="vr-hero-t"><small>Ma région</small><h2>${esc(R.nom)}</h2><p>${new Set(cl.map(c=>c.ville)).size} ville${new Set(cl.map(c=>c.ville)).size>1?"s":""} · ${new Set(cl.map(c=>c.animId).filter(Boolean)).size} animateur${new Set(cl.map(c=>c.animId).filter(Boolean)).size>1?"s":""}</p></div>
+      <div class="vr-kpis">
+        <button onclick="go('clubs')"><b>${cl.length}</b><span>groupes · ${actifs} actif${actifs>1?"s":""}</span></button>
+        <button onclick="go('membres')"><b>${DB.membres.length}</b><span>membres</span></button>
+        <button onclick="go('agenda')"><b>${aVenir.length}</b><span>réunion${aVenir.length>1?"s":""} à venir</span></button>
+        <button onclick="${sansBil.length&&peut?`openBilan('${sansBil[0].id}')`:"go('agenda')"}" class="${sansBil.length?"alerte":""}"><b>${sansBil.length}</b><span>bilan${sansBil.length>1?"s":""} à saisir</span></button></div></section>
+    <div class="vr-haut">
+      <section class="vr-todo"><div class="vr-h">À faire dans la région</div>
+        ${todo.length?todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join(""):`<p class="fh-empty">✓ Rien en attente dans la région.</p>`}</section>
+      <section class="vr-tab"><div class="vr-h">Les groupes, du plus urgent au plus calme</div>
+        <div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${tri.map(ligne).join("")}</tbody></table></div></section>
+    </div>
+    <section class="vr-plan"><div class="vr-plan-t"><div><div class="vr-h">Planning de la région</div><p>Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir la réunion ou planifier</p></div>${peut?`<button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button>`:""}</div>
+      ${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}
+      <div class="vr-tw">${grille}</div>
+      <div class="vr-leg"><span><i class="vr-pt f">✓</i>réalisée</span><span><i class="vr-pt v">12</i>prévue (jour du mois)</span><span><i class="vr-pt b">!</i>bilan à saisir</span><span><i class="vr-pt x">✕</i>annulée</span>${peut?`<span><i class="vr-pt p">+</i>à planifier</span>`:""}</div>
+    </section><div style="height:8px"></div></div>`;
+}
 function updateRegionLabel(){
   let t;
   if(SESSION.role==="visiteur")t="Consultation · tout le réseau";
   else if(SESSION.role==="directeur_national")t="Direction nationale · tout le réseau";
   else if(SESSION.role==="animateur")t="Animateur · "+[...new Set(SESSION.clubIds.map(id=>club(id).ville))].join(", ");
   else t=national()?"Vue nationale · tout le réseau":"Zone "+zone(SESSION.zoneId).nom;
+  if(SESSION.role!=="visiteur"&&SESSION.role!=="animateur"&&vueMode()==="reg")t="Ma région · "+vueRegion().nom;
   document.getElementById("tb-region").textContent=t;
 }
 
@@ -2466,11 +2641,12 @@ function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(t
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
-  v.innerHTML=tab==="dash"?viewDashboard():tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam();
+  vueAppliquer();
+  v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam());
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v)}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);navBadges();demBadge();railRender();filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
+  animateRings(v);avecVue(navBadges);avecVue(demBadge);avecVue(railRender);filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -3891,11 +4067,11 @@ function viewDashboard(){
   let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
-  const sc=window._dashSc==="reg"?"reg":"nat";
+  const sc=vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
   html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
-  const seg=`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
+  const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${DB.animateurs.length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
   const todo=dashSec("todo","⚡","À traiter","Ce qui attend une action, région par région",dashATraiter(sc),"dash-todo");
@@ -6022,6 +6198,9 @@ function horlogeMaj(){
   document.querySelectorAll('[data-hor="d"]').forEach(e=>e.textContent=x.d);
 }
 function horlogeDemarrer(){horlogeMaj();clearTimeout(_horT);const suite=()=>{horlogeMaj();_horT=setTimeout(suite,60000-Date.now()%60000+50)};_horT=setTimeout(suite,60000-Date.now()%60000+50)}
+
+/* v0.38.0 : rendus partiels et listes ouvertes depuis la page suivent aussi la vue */
+for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){const f=window[n];if(typeof f==="function")window[n]=function(...a){return avecVue(()=>f.apply(this,a))}}
 </script>
 </body>
 </html>

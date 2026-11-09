@@ -1640,6 +1640,25 @@ button.grp-st{cursor:pointer}button.grp-st:hover{transform:translateY(-2px);box-
 .gpi b{text-align:right}
 @keyframes gpW{from{transform:scaleX(0)}}
 @media (prefers-reduced-motion:reduce){.grp-corps>*,.grp-cr,.gb-c i,.gpi i{animation:none!important}}
+
+/*v0351 fermer le panneau*/
+.sheet-x{display:grid;place-items:center;position:sticky;top:0;float:right;margin:-8px -10px 0 8px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:3;transition:color .2s,border-color .2s,transform .15s}
+.sheet-x:hover{color:var(--crimson);border-color:rgba(176,18,46,.4)}.sheet-x:active{transform:scale(.92)}
+.sheet-wrap.force .sheet-x{display:none}
+@media(min-width:900px){.sheet-max{margin-right:0}}
+.sheet-wrap.force .sheet-x+.sheet-max{margin-right:-10px}
+.rail-h{position:relative}.rail-h small{margin-left:auto}
+.rail-x{flex:0 0 auto;align-self:center;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;font-size:13px;transition:color .2s,border-color .2s,transform .15s}
+.rail-x:hover{color:var(--crimson);border-color:rgba(176,18,46,.4)}.rail-x:active{transform:scale(.9)}
+.rail-tab{position:fixed;right:0;top:50%;z-index:30;transform:translateY(-50%);writing-mode:vertical-rl;display:flex;align-items:center;gap:6px;padding:14px 7px;border:1px solid var(--line);border-right:0;border-radius:12px 0 0 12px;background:var(--card);color:var(--crimson);font:700 12.5px Inter,sans-serif;letter-spacing:.04em;cursor:pointer;box-shadow:-4px 0 14px rgba(0,0,0,.08);transition:padding .2s}
+.rail-tab span{writing-mode:horizontal-tb;font-size:15px}
+.rail-tab:hover{padding-right:11px}
+.rail-tab[hidden]{display:none}
+
+/*v036 archives candidatures*/
+.adh-motifs{display:flex;flex-wrap:wrap;gap:6px}
+.adh-arch{display:flex;flex-direction:column;gap:3px;margin:14px 0;padding:12px 14px;border-radius:14px;background:var(--soft);border:1px dashed var(--line)}
+.adh-arch span{color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -1700,7 +1719,7 @@ button.grp-st{cursor:pointer}button.grp-st:hover{transform:translateY(-2px);box-
 <button id="fab" class="fab hidden" onclick="fabAction()" aria-label="Ajouter"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
 <aside id="rail" class="rail" aria-label="Aperçu"></aside>
-<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><button type="button" class="sheet-max" id="sheet-max" onclick="sheetPlein()" aria-label="Afficher en plein écran" title="Plein écran"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path class="i-max" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/><path class="i-min" d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></button><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
+<div id="sheet" class="sheet-wrap"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet"><div class="sheet-grip"></div><button type="button" class="sheet-x" id="sheet-x" onclick="closeSheet()" aria-label="Fermer" title="Fermer (Échap)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button type="button" class="sheet-max" id="sheet-max" onclick="sheetPlein()" aria-label="Afficher en plein écran" title="Plein écran"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path class="i-max" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/><path class="i-min" d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></button><nav id="fil-fiche" class="fil" aria-label="Fil d'Ariane"></nav><div id="sheet-content"></div></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
 <div id="confetti" class="confetti"></div>
@@ -1716,8 +1735,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.35.0";
+const APP_VERSION="0.36.0";
 const CHANGELOG=[
+  {v:"0.36.0",date:"9 novembre 2026",notes:{
+    "Ajouté":[
+      "Retirer une candidature avec un motif (bouton 🗄 sur la carte de l'onglet Demandes, ou « Retirer et archiver » dans la fiche) : motifs proposés (essai, doublon, le candidat renonce, dossier incomplet, hors profil, autre) et une précision libre. La candidature quitte les demandes et les compteurs mais reste dans « 🗄 Archives », avec sa date et son motif, et peut être restaurée. Si elle avait déjà été intégrée, on peut supprimer la fiche membre en même temps.",
+      "Panneau de droite sur grand écran : chaque fiche a une croix pour la fermer (et Échap), et le panneau d'aperçu se masque avec ✕ ; l'onglet « Aperçu » au bord droit le rouvre. Le choix est retenu."
+    ]}},
   {v:"0.35.0",date:"30 octobre 2026",notes:{
     "Ajouté":[
       "Espace « Mon groupe » (onglet Groupe, à la place de Réunions) : l'animateur pilote son groupe depuis une seule page. En tête, le groupe (santé, animateur, rythme, prochaine action) et le choix du groupe quand on en a plusieurs. Cinq onglets : Tableau de bord (membres et objectif, réunions faites dans l'année, présents en moyenne, invités et adhésions obtenues, affaires échangées en MAD, recommandations, ce qui reste à faire, réunions mois par mois sur 12 mois), Calendrier du groupe (semaine, mois ou liste, rythme, planifier la suivante), Membres & métiers (liste, métiers représentés, métiers recherchés à compléter depuis la liste officielle, ce que cherchent les membres), Comptes rendus (toutes les réunions passées, écrits ou à écrire), Affaires (montant signé, avancement des recommandations, membres les plus actifs, et « Noter une affaire annoncée en réunion »).",
@@ -2434,8 +2458,15 @@ function render(){const v=document.getElementById("view");
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
    (même #sheet, docké par la CSS, sans voile). Fermer la fiche rend l'aperçu.
    ============================================================ */
-function isRail(){return window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
-function railSync(){document.documentElement.classList.toggle("rail-on",isRail())}
+function railMasque(){try{return localStorage.getItem("cap-rail")==="off"}catch(e){return false}}
+function railGrand(){return window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
+function isRail(){return !railMasque()&&window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
+function railSync(){document.documentElement.classList.toggle("rail-on",isRail());
+  let t=document.getElementById("rail-tab");if(!t){t=document.createElement("button");t.id="rail-tab";t.type="button";t.className="rail-tab";t.title="Afficher le panneau d'aperçu";t.setAttribute("aria-label","Afficher le panneau d'aperçu");t.innerHTML="<span>‹</span>Aperçu";t.onclick=()=>railBasculer(true);document.body.appendChild(t)}
+  t.hidden=!(railMasque()&&railGrand())}
+function railBasculer(on){try{on?localStorage.removeItem("cap-rail"):localStorage.setItem("cap-rail","off")}catch(e){}
+  const sh=document.getElementById("sheet");if(!on&&sh&&sh.classList.contains("open")&&!sh.classList.contains("force"))closeSheet();
+  railRender();if(typeof navPill==="function")navPill();if(!on)toast("Panneau masqué · « Aperçu » au bord droit pour le rouvrir")}
 function railRang(t,rows,vide){return `<div class="sec-h"><span>${t}${rows.length?` <em>${rows.length}</em>`:""}</span></div><div class="rank">${rows.length?rows.join(""):`<div class="rail-vide">${vide}</div>`}</div>`}
 function railReunions(ids,n,filtre){
   const l=DB.reunions.filter(r=>ids.has(r.clubId)&&!isPast(r.date)&&r.statut!=="annulee"&&(!filtre||filtre(r))).sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||"")).slice(0,n);
@@ -2461,7 +2492,7 @@ function railMembresIncomplets(ids,n){
 }
 function railHTML(){
   const ids=new Set(scopedClubIds());const T={dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",demandes:"Demandes",lieux:"Lieux",team:"Équipe"}[tab]||"";
-  const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small></div><div class="rail-sub">${sub}</div>`;
+  const head=(t,sub)=>`<div class="rail-h"><h3>${t}</h3><small>Aperçu · ${T}</small><button type="button" class="rail-x" onclick="railBasculer(false)" title="Masquer le panneau" aria-label="Masquer le panneau">✕</button></div><div class="rail-sub">${sub}</div>`;
   if(tab==="agenda"){
     const sem=new Date(TODAY);sem.setDate(sem.getDate()+7);const iso=isoJour(sem);
     return head("Cette semaine","Touche une réunion pour ouvrir sa fiche ici.")
@@ -3707,6 +3738,7 @@ function sheetPlein(force){const w=document.getElementById("sheet"),on=force===u
   w.classList.toggle("plein",on);document.documentElement.classList.toggle("sheet-plein",on);
   const b=document.getElementById("sheet-max");if(b){b.setAttribute("aria-label",on?"Revenir au panneau":"Afficher en plein écran");b.title=on?"Revenir au panneau":"Plein écran"}
   try{sessionStorage.setItem("cap-plein",on?"1":"")}catch(e){}}
+addEventListener("keydown",e=>{const sh=document.getElementById("sheet");if(e.key!=="Escape"||_tuto||!sh.classList.contains("open")||sh.classList.contains("plein")||sh.classList.contains("force"))return;if(document.querySelector("#cst-o,.show-o"))return;closeSheet()});
 addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("sheet").classList.contains("plein")&&document.getElementById("sheet").classList.contains("open")){e.stopImmediatePropagation();sheetPlein(false)}},true);
 /* D — la pastille glisse sous l'onglet actif (barre du bas au téléphone, colonne à gauche sur ordinateur). */
 function navPill(){const nav=document.getElementById("nav"),pl=document.getElementById("nav-pill");if(!nav||!pl)return;
@@ -4531,7 +4563,7 @@ function exportCSV(){
    La page publique dépose le PDF rempli + une ligne `adhesions` ; ici on
    les lit, on ouvre le PDF, et on intègre la personne dans `membres`.
    ============================================================ */
-const ADH_STATUTS={recue:"Reçue",traitee:"Traitée",integree:"Intégrée",rejetee:"Rejetée"};
+const ADH_STATUTS={recue:"Reçue",traitee:"Traitée",integree:"Intégrée",rejetee:"Archivée"};
 const ADH_DOT={recue:"bad",traitee:"warn",integree:"ok",rejetee:""};
 function adhLink(clubId){const u=new URL("adhesion.html",location.href);if(clubId)u.searchParams.set("ref",clubId);return u.toString()}
 function adhNom(a){return((a.data.m_prenom||"")+" "+(a.data.m_nom||"")).trim()||"—"}
@@ -4559,7 +4591,7 @@ async function openAdhesionsFiche(f){
   DB.adhesions=data||[];
   try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}
   const all=DB.adhesions;
-  const F={todo:["À intégrer",a=>a.statut==="recue"||a.statut==="traitee"],saisie:["À saisir",a=>a.statut!=="rejetee"&&!a.saisie_proteine_le],retard:["En retard",adhEnRetard],all:["Toutes",a=>true],rejetee:["Rejetées",a=>a.statut==="rejetee"]};
+  const F={todo:["À intégrer",a=>a.statut==="recue"||a.statut==="traitee"],saisie:["À saisir",a=>a.statut!=="rejetee"&&!a.saisie_proteine_le],retard:["En retard",adhEnRetard],all:["Toutes",a=>true],rejetee:["Archives",a=>a.statut==="rejetee"]};
   if(!F[_adhFiltre])_adhFiltre="todo";
   const list=all.filter(F[_adhFiltre][1]).sort((a,b)=>b.created_at.localeCompare(a.created_at));
   const chips=Object.entries(F).map(([k,[l,fn]])=>`<button class="chip ${_adhFiltre===k?"on":""}" onclick="openAdhesions('${k}')">${l}<em>${all.filter(fn).length}</em></button>`).join("");
@@ -4632,13 +4664,15 @@ function adhDetail(id){
     ${SESSION.role==="superadmin"&&a.statut!=="rejetee"?adhNationalBloc(a):""}
     ${mb?mbEspaceHTML(mb,mbInfos(mb),peut):a.statut!=="rejetee"?`${secHead("Espace membre")}<p class="fh-note">L'accès à l'espace membre (annuaire et messages) s'ouvre dès l'intégration dans un club, avec le mobile de cette demande${a.data.m_tel?" ("+esc(a.data.m_tel)+")":""}.</p>`:""}
     ${blocs}
-    ${peut&&a.statut!=="integree"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
+    ${a.statut==="rejetee"?`<div class="adh-arch"><b>🗄 Candidature archivée${a.archivee_le?" le "+esc(adhDate(a.archivee_le)):""}</b><span>${a.archive_motif?"Motif : "+esc(a.archive_motif):"Aucun motif indiqué"}</span></div>`:""}
+    ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson);margin:18px 0 8px">Intégrer comme membre</div>
       <div class="field"><label>Club</label><select id="adh-int-club"><option value="">— Choisir un club —</option>${clubOpts}</select></div>
       <button class="btn" onclick="adhIntegrer('${a.id}')">Intégrer dans le club</button>`:""}
     <div class="sheet-actions" style="margin-top:12px">
       <button class="btn ghost" onclick="openAdhesions()">← Toutes les demandes</button>
       ${peut&&a.statut==="recue"?`<button class="btn ghost" onclick="adhStatut('${a.id}','traitee')">Marquer traitée</button>`:""}
-      ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhStatut('${a.id}','rejetee')">Rejeter</button>`:""}
+      ${peut&&a.statut!=="rejetee"?`<button class="btn ghost" onclick="adhArchiverForm('${a.id}')">🗄 Retirer et archiver</button>`:""}
+      ${peut&&a.statut==="rejetee"?`<button class="btn" onclick="adhRestaurer('${a.id}')">↩ Restaurer</button>`:""}
     </div>`;  if(!document.getElementById("sheet").classList.contains("open"))ficheOpen();
 }
 /* ---- Classeur des PDF : par mois de réception, puis par groupe, fichiers nommés
@@ -4813,6 +4847,59 @@ function adhExportSaisie(format){
   if(format==="json")dl(new Blob([JSON.stringify(lignes,null,2)],{type:"application/json"}),"adhesions-a-saisir-"+jour+".json");
   else dl(new Blob([csv],{type:"text/csv"}),"adhesions-a-saisir-"+jour+".csv");
   toast(list.length+" adhésion"+(list.length>1?"s":"")+" exportée"+(list.length>1?"s":""));
+}
+
+/* ============================================================
+   v0.36.0 — RETIRER UNE CANDIDATURE AVEC MOTIF, ARCHIVES, RESTAURATION.
+   Rien n'est effacé : la candidature passe en statut « rejetee » (= archivée) avec
+   archivee_le / archive_motif / archive_par, et sort de tous les compteurs. On peut la restaurer.
+   Option : supprimer aussi la fiche membre qui en a été tirée (cas d'un essai).
+   ============================================================ */
+const ADH_MOTIFS=["Essai ou données fictives","Doublon","Le candidat renonce","Dossier incomplet","Ne correspond pas au profil du club","Autre"];
+function adhArchiverForm(id){
+  const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
+  const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id),cm=mb&&club(mb.clubId);
+  window._adhMotif="";
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:"🗄",title:"Retirer la candidature",sub:esc(adhNom(a))+(a.data.ent_nom?" · "+esc(a.data.ent_nom):"")})}
+    <p class="fh-note">Elle quitte les demandes et les compteurs, mais reste consultable dans les archives avec son motif. Tu pourras la restaurer.</p>
+    <div class="field"><label>Motif</label><div class="adh-motifs">${ADH_MOTIFS.map((m,i)=>`<button type="button" class="chip" data-m="${esc(m)}" onclick="adhMotifChoix(this)">${esc(m)}</button>`).join("")}</div></div>
+    <div class="field"><label>Précision${""}</label><textarea id="adh-motif-txt" rows="3" placeholder="Ce qui s'est passé, pour s'en souvenir plus tard…"></textarea></div>
+    ${mb?`<label class="reu-mem"><input type="checkbox" id="adh-del-mb"> Supprimer aussi la fiche membre de ${esc(mb.nom)}${cm&&cm.nom?" ("+esc(cm.nom.replace(/^CAP\s+/,""))+")":""}</label>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${a.id}')">Annuler</button><button class="btn" onclick="adhArchiver('${a.id}')">🗄 Archiver</button></div>`;
+  if(!document.getElementById("sheet").classList.contains("open"))ficheOpen();
+}
+function adhMotifChoix(b){document.querySelectorAll(".adh-motifs .chip").forEach(x=>x.classList.toggle("on",x===b));window._adhMotif=b.dataset.m;if(b.dataset.m==="Autre")document.getElementById("adh-motif-txt").focus()}
+async function adhArchiver(id){
+  const a=DB.adhesions.find(x=>x.id===id),txt=(document.getElementById("adh-motif-txt").value||"").trim(),m=window._adhMotif||"";
+  if(!m&&!txt){toast("Choisis ou écris un motif");return}
+  if(m==="Autre"&&!txt){toast("Précise le motif");return}
+  const motif=[m!=="Autre"?m:"",txt].filter(Boolean).join(" — ");
+  const del=document.getElementById("adh-del-mb"),mbId=del&&del.checked?a.membre_id:null;
+  if(mbId){const {error:e1}=await sb.from("membres").delete().eq("id",mbId);if(e1){toast(rlsMsg(e1));return}
+    DB.membres=DB.membres.filter(x=>x.id!==mbId);a.membre_id=null}
+  const row={statut:"rejetee",archivee_le:new Date().toISOString(),archive_motif:motif,archive_par:SESSION.id};
+  const {error}=await sb.from("adhesions").update(row).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(a,row);closeSheet();if(typeof demBadge==="function")demBadge();render();
+  toast("Candidature archivée"+(mbId?" · fiche membre supprimée":""),"",()=>openArchivesAdh());
+}
+async function adhRestaurer(id){
+  const a=DB.adhesions.find(x=>x.id===id);const st=a.membre_id&&DB.membres.some(m=>m.id===a.membre_id)?"integree":"recue";
+  const row={statut:st,archivee_le:null,archive_motif:null,archive_par:null};
+  const {error}=await sb.from("adhesions").update(row).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  Object.assign(a,row);if(typeof demBadge==="function")demBadge();render();toast("Candidature restaurée");adhDetail(id);
+}
+function openArchivesAdh(){
+  const l=(DB.adhesions||[]).filter(a=>a.statut==="rejetee").sort((x,y)=>(y.archivee_le||y.created_at||"").localeCompare(x.archivee_le||x.created_at||""));
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:"🗄",title:"Archives des candidatures",sub:`${l.length} candidature${l.length>1?"s":""} retirée${l.length>1?"s":""} · touche une ligne pour la revoir ou la restaurer`})}
+    ${l.length?`<div class="rl">${l.map((a,i)=>`<div class="rl-row" style="--i:${Math.min(i,14)}"><button class="rl-h" onclick="adhDetail('${a.id}')">
+      <span class="rl-emb sm">${esc(initiales(adhNom(a)))}</span>
+      <span class="rl-t"><b>${esc(adhNom(a))}${a.data.ent_nom?" · "+esc(a.data.ent_nom):""}</b><small>${a.archive_motif?esc(a.archive_motif):"Sans motif"} · ${esc(adhDate(a.archivee_le||a.created_at))}</small></span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:`<p class="fh-empty">Aucune candidature archivée.</p>`}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  ficheOpen();
 }
 async function adhStatut(id,statut){
   const {error}=await sb.from("adhesions").update({statut,traitee_par:SESSION.id,traitee_le:new Date().toISOString()}).eq("id",id);
@@ -5691,6 +5778,7 @@ function dmCarte(a,i,col){
     <div class="dm-grp"><i></i>${g==="Sans groupe"?"<span class=\"warn\">Groupe à choisir</span>":esc(g.replace(/^CAP\s+/,""))}</div>
     <div class="dm-act"><button class="dm-go" onclick="dmOuvrir(event,'${a.id}')">${act} <span>›</span></button>
       ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}
+      ${!readOnly()?`<button class="dm-ic" title="Retirer et archiver" aria-label="Retirer et archiver" onclick="event.stopPropagation();adhArchiverForm('${a.id}')">🗄</button>`:""}
       ${tel?`<a class="dm-ic" title="WhatsApp" aria-label="Écrire sur WhatsApp" href="https://wa.me/${tel.replace(/^\+/,"").replace(/^0/,"212")}" target="_blank" rel="noopener" onclick="event.stopPropagation()">💬</a>`:""}</div></article>`;
 }
 /* Clic : une onde part du point touché, la carte s'enfonce puis la fiche s'ouvre. */
@@ -5727,7 +5815,7 @@ function viewDemandes(){
     ${dmProchaine()}
     <div class="dm-ks">${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
     <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
-      <button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>${nR?`<button class="chip" onclick="openAdhesionsFiche('rejetee')">Rejetées<em>${nR}</em></button>`:""}</div>
+      <button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>
     <div class="dm-main"><div id="dm-pipe">${dmPipeHTML()}</div>
       <aside class="dm-side">${readOnly()?"":`<section class="dm-box"><h3>✉️ Envoyer le lien d'adhésion</h3><p>Le futur membre remplit le formulaire depuis son téléphone ; sa demande arrive ici.</p>
         <div class="field"><label>Groupe concerné</label><select id="adh-club"><option value="">— Sans groupe —</option>${clubOpts}</select></div>
@@ -5819,7 +5907,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

@@ -215,6 +215,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Migration `20261030230000_espace_groupe.sql` (appliquée) : `clubs.metiers_recherches` jsonb (liste officielle `METIERS_OFF`, copiée d'`adhesion.html`) ; policy `recos_equipe_ajouter` : l'équipe d'un club peut noter une recommandation (`grpRecoForm`, `grpRecoSauver`), le déclencheur de notification au receveur s'applique.
 - ⚠ La classe `.gp` existait déjà (avatars empilés) : le pipeline utilise `.gpi`. Banc `grp.mjs` 40/40.
 
+**🗄 Candidatures archivées avec motif + panneau de droite refermable (v0.36.0, 09/11/2026)** — JB : « supprimer une candidature avec motif stocké en archives » et « pouvoir fermer la side bar de droite ».
+- Rien n'est effacé : `adhArchiverForm(id)` (bouton 🗄 sur la carte Demandes, « Retirer et archiver » dans `adhDetail`) → `adhArchiver` passe en `statut='rejetee'` (affiché « Archivée ») + `archivee_le`, `archive_motif` (`ADH_MOTIFS` + précision), `archive_par` ; option « supprimer aussi la fiche membre » si la candidature était intégrée. `openArchivesAdh()` (chip « 🗄 Archives »), `adhRestaurer` (retour en `integree` si la fiche membre existe, sinon `recue`). Migration `20261109120000_adhesions_archive_motif.sql` (appliquée).
+- Panneau de droite (≥ 1500 px) : croix `#sheet-x` sur chaque fiche (+ Échap, sauf mot de passe forcé, plein écran, visite guidée) ; ✕ `.rail-x` dans l'en-tête de l'aperçu → `railBasculer(false)` (localStorage `cap-rail=off`, `isRail()` le respecte, `railGrand()` = écran assez large) ; onglet `#rail-tab` « ‹ Aperçu » au bord droit pour rouvrir.
+- Bancs `arch.mjs` 11/11, `rail2.mjs` 17/17 ; `adh.mjs` recalé (libellé Archives).
+- Nettoyage du 09/11 : essais TEST ALIX et Nawar (adhésion + fiche) supprimés ; JB a supprimé à la main Reda-Allah Sibari, Tarek Amar et Abderazak DINIA (fausses données). Reste l'essai de Ghita (adhésion `bc19a838…` + fiche `fd9e4256…`, à archiver plus tard) et 3 PDF d'essai dans le stockage `adhesions`. Le contrat d'essai n° 119 existe encore au CRM national.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

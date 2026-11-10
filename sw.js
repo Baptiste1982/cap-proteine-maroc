@@ -5,7 +5,7 @@ self.addEventListener("push", (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (_) { d = { title: "CRM Protéine", body: e.data && e.data.text() }; }
   e.waitUntil(self.registration.showNotification(d.title || "CRM Protéine", {
-    body: d.body || "", tag: d.tag, icon: "/icone-192.png", badge: "/icone-192.png", data: { url: d.url || "/" },
+    body: d.body || "", tag: d.tag, icon: "/icone-192.png?v=2", badge: "/icone-192.png?v=2", data: { url: d.url || "/" },
   }));
 });
 self.addEventListener("notificationclick", (e) => {

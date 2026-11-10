@@ -253,6 +253,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **✍️ Miroir du national (v0.41.1, 10/11/2026)** — JB : « le bouton mène à la page d'accueil, il faudrait la bonne page ». Le national n'a PAS d'adresse par écran (menu `#btProspectsMembres` → `$.ajax('/prospectMembre')` dans `#corpsIndex`) : aucun lien direct possible. Action `miroir` de `national-suivi` (attente + membres, lecture seule ; PDF `contratPapier-<nomFichier>.pdf`), `natMiroir(contratId)` dans le CRM (superadmin ; contrat visé surligné, lien vers notre demande, n° 119 = essai). Action `regarder` (lecture seule d'une page du national) gardée pour les relevés futurs. Banc `envnat.mjs` 36/36.
 
+**🏢 Plus de doublon d'entreprise à l'envoi (national-adhesion v4, 10/11/2026)** — JB : « dans Sans contrat il n'y a que Reda ». Normal pour Dinia et Nawar (avec un contrat, la fiche passe dans « En attente de signature ») ; Reda y figurait parce que l'envoi n'avait pas reconnu son entreprise existante « DIGISELL TECHNOLOGIES » (nom saisi : « DIGISELL ») et en avait créé une seconde (n° 635). L'envoi réutilise désormais l'entreprise du prospect : même nom, nom légal, nom qui contient l'autre, ou la seule rattachée. Le doublon de Reda est à supprimer au national par JB.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

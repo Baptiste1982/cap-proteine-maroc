@@ -151,7 +151,11 @@ Deno.serve(async (req) => {
       'columns[0][data]': 'idPersonne', 'columns[0][searchable]': 'true', 'columns[0][searchOperator]': '=', 'columns[0][search][value]': String(nat.prospect_id), start: '0', length: '5',
     }) || {})[0] as any) : await chercher();
     const entreprisesDe = (p: any) => Object.values(p?.tabEntreprises || {}).flatMap((g: any) => Object.values(g || {})) as any[];
-    let ent = pers ? (entreprisesDe(pers).find(e => n(e.nom) === n(d.ent_nom)) || null) : null;
+    // Entreprise déjà rattachée au prospect : même nom, ou nom légal, ou un nom qui contient l'autre (« DIGISELL » / « DIGISELL TECHNOLOGIES »),
+    // ou la seule qu'il ait. Sinon on en créerait une seconde et le prospect resterait en double dans « Sans contrat ».
+    const sesEnts = pers ? entreprisesDe(pers) : [];
+    const proche = (x: string) => { const a1 = n(x), b1 = n(d.ent_nom), c1 = n(d.ent_nom_legal); return !!a1 && (a1 === b1 || a1 === c1 || (b1 && (a1.includes(b1) || b1.includes(a1))) || (c1 && (a1.includes(c1) || c1.includes(a1)))); };
+    let ent = sesEnts.find(e => n(e.nom) === n(d.ent_nom)) || sesEnts.find(e => proche(e.nom)) || (sesEnts.length === 1 ? sesEnts[0] : null) || null;
     if (nat.entreprise_id) ent = { id: nat.entreprise_id, nom: d.ent_nom };
     etapes.push(pers ? `Prospect existant au national (n° ${pers.id})` : 'Prospect absent : il sera créé');
     etapes.push(ent ? `Entreprise existante : ${ent.nom} (n° ${ent.id})` : 'Entreprise : une nouvelle sera créée');

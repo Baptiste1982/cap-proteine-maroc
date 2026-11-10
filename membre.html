@@ -204,9 +204,9 @@ async function demarrer(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   if(DEMO){Object.assign(S,demo());return lancer()}
   const {data:moi,error}=await sb.rpc("cap_membre_lier");
-  if(error){await sb.auth.signOut();return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
+  if(error){await sb.auth.signOut({scope:"local"});return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
   if(moi.statut!=="ok"){
-    await sb.auth.signOut();
+    await sb.auth.signOut({scope:"local"});
     return vueLogin({t:moi.statut==="en_cours"?"Ta demande d'adhésion est bien reçue. Ton espace s'ouvrira dès que ton animateur t'aura intégré à ton club : tu pourras alors te connecter avec ce même numéro."
       :moi.statut==="ambigu"?"Ce numéro est inscrit sur plusieurs fiches. Ton animateur doit corriger la fiche en double avant que tu puisses entrer."
       :"Ce numéro n'est relié à aucune fiche membre. Demande à ton animateur de l'ajouter dans ta fiche (mobile), puis réessaie."});
@@ -611,7 +611,7 @@ function brancher(){
     if(v.length<6){toast("Le code doit faire au moins 6 caractères");return}
     if(!DEMO){const {error}=await sb.auth.updateUser({password:v});if(error){toast("Code non changé : "+error.message);return}}
     $("c-new").value="";toast("Code changé. Garde-le pour ta prochaine connexion.")};
-  const o=$("p-out");if(o)o.onclick=async()=>{if(!DEMO)await sb.auth.signOut();location.reload()};
+  const o=$("p-out");if(o)o.onclick=async()=>{if(!DEMO)await sb.auth.signOut({scope:"local"});location.reload()};
 }
 function brancherRes(){const r=$("res");r.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));r.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire))}
 function ouvrirConv(id){aller("conv",{conv:id});marquerLus(id).then(()=>{const bn=$("nav-nl");const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;bn.hidden=!nl;bn.textContent=nl})}

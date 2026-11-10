@@ -67,6 +67,27 @@ Deno.serve(async (req) => {
     }
     if (!ok) return json({ error: 'Non autorisé' }, 401);
 
+    const body = await req.json().catch(() => ({}));
+    if (body.action === 'regarder') {
+      // Lecture seule d'une page du national, morceaux autour d'un motif (pour relever la navigation).
+      const N0 = new National(); await N0.connexion();
+      const t = await (await N0.req('GET', String(body.page || '/connexion/extranet'))).text();
+      return json({ ok: true, morceaux: [...t.matchAll(new RegExp(String(body.motif), 'g'))].slice(0, 6).map(m => t.slice(Math.max(0, m.index! - 200), m.index! + 700)) });
+    }
+    if (body.action === 'miroir') {
+      // Ce que le national affiche dans « En attente de signature » et « Gestion des membres » (lecture seule).
+      const N1 = new National(); await N1.connexion();
+      const etatDe = (c: any) => Object.values(c?.tabEtatSignature || {}).map((x: any) => String(x?.libelle || '').replace(/<br\s*\/?>/g, ' ').replace(/\s+/g, ' ').trim()).pop() || '';
+      const ligne = (r: any) => {
+        const ab = r?.entreprise?.abonnementEnCours || {}, c = ab.contrat || {}, p = r?.personne || {};
+        return { personne: [p.prenom, p.nom].filter(Boolean).join(' '), email: p.email || '', tel: p.tel1 || '', entreprise: r?.entreprise?.nom || '', entreprise_id: r?.entreprise?.id || null,
+          contrat_id: c.id || null, date: c.date || '', debut: ab.dateDebut || '', fin: ab.dateFin || '', montant: c.montantTotal || ab.montantTotal || '', etat: etatDe(c), signe: c.isSigne === true,
+          pdf: c.nomFichier ? `https://app.ma.caproteine.com/uploads/contratMembre/contratPapier-${c.nomFichier}.pdf` : '' };
+      };
+      const attente = (await N1.liste('/prospectMembre/indexAttenteSignature', '/prospectMembre/lister', COL_ATTENTE)).map(ligne);
+      const membres = (await N1.liste('/membre', '/membre/lister', COL_MEMBRES, 1000)).map(ligne);
+      return json({ ok: true, attente, membres, lu_le: new Date().toISOString() });
+    }
     const { data: adhs, error } = await admin.from('adhesions').select('id, statut, data, national, saisie_proteine_le, created_at').neq('statut', 'rejetee');
     if (error) throw error;
     const N = new National();

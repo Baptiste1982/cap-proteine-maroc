@@ -1378,6 +1378,9 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .dm-ks[hidden]{display:none!important}
 .nat-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
 .nat-verif{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}.nat-verif span{font-size:12px;color:var(--muted)}
+.nm-h{font:800 15px "Bricolage Grotesque",sans-serif;margin:16px 0 8px;display:flex;align-items:center;gap:8px}.nm-h em{font-style:normal;font-size:12px;background:var(--crimson-tint);color:var(--crimson);border-radius:99px;padding:1px 8px}
+.nm-l{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;background:var(--card);animation:dmEntre .35s ease calc(var(--i)*60ms) both}.nm-l.vise{border-color:var(--crimson);box-shadow:0 0 0 3px var(--crimson-tint)}
+.nm-t{display:flex;flex-direction:column;margin-bottom:6px}.nm-t small{color:var(--muted);font-size:12px;overflow-wrap:anywhere}.nm-l .nat-dl{margin:0 0 8px}.nm-act{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.nm-hors{font-size:12px;color:var(--muted);font-style:italic}
 .nat-avant{font-size:12.5px;color:var(--muted);margin:0 0 12px}.nat-avant a{color:var(--crimson);font-weight:700}
 .nat-envoyer{--tn:var(--crimson)}.nat-attente{--tn:#C8A24C}.nat-signe{--tn:#2E8B57}
 .nat-dl{margin:0 0 9px 46px;display:grid;gap:3px;font-size:12px}.nat-dl div{display:flex;gap:8px}.nat-dl dt{color:var(--muted);min-width:78px}.nat-dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
@@ -1830,8 +1833,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.41.0";
+const APP_VERSION="0.41.1";
 const CHANGELOG=[
+  {v:"0.41.1",date:"10 novembre 2026",notes:{
+    "Amélioré":[
+      "« ✍️ État des signatures au national » ouvre maintenant, dans le CRM, ce que le national affiche en direct : les contrats en attente de signature (n° de contrat, date, abonnement, état) et les membres, avec le PDF du contrat tel que le national l'a généré et un lien vers la demande correspondante chez nous. Le national n'a pas d'adresse propre pour cet onglet : un lien ne pouvait mener qu'à son accueil."
+    ]}},
   {v:"0.41.0",date:"10 novembre 2026",notes:{
     "Ajouté":[
       "Suivi des signatures au CRM national : chaque heure, de 8h à 21h, le CRM lit (sans rien modifier) les dossiers en attente de signature et les membres du national. Un contrat signé passe tout seul dans « Signées », avec une notification. Bouton « 🔄 Vérifier au national » pour le faire à la demande.",
@@ -5047,7 +5054,7 @@ function adhNationalBloc(a){
     ${n.contrat_id?`<div class="nat-ok">✓ ${esc(n.signe_le?"Signé le "+adhDate(n.signe_le):NAT_STATUTS[n.statut]||"Contrat créé")} · contrat national n° ${esc(n.contrat_id)}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Contrat pas encore envoyé.</div>`}
     ${n.etat_signature&&!n.signe_le?`<div class="nat-v">État au national : ${esc(n.etat_signature)}${n.verifie_le?" (vérifié le "+esc(adhDate(n.verifie_le))+")":""}</div>`:""}
     ${n.prospect_id?`<div class="nat-v">Annuaire du national : fiche n° ${esc(n.prospect_id)}${n.entreprise_id?" · entreprise n° "+esc(n.entreprise_id):""}${n.annuaire_le?" ("+(n.annuaire==="créé"?"ajoutée":"retrouvée")+" le "+esc(adhDate(n.annuaire_le))+")":""}</div>`:`<div class="nat-v">Pas encore dans l'annuaire du national : elle y sera ajoutée à la prochaine vérification (chaque heure).</div>`}
-    <a class="btn ghost" href="${natLienNational(a)[0]}" target="_blank" rel="noopener">🌐 ${esc(natLienNational(a)[1].split(" — ")[0])}</a><div class="nat-v">Au national : ${esc(natLienNational(a)[1].split(" — ")[1])}</div>
+    ${n.contrat_id&&SESSION&&SESSION.role==="superadmin"?`<button class="btn ghost" onclick="natMiroir(${Number(n.contrat_id)})">✍️ État de la signature au national</button>`:""}<a class="btn ghost" href="${natLienNational(a)[0]}" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a><div class="nat-v">Au national : ${esc(natLienNational(a)[1].split(" — ")[1])}</div>
     ${n.contrat_pdf?`<button class="btn" onclick="mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📄 Ouvrir le contrat à signer</button><div class="nat-v">Rangé dans le dossier du membre.</div>`:lien?`<button class="btn" onclick="adhRangerContrat('${a.id}')">📥 Ranger le contrat dans le dossier</button>`:""}
     ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
     ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
@@ -6083,6 +6090,25 @@ const NAT_URL="https://animateur.ma.caproteine.com";
 const NAT_CHEMINS={signe:"Membres → Gestion des membres",attente:"Membres et Prospects → Gestion Prospects → onglet « En attente de signature »",annuaire:"Annuaire → Gestion des contacts"};
 function natLienNational(a){const n=a.national||{},k=n.signe_le?"signe":n.contrat_id?"attente":"annuaire";return[NAT_URL+"/connexion/extranet",{signe:"Voir le membre au national",attente:"État de la signature au national",annuaire:"Voir dans l'annuaire du national"}[k]+" — "+NAT_CHEMINS[k]]}
 function natDerniereVerif(){const l=(DB.adhesions||[]).map(a=>(a.national||{}).verifie_le||(a.national||{}).annuaire_le||"").filter(Boolean).sort();return l.length?l[l.length-1]:""}
+/* Miroir du national : ce que le CRM national affiche, lu en direct (lecture seule, superadmin). */
+async function natMiroir(contratId){
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✍️",title:"État des signatures au national",sub:"Lecture en direct du CRM national"})}<div id="nm-corps">${skLignes(4)}</div>`;openSheet();
+  const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"miroir"}});
+  const z=document.getElementById("nm-corps");if(!z)return;
+  const err=error?((await error.context?.json?.().catch(()=>null))?.error||error.message):r?.error;
+  if(err){z.innerHTML=`<div class="nat-err">${esc(natErr(err))}</div>`;return}
+  const parC=new Map(),parE=new Map();(DB.adhesions||[]).forEach(a=>{const n=a.national||{};if(n.contrat_id)parC.set(String(n.contrat_id),a);if(n.entreprise_id)parE.set(String(n.entreprise_id),a)});
+  const ligne=(x,i)=>{const a=parC.get(String(x.contrat_id))||parE.get(String(x.entreprise_id));const vise=contratId&&String(contratId)===String(x.contrat_id);
+    return `<div class="nm-l${vise?" vise":""}" style="--i:${i}"><div class="nm-t"><b>${esc(x.personne||"—")}</b><small>${esc(x.entreprise||"")}${x.email?" · "+esc(x.email):""}</small></div>
+      <dl class="nat-dl"><div><dt>Contrat nat.</dt><dd>${x.contrat_id?"n° "+esc(x.contrat_id):"—"}${x.date?" · du "+esc(x.date):""}</dd></div>${x.debut?`<div><dt>Abonnement</dt><dd>${esc(x.debut)} → ${esc(x.fin)}${x.montant?" · "+esc(String(x.montant).replace(/\.00$/,""))+" MAD HT":""}</dd></div>`:""}${x.etat?`<div><dt>État</dt><dd>${esc(x.etat)}</dd></div>`:""}</dl>
+      <div class="nm-act">${a?`<button class="btn mini" onclick="adhDetail('${a.id}')">Voir la demande</button>`:`<span class="nm-hors">${x.contrat_id==119?"Essai du 29/10, à supprimer au national":"Pas dans notre CRM"}</span>`}${x.pdf?`<a class="btn ghost mini" href="${esc(x.pdf)}" target="_blank" rel="noopener">📄 Contrat du national</a>`:""}</div></div>`};
+  const sec=(t,l,vide)=>`<h3 class="nm-h">${t} <em>${l.length}</em></h3>${l.length?l.map(ligne).join(""):`<p class="fh-empty">${vide}</p>`}`;
+  z.innerHTML=`<p class="nat-v">Lu au national le ${esc(adhDate(r.lu_le))}. Ce sont les mêmes informations que dans « Gestion Prospects → En attente de signature » et « Gestion des membres ».</p>
+    ${sec("✍️ En attente de signature",r.attente||[],"Aucun contrat en attente au national.")}
+    ${sec("✅ Membres (Gestion des membres)",r.membres||[],"Aucun membre au national pour ton réseau pour l'instant.")}
+    <div class="sheet-actions"><button class="btn ghost" onclick="natMiroir()">↻ Relire</button><a class="btn ghost" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a></div>`;
+  const v=z.querySelector(".nm-l.vise");if(v)v.scrollIntoView({block:"center"});
+}
 async function natVerifier(btn){
   if(btn){btn.disabled=true;btn.textContent="⏳ Vérification au national…"}
   const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"verifier"}});
@@ -6109,7 +6135,7 @@ function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer"
 function dmVueSeg(){const v=window._dmVue==="nat"?"nat":"pipe",n=natAEnvoyer().length;
   return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button></div>`}
 function natResume(){const c=natCols(),nI=adhAIntegrer().length,dv=natDerniereVerif(),su=SESSION&&SESSION.role==="superadmin";
-  return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener" title="${esc(NAT_CHEMINS.attente)}">✍️ État des signatures au national</a><span>Au national : ${esc(NAT_CHEMINS.attente)}.<br>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
+  return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}${su?`<button class="btn ghost mini" onclick="natMiroir()">✍️ État des signatures au national</button>`:`<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a>`}<span>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
     <div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
     ${nI?`<p class="nat-avant">${nI} demande${nI>1?"s":""} pas encore intégrée${nI>1?"s":""} au niveau régional : elle${nI>1?"s":""} arrivera${nI>1?"ont":""} ici une fois intégrée${nI>1?"s":""}. <a href="#" onclick="window._dmVue='pipe';window._dmCol='todo';render();return false">Les voir ›</a></p>`:""}`}
 function natCarte(a,i,col){
@@ -6132,7 +6158,7 @@ function natCarte(a,i,col){
     <div class="dm-act">${act}
       ${n.contrat_pdf?`<button class="dm-ic" title="Contrat" aria-label="Contrat" onclick="event.stopPropagation();mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📑</button>`:""}
       ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}
-      <a class="dm-ic" title="${esc(natLienNational(a)[1])}" aria-label="${esc(natLienNational(a)[1])}" href="${natLienNational(a)[0]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐</a></div></article>`;
+      ${su&&n.contrat_id?`<button class="dm-ic" title="État au national" aria-label="État au national" onclick="event.stopPropagation();natMiroir(${Number(n.contrat_id)})">✍️</button>`:`<a class="dm-ic" title="${esc(natLienNational(a)[1])}" aria-label="${esc(natLienNational(a)[1])}" href="${natLienNational(a)[0]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐</a>`}</div></article>`;
 }
 function natPipeHTML(){
   const cols=natCols(),sel=window._natCol||"envoyer";

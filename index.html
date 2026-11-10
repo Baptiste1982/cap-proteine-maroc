@@ -1377,6 +1377,7 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .dm-vue button.on{background:var(--crimson);color:#fff}.dm-vue button em{font-style:normal;font-size:11.5px;background:var(--crimson-tint);color:var(--crimson);border-radius:99px;padding:1px 7px}.dm-vue button.on em{background:#fff}
 .dm-ks[hidden]{display:none!important}
 .nat-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.nat-verif{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}.nat-verif span{font-size:12px;color:var(--muted)}
 .nat-avant{font-size:12.5px;color:var(--muted);margin:0 0 12px}.nat-avant a{color:var(--crimson);font-weight:700}
 .nat-envoyer{--tn:var(--crimson)}.nat-attente{--tn:#C8A24C}.nat-signe{--tn:#2E8B57}
 .nat-dl{margin:0 0 9px 46px;display:grid;gap:3px;font-size:12px}.nat-dl div{display:flex;gap:8px}.nat-dl dt{color:var(--muted);min-width:78px}.nat-dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
@@ -1829,8 +1830,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.40.0";
+const APP_VERSION="0.41.0";
 const CHANGELOG=[
+  {v:"0.41.0",date:"10 novembre 2026",notes:{
+    "Ajouté":[
+      "Suivi des signatures au CRM national : chaque heure, de 8h à 21h, le CRM lit (sans rien modifier) les dossiers en attente de signature et les membres du national. Un contrat signé passe tout seul dans « Signées », avec une notification. Bouton « 🔄 Vérifier au national » pour le faire à la demande.",
+      "Annuaire du national rempli au fil de l'eau : chaque personne qui remplit le formulaire d'adhésion est ajoutée au carnet d'adresses du national (ou retrouvée par son e-mail si elle y est déjà).",
+      "Le numéro de contrat national, l'état de signature lu au national et la fiche de l'annuaire apparaissent sur chaque carte et dans la demande, avec un bouton 🌐 qui ouvre la bonne page du CRM national."
+    ]}},
   {v:"0.40.0",date:"10 novembre 2026",notes:{
     "Ajouté":[
       "Demandes → nouvel onglet « 🚀 Envoi au national » : toutes les demandes validées au niveau régional (intégrées), rangées en trois colonnes : à envoyer, en attente de signature (contrat créé au national, avec son numéro et son PDF), signées (historique complet). Bouton « Envoyer au national » sur chaque carte, bouton « ✓ Marquer signé » quand le membre a signé son contrat. La recherche fonctionne aussi dans cet onglet."
@@ -5037,7 +5044,10 @@ function adhNationalBloc(a){
   const n=a.national||{},lien=n.url_contrat_papier||n.url_contrat;
   return `<div class="nat-box">
     <div class="nat-t">Envoi au CRM national</div>
-    ${n.contrat_id?`<div class="nat-ok">✓ ${esc(NAT_STATUTS[n.statut]||"Contrat créé")} · contrat n° ${esc(n.contrat_id)}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Pas encore envoyée.</div>`}
+    ${n.contrat_id?`<div class="nat-ok">✓ ${esc(n.signe_le?"Signé le "+adhDate(n.signe_le):NAT_STATUTS[n.statut]||"Contrat créé")} · contrat national n° ${esc(n.contrat_id)}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Contrat pas encore envoyé.</div>`}
+    ${n.etat_signature&&!n.signe_le?`<div class="nat-v">État au national : ${esc(n.etat_signature)}${n.verifie_le?" (vérifié le "+esc(adhDate(n.verifie_le))+")":""}</div>`:""}
+    ${n.prospect_id?`<div class="nat-v">Annuaire du national : fiche n° ${esc(n.prospect_id)}${n.entreprise_id?" · entreprise n° "+esc(n.entreprise_id):""}${n.annuaire_le?" ("+(n.annuaire==="créé"?"ajoutée":"retrouvée")+" le "+esc(adhDate(n.annuaire_le))+")":""}</div>`:`<div class="nat-v">Pas encore dans l'annuaire du national : elle y sera ajoutée à la prochaine vérification (chaque heure).</div>`}
+    <a class="btn ghost" href="${natLienNational(a)[0]}" target="_blank" rel="noopener">🌐 ${esc(natLienNational(a)[1].split(" — ")[0])}</a><div class="nat-v">Au national : ${esc(natLienNational(a)[1].split(" — ")[1])}</div>
     ${n.contrat_pdf?`<button class="btn" onclick="mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📄 Ouvrir le contrat à signer</button><div class="nat-v">Rangé dans le dossier du membre.</div>`:lien?`<button class="btn" onclick="adhRangerContrat('${a.id}')">📥 Ranger le contrat dans le dossier</button>`:""}
     ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
     ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
@@ -6068,6 +6078,22 @@ function dmProchaine(){
   return `<button class="dm-next${adhEnRetard(a)?" late":""}" onclick="dmOuvrir(event,'${a.id}')"><span class="dm-next-ic">${adhEnRetard(a)?"⏰":"👉"}</span><div><small>Prochaine action</small><b>${e===1?"Intégrer":"Saisir au national"} ${esc(adhNom(a))}</b><em>${esc(a.data.ent_nom||"")}${a.data.ent_nom?" · ":""}reçue ${adhAge(a.created_at)}</em></div><span class="dm-next-go">›</span></button>`;
 }
 /* ---- 🚀 Envoi au national : les demandes validées au niveau régional (intégrées), jusqu'à la signature du contrat ---- */
+const NAT_URL="https://animateur.ma.caproteine.com";
+// Le national charge ses écrans dans sa page d'accueil : on ouvre l'accueil et on indique le chemin.
+const NAT_CHEMINS={signe:"Membres → Gestion des membres",attente:"Membres et Prospects → Gestion Prospects → onglet « En attente de signature »",annuaire:"Annuaire → Gestion des contacts"};
+function natLienNational(a){const n=a.national||{},k=n.signe_le?"signe":n.contrat_id?"attente":"annuaire";return[NAT_URL+"/connexion/extranet",{signe:"Voir le membre au national",attente:"État de la signature au national",annuaire:"Voir dans l'annuaire du national"}[k]+" — "+NAT_CHEMINS[k]]}
+function natDerniereVerif(){const l=(DB.adhesions||[]).map(a=>(a.national||{}).verifie_le||(a.national||{}).annuaire_le||"").filter(Boolean).sort();return l.length?l[l.length-1]:""}
+async function natVerifier(btn){
+  if(btn){btn.disabled=true;btn.textContent="⏳ Vérification au national…"}
+  const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"verifier"}});
+  let err=error?((await error.context?.json?.().catch(()=>null))?.error||error.message):r?.error;
+  await adhCharger();render();
+  if(err){toast(natErr(err),"e");return}
+  const m=[];if(r.signes?.length)m.push(r.signes.length+" contrat"+(r.signes.length>1?"s":"")+" signé"+(r.signes.length>1?"s":""));
+  if(r.attente)m.push(r.attente+" en attente");if(r.annuaire?.length)m.push(r.annuaire.length+" ajout"+(r.annuaire.length>1?"s":"")+" à l'annuaire");
+  toast("Vérifié au national : "+(m.join(" · ")||"rien de nouveau")+(r.erreurs?.length?" · ⚠ "+r.erreurs[0]:""),r.erreurs?.length?"w":"s");
+  if(r.signes?.length)celebrer("✍️",r.signes.length>1?"Contrats signés":"Contrat signé",r.signes.map(x=>x.nom).join(", "),"",()=>{window._natCol="signe";dmChercher(window._dmQ||"")});
+}
 function natEtat(a){if(a.statut==="rejetee"||a.statut!=="integree")return null;const n=a.national||{};
   if(n.signe_le)return"signe";if(n.contrat_id||a.saisie_proteine_le)return"attente";return"envoyer"}
 function natCols(){
@@ -6082,14 +6108,18 @@ function natCols(){
 function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
 function dmVueSeg(){const v=window._dmVue==="nat"?"nat":"pipe",n=natAEnvoyer().length;
   return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button></div>`}
-function natResume(){const c=natCols(),nI=adhAIntegrer().length;
-  return `<div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
+function natResume(){const c=natCols(),nI=adhAIntegrer().length,dv=natDerniereVerif(),su=SESSION&&SESSION.role==="superadmin";
+  return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener" title="${esc(NAT_CHEMINS.attente)}">✍️ État des signatures au national</a><span>Au national : ${esc(NAT_CHEMINS.attente)}.<br>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
+    <div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
     ${nI?`<p class="nat-avant">${nI} demande${nI>1?"s":""} pas encore intégrée${nI>1?"s":""} au niveau régional : elle${nI>1?"s":""} arrivera${nI>1?"ont":""} ici une fois intégrée${nI>1?"s":""}. <a href="#" onclick="window._dmVue='pipe';window._dmCol='todo';render();return false">Les voir ›</a></p>`:""}`}
 function natCarte(a,i,col){
   const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g),n=a.national||{},su=SESSION&&SESSION.role==="superadmin";
   const lignes=[["Reçue",adhDate(a.created_at)]];
   if(a.saisie_proteine_le||n.maj)lignes.push(["Envoyée",adhDate(a.saisie_proteine_le||n.maj)]);
-  if(n.contrat_id)lignes.push(["Contrat",`n° ${n.contrat_id}${n.signature==="papier"?" · papier":""}`]);
+  if(n.contrat_id)lignes.push(["Contrat nat.",`n° ${n.contrat_id}${n.signature==="papier"?" · papier":""}`]);
+  if(n.etat_signature&&col!=="signe")lignes.push(["État",n.etat_signature]);
+  if(n.verifie_le&&col!=="signe")lignes.push(["Vérifié",adhDate(n.verifie_le)]);
+  if(col==="envoyer"&&n.prospect_id)lignes.push(["Annuaire",`fiche n° ${n.prospect_id}`]);
   if(n.signe_le)lignes.push(["Signé",adhDate(n.signe_le)]);
   if(n.erreur&&col==="envoyer")lignes.push(["Dernier essai",n.erreur]);
   const act=col==="envoyer"?(su?`<button class="dm-go" onclick="event.stopPropagation();natEnvoyer('${a.id}')">Envoyer au national <span>›</span></button>`:`<button class="dm-go" onclick="event.stopPropagation();adhDetail('${a.id}')">Voir la demande <span>›</span></button>`)
@@ -6101,7 +6131,8 @@ function natCarte(a,i,col){
     <dl class="nat-dl">${lignes.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
     <div class="dm-act">${act}
       ${n.contrat_pdf?`<button class="dm-ic" title="Contrat" aria-label="Contrat" onclick="event.stopPropagation();mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📑</button>`:""}
-      ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}</div></article>`;
+      ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}
+      <a class="dm-ic" title="${esc(natLienNational(a)[1])}" aria-label="${esc(natLienNational(a)[1])}" href="${natLienNational(a)[0]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐</a></div></article>`;
 }
 function natPipeHTML(){
   const cols=natCols(),sel=window._natCol||"envoyer";
@@ -6117,7 +6148,7 @@ async function natSigne(id,oui){
   if(error){toast(rlsMsg(error));return}
   a.national=n;
   if(oui&&!a.saisie_proteine_le){a.saisie_proteine_le=n.signe_le;await sb.from("adhesions").update({saisie_proteine_le:n.signe_le,saisie_proteine_par:SESSION.id}).eq("id",id)}
-  toast(oui?`Contrat de ${adhNom(a)} marqué signé`:"Signature annulée",oui?"ok":"",oui?()=>{window._natCol="signe";dmChercher(window._dmQ||"")}:null);
+  toast(oui?`Contrat de ${adhNom(a)} marqué signé`:"Signature annulée",oui?"s":"",oui?()=>{window._natCol="signe";dmChercher(window._dmQ||"")}:null);
   if(oui)window._natCol=window._natCol||"attente";
   render();
 }

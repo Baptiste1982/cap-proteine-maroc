@@ -232,6 +232,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Accueil régional `viewRegion()` (classes `vr-*`) : bandeau + 4 chiffres, « À faire dans la région », tableau des groupes trié (sans réunion à venir, puis bilans, puis à faire, puis à jour ; ligne → `grpAller`), planning `vrMois()` (−6 à +3 mois) avec cases réalisée/prévue/bilan/annulée/« + ». Accueil national = Synthèse avec bandeau `.vn-band` (plus d'interrupteur `.seg-sc` pour ceux qui ont la bascule).
 - ⚠ Au téléphone la bascule n'affiche que ses icônes (≤ 600 px) : en texte elle faisait déborder la barre du haut et toute la page. Bancs `vues.mjs` 38/38 ; `v09` et `demandes` recalés ; 20 bancs verts.
 
+**✍ Spécialité libre dans le formulaire d'adhésion (v0.39.0, 10/11/2026)** — JB : « plein de gens ne trouvent pas leur métier dans la liste » (ex. Abderrazak, construction, n'a trouvé que « Constructeur Maisons individuelles » ; il veut « tous corps d'état, TCE »).
+- `adhesion.html` : champ `metier_precis` sous le métier (120 car.), facultatif, obligatoire si le métier choisi est « - Autre - » (`majPrecis`, contrôle dans `validate(1)`). Le métier officiel reste exigé (le national en a besoin) et c'est lui seul qui part au CRM national.
+- PDF : `metierLigne(d)` = « métier · spécialité » (la spécialité seule si « - Autre - »). Le champ Métier du PDF fait toute la largeur : même 120 caractères tiennent. Repli si la ligne ne tenait pas à 7 pt : métier officiel sur la ligne, « Spécialité : … » en tête des commentaires.
+- CRM : `adhMetier(d)` (spécialité, sinon métier, sinon l'activité si « - Autre - ») pour les cartes Demandes, la spécialité du membre à l'intégration et `mbMetier` ; champ dans la fiche de demande, l'export et la recherche. Banc `precis.mjs` 12/12.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

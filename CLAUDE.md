@@ -241,6 +241,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **🔐 Déconnexion locale (v0.39.2, 10/11/2026)** — JB : « Session invalide » à l'envoi au national. Cause lue dans les journaux Auth : `signOut()` (portée globale par défaut) sur l'iPhone à 15:36 UTC a fermé AUSSI la session du PC ; le PC gardait un jeton dont la session n'existait plus (`session_not_found`). Tous les `signOut` (index.html, membre.html) passent en `{scope:"local"}`. `natSessionOk` vérifie la session côté serveur (`getUser`) avant l'aperçu national ; `natErr` traduit « Session invalide » + bouton « Se reconnecter ».
 
+**🚀 Envoi au national (v0.40.0, 10/11/2026)** — JB : « une zone où je retrouve facilement toutes les demandes à envoyer au CRM national une fois traitées au niveau régional » ; clics : onglet dans Demandes, bouton « Signé » à la main.
+- Demandes : bascule `dmVueSeg()` (`window._dmVue` 'pipe'|'nat'). En 'nat', `dmPipeHTML` rend `natPipeHTML()` : `natEtat(a)` (seulement `statut='integree'`) = envoyer (pas de `national.contrat_id` ni `saisie_proteine_le`) / attente / signe (`national.signe_le`). `natCols()`, `natCarte` (reçue, envoyée, n° de contrat, signé le ; PDF du contrat `national.contrat_pdf`), `natResume()` (+ rappel des demandes pas encore intégrées), colonne active au téléphone `window._natCol`.
+- `natEnvoyer(id)` = `adhDetail` + `adhNational` (superadmin seulement ; les autres voient la demande). `natSigne(id,oui)` écrit `national.signe_le/signe_par` (jsonb fusionné, sans migration) et pose `saisie_proteine_le` s'il manquait. Banc `envnat.mjs` 30/30.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

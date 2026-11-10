@@ -1372,6 +1372,15 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .dm-grps i b{display:block;height:100%;background:var(--crimson);border-radius:3px;animation:dmBarre .8s cubic-bezier(.2,1,.4,1) calc(var(--i)*70ms) both}
 @keyframes dmBarre{from{width:0}}.dm-grps em{font-style:normal;font-weight:800;text-align:right}
 .dm-leg{font-size:11.5px;color:var(--muted);margin:0}
+.dm-vue{display:inline-flex;gap:4px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin:0 0 12px;max-width:100%;overflow-x:auto}
+.dm-vue button{border:0;background:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;transition:background .2s,color .2s}
+.dm-vue button.on{background:var(--crimson);color:#fff}.dm-vue button em{font-style:normal;font-size:11.5px;background:var(--crimson-tint);color:var(--crimson);border-radius:99px;padding:1px 7px}.dm-vue button.on em{background:#fff}
+.dm-ks[hidden]{display:none!important}
+.nat-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.nat-avant{font-size:12.5px;color:var(--muted);margin:0 0 12px}.nat-avant a{color:var(--crimson);font-weight:700}
+.nat-envoyer{--tn:var(--crimson)}.nat-attente{--tn:#C8A24C}.nat-signe{--tn:#2E8B57}
+.nat-dl{margin:0 0 9px 46px;display:grid;gap:3px;font-size:12px}.nat-dl div{display:flex;gap:8px}.nat-dl dt{color:var(--muted);min-width:78px}.nat-dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.dm-go.nat-ghost{background:none;color:var(--muted);border:1px solid var(--line)}
 @media(max-width:899px){
   .dm-seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
   .dm-seg button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 12px;font-weight:700;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
@@ -1820,8 +1829,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.39.2";
+const APP_VERSION="0.40.0";
 const CHANGELOG=[
+  {v:"0.40.0",date:"10 novembre 2026",notes:{
+    "Ajouté":[
+      "Demandes → nouvel onglet « 🚀 Envoi au national » : toutes les demandes validées au niveau régional (intégrées), rangées en trois colonnes : à envoyer, en attente de signature (contrat créé au national, avec son numéro et son PDF), signées (historique complet). Bouton « Envoyer au national » sur chaque carte, bouton « ✓ Marquer signé » quand le membre a signé son contrat. La recherche fonctionne aussi dans cet onglet."
+    ]}},
   {v:"0.39.2",date:"10 novembre 2026",notes:{
     "Corrigé":[
       "Se déconnecter sur un appareil (le téléphone, par exemple) ne ferme plus la session des autres (le PC). Avant, le PC restait affiché comme connecté mais l'envoi au CRM national répondait « Session invalide ».",
@@ -6054,8 +6067,63 @@ function dmProchaine(){
   const e=adhEtape(a);
   return `<button class="dm-next${adhEnRetard(a)?" late":""}" onclick="dmOuvrir(event,'${a.id}')"><span class="dm-next-ic">${adhEnRetard(a)?"⏰":"👉"}</span><div><small>Prochaine action</small><b>${e===1?"Intégrer":"Saisir au national"} ${esc(adhNom(a))}</b><em>${esc(a.data.ent_nom||"")}${a.data.ent_nom?" · ":""}reçue ${adhAge(a.created_at)}</em></div><span class="dm-next-go">›</span></button>`;
 }
+/* ---- 🚀 Envoi au national : les demandes validées au niveau régional (intégrées), jusqu'à la signature du contrat ---- */
+function natEtat(a){if(a.statut==="rejetee"||a.statut!=="integree")return null;const n=a.national||{};
+  if(n.signe_le)return"signe";if(n.contrat_id||a.saisie_proteine_le)return"attente";return"envoyer"}
+function natCols(){
+  const q=mbNorm(window._dmQ||"").split(/\s+/).filter(Boolean),ok=a=>q.every(w=>dmTexte(a).includes(w));
+  const all=(DB.adhesions||[]).filter(a=>natEtat(a)&&ok(a)),par=(x,y)=>(x.created_at||"").localeCompare(y.created_at||"");
+  const env=a=>a.saisie_proteine_le||(a.national||{}).maj||"";
+  return [
+    {k:"envoyer",t:"À envoyer",s:"Validées au niveau régional",ico:"🚀",l:all.filter(a=>natEtat(a)==="envoyer").sort(par)},
+    {k:"attente",t:"En attente de signature",s:"Contrat créé au national",ico:"✍️",l:all.filter(a=>natEtat(a)==="attente").sort((x,y)=>env(x).localeCompare(env(y)))},
+    {k:"signe",t:"Signées",s:"Historique complet",ico:"✅",l:all.filter(a=>natEtat(a)==="signe").sort((x,y)=>((y.national||{}).signe_le||"").localeCompare((x.national||{}).signe_le||""))}];
+}
+function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
+function dmVueSeg(){const v=window._dmVue==="nat"?"nat":"pipe",n=natAEnvoyer().length;
+  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button></div>`}
+function natResume(){const c=natCols(),nI=adhAIntegrer().length;
+  return `<div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
+    ${nI?`<p class="nat-avant">${nI} demande${nI>1?"s":""} pas encore intégrée${nI>1?"s":""} au niveau régional : elle${nI>1?"s":""} arrivera${nI>1?"ont":""} ici une fois intégrée${nI>1?"s":""}. <a href="#" onclick="window._dmVue='pipe';window._dmCol='todo';render();return false">Les voir ›</a></p>`:""}`}
+function natCarte(a,i,col){
+  const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g),n=a.national||{},su=SESSION&&SESSION.role==="superadmin";
+  const lignes=[["Reçue",adhDate(a.created_at)]];
+  if(a.saisie_proteine_le||n.maj)lignes.push(["Envoyée",adhDate(a.saisie_proteine_le||n.maj)]);
+  if(n.contrat_id)lignes.push(["Contrat",`n° ${n.contrat_id}${n.signature==="papier"?" · papier":""}`]);
+  if(n.signe_le)lignes.push(["Signé",adhDate(n.signe_le)]);
+  if(n.erreur&&col==="envoyer")lignes.push(["Dernier essai",n.erreur]);
+  const act=col==="envoyer"?(su?`<button class="dm-go" onclick="event.stopPropagation();natEnvoyer('${a.id}')">Envoyer au national <span>›</span></button>`:`<button class="dm-go" onclick="event.stopPropagation();adhDetail('${a.id}')">Voir la demande <span>›</span></button>`)
+    :col==="attente"?(readOnly()?"":`<button class="dm-go" onclick="event.stopPropagation();natSigne('${a.id}',true)">✓ Marquer signé <span>›</span></button>`)
+    :(readOnly()?"":`<button class="dm-go nat-ghost" onclick="event.stopPropagation();natSigne('${a.id}',false)">Annuler la signature</button>`);
+  return `<article class="dm-card nat-card" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}" tabindex="0" onclick="adhDetail('${a.id}')" onkeydown="if(event.key==='Enter')adhDetail('${a.id}')">
+    <div class="dm-top"><span class="dm-av">${esc(initiales(adhNom(a)))}</span><div class="dm-id"><b>${esc(adhNom(a))}</b><small>${esc([a.data.ent_nom,adhMetier(a.data)].filter(Boolean).join(" · ")||"—")}</small></div></div>
+    <div class="dm-grp"><i></i>${g==="Sans groupe"?"<span class=\"warn\">Groupe à choisir</span>":esc(g.replace(/^CAP\s+/,""))}</div>
+    <dl class="nat-dl">${lignes.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    <div class="dm-act">${act}
+      ${n.contrat_pdf?`<button class="dm-ic" title="Contrat" aria-label="Contrat" onclick="event.stopPropagation();mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📑</button>`:""}
+      ${a.pdf_path?`<button class="dm-ic" title="Formulaire PDF" aria-label="Formulaire PDF" onclick="event.stopPropagation();adhPdf('${a.id}')">📄</button>`:""}</div></article>`;
+}
+function natPipeHTML(){
+  const cols=natCols(),sel=window._natCol||"envoyer";
+  return `<div class="dm-seg" role="tablist">${cols.map(c=>`<button role="tab" aria-selected="${sel===c.k}" class="${sel===c.k?"on":""}" onclick="window._natCol='${c.k}';dmChercher(window._dmQ||'')">${c.ico} ${c.t}<em>${c.l.length}</em></button>`).join("")}</div>
+    <div class="dm-cols">${cols.map(c=>`<section class="dm-col nat-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
+      <div class="dm-list">${c.l.length?c.l.map((a,i)=>natCarte(a,i,c.k)).join(""):`<p class="dm-vide">${window._dmQ?"Aucun résultat":c.k==="envoyer"?"Rien à envoyer ✓":c.k==="attente"?"Aucun contrat en attente":"Aucune pour l'instant"}</p>`}</div></section>`).join("")}</div>`;
+}
+function natEnvoyer(id){adhDetail(id);setTimeout(()=>adhNational(id),30)}
+async function natSigne(id,oui){
+  const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
+  const n={...(a.national||{})};if(oui){n.signe_le=new Date().toISOString();n.signe_par=SESSION.id}else{delete n.signe_le;delete n.signe_par}
+  const {error}=await sb.from("adhesions").update({national:n}).eq("id",id);
+  if(error){toast(rlsMsg(error));return}
+  a.national=n;
+  if(oui&&!a.saisie_proteine_le){a.saisie_proteine_le=n.signe_le;await sb.from("adhesions").update({saisie_proteine_le:n.signe_le,saisie_proteine_par:SESSION.id}).eq("id",id)}
+  toast(oui?`Contrat de ${adhNom(a)} marqué signé`:"Signature annulée",oui?"ok":"",oui?()=>{window._natCol="signe";dmChercher(window._dmQ||"")}:null);
+  if(oui)window._natCol=window._natCol||"attente";
+  render();
+}
 function dmChercher(v){window._dmQ=v;const z=document.getElementById("dm-pipe");if(z)z.innerHTML=dmPipeHTML()}
 function dmPipeHTML(){
+  if(window._dmVue==="nat")return natPipeHTML();
   const cols=dmCols(),sel=window._dmCol||"todo";
   return `<div class="dm-seg" role="tablist">${cols.map(c=>`<button role="tab" aria-selected="${sel===c.k}" class="${sel===c.k?"on":""}" onclick="window._dmCol='${c.k}';dmChercher(window._dmQ||'')">${c.ico} ${c.t}<em>${c.l.length}</em></button>`).join("")}</div>
     <div class="dm-cols">${cols.map(c=>`<section class="dm-col dm-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
@@ -6071,10 +6139,11 @@ function viewDemandes(){
   const k=(n,l,cls,fn)=>`<button class="dm-k ${cls||""}" ${fn?`onclick="${fn}"`:"disabled"}><b data-count="${n}">${n}</b><span>${l}</span></button>`;
   return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}</div></div>
-    ${dmProchaine()}
-    <div class="dm-ks">${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
+    ${dmVueSeg()}
+    ${window._dmVue==="nat"?natResume():dmProchaine()}
+    <div class="dm-ks"${window._dmVue==="nat"?" hidden":""}>${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
     <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
-      <button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>
+      ${window._dmVue==="nat"?"":`<button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>`}${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>
     <div class="dm-main"><div id="dm-pipe">${dmPipeHTML()}</div>
       <aside class="dm-side">${readOnly()?"":`<section class="dm-box"><h3>✉️ Envoyer le lien d'adhésion</h3><p>Le futur membre remplit le formulaire depuis son téléphone ; sa demande arrive ici.</p>
         <div class="field"><label>Groupe concerné</label><select id="adh-club"><option value="">— Sans groupe —</option>${clubOpts}</select></div>

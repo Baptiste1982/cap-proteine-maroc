@@ -100,7 +100,18 @@ Deno.serve(async (req) => {
       await admin.from('adhesions').update({ national: a.national, ...cols }).eq('id', a.id);
     };
 
-    // 1 · Annuaire du national, au fil des demandes reçues.
+    // 1 · Fiche prospect au national (« Sans contrat »), remplie par national-adhesion action « prospect ».
+    const aRemplir = (adhs || []).filter(a => !a.national?.personne_id && !a.national?.contrat_id && !a.national?.prospect_erreur_le).slice(0, 5);
+    for (const a of aRemplir) {
+      try {
+        const r = await fetch(url + '/functions/v1/national-adhesion', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-suivi-jeton': jeton || '', Authorization: req.headers.get('Authorization') || '' }, body: JSON.stringify({ action: 'prospect', adhesion_id: a.id }) });
+        const j = await r.json().catch(() => ({}));
+        if (j?.ok) { a.national = j.national; res.annuaire.push(`${nomDe(a.data)} : fiche prospect remplie au national`); }
+        else { res.erreurs.push(`Prospect, ${nomDe(a.data)} : ${j?.error || r.status}`); if (/incompl/i.test(j?.error || '')) await sauver(a, { prospect_erreur_le: maintenant, prospect_erreur: j.error }); }
+      } catch (e) { res.erreurs.push(`Prospect, ${nomDe(a.data)} : ${(e as Error).message}`); }
+    }
+
+    // 1 bis · Annuaire seul, pour les demandes incomplètes (pas de fiche prospect possible).
     const aCreer = (adhs || []).filter(a => !a.national?.prospect_id && !a.national?.contrat_id && a.data?.m_email && a.data?.m_nom && a.data?.m_prenom).slice(0, 10);
     for (const a of aCreer) {
       const d = a.data;

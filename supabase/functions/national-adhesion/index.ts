@@ -4,6 +4,7 @@
 //
 //   action "apercu"  : se connecte, LIT seulement, et dit ce qui serait envoyé.
 //   action "contrat" : range le PDF du contrat (déjà généré) dans le dossier du membre.
+//   action "prospect": prospect → entreprise → personne, sans contrat (fiche « Sans contrat » remplie à l'arrivée).
 //   action "envoyer" : prospect → entreprise → personne → contrat + abonnement → PDF du contrat.
 //                      signature "papier" : contrat papier à imprimer (aucun e-mail ne part) ;
 //                      signature "aucune" : s'arrête une fois le contrat généré.
@@ -87,24 +88,32 @@ Deno.serve(async (req) => {
   let surErreur: (() => Promise<void>) | null = null;
   try {
     const url = Deno.env.get('SUPABASE_URL')!, anon = Deno.env.get('SUPABASE_ANON_KEY')!, service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const caller = createClient(url, anon, { global: { headers: { Authorization: req.headers.get('Authorization') || '' } } });
-    const { data: { user } } = await caller.auth.getUser();
-    if (!user) return json({ error: 'Session invalide' }, 401);
     const admin = createClient(url, service);
-    const { data: prof } = await admin.from('profiles').select('role').eq('id', user.id).single();
-    if (prof?.role !== 'superadmin') return json({ error: 'Réservé au superadmin' }, 403);
+    // Appel programmé (national-suivi) : jeton du coffre, seulement pour l'action « prospect ».
+    const jeton = req.headers.get('x-suivi-jeton');
+    let user: { id: string | null } | null = null;
+    if (jeton) { const { data } = await admin.rpc('cap_national_jeton_ok', { p: jeton }); if (data === true) user = { id: null }; }
+    if (!user) {
+      const caller = createClient(url, anon, { global: { headers: { Authorization: req.headers.get('Authorization') || '' } } });
+      const { data: { user: u } } = await caller.auth.getUser();
+      if (!u) return json({ error: 'Session invalide' }, 401);
+      const { data: prof } = await admin.from('profiles').select('role').eq('id', u.id).single();
+      if (prof?.role !== 'superadmin') return json({ error: 'Réservé au superadmin' }, 403);
+      user = { id: u.id };
+    }
 
     const body = await req.json().catch(() => ({}));
     const { action, adhesion_id } = body;
     const opt = { offre: 'Aucune', justification: '', date_debut: '', signature: 'papier', ...(body.options || {}) };
-    if (!['apercu', 'envoyer', 'contrat'].includes(action)) return json({ error: 'Action inconnue' }, 400);
+    if (!['apercu', 'envoyer', 'contrat', 'prospect'].includes(action)) return json({ error: 'Action inconnue' }, 400);
+    if (user.id === null && action !== 'prospect') return json({ error: 'Non autorisé' }, 401);
     if (!['papier', 'aucune'].includes(opt.signature)) return json({ error: 'Signature électronique non prise en charge ici' }, 400);
 
     const { data: a, error: aerr } = await admin.from('adhesions').select('*').eq('id', adhesion_id).single();
     if (aerr || !a) return json({ error: 'Adhésion introuvable' }, 404);
     const d = a.data || {};
     const nat: Record<string, any> = { ...(a.national || {}) };
-    surErreur = async () => { if (action === 'envoyer') await admin.from('adhesions').update({ national: { ...nat, etapes, erreur: etapes[etapes.length - 1], maj: new Date().toISOString() } }).eq('id', a.id); };
+    surErreur = async () => { if (action === 'envoyer' || action === 'prospect') await admin.from('adhesions').update({ national: { ...nat, etapes, erreur: etapes[etapes.length - 1], maj: new Date().toISOString() } }).eq('id', a.id); };
     const sauver = async (extra: Record<string, unknown> = {}) => {
       Object.assign(nat, extra, { maj: new Date().toISOString(), etapes, erreur: null });
       if (action !== 'apercu') await admin.from('adhesions').update({ national: nat }).eq('id', a.id);
@@ -120,12 +129,12 @@ Deno.serve(async (req) => {
     // Ce qu'il faut absolument avoir pour un contrat.
     const manque = [['ent_nom', 'nom de l\'entreprise'], ['ent_nom_legal', 'nom légal'], ['ent_ice', 'ICE'], ['ent_categorie', 'catégorie juridique'],
       ['metier', 'métier'], ['ent_adresse', 'adresse'], ['ent_cp', 'code postal'], ['ent_ville', 'ville'], ['m_nom', 'nom'], ['m_prenom', 'prénom'],
-      ['m_email', 'e-mail'], ['m_tel', 'mobile'], ['m_fonction', 'fonction'], ['reg_mode', 'mode de règlement'], ['reg_fois', 'nombre de versements']]
+      ['m_email', 'e-mail'], ['m_tel', 'mobile'], ['m_fonction', 'fonction'], ...(action === 'prospect' ? [] : [['reg_mode', 'mode de règlement'], ['reg_fois', 'nombre de versements']])]
       .filter(([k]) => !String(d[k] ?? '').trim()).map(([, l]) => l);
     if (manque.length) return json({ error: 'Adhésion incomplète pour le national : ' + manque.join(', ') }, 400);
     if (d.sig_same === false) return json({ error: `Le signataire (${d.s_prenom || ''} ${d.s_nom || ''}) n'est pas le membre : à ajouter à la main dans le national.` }, 400);
     const idMode = MODES[`${d.reg_mode}|${d.reg_fois}`];
-    if (!idMode) return json({ error: 'Mode de règlement inconnu du national' }, 400);
+    if (!idMode && action !== 'prospect') return json({ error: 'Mode de règlement inconnu du national' }, 400);
 
     const N = new National();
     const club = await N.connexion(Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '');
@@ -226,6 +235,11 @@ Deno.serve(async (req) => {
     });
     etapes.push(`Personne membre enregistrée (n° ${p2.id}), identifiant ${ident}`);
     await sauver({ personne_id: p2.id, identifiant: ident, mot_de_passe: mdp });
+    if (action === 'prospect') {
+      etapes.push('Fiche prospect remplie au national (onglet « Sans contrat »).');
+      await sauver({ prospect_le: new Date().toISOString() });
+      return json({ ok: true, etapes, national: nat });
+    }
 
     // 4 · Contrat + abonnement + PDF.
     const page = await (await N.req('GET', `/prospectMembre/formulaireAjoutAttenteSignature?idPersonne=${pers.id}`)).text();

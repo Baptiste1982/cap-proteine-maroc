@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#B0122E">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" href="favicon.ico" sizes="any">
-<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CRM Protéine">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1750,7 +1750,7 @@ button.vr-pt:hover{transform:scale(1.15)}
 
 <!-- LOGIN -->
 <div id="auth" class="auth">
-  <div class="auth-brand"><div class="mono"><img src="icone-512.png" alt="Protéine"></div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
+  <div class="auth-brand"><div class="mono"><img src="logo-globe-512.png" alt="Protéine"></div><div><small>Club d'Affaires</small><b>Protéine Maroc</b></div></div>
   <div class="auth-hero">
     <div class="eyebrow">CRM Animation · Saison 2026</div>
     <h1>Le réseau,<br>piloté au&nbsp;cordeau.</h1>
@@ -1771,7 +1771,7 @@ button.vr-pt:hover{transform:scale(1.15)}
 <div id="app" class="app hidden">
   <div class="topbar">
     <div class="tb-row">
-      <div class="mono"><img src="icone-512.png" alt="Protéine"></div>
+      <div class="mono"><img src="logo-globe-512.png" alt="Protéine"></div>
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
@@ -1820,8 +1820,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.39.0";
+const APP_VERSION="0.39.1";
 const CHANGELOG=[
+  {v:"0.39.1",date:"10 novembre 2026",notes:{
+    "Amélioré":[
+      "Nouvelle icône sur l'écran d'accueil du téléphone : le logo Protéine (le globe et « PROTEINE ») en blanc sur fond rouge, pour le CRM, l'espace membre et le formulaire d'adhésion. Pour la voir sur un téléphone où le CRM est déjà installé, il faut retirer l'icône et ajouter de nouveau le CRM à l'écran d'accueil."
+    ]}},
   {v:"0.39.0",date:"10 novembre 2026",notes:{
     "Ajouté":[
       "Formulaire d'adhésion : un champ « Votre spécialité, en vos mots » sous le métier. Celui qui ne trouve pas son métier exact dans la liste officielle prend le plus proche (ou « - Autre - », la précision devient alors obligatoire) et écrit le sien, par exemple « Entreprise tous corps d'état (TCE) ». La spécialité est écrite sur le PDF, à côté du métier (ou en tête des commentaires si la ligne est trop courte).",
@@ -5738,7 +5742,7 @@ async function rpPdf(){
     const txt=(t,x,yy,o={})=>page.drawText(pdfTxt(t),{x,y:yy,size:o.s||10,font:o.b?fb:f,color:o.c||IN});
     const nouvellePage=()=>{page=doc.addPage([595.28,841.89]);y=790};
     const besoin=h=>{if(y-h<60)nouvellePage()};
-    try{const png=await (await fetch("icone-192.png")).arrayBuffer();const im=await doc.embedPng(png);page.drawImage(im,{x:X+WD-40,y:y-14,width:40,height:40})}catch(e){}
+    try{const png=await (await fetch("logo-globe-192.png")).arrayBuffer();const im=await doc.embedPng(png);page.drawImage(im,{x:X+WD-40,y:y-14,width:40,height:40})}catch(e){}
     txt(d.titre,X,y,{s:19,b:1,c:DE});y-=18;txt(d.perim+" · établi par "+d.auteur,X,y,{s:10,c:MU});y-=12;
     page.drawRectangle({x:X,y,width:WD,height:2.5,color:CR});y-=26;
     const sec=t=>{besoin(40);txt(t.toUpperCase(),X,y,{s:10,b:1,c:CR});y-=16};
@@ -5838,7 +5842,7 @@ function cstRender(){
   _cst.pos=pos;
   const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">membre${tot>1?"s":""}</text></g>`;
   const h=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-  o.innerHTML=`<div class="cst-top"><span class="mono"><img src="icone-192.png" alt=""></span><div><small>Club d'Affaires Protéine Maroc</small><b>Le réseau aujourd'hui</b></div><span class="cst-clk" id="cst-clk">${h}</span>
+  o.innerHTML=`<div class="cst-top"><span class="mono"><img src="logo-globe-192.png" alt=""></span><div><small>Club d'Affaires Protéine Maroc</small><b>Le réseau aujourd'hui</b></div><span class="cst-clk" id="cst-clk">${h}</span>
       <button class="cst-btn" onclick="closeConstellation();openPresentation()">▶ Diaporama</button><button class="cst-x" aria-label="Fermer" onclick="closeConstellation()">✕</button></div>
     <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} membres"><defs><radialGradient id="cstg"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#5C0A18"/></radialGradient></defs>
       <g class="cst-et">${et}</g>${liens}${com}${orb}${coeur}${astres}</svg><div class="cst-tip" id="cst-tip" hidden></div></div>
@@ -5883,7 +5887,7 @@ function openPresentation(){
 function showRender(){
   const o=document.getElementById("show-o");if(!o)return;const S=showSlides();_sh.i=(_sh.i+S.length)%S.length;
   o.innerHTML=`<div class="tap"><button aria-label="Diapositive précédente" onclick="showGo(-1)"></button><button aria-label="Diapositive suivante" onclick="showGo(1)"></button></div>
-    <div class="h"><span class="mono"><img src="icone-192.png" alt=""></span><span><small>Club d'Affaires</small><b>Protéine Maroc</b></span><span class="clk">${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span><button class="x" onclick="closePresentation()" aria-label="Quitter la présentation">✕</button></div>
+    <div class="h"><span class="mono"><img src="logo-globe-192.png" alt=""></span><span><small>Club d'Affaires</small><b>Protéine Maroc</b></span><span class="clk">${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span><button class="x" onclick="closePresentation()" aria-label="Quitter la présentation">✕</button></div>
     <div class="sl">${S[_sh.i]}</div>
     <div class="sprog">${S.map((_,i)=>`<i class="${i<_sh.i?"done":i===_sh.i?"on":""}"><b></b></i>`).join("")}</div>`;
   clearTimeout(_sh.t);_sh.t=setTimeout(()=>showGo(1),7000);

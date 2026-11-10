@@ -239,6 +239,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **📱 Icône Protéine sur l'écran d'accueil (v0.39.1, 10/11/2026)** — `icone-180/192/512.png` = globe + « PROTEINE » en crimson sur fond blanc (tirés de `logo-proteine.png`), liens en `?v=2` (manifestes, apple-touch-icon, `sw.js`) ; `adhesion.html` a aussi son apple-touch-icon. L'ancien globe rouge sur blanc sert toujours DANS l'appli sous `logo-globe-512.png` / `logo-globe-192.png` (connexion, constellation, présentation, PDF). Un téléphone qui a déjà l'icône garde l'ancienne : retirer puis réajouter.
 
+**🔐 Déconnexion locale (v0.39.2, 10/11/2026)** — JB : « Session invalide » à l'envoi au national. Cause lue dans les journaux Auth : `signOut()` (portée globale par défaut) sur l'iPhone à 15:36 UTC a fermé AUSSI la session du PC ; le PC gardait un jeton dont la session n'existait plus (`session_not_found`). Tous les `signOut` (index.html, membre.html) passent en `{scope:"local"}`. `natSessionOk` vérifie la session côté serveur (`getUser`) avant l'aperçu national ; `natErr` traduit « Session invalide » + bouton « Se reconnecter ».
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -1820,8 +1820,13 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.39.1";
+const APP_VERSION="0.39.2";
 const CHANGELOG=[
+  {v:"0.39.2",date:"10 novembre 2026",notes:{
+    "Corrigé":[
+      "Se déconnecter sur un appareil (le téléphone, par exemple) ne ferme plus la session des autres (le PC). Avant, le PC restait affiché comme connecté mais l'envoi au CRM national répondait « Session invalide ».",
+      "Si la session a quand même été fermée, l'envoi au national le dit en clair et propose « Se reconnecter »."
+    ]}},
   {v:"0.39.1",date:"10 novembre 2026",notes:{
     "Amélioré":[
       "Nouvelle icône sur l'écran d'accueil du téléphone : le logo Protéine (le globe et « PROTEINE ») en rouge sur fond blanc, pour le CRM, l'espace membre et le formulaire d'adhésion. Pour la voir sur un téléphone où le CRM est déjà installé, il faut retirer l'icône et ajouter de nouveau le CRM à l'écran d'accueil."
@@ -2334,7 +2339,7 @@ async function loadSessionProfile(){
 }
 async function bootIntoApp(){
   const ok=await loadSessionProfile();
-  if(!ok){await sb.auth.signOut();return false}
+  if(!ok){await sb.auth.signOut({scope:"local"});return false}
   montrerSquelette();
   await loadDB();
   if(SESSION.role==="animateur"&&SESSION.animId)
@@ -2521,7 +2526,7 @@ async function verifierMdpInitial(){
   if(!r||r.error||r.data!==true)return;
   _mdpForce=true;openMyPassword(true);
 }
-async function logout(){presenceArreter();await sb.auth.signOut();SESSION=null;DB=null;
+async function logout(){presenceArreter();await sb.auth.signOut({scope:"local"});SESSION=null;DB=null;
   document.getElementById("app").classList.add("hidden");document.getElementById("nav").classList.add("hidden");
   document.getElementById("fab").classList.add("hidden");document.getElementById("auth").classList.remove("hidden");window.scrollTo(0,0);railRender();}
 function enterApp(){
@@ -5026,13 +5031,19 @@ function adhNationalBloc(a){
     <button class="btn ${n.contrat_id?"ghost":""}" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>
   </div>`;
 }
+// Session fermée ailleurs (déconnexion sur un autre appareil) : le serveur la refuse alors que l'écran semble connecté.
+const NAT_SESSION_MSG="Ta session a été fermée (déconnexion sur un autre appareil, ou trop longue inactivité). Reconnecte-toi, puis relance l'envoi.";
+async function natSessionOk(sc,id){const {error}=await sb.auth.getUser();if(!error)return true;
+  sc.innerHTML+=`<div class="nat-err">${esc(NAT_SESSION_MSG)}</div><div class="sheet-actions"><button class="btn" onclick="logout()">Se reconnecter</button><button class="btn ghost" onclick="adhDetail('${id}')">← Retour</button></div>`;return false}
+const natErr=e=>e==="Session invalide"?NAT_SESSION_MSG:e;
 async function adhNational(id){
   const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
   const sc=document.getElementById("sheet-content");
   sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(a.data.ent_nom||adhNom(a))})}<p class="nat-v">Connexion au CRM national et vérification, sans rien y écrire…</p>`;
+  if(!await natSessionOk(sc,id))return;
   const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"apercu",adhesion_id:id}});
   const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:r?.error;
-  if(err||!r?.ok){sc.innerHTML+=`<div class="nat-err">${esc(err||"Erreur inconnue")}</div><div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${id}')">← Retour</button></div>`;return}
+  if(err||!r?.ok){sc.innerHTML+=`<div class="nat-err">${esc(natErr(err)||"Erreur inconnue")}</div><div class="sheet-actions">${err==="Session invalide"?`<button class="btn" onclick="logout()">Se reconnecter</button>`:""}<button class="btn ghost" onclick="adhDetail('${id}')">← Retour</button></div>`;return}
   const p=r.plan,auj=new Date(),max=new Date(auj.getTime()+14*864e5);
   sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(r.club||"")})}
     ${p.deja?`<div class="ck-act urgent" style="cursor:default"><span class="ic">!</span><span class="tx">${esc(p.deja)} : l'envoi le mettra à jour, sans doublon.</span></div>`:""}
@@ -5048,7 +5059,7 @@ async function adhNational(id){
 async function adhRangerContrat(id){
   toast("Récupération du contrat au national…","s");
   const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"contrat",adhesion_id:id}});
-  const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error);
+  const err=natErr(error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error));
   const {data:row}=await sb.from("adhesions").select("*").eq("id",id).single();
   if(row){const i=DB.adhesions.findIndex(x=>x.id===id);if(i>=0)DB.adhesions[i]=row}
   toast(err?"Contrat non rangé : "+err:"Contrat rangé dans le dossier du membre",err?"e":"s");adhDetail(id);
@@ -5060,7 +5071,7 @@ async function adhNationalEnvoyer(id){
   const deb=v("nat-debut");if(!deb){toast("Date de début requise");return}
   b.disabled=true;b.textContent="Envoi en cours…";
   const {data:r,error}=await sb.functions.invoke("national-adhesion",{body:{action:"envoyer",adhesion_id:id,options:{offre,justification:just,date_debut:deb.split("-").reverse().join("/"),signature:v("nat-sig")}}});
-  const err=error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error);
+  const err=natErr(error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error));
   const {data:row}=await sb.from("adhesions").select("*").eq("id",id).single();
   if(row){const i=DB.adhesions.findIndex(x=>x.id===id);if(i>=0)DB.adhesions[i]=row}
   toast(err?"Envoi interrompu : "+err:"Envoyée au CRM national : contrat prêt",err?"e":"s");

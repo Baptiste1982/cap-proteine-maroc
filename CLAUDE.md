@@ -262,6 +262,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Demandes → onglet 📝 Formulaire (`dmFormHTML`, `window._dmVue='form'`) : `adhesion.html` intégré, « Remplir » (vraie demande, `?ref=` du groupe choisi) ou « Consulter » (`#demo`), PDF vierge, plein écran.
 - Banc `scratchpad/tools/v042.mjs` 56/56.
 
+**📆 Quinzaine, glisser-déposer, heure du matin (v0.43.0, 12/11/2026)** — JB : « une réunion tous les 15 jours », « drag and drop des réunions », « les réunions sont le matin, 11 h par défaut, plus de molettes ».
+- Migration `20261112180000_clubs_rythme_quinzaine.sql` (appliquée) : `clubs.rythme_pas` (1|2) + `rythme_depart` (date). Quinzaine = `rythme_rang 0` + `rythme_pas 2`, ancrée sur `rythme_depart` (sinon la dernière réunion). `rythmeQuinz`, `quinzDates` (pas de 14 jours), `prochaineDate`, `psDates` (`rang "q"`, champ « 1re réunion » dans Planifier en série), `openRythme` (« Tous les 15 jours » par défaut + date d'une réunion de la série). `psDeviner` reconnaît un écart de 11 à 20 jours.
+- Calendrier (Agenda et Groupe, mois et semaine) : une réunion à venir, modifiable, non réalisée ni annulée se glisse sur un autre jour (`calBougeable`, `reuDeplacer`, cases `data-cal-iso`) ; toast cliquable pour annuler. Glisser HTML5 : ordinateur ; au téléphone « Changer le jour » reste.
+- Heure : `heureChamp(id,val,onch,compact)` remplace tous les `input type=time` (créneaux 8h–13h + listes heure/minutes, champ caché au même id) ; défaut `HEURE_DEF` = 11:00 (ou l'heure habituelle du club).
+- Banc `scratchpad/tools/v043.mjs` 29/29.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -255,6 +255,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **🏢 Plus de doublon d'entreprise à l'envoi (national-adhesion v4, 10/11/2026)** — JB : « dans Sans contrat il n'y a que Reda ». Normal pour Dinia et Nawar (avec un contrat, la fiche passe dans « En attente de signature ») ; Reda y figurait parce que l'envoi n'avait pas reconnu son entreprise existante « DIGISELL TECHNOLOGIES » (nom saisi : « DIGISELL ») et en avait créé une seconde (n° 635). L'envoi réutilise désormais l'entreprise du prospect : même nom, nom légal, nom qui contient l'autre, ou la seule rattachée. Le doublon de Reda est à supprimer au national par JB.
 
+**🔎 Recherche prédictive, vues des membres, région = national, formulaire dans Demandes (v0.42.0, 12/11/2026)** — JB : « plusieurs modes d'affichage et une recherche prédictive sur les premières lettres partout », « le panneau régional trop pauvre », « le formulaire dans Demandes ».
+- Recherche prédictive : tout champ `data-pred="<source>"` (`PRED_SRC` : membres, clubs, lieux, equipe, demandes, tout) ouvre `#pred` dès la première lettre ; un résultat sort si chaque mot tapé est le DÉBUT d'un mot de la fiche (`predMots`, `predCalc`), lettres surlignées, ↑ ↓ Entrée Échap. Recherche globale (`#ds-q`, source `tout`) en tête de la Synthèse et de Ma région. `render()` garde le focus du champ actif (avant : la recherche Clubs / Lieux perdait le focus à chaque lettre).
+- Membres : 4 vues (`MB_MODES` cartes, liste, par groupe, par métier ; localStorage `cap-mbvue`) ; la liste filtre aussi par début de mot.
+- Ma région = `viewDashboard({band,lieu,apres})` (mêmes chapitres que le national, filtrés par `avecVue`) + chapitres « Les groupes de la région » et « Planning de la région ».
+- Demandes → onglet 📝 Formulaire (`dmFormHTML`, `window._dmVue='form'`) : `adhesion.html` intégré, « Remplir » (vraie demande, `?ref=` du groupe choisi) ou « Consulter » (`#demo`), PDF vierge, plein écran.
+- Banc `scratchpad/tools/v042.mjs` 56/56.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

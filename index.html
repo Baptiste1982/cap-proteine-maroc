@@ -1757,6 +1757,34 @@ button.vr-pt:hover{transform:scale(1.15)}
 .vr-pt.p{background:none;border:1.5px dashed var(--line);color:var(--muted)}.vr-pt.p:hover{border-color:var(--crimson);color:var(--crimson)}
 .vr-leg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}.vr-leg span{display:flex;align-items:center;gap:6px}.vr-leg .vr-pt{width:20px;height:20px;font-size:10px;cursor:default}
 @media (prefers-reduced-motion:reduce){body.vue-change .page,.vr-tab tbody tr{animation:none!important}}
+
+.dmf-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:4px 0 8px}.dmf-seg{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.dmf-seg button{border:none;background:none;border-radius:9px;padding:7px 12px;font:600 13px Inter,sans-serif;color:var(--muted);cursor:pointer}.dmf-seg button.on{background:var(--crimson);color:#fff}
+.dmf-g{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.dmf-g select{max-width:260px}.dmf-act{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.dmf-note{font-size:13px;color:var(--muted);margin:0 0 10px}.dmf-cadre{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+.dmf-cadre iframe{display:block;width:100%;height:min(1100px,calc(100vh - 230px));min-height:620px;border:0}
+/*v042*/.vr-tab.in,.vr-todo.in{border:none;background:none;padding:0;border-radius:0}.vr-todo.in{margin-bottom:12px}.dsec-groupes{--tn:var(--crimson)}.dsec-plan{--tn:var(--info)}.vn-band.reg{background:linear-gradient(120deg,var(--crimson-darker),var(--crimson-deep));border-bottom-color:var(--gold)}
+.mb-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}.mb-bar .filters{flex:1;min-width:0;margin-bottom:0}
+.vmode{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:12px}
+.vmode button{border:none;background:none;border-radius:9px;padding:6px 10px;font:600 12.5px Inter,sans-serif;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .2s,color .2s}
+.vmode button em{font-style:normal}.vmode button span{font-size:14px;line-height:1}.vmode button:hover{color:var(--ink)}.vmode button.on{background:var(--crimson);color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--crimson) 35%,transparent)}
+@media (max-width:600px){.vmode button em{display:none}.vmode button{padding:7px 11px}}
+.mbl-w{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.mbl{width:100%;border-collapse:collapse;font-size:13px}.mbl th{font:700 11px Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.mbl td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}.mbl tr:last-child td{border-bottom:none}.mbl tbody tr{cursor:pointer;box-shadow:inset 3px 0 0 var(--vc);animation:mbIn .35s calc(var(--i)*25ms) both}
+.mbl tbody tr:hover{background:color-mix(in srgb,var(--crimson) 5%,var(--card))}.mbl td small{display:block;color:var(--muted);font-size:11.5px}.mbl-n{display:flex;align-items:center;gap:9px;white-space:nowrap}.mbl-m{color:var(--muted)}.mbl-t a{color:var(--crimson);text-decoration:none;white-space:nowrap}
+.mb-av.sm{width:28px;height:28px;font-size:11px;flex:0 0 28px}
+@keyframes mbIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.mbg{margin:0 0 16px}.mbg-h{display:flex;align-items:center;gap:8px;margin:4px 2px 8px;font-size:13px}.mbg-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:15px}.mbg-h em{font-style:normal;font-weight:700;font-size:11.5px;color:#fff;background:var(--crimson);border-radius:99px;padding:1px 8px}
+.mbg-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.pred{position:fixed;z-index:9000;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(27,20,22,.18);padding:6px;max-height:min(60vh,420px);overflow-y:auto;animation:predIn .16s ease-out}
+.pred[hidden]{display:none}@keyframes predIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.pred button{display:flex;align-items:center;gap:10px;width:100%;border:none;background:none;text-align:left;padding:8px 10px;border-radius:10px;cursor:pointer;font:inherit;color:var(--ink)}
+.pred button:hover,.pred button.on{background:color-mix(in srgb,var(--crimson) 8%,var(--card))}.pred-ico{width:30px;height:30px;flex:0 0 30px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--gold) 16%,var(--card));font-size:15px}
+.pred-t{min-width:0;display:flex;flex-direction:column}.pred-t b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pred-t small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pred mark{background:color-mix(in srgb,var(--gold) 45%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.pred-pied{font-size:11px;color:var(--muted);padding:6px 10px 2px;border-top:1px solid var(--line);margin-top:4px}.pred-vide{padding:12px;color:var(--muted);font-size:13px}
+@media (hover:none){.pred-pied{display:none}}
 </style>
 </head>
 <body>
@@ -1833,7 +1861,7 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.41.1";
+const APP_VERSION="0.42.0";
 const CHANGELOG=[
   {v:"0.41.1",date:"10 novembre 2026",notes:{
     "Amélioré":[
@@ -2644,24 +2672,18 @@ function viewRegion(){
   const grille=`<div class="vr-pl" style="--cols:${M.length}"><div class="vr-ph"></div>${M.map(m=>`<div class="vr-ph ${m.auj?"auj":""}">${m.lab}${m.lab==="janv."?`<small>${m.an}</small>`:""}</div>`).join("")}
     ${tri.map(c=>`<div class="vr-pn" style="--vc:${vrTeinte(c.ville)}"><i></i><span>${esc(c.nom.replace(/^CAP\s+/,""))}<small>${esc(c.ville)}</small></span></div>${M.map(m=>`<div class="vr-pc ${m.auj?"auj":""}">${cellule(c,m)}</div>`).join("")}`).join("")}</div>`;
   const dernier=DB.reunions.filter(r=>r.statut!=="annulee"&&isPast(r.date)).map(r=>r.date).sort().pop();
-  return `<div class="page vr">
-    <section class="vr-hero"><div class="vr-hero-t"><small>Ma région</small><h2>${esc(R.nom)}</h2><p>${new Set(cl.map(c=>c.ville)).size} ville${new Set(cl.map(c=>c.ville)).size>1?"s":""} · ${new Set(cl.map(c=>c.animId).filter(Boolean)).size} animateur${new Set(cl.map(c=>c.animId).filter(Boolean)).size>1?"s":""}</p></div>
-      <div class="vr-kpis">
-        <button onclick="go('clubs')"><b>${cl.length}</b><span>groupes · ${actifs} actif${actifs>1?"s":""}</span></button>
-        <button onclick="go('membres')"><b>${DB.membres.length}</b><span>membres</span></button>
-        <button onclick="go('agenda')"><b>${aVenir.length}</b><span>réunion${aVenir.length>1?"s":""} à venir</span></button>
-        <button onclick="${sansBil.length&&peut?`openBilan('${sansBil[0].id}')`:"go('agenda')"}" class="${sansBil.length?"alerte":""}"><b>${sansBil.length}</b><span>bilan${sansBil.length>1?"s":""} à saisir</span></button></div></section>
-    <div class="vr-haut">
-      <section class="vr-todo"><div class="vr-h">À faire dans la région</div>
-        ${todo.length?todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join(""):`<p class="fh-empty">✓ Rien en attente dans la région.</p>`}</section>
-      <section class="vr-tab"><div class="vr-h">Les groupes, du plus urgent au plus calme</div>
-        <div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${tri.map(ligne).join("")}</tbody></table></div></section>
-    </div>
-    <section class="vr-plan"><div class="vr-plan-t"><div><div class="vr-h">Planning de la région</div><p>Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir la réunion ou planifier</p></div>${peut?`<button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button>`:""}</div>
-      ${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}
-      <div class="vr-tw">${grille}</div>
-      <div class="vr-leg"><span><i class="vr-pt f">✓</i>réalisée</span><span><i class="vr-pt v">12</i>prévue (jour du mois)</span><span><i class="vr-pt b">!</i>bilan à saisir</span><span><i class="vr-pt x">✕</i>annulée</span>${peut?`<span><i class="vr-pt p">+</i>à planifier</span>`:""}</div>
-    </section><div style="height:8px"></div></div>`;
+  /* v0.42.0 : même interface que la vue nationale (chiffres, à traiter, croissance, équipe), filtrée sur la région,
+     plus ce qui n'a de sens qu'à l'échelle régionale : le tableau des groupes et le planning. */
+  const nbV=new Set(cl.map(c=>c.ville)).size,nbA=new Set(cl.map(c=>c.animId).filter(Boolean)).size;
+  const band=`<div class="vn-band reg"><small>Vue régionale</small><b>${esc(R.nom)}</b><span>${nbV} ville${nbV>1?"s":""} · ${cl.length} groupe${cl.length>1?"s":""} (${actifs} actif${actifs>1?"s":""}) · ${nbA} animateur${nbA>1?"s":""} · ${DB.membres.length} membre${DB.membres.length>1?"s":""}</span>${vuePeutBasculer()?`<button class="btn ghost mini" onclick="vueChoisir('nat')">🌍 Passer à la vue nationale</button>`:""}</div>`;
+  const groupes=dashSec("groupes","🏛","Les groupes de la région","Du plus urgent au plus calme · touche une ligne pour ouvrir le groupe",
+    `${todo.length?`<div class="vr-todo in">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:""}<div class="vr-tab in"><div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${tri.map(ligne).join("")}</tbody></table></div></div>`);
+  const plan=dashSec("plan","📆","Planning de la région","Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir ou planifier",
+    `${peut?`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>`:""}
+    ${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}
+    <div class="vr-tw">${grille}</div>
+    <div class="vr-leg"><span><i class="vr-pt f">✓</i>réalisée</span><span><i class="vr-pt v">12</i>prévue (jour du mois)</span><span><i class="vr-pt b">!</i>bilan à saisir</span><span><i class="vr-pt x">✕</i>annulée</span>${peut?`<span><i class="vr-pt p">+</i>à planifier</span>`:""}</div>`);
+  return viewDashboard({band,lieu:R.nom,apres:groupes+plan});
 }
 function updateRegionLabel(){
   let t;
@@ -2682,12 +2704,14 @@ function go(t){filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(t
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
+  const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
   vueAppliquer();
   v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam());
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v)}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
-  animateRings(v);avecVue(navBadges);avecVue(demBadge);avecVue(railRender);filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";}
+  animateRings(v);avecVue(navBadges);avecVue(demBadge);avecVue(railRender);filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";
+  if(_afId){const n=document.getElementById(_afId);if(n){n.focus();try{n.setSelectionRange(_afPos,_afPos)}catch(e){}predMaj(n)}}}
 /* ============================================================
    GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu à droite.
    Il reste ouvert : sans fiche, il montre un aperçu propre à l'onglet ; une fiche ouverte s'y loge
@@ -2764,8 +2788,8 @@ function mbMetier(m){const i=m.infos||{};const s=m.specialite&&m.specialite!=="-
 function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(m),(c.nom||"").replace(/^CAP\s+/,"")].filter(Boolean).join(" · ")}
 function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.metier_precis,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
 function mbListe(){
-  const ids=new Set(scopedClubIds());const q=mbNorm(window._q4||"").split(/\s+/).filter(Boolean);
-  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(!q.length||(x=>q.every(t=>x.includes(t)))(mbIndex(m))))
+  const ids=new Set(scopedClubIds());const q=predMots(window._q4||"");
+  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
     .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
 }
 function mbCarte(m,i){
@@ -2776,10 +2800,25 @@ function mbCarte(m,i){
     ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
   </div>`;
 }
+/* v0.42.0 : quatre façons de voir l'annuaire (mémorisé sur l'appareil). */
+const MB_MODES=[["cartes","▦","Cartes"],["liste","☰","Liste"],["groupes","◎","Par groupe"],["metiers","⚒","Par métier"]];
+function mbMode(){try{const m=localStorage.getItem("cap-mbvue");return MB_MODES.some(x=>x[0]===m)?m:"cartes"}catch(e){return"cartes"}}
+function mbChoisirMode(m){try{localStorage.setItem("cap-mbvue",m)}catch(e){}document.querySelectorAll(".vmode button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));mbFiltrer()}
+function vModes(modes,cur,fn){return `<div class="vmode" role="tablist" aria-label="Mode d'affichage">${modes.map(([k,ic,l])=>`<button type="button" role="tab" data-m="${k}" class="${cur===k?"on":""}" aria-selected="${cur===k}" onclick="${fn}('${k}')" title="${esc(l)}"><span aria-hidden="true">${ic}</span><em>${esc(l)}</em></button>`).join("")}</div>`}
+function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
+  return `<tr style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
+    <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b></span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
+    <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(tel)}</a>`:"—"}</td></tr>`}
+function mbGroupes(l,cle,titre){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});let i=0;
+  return Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr")).map(k=>`<section class="mbg"><div class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></div><div class="mb-grid">${g[k].map(m=>mbCarte(m,i++)).join("")}</div></section>`).join("")}
 function mbResultats(){
-  const l=mbListe();
+  const l=mbListe(),mode=mbMode();
   if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
-  return `<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div><div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
+  const n=`<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div>`;
+  if(mode==="liste")return n+`<div class="mbl-w"><table class="mbl"><thead><tr><th>Membre</th><th>Entreprise</th><th>Métier</th><th>Groupe</th><th>Téléphone</th></tr></thead><tbody>${l.map(mbLigne).join("")}</tbody></table></div>`;
+  if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")});
+  if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k);
+  return n+`<div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
 }
 function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=mbResultats()}
 function viewMembres(){
@@ -2787,10 +2826,52 @@ function viewMembres(){
   const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} dans tout le réseau</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="mb-q" type="search" placeholder="Nom, entreprise, métier, club, ville…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
-    <div class="filters">${fchip("Tous","all",tous.length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>
+      <input id="mb-q" type="search" data-pred="membres" placeholder="Tape les premières lettres : nom, entreprise, métier, club…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
+    <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
     <div id="mb-res">${mbResultats()}</div><div style="height:8px"></div></div>`;
 }
+
+/* ============================================================
+   RECHERCHE PRÉDICTIVE (v0.42.0) — tout champ portant data-pred="<source>" propose, dès la première
+   lettre, les fiches dont un MOT commence par ce qui est tapé (ex. « ib » → Ibtissam, « ar » → Architecte).
+   ↑ ↓ pour choisir, Entrée ouvre, Échap ferme. La liste de l'écran continue de se filtrer en dessous.
+   ============================================================ */
+const ICO_LOUPE=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+function predMots(s){return mbNorm(s).split(/[^a-z0-9@+]+/).filter(Boolean)}
+const PRED_SRC={
+  membres:()=>{const ids=new Set(scopedClubIds());return DB.membres.filter(m=>ids.has(m.clubId)).map(m=>{const c=club(m.clubId),i=m.infos||{};return{t:m.nom,s:[mbEntreprise(m),mbMetier(m),(c.nom||"").replace(/^CAP\s+/,"")].filter(Boolean).join(" · "),ico:"👤",k:[m.nom,i.ent_nom,i.ent_nom_legal,mbMetier(m),i.m_fonction,c.nom,c.ville,i.m_tel].join(" "),a:`memberSheet('${m.clubId}','${m.id}')`}})},
+  clubs:()=>{const ids=scopedClubIds();return DB.clubs.filter(c=>ids.includes(c.id)).map(c=>{const a=anim(c.animId);return{t:c.nom.replace(/^CAP\s+/,""),s:[c.ville,a?a.nom:"sans animateur",DB.membres.filter(m=>m.clubId===c.id).length+" membres"].join(" · "),ico:"🏛",k:[c.nom,c.ville,a&&a.nom].join(" "),a:`openClub('${c.id}')`}})},
+  lieux:()=>DB.lieux.map(l=>({t:l.nom,s:[l.ville,l.adresse].filter(Boolean).join(" · "),ico:"📍",k:[l.nom,l.ville,l.adresse].join(" "),a:`openLieu('${l.id}')`})),
+  equipe:()=>DB.animateurs.map(a=>({t:a.nom,s:[a.ville,DB.clubs.filter(c=>c.animId===a.id).map(c=>c.nom.replace(/^CAP\s+/,"")).join(", ")].filter(Boolean).join(" · "),ico:"🎙",k:[a.nom,a.ville,DB.clubs.filter(c=>c.animId===a.id).map(c=>c.nom).join(" ")].join(" "),a:`openAnim('${a.id}')`})),
+  demandes:()=>(DB.adhesions||[]).filter(a=>a.statut!=="rejetee").map(a=>{const d=a.data||{};return{t:[d.m_prenom,d.m_nom].filter(Boolean).join(" ")||"Demande",s:[d.ent_nom,adhMetier(d),ADH_STATUTS&&ADH_STATUTS[a.statut]||a.statut].filter(Boolean).join(" · "),ico:"📝",k:[d.m_prenom,d.m_nom,d.ent_nom,adhMetier(d),d.m_tel,d.m_email].join(" "),a:`adhDetail('${a.id}')`}}),
+  tout:()=>["membres","clubs","demandes","equipe","lieux"].flatMap(k=>{try{return PRED_SRC[k]()}catch(e){return[]}})
+};
+let _pred={el:null,items:[],i:-1};
+function predCalc(src,q){const toks=predMots(q);if(!toks.length)return[];
+  const out=[];for(const it of(PRED_SRC[src]||(()=>[]))()){const mots=predMots(it.k||it.t),tm=predMots(it.t);
+    if(!toks.every(t=>mots.some(w=>w.startsWith(t))))continue;
+    const sc=(tm[0]&&tm[0].startsWith(toks[0])?0:tm.some(w=>w.startsWith(toks[0]))?1:2);out.push([sc,it])}
+  return out.sort((a,b)=>a[0]-b[0]||a[1].t.localeCompare(b[1].t,"fr")).slice(0,8).map(x=>x[1])}
+function predSurligne(txt,q){const toks=predMots(q);return esc(txt).replace(/[\p{L}\p{N}]+/gu,w=>{const n=mbNorm(w),t=toks.find(t=>n.startsWith(t));return t?`<mark>${w.slice(0,t.length)}</mark>${w.slice(t.length)}`:w})}
+function predBox(){let b=document.getElementById("pred");if(!b){b=document.createElement("div");b.id="pred";b.className="pred";b.setAttribute("role","listbox");b.hidden=true;document.body.appendChild(b)}return b}
+function predFermer(){const b=document.getElementById("pred");if(b)b.hidden=true;if(_pred.el)_pred.el.setAttribute("aria-expanded","false");_pred={el:null,items:[],i:-1}}
+function predMaj(el){if(!el||!el.dataset||!el.dataset.pred)return;const q=el.value||"",b=predBox();
+  const items=predCalc(el.dataset.pred,q);_pred={el,items,i:-1};
+  if(!q.trim()){b.hidden=true;return}
+  const r=el.closest(".searchbar,.dm-q")?.getBoundingClientRect()||el.getBoundingClientRect();
+  b.style.left=Math.max(8,r.left)+"px";b.style.top=(r.bottom+6)+"px";b.style.width=Math.min(r.width,window.innerWidth-16)+"px";
+  b.innerHTML=items.length?items.map((it,i)=>`<button type="button" role="option" data-i="${i}" onmousedown="event.preventDefault()" onclick="predOuvrir(${i})"><span class="pred-ico" aria-hidden="true">${it.ico}</span><span class="pred-t"><b>${predSurligne(it.t,q)}</b><small>${predSurligne(it.s||"",q)}</small></span></button>`).join("")+`<div class="pred-pied">↑ ↓ pour choisir · Entrée pour ouvrir</div>`:`<div class="pred-vide">Rien ne commence par « ${esc(q)} »</div>`;
+  b.hidden=false;el.setAttribute("aria-expanded","true")}
+function predOuvrir(i){const it=_pred.items[i];if(!it)return;predFermer();try{(new Function(it.a))()}catch(e){console.error(e)}}
+function predSel(d){if(!_pred.items.length)return;_pred.i=(_pred.i+d+_pred.items.length)%_pred.items.length;document.querySelectorAll("#pred button").forEach((b,k)=>b.classList.toggle("on",k===_pred.i));const on=document.querySelector("#pred button.on");if(on)on.scrollIntoView({block:"nearest"})}
+document.addEventListener("input",e=>{const el=e.target;if(el&&el.dataset&&el.dataset.pred)setTimeout(()=>predMaj(document.getElementById(el.id)||el),0)});
+document.addEventListener("focusin",e=>{const el=e.target;if(el&&el.dataset&&el.dataset.pred&&el.value)predMaj(el)});
+document.addEventListener("keydown",e=>{const el=e.target;if(!el||!el.dataset||!el.dataset.pred)return;const b=document.getElementById("pred");if(!b||b.hidden)return;
+  if(e.key==="ArrowDown"){e.preventDefault();predSel(1)}else if(e.key==="ArrowUp"){e.preventDefault();predSel(-1)}
+  else if(e.key==="Enter"&&_pred.items.length){e.preventDefault();predOuvrir(_pred.i<0?0:_pred.i)}else if(e.key==="Escape"){e.stopPropagation();predFermer()}},true);
+document.addEventListener("focusout",e=>{if(e.target&&e.target.dataset&&e.target.dataset.pred)setTimeout(()=>{const a=document.activeElement;if(!a||!a.dataset||!a.dataset.pred)predFermer()},150)});
+window.addEventListener("scroll",()=>{if(_pred.el&&document.getElementById("pred")&&!document.getElementById("pred").hidden)predMaj(_pred.el)},{passive:true});
+window.addEventListener("resize",()=>predFermer());
 
 /* ============================================================
    QUI EST CONNECTÉ — chaque appli ouverte se signale (cap_ping) chaque minute ;
@@ -3526,7 +3607,7 @@ function viewClubs(){
     }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Clubs d'affaires</h2><p>${clubs.length} club${clubs.length>1?"s":""}${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input placeholder="Rechercher un club…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
+      <input id="cl-q" type="search" data-pred="clubs" autocomplete="off" placeholder="Tape les premières lettres d'un club ou d'une ville…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
     <div class="filters">${fchip("Tous","all",all.length)}${fchip("À traiter","todo",all.filter(F.todo).length)}${fchip("Actifs","actif",all.filter(F.actif).length)}${fchip("En création","creation",all.filter(F.creation).length)}${villes.map(v=>fchip(v,"v:"+v,all.filter(c=>c.ville===v).length)).join("")}</div>
     ${sections||emptyState("Aucun club","Ajuste la recherche ou les filtres.")}<div style="height:8px"></div></div>`;
 }
@@ -3568,7 +3649,7 @@ function viewLieux(){
   }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input placeholder="Rechercher un lieu…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
+      <input id="li-q" type="search" data-pred="lieux" autocomplete="off" placeholder="Tape les premières lettres d'un lieu ou d'une ville…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
     ${villeChips}
     ${lieux.length?(wide?`<div class="lieux-grid">${cards}</div>`:`<div class="rl">${rows}</div>`):emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
 }
@@ -3626,6 +3707,7 @@ function viewTeam(){
   const pourvoir=libres.length?`<div class="month-label">À pourvoir <span style="color:var(--crimson);font-weight:700">${libres.length}</span></div>
     <div class="${wide?"grid two":"rl"}">${libres.map(c=>`<div class="rl-row" style="--vc:${villeColor(c.ville)}"><button class="rl-h" onclick="openClub('${c.id}')"><span class="rl-emb">${esc(initiales(c.nom.replace(/^CAP\s+/,"")))}</span><span class="rl-t"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)} · <span class="rl-no">animateur à nommer</span></small></span><span class="rl-ind"><span class="rl-flag urgent"></span></span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:"";
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Équipe</div><h2>Animateurs</h2><p>${anims.length} animateur${anims.length>1?"s":""}</p></div></div>
+    <div class="searchbar">${ICO_LOUPE}<input id="tm-q" type="search" data-pred="equipe" autocomplete="off" placeholder="Tape les premières lettres d'un animateur, d'un club…"></div>
     ${sections||emptyState("Aucun animateur","")}${pourvoir}<div style="height:8px"></div></div>`;
 }
 
@@ -4104,23 +4186,25 @@ function dashCountUp(root){
     requestAnimationFrame(pas);
   });
 }
-function viewDashboard(){
+function viewDashboard(reg){
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
-  let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>Synthèse</h2></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>`;
+  let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>${reg?"Ma région":"Synthèse"}</h2></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>
+    <div class="searchbar dash-q">${ICO_LOUPE}<input id="ds-q" type="search" data-pred="tout" autocomplete="off" placeholder="Rechercher partout : membre, groupe, demande, animateur, lieu…"></div>`;
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
-  const sc=vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
+  const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
   html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${DB.animateurs.length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
-  const st=dashStats(per),lieu=sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
+  const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
   const todo=dashSec("todo","⚡","À traiter","Ce qui attend une action, région par région",dashATraiter(sc),"dash-todo");
   const crois=dashSec("crois","📈","Croissance","Membres et invités : où ils en sont",dashCroissance(st,sc)+dashFunnel(per,sc));
   const equipe=dashSec("equipe","👥","L'équipe","Animateurs et dossiers des membres",dashByAnim(per)+dashRelancer(per));
-  if(large){html+=seg+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`;return html+`<div style="height:8px"></div></div>`}
-  html+=seg+chiffres+todo+crois+equipe;
+  const band=reg?reg.band:seg,apres=reg?reg.apres:"";
+  if(large){html+=band+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`+apres;return html+`<div style="height:8px"></div></div>`}
+  html+=band+chiffres+todo+(reg?apres:"")+crois+equipe;
   return html+`<div style="height:8px"></div></div>`;
 }
 
@@ -6132,8 +6216,19 @@ function natCols(){
     {k:"signe",t:"Signées",s:"Historique complet",ico:"✅",l:all.filter(a=>natEtat(a)==="signe").sort((x,y)=>((y.national||{}).signe_le||"").localeCompare((x.national||{}).signe_le||""))}];
 }
 function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
-function dmVueSeg(){const v=window._dmVue==="nat"?"nat":"pipe",n=natAEnvoyer().length;
-  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button></div>`}
+function dmVueSeg(){const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",n=natAEnvoyer().length;
+  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button>`}</div>`}
+/* v0.42.0 : le formulaire d'adhésion dans le CRM. « Remplir » envoie une vraie demande (elle arrive dans Demandes),
+   « Consulter » ouvre le même formulaire en démonstration : rien n'est envoyé. */
+function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"demo":"vrai";
+  const src=new URL("adhesion.html",location.href);if(g)src.searchParams.set("ref",g);if(m==="demo")src.hash="demo";
+  const opts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}" ${c.id===g?"selected":""}>${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
+  return `<div class="dmf">
+    <div class="dmf-bar"><div class="dmf-seg" role="tablist"><button role="tab" class="${m==="vrai"?"on":""}" onclick="window._dmFormM='vrai';render()">✍️ Remplir une demande</button><button role="tab" class="${m==="demo"?"on":""}" onclick="window._dmFormM='demo';render()">👁 Consulter (rien n'est envoyé)</button></div>
+      <label class="dmf-g">Groupe <select onchange="window._dmFormG=this.value;render()"><option value="">— Sans groupe —</option>${opts}</select></label>
+      <div class="dmf-act"><a class="btn ghost mini" href="formulaire-adhesion-membre.pdf" target="_blank" rel="noopener">📄 PDF vierge</a><a class="btn ghost mini" href="${esc(src.toString())}" target="_blank" rel="noopener">↗ Plein écran</a><button class="btn ghost mini" onclick="adhCharger&&adhCharger().then(()=>{toast('Demandes actualisées','s');render()})">⟳ Actualiser les demandes</button></div></div>
+    <p class="dmf-note">${m==="vrai"?"Tu remplis le formulaire avec le futur membre, comme il le ferait sur son téléphone. À l'envoi, sa demande arrive dans l'onglet 📥 Demandes avec le PDF signé.":"Le formulaire tel que le voit le futur membre. Mode démonstration : rien n'est enregistré."}</p>
+    <div class="dmf-cadre"><iframe title="Formulaire d'adhésion" src="${esc(src.toString())}" loading="lazy"></iframe></div></div>`}
 function natResume(){const c=natCols(),nI=adhAIntegrer().length,dv=natDerniereVerif(),su=SESSION&&SESSION.role==="superadmin";
   return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}${su?`<button class="btn ghost mini" onclick="natMiroir()">✍️ État des signatures au national</button>`:`<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a>`}<span>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
     <div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
@@ -6197,16 +6292,16 @@ function viewDemandes(){
   return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}</div></div>
     ${dmVueSeg()}
-    ${window._dmVue==="nat"?natResume():dmProchaine()}
+    ${window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
     <div class="dm-ks"${window._dmVue==="nat"?" hidden":""}>${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
-    <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
+    <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" data-pred="demandes" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
       ${window._dmVue==="nat"?"":`<button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>`}${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>
     <div class="dm-main"><div id="dm-pipe">${dmPipeHTML()}</div>
       <aside class="dm-side">${readOnly()?"":`<section class="dm-box"><h3>✉️ Envoyer le lien d'adhésion</h3><p>Le futur membre remplit le formulaire depuis son téléphone ; sa demande arrive ici.</p>
         <div class="field"><label>Groupe concerné</label><select id="adh-club"><option value="">— Sans groupe —</option>${clubOpts}</select></div>
         <div class="dm-2"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">WhatsApp</button></div></section>`}
         ${grp.length?`<section class="dm-box"><h3>📊 Par groupe</h3><div class="dm-grps">${grp.map(([g,n],i)=>`<div><span>${esc(g.replace(/^CAP\s+/,""))}</span><i><b style="width:${Math.round(n/mx*100)}%;--i:${i}"></b></i><em>${n}</em></div>`).join("")}</div></section>`:""}
-        <p class="dm-leg"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au club · saisie au national</p></aside></div></div>`;
+        <p class="dm-leg"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au club · saisie au national</p></aside></div></div>`}`;
 }
 function demBadge(){
   const b=document.getElementById("dem-btn");if(!b)return;

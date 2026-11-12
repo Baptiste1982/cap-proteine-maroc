@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
         const r = await fetch(url + '/functions/v1/national-adhesion', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-suivi-jeton': jeton || '', Authorization: req.headers.get('Authorization') || '' }, body: JSON.stringify({ action: 'prospect', adhesion_id: a.id }) });
         const j = await r.json().catch(() => ({}));
         if (j?.ok) { a.national = j.national; res.annuaire.push(`${nomDe(a.data)} : fiche prospect remplie au national`); }
-        else { res.erreurs.push(`Prospect, ${nomDe(a.data)} : ${j?.error || r.status}`); if (/incompl/i.test(j?.error || '')) await sauver(a, { prospect_erreur_le: maintenant, prospect_erreur: j.error }); }
+        else { res.erreurs.push(`Prospect, ${nomDe(a.data)} : ${j?.error || r.status}`); if (j && j.ok === false || /incompl/i.test(j?.error || '')) await sauver(a, { prospect_erreur_le: maintenant, prospect_erreur: j.error }); }
       } catch (e) { res.erreurs.push(`Prospect, ${nomDe(a.data)} : ${(e as Error).message}`); }
     }
 

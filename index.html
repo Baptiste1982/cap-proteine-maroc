@@ -1791,6 +1791,21 @@ button.vr-pt:hover{transform:scale(1.15)}
 .hc-sel{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);border-radius:12px;padding:3px 6px;background:var(--card)}
 .hc-sel select{border:none;background:none;font:600 15px Inter,sans-serif;padding:6px 4px;width:auto;min-width:54px;cursor:pointer;appearance:auto}.hc-sel b{color:var(--muted);font-weight:600}
 .hc.mini .hc-sel{padding:1px 4px}.hc.mini .hc-sel select{font-size:13px;min-width:46px;padding:4px 2px}
+/*v043b vignettes*/.cal-ev{position:relative;gap:2px;border:1px solid color-mix(in srgb,var(--vc) 22%,transparent);border-left:0;border-radius:10px;padding:5px 7px 5px 10px;
+background:linear-gradient(135deg,color-mix(in srgb,var(--vc) 16%,var(--card)),color-mix(in srgb,var(--vc) 5%,var(--card)));box-shadow:0 1px 2px rgba(27,20,22,.06);overflow:hidden;transition:transform .18s,box-shadow .18s}
+.cal-ev::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--vc);border-radius:10px 0 0 10px}
+.cal-ev.rl{border-left-style:none}.cal-ev.rl::before{background:repeating-linear-gradient(180deg,var(--vc) 0 5px,transparent 5px 8px)}
+.cal-ev:hover{transform:translateY(-2px);box-shadow:0 10px 18px -10px color-mix(in srgb,var(--vc) 70%,#000)}
+.ce-top{display:flex;align-items:center;gap:4px;width:100%;min-width:0}
+.ce-h{font:700 10px Inter,sans-serif;color:#fff;background:var(--vc);border-radius:99px;padding:1px 6px;letter-spacing:.02em;white-space:nowrap}
+.ce-ty{font:700 9px Inter,sans-serif;color:var(--vc);border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);border-radius:5px;padding:0 4px;line-height:14px}
+.ce-st{margin-left:auto;width:8px;height:8px;border-radius:50%;flex:0 0 8px;box-shadow:0 0 0 2px var(--card)}
+.cal-ev.planifiee .ce-st{background:transparent;border:2px solid var(--gold);width:9px;height:9px}.cal-ev.confirmee .ce-st{background:var(--ok)}
+.cal-ev.realisee .ce-st{background:var(--ok);width:12px;height:12px;flex-basis:12px;display:grid;place-items:center}.cal-ev.realisee .ce-st::after{content:"✓";color:#fff;font-size:8px;font-weight:800;line-height:1}
+.cal-ev.realisee b::after{content:none}.cal-ev.realisee{filter:saturate(.75)}.cal-ev.annulee .ce-st{background:var(--muted)}
+.cal-ev b{font-size:11.5px;font-weight:700;margin-top:1px}.cal-ev small i{font-style:normal;color:var(--warn,#B5651D);font-weight:600}
+.cal-ev.dg::after{content:"⋮⋮";position:absolute;right:4px;bottom:3px;font-size:9px;letter-spacing:-2px;color:color-mix(in srgb,var(--vc) 55%,transparent);opacity:0;transition:opacity .15s}.cal-ev.dg:hover::after{opacity:1}
+.cal-det .cal-ev{padding:9px 12px 9px 14px}.cal-det .ce-h{font-size:12px;padding:2px 8px}.cal-det .ce-ty{font-size:10.5px}
 /*v043*/.cal-ev.dg{cursor:grab}.cal-ev.dg:active{cursor:grabbing}.cal-ev.glisse{opacity:.45;transform:scale(.97)}
 body.cal-glisse [data-cal-iso]{transition:background .15s,box-shadow .15s}body.cal-glisse [data-cal-iso].cible{background:color-mix(in srgb,var(--crimson) 10%,var(--card))!important;box-shadow:inset 0 0 0 2px var(--crimson);border-radius:10px}
 .ps-dep{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}.ps-dep input{width:auto}
@@ -3431,8 +3446,10 @@ function calMaj(){const z=document.getElementById("cal");if(!z){render();return}
   ["cal-t","cal-corps"].forEach(k=>{const a=z.querySelector("."+k),b=n.querySelector("."+k);if(a&&b)a.replaceWith(b)});
   window._calSens=null;}
 function calBougeable(m){return !readOnly()&&canEditReunion(m)&&!isPast(m.date)&&m.statut!=="realisee"&&m.statut!=="annulee"}
-function calPuce(m){const c=club(m.clubId),dg=calBougeable(m);return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}${dg?" dg":""}" style="--vc:${villeColor(c.ville)}" ${dg?`draggable="true" data-reu="${m.id}"`:""} onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(TYPES[m.type]||m.type)}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))}">
-  <b>${m.heure?esc(m.heure.slice(0,5))+" ":""}${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.type}${m.lieuId?" · "+esc(lieuNom(m.lieuId)):" · lieu à définir"}</small></button>`}
+function calPuce(m){const c=club(m.clubId),dg=calBougeable(m),st={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"}[m.statut]||"";
+  return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}${dg?" dg":""}" style="--vc:${villeColor(c.ville)}" ${dg?`draggable="true" data-reu="${m.id}"`:""} onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(TYPES[m.type]||m.type)}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))} · ${st}${dg?" · glisser pour changer de jour":""}">
+  <span class="ce-top">${m.heure?`<span class="ce-h">${esc(m.heure.slice(0,5).replace(":","h"))}</span>`:""}<span class="ce-ty">${m.type}</span><span class="ce-st" aria-label="${st}"></span></span>
+  <b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.lieuId?"📍 "+esc(lieuNom(m.lieuId)):`<i>lieu à définir</i>`}</small></button>`}
 function calendrier(list){
   window._calList=list;
   const v=calVue(),cur=calCur(),auj=isoJour(TODAY),parJour={};

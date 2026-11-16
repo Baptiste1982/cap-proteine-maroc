@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="light">
 <script>/* thème posé avant l'affichage : clair par défaut, sombre ou automatique si choisi dans Paramètres */
-(function(){try{var t=localStorage.getItem("cap-theme")||"clair";var d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
+(function(){try{var t=localStorage.getItem("cap-theme")||"sombre";var d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CAP · Protéine Maroc — CRM Animation</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -1952,7 +1952,7 @@ const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégre
 const APP_VERSION="0.50.0";
 const CHANGELOG=[
   {v:"0.50.0",date:"16 novembre 2026",notes:{
-    "Modifié":["Thème sombre refait : un gris anthracite plus clair et plus doux, une seule palette sur tous les écrans, le rouge du logo partout. Les pastilles (planifiée, lancement, recommandations, renouvellements, présences) n'ont plus de fond clair qui jurait. Le menu actif reste lisible."]}},
+    "Modifié":["Thème sombre refait : un gris anthracite plus clair et plus doux, une seule palette sur tous les écrans, le rouge du logo partout. Les pastilles (planifiée, lancement, recommandations, renouvellements, présences) n'ont plus de fond clair qui jurait. Le menu actif reste lisible.","Le sombre devient le thème par défaut. Ceux qui ont choisi le clair dans Paramètres le gardent."]}},
   {v:"0.49.1",date:"16 novembre 2026",notes:{
     "Modifié":["Thème sombre : le rouge est celui du logo Protéine (#A81E3C, bordeaux). Il tirait sur le rose saumon. Les petits textes rouges restent lisibles grâce à une teinte un peu plus claire, rouge et non rose. Les alertes passent sur un fond bordeaux."]}},
   {v:"0.49.0",date:"16 novembre 2026",notes:{
@@ -6452,7 +6452,7 @@ function animsTable(list){
 }
 function fmtTelAff(t){return String(t).replace(/^\+212/,"0").replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
 /* ---------- Thème ---------- */
-function themeChoisi(){try{return localStorage.getItem("cap-theme")||"clair"}catch(e){return"clair"}}
+function themeChoisi(){try{return localStorage.getItem("cap-theme")||"sombre"}catch(e){return"sombre"}}
 function appliquerTheme(){const t=themeChoisi(),d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.classList.toggle("dark",d);const m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=d?"dark":"light"}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(themeChoisi()==="auto")appliquerTheme()})}catch(e){}

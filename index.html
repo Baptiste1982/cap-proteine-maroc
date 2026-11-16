@@ -1511,6 +1511,9 @@ html.dark .vb-or{background:#223042;--enc:#2B3A4B}html.dark .vb-or .vb-n{color:#
 .emb-c{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);animation:dmEntre .4s ease calc(var(--i)*40ms) backwards}
 .emb-h{display:flex;gap:10px;align-items:flex-start}.emb-h .av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
 .emb-h div{display:flex;flex-direction:column;min-width:0}.emb-h b{font-size:14px}.emb-h small{font-size:12px;color:var(--muted)}.emb-h code{font-size:12px;background:var(--soft);padding:0 5px;border-radius:5px}
+.acc-c{display:flex;flex-direction:column;gap:4px;align-items:flex-start}.acc-e{font-size:12px;font-weight:700}.acc-e.r{color:var(--crimson)}.acc-e.w{color:var(--warn)}.acc-e.ok{color:var(--ok)}.acc-e.n{color:var(--muted)}
+.acc-go{padding:5px 10px;font-size:12px;min-height:0}.acc-mob{margin:8px 0}.acc-mob .acc-c{flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px}
+.acc-sheet{display:grid;gap:12px;margin-top:12px}.acc-role{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}.acc-role ul{margin:6px 0 0;padding-left:18px;display:grid;gap:3px;font-size:14px}.acc-big{width:100%}.acc-n{font-size:12px;margin:-4px 0 0}
 .emb-e{font-size:12px;font-weight:700;margin-top:3px}.emb-e.r{color:var(--crimson)}.emb-e.w{color:var(--warn)}.emb-e.ok{color:var(--ok)}
 .emb-tel{margin:10px 0 0}
 .emb-go{width:100%;margin-top:10px}
@@ -1904,8 +1907,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.44.2";
+const APP_VERSION="0.45.0";
 const CHANGELOG=[
+  {v:"0.45.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Équipe : une colonne « Accès CRM » montre où en est chaque animateur (mot de passe de départ, invité, connecté) et un bouton « 🔑 Donner l'accès » prépare son mot de passe et un message WhatsApp qui dit ce que son rôle permet."]}},
   {v:"0.41.1",date:"10 novembre 2026",notes:{
     "Amélioré":[
       "« ✍️ État des signatures au national » ouvre maintenant, dans le CRM, ce que le national affiche en direct : les contrats en attente de signature (n° de contrat, date, abonnement, état) et les membres, avec le PDF du contrat tel que le national l'a généré et un lien vers la demande correspondante chez nous. Le national n'a pas d'adresse propre pour cet onglet : un lien ne pouvait mener qu'à son accueil."
@@ -2366,6 +2371,8 @@ async function loadDB(){
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
   DB.aEmbarquer=0; // v0.33.0 : comptes d'équipe à embarquer (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
+  DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
+  if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.recos=[];DB.presences=[];
   try{const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
@@ -3758,7 +3765,7 @@ function animRow(a,i){
       <span class="rl-chev">›</span></button>
     <div class="rl-x"><div><div class="rl-in">
       <div class="rl-facts">${clubs.map(c=>`<button class="rl-fact link" onclick="openClub('${c.id}')">${esc(c.nom.replace(/^CAP\s+/,""))} · ${DB.membres.filter(m=>m.clubId===c.id).length}</button>`).join("")||`<span class="rl-fact">Aucun club attribué</span>`}</div>
-      <div class="rl-links"><button onclick="openAnim('${a.id}')">Ouvrir la fiche</button>${tel?`<a href="tel:${tel}">Appeler</a><a href="https://wa.me/${tel.replace(/^\+/,"").replace(/^0/,"212")}" target="_blank" rel="noopener">WhatsApp</a>`:""}</div>
+      ${accVisible()?`<div class="acc-mob">${accCellule(a)}</div>`:""}<div class="rl-links"><button onclick="openAnim('${a.id}')">Ouvrir la fiche</button>${tel?`<a href="tel:${tel}">Appeler</a><a href="https://wa.me/${tel.replace(/^\+/,"").replace(/^0/,"212")}" target="_blank" rel="noopener">WhatsApp</a>`:""}</div>
     </div></div></div></div>`;
 }
 function viewTeam(){
@@ -5600,6 +5607,82 @@ async function embInviter(id){
   Object.assign(u,{mdp_initial:false,mdp_provisoire:true,invite_le:new Date().toISOString()});
   _emb.res[id]={pwd};delete _emb.conf[id];DB.aEmbarquer=_emb.l.filter(x=>x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire)).length;embRendu();toast("Accès prêts : envoie-les maintenant, le mot de passe ne sera plus affiché ensuite");
 }
+
+/* ============================================================
+   ACCÈS PAR RÔLE (v0.45.0) — donner ses identifiants à un membre de l'équipe,
+   depuis la page Équipe, avec un message qui dit ce que son rôle permet.
+   ============================================================ */
+const ROLE_DROITS={
+  superadmin:["voit et modifie tout le réseau","gère les comptes et les accès","envoie les adhésions au CRM national"],
+  directeur_national:["voit tout le réseau","suit les adhésions et qui est connecté","prépare les réunions avec les animateurs"],
+  directeur:["voit tout le réseau","modifie les groupes, les réunions et les membres de sa zone","traite les demandes d'adhésion de sa zone"],
+  animateur:["gère ses groupes : réunions, bilans, invités et membres","planifie ses réunions et écrit les comptes rendus","envoie le lien d'adhésion à ses futurs membres"],
+  visiteur:["consulte le réseau en lecture seule"]};
+const _acc={res:{},conf:{}};
+function accVisible(){return !!(SESSION&&SESSION.role==="superadmin"&&DB&&DB.acces)}
+function accDe(animId){return (DB.acces||[]).find(u=>u.animateur_id===animId)||null}
+function accEtat(u){
+  if(!u)return["n","Pas de compte"];
+  if(u.mdp_initial)return["r","« cap2026 » encore actif"];
+  if(u.mdp_provisoire&&!u.derniere_connexion)return["w","Invité le "+adhDate(u.invite_le)];
+  if(u.mdp_provisoire)return["w","Invité le "+adhDate(u.invite_le)+" · pas encore changé"];
+  if(u.derniere_connexion)return["ok","Connecté le "+adhDate(u.derniere_connexion)];
+  return["w","Jamais connecté"];
+}
+function accCellule(a){
+  const u=accDe(a.id),[t,txt]=accEtat(u),moi=u&&u.id===SESSION.id;
+  if(moi)return `<span class="acc-e ok">C'est toi</span>`;
+  const neuf=!u||u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire);
+  return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span><button class="btn ${neuf?"":"ghost"} acc-go" onclick="event.stopPropagation();accDonner('${a.id}')">🔑 ${neuf?"Donner l'accès":"Renvoyer"}</button></div>`;
+}
+function accLogin(a){return (a.nom||"").split(/\s+/)[0].normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
+  return `Bonjour ${pr} 👋\nVoici ton accès au CRM du Club d'Affaires Protéine Maroc :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
+function accDonner(animId){
+  const a=anim(animId);if(!a||!accVisible())return;
+  const u=accDe(animId),r=_acc.res[animId],[t,txt]=accEtat(u);
+  const role=u?u.role:"animateur",dr=ROLE_DROITS[role]||[],login=u?(u.email||"").split("@")[0]:accLogin(a);
+  const tel=a.tel||"",remplace=u&&!u.mdp_initial&&(u.derniere_connexion||u.mdp_provisoire);
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:initiales(a.nom),round:true,vc:villeColor(a.ville),title:a.nom,sub:`Accès CRM · ${esc(ROLES[role]||role)} · identifiant <code>${esc(login)}</code>`})}
+    <div class="acc-sheet">
+      <span class="acc-e ${t}">${esc(txt)}</span>
+      <div class="acc-role"><b>Ce que son rôle permet</b><ul>${dr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="field"><label>Mobile WhatsApp</label><input id="acc-tel" type="tel" inputmode="tel" value="${esc(tel)}" placeholder="06 …" onchange="accTel('${animId}',this.value)"></div>
+      ${r?`<div class="emb-ok"><div>Mot de passe provisoire : <b>${esc(r.pwd)}</b></div><small>Il ne sera plus affiché après. Envoie-le maintenant.${a.tel?"":" Sans mobile enregistré, WhatsApp te demandera à qui l'envoyer."}</small>
+          <div class="emb-2"><a class="btn" href="https://wa.me/${accTelWa(a.tel)}?text=${encodeURIComponent(accMessage(r.u,a,r.pwd))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost" onclick="accCopier('${animId}')">Copier le message</button></div></div>`
+        :`<button class="btn acc-big" onclick="accCreer('${animId}')">${_acc.conf[animId]?"Confirmer : remplacer son mot de passe actuel ?":u?(remplace?"🔑 Nouveau mot de passe et message":"🔑 Créer le mot de passe et préparer le message"):"🔑 Créer son compte et préparer le message"}</button>
+          ${remplace&&!_acc.conf[animId]?`<p class="mut acc-n">Son mot de passe actuel cessera de marcher.</p>`:""}`}
+    </div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+async function accTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();
+  const u=accDe(animId);if(u)u.tel=v.trim();toast("Mobile enregistré");if(_acc.res[animId])accDonner(animId)}
+async function accCreer(animId){
+  const a=anim(animId);let u=accDe(animId);
+  const remplace=u&&!u.mdp_initial&&(u.derniere_connexion||u.mdp_provisoire);
+  if(remplace&&!_acc.conf[animId]){_acc.conf[animId]=true;accDonner(animId);return}
+  const pwd=mdpProvisoire();
+  if(!u){
+    const login=accLogin(a);if(!login){toast("Nom de l'animateur illisible");return}
+    const z=DB.zones.find(x=>(x.villes||[]).includes(a.ville));
+    const {data,error}=await adminCall({action:"create",login,nom:a.nom,password:pwd,role:"animateur",zone_id:z?z.id:null,animateur_id:animId});
+    if(error){toast(error);return}
+    u={id:data.id,nom:a.nom,role:"animateur",email:data.email,animateur_id:animId,zone_id:z?z.id:null,tel:a.tel,derniere_connexion:null,mdp_initial:false};
+    DB.acces.push(u);
+  }else{
+    const {error}=await adminCall({action:"set_password",id:u.id,password:pwd});
+    if(error){toast(error);return}
+  }
+  const e2=await sb.rpc("cap_marquer_invite",{p_id:u.id});if(e2.error)console.warn(e2.error);
+  Object.assign(u,{mdp_initial:false,mdp_provisoire:true,invite_le:new Date().toISOString()});
+  _acc.res[animId]={pwd,u};delete _acc.conf[animId];
+  DB.aEmbarquer=DB.acces.filter(x=>x.role!=="visiteur"&&x.id!==SESSION.id&&(x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire))).length;
+  accDonner(animId);render();toast("Accès prêts : envoie-les maintenant");
+}
+async function accCopier(animId){const r=_acc.res[animId],a=anim(animId),m=accMessage(r.u,a,r.pwd);try{await navigator.clipboard.writeText(m);toast("Message copié")}catch(e){prompt("Message :",m)}}
 /* ============================================================
    VERSION — notes de mise à jour + alerte nouvelle version
    ============================================================ */
@@ -6183,11 +6266,11 @@ function meetingTr(m){
     <td><span class="st ${m.statut}">${STATUTS[m.statut]}</span>${past&&(m.statut==="planifiee"||m.statut==="confirmee")&&canEditReunion(m)?` <button class="act todo" onclick="event.stopPropagation();openBilan('${m.id}')">Bilan ›</button>`:""}</td></tr>`;
 }
 function animsTable(list){
-  return `<div class="tbl tbl-wrap"><table><thead><tr><th>Animateur</th><th>Clubs</th><th class="n">Membres</th><th class="n">Réunions à venir</th><th>Téléphone</th></tr></thead><tbody>${list.map(a=>{
+  return `<div class="tbl tbl-wrap"><table><thead><tr><th>Animateur</th><th>Clubs</th><th class="n">Membres</th><th class="n">Réunions à venir</th><th>Téléphone</th>${accVisible()?"<th>Accès CRM</th>":""}</tr></thead><tbody>${list.map(a=>{
     const cs=DB.clubs.filter(c=>c.animId===a.id),nbM=DB.membres.filter(m=>cs.some(c=>c.id===m.clubId)).length,nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
     return `<tr ${trOpen(`openAnim('${a.id}')`)}><td><div class="who" style="--vc:${villeColor(a.ville)}"><span class="emb round">${esc(initiales(a.nom))}</span><span><b>${esc(a.nom)}</b><small>${esc(a.ville||"")}</small></span></div></td>
       <td>${cs.length?`<div class="chipz">${cs.map(c=>`<span>${esc(c.nom.replace(/^CAP\s+/,""))}</span>`).join("")}</div>`:`<span class="mut">aucun club</span>`}</td>
-      <td class="n">${nbM}</td><td class="n ${nbUp?"":"red"}">${nbUp}</td><td class="mut">${a.tel?esc(fmtTelAff(a.tel)):"—"}</td></tr>`}).join("")}</tbody></table></div>`;
+      <td class="n">${nbM}</td><td class="n ${nbUp?"":"red"}">${nbUp}</td><td class="mut">${a.tel?esc(fmtTelAff(a.tel)):"—"}</td>${accVisible()?`<td onclick="event.stopPropagation()">${accCellule(a)}</td>`:""}</tr>`}).join("")}</tbody></table></div>`;
 }
 function fmtTelAff(t){return String(t).replace(/^\+212/,"0").replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
 /* ---------- Thème ---------- */
@@ -6519,7 +6602,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

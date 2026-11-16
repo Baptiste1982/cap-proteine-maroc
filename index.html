@@ -1920,8 +1920,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.46.1";
+const APP_VERSION="0.47.0";
 const CHANGELOG=[
+  {v:"0.47.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Invitation à une réunion : un vrai message d'accueil selon le type (réunion d'information, de lancement), à relire et ajuster avant l'envoi par WhatsApp. Le texte retouché peut être gardé comme modèle."]}},
   {v:"0.46.1",date:"16 novembre 2026",notes:{
     "Corrigé":["Message d'accès au CRM : « Club d'Affaires Protéine Rabat et Région », sans l'émoji qui s'affichait mal dans WhatsApp."]}},
   {v:"0.46.0",date:"16 novembre 2026",notes:{
@@ -4451,8 +4453,56 @@ function natInvPerime(m){const n=m.nat;if(!n)return"";const r=[];
   const ln=normTxt(lieuNom(m.lieuId)),nl=normTxt(n.lieu||"");if(m.lieuId&&nl&&ln!==nl)r.push("le lieu");
   return r.length?r.join(", ").replace(/, ([^,]*)$/," et $1"):""}
 function normTxt(t){return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim()}
-function natInvMessage(m){const dt=dObj(m.date),c=club(m.clubId)||{};
-  return `${NAT_TYPE_REU[m.type]||"Réunion"} du Club d'affaires Protéine${c.nom?" ("+c.nom.replace(/^CAP\s+/,"")+")":""}\n${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" à "+m.heure.replace(":","h"):""}${m.lieuId?" · "+lieuNom(m.lieuId):""}\n\nInscription : ${m.nat.lien}`}
+/* v0.47.0 : message d'accueil par type de réunion, modifiable avant l'envoi. Un modèle gardé (par type, sur l'appareil)
+   remplace le texte d'origine ; les repères {jour} {heure} {lieu} {adresse} {groupe} {lien} {prenom} sont remplis à l'envoi. */
+const INV_MODELES={
+  SI:`Bonjour,
+
+J'ai le plaisir de vous inviter à notre prochaine réunion d'information du Club d'Affaires Protéine Rabat et Région, groupe {groupe}.
+
+{jour} à {heure}
+{lieu}{adresse}
+
+Protéine réunit des chefs d'entreprise et des indépendants qui se recommandent des affaires entre eux, un seul professionnel par métier dans chaque groupe. Pendant cette rencontre, vous découvrirez comment fonctionne le club, vous rencontrerez ses membres et vous pourrez présenter votre activité.
+
+La participation est gratuite. L'inscription prend une minute :
+{lien}
+
+Au plaisir de vous accueillir,
+{prenom}`,
+  RL:`Bonjour,
+
+Le groupe {groupe} du Club d'Affaires Protéine Rabat et Région se lance, et j'aimerais vous compter parmi ses membres fondateurs.
+
+Réunion de lancement : {jour} à {heure}
+{lieu}{adresse}
+
+C'est le moment de réserver votre métier dans le groupe (un seul professionnel par métier), de rencontrer les autres fondateurs et de poser les bases des recommandations d'affaires entre vous.
+
+Inscription en une minute :
+{lien}
+
+Au plaisir de vous y retrouver,
+{prenom}`,
+  autre:`Bonjour,
+
+Je vous invite à la prochaine réunion du groupe {groupe} du Club d'Affaires Protéine Rabat et Région.
+
+{jour} à {heure}
+{lieu}{adresse}
+
+Inscription en une minute :
+{lien}
+
+À très vite,
+{prenom}`};
+function invModeleCle(t){return "cap-invtpl-"+(INV_MODELES[t]?t:"autre")}
+function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}return INV_MODELES[t]||INV_MODELES.autre}
+function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
+  const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
+    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?m.nat.lien:"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0]};
+  return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
+function natInvMessage(m){return invRemplir(invModele(m.type),m)}
 function natInvBloc(m){
   const su=SESSION&&SESSION.role==="superadmin",n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
   if(!n){if(!su||!avenir)return"";
@@ -4479,7 +4529,20 @@ async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)
 /* Le QR du national exige une session chez eux : on le dessine ici à partir du lien d'inscription. */
 async function natInvQr(){const z=[...document.querySelectorAll("[data-niqr]:empty")];if(!z.length)return;
   try{const qrcode=await qrLib();z.forEach(el=>{const q=qrcode(0,"M");q.addData(el.dataset.niqr);q.make();el.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true})})}catch(e){z.forEach(el=>el.remove())}}
-function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(m&&m.nat)window.open("https://wa.me/?text="+encodeURIComponent(natInvMessage(m)),"_blank","noopener")}
+function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const perso=(()=>{try{return !!localStorage.getItem(invModeleCle(m.type))}catch(e){return false}})();
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✉",title:"Message d'invitation",sub:`${esc(NAT_TYPE_REU[m.type]||"Réunion")} · ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}`})}
+    <p class="fh-note">Relis et ajuste le texte avant de l'envoyer. Le lien d'inscription du national est déjà dedans.</p>
+    <div class="field"><textarea id="inv-txt" rows="16" style="width:100%;font:inherit;line-height:1.45">${esc(natInvMessage(m))}</textarea></div>
+    <div class="emb-2"><button class="btn" onclick="invEnvoyer()">Envoyer par WhatsApp</button><button class="btn ghost" onclick="invCopier()">Copier le message</button></div>
+    <div class="emb-2" style="margin-top:8px"><button class="btn ghost mini" onclick="invGarder('${id}')">Garder comme modèle pour ce type de réunion</button>${perso?`<button class="btn ghost mini" onclick="invOrigine('${id}')">Revenir au texte d'origine</button>`:""}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openMeeting('${id}')">Retour à la réunion</button></div>`;openSheet()}
+function invTexte(){const t=document.getElementById("inv-txt");return t?t.value:""}
+function invEnvoyer(){window.open("https://wa.me/?text="+encodeURIComponent(invTexte()),"_blank","noopener")}
+async function invCopier(){const t=invTexte();try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
+function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{prenom}",m).split("|"),k=["jour","heure","lieu","adresse","groupe","lien","prenom"];
+  k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
+  try{localStorage.setItem(invModeleCle(m.type),t)}catch(e){}toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
+function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.type))}catch(e){}natInvWa(id)}
 async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;try{await navigator.clipboard.writeText(m.nat.lien);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",m.nat.lien)}}
 /* v0.43.0 : choix de l'heure sans molettes. Créneaux d'un clic (les réunions sont le matin) + heure et minutes
    dans deux listes. Le champ caché garde l'id d'origine : le code qui lit la valeur ne change pas. */
@@ -6661,7 +6724,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

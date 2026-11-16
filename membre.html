@@ -48,6 +48,13 @@ a{color:var(--crimson)}
 .row .t span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .t small{font-size:12px;color:var(--soft)}
 .av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
+.av.img{background:#fff!important;overflow:hidden;padding:0}.av.img img{width:100%;height:100%;object-fit:cover;display:block}
+.logo-ent{width:56px;height:56px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid var(--line2);flex-shrink:0}
+.liens{display:flex;flex-wrap:wrap;gap:8px}.liens a{font-size:13.5px;font-weight:600;color:var(--crimson);background:var(--tint);border-radius:10px;padding:8px 12px;text-decoration:none;overflow-wrap:anywhere}
+.up{display:flex;align-items:center;gap:12px}.up .btn{height:40px;font-size:13.5px}
+.grp-row{border:1px solid var(--crimson)!important;background:var(--tint)!important}
+.bulle .aut{display:block;font-size:11.5px;font-weight:700;color:var(--crimson);margin-bottom:2px}.bulle.moi .aut{display:none}
+.ca-perso{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ca-perso div{background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}.ca-perso b{font-family:"Bricolage Grotesque",sans-serif;font-size:19px}.ca-perso span{font-size:12.5px;color:var(--muted)}
 .ico{width:44px;height:44px;border-radius:14px;border:0;background:var(--tint);color:var(--crimson);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ico:disabled{background:#F2EDEE;color:#B9AAAE;cursor:default}
 .btn{height:50px;border-radius:14px;border:0;background:var(--crimson);color:#fff;font-weight:700;font-size:15px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
@@ -158,7 +165,7 @@ const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLo
 const COUL=[["#F8E9EC","#8A0E24"],["#F4ECD8","#6B5420"],["#E8EEF6","#2C4A73"],["#EAF2EA","#2F5B33"],["#F1E8F4","#5B2F6B"]];
 function coul(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return COUL[h%COUL.length]}
 function ini(n){const p=String(n||"").replace(/[^\p{L}\s-]/gu," ").trim().split(/\s+/).filter(Boolean);return ((p[0]||"")[0]||"").toUpperCase()+((p[1]||"")[0]||"").toUpperCase()}
-function av(m,cls=""){const [f,e]=coul(m.id);return `<span class="av ${cls}" style="background:${f};color:${e}">${esc(ini(m.nom))}</span>`}
+function av(m,cls=""){if(m.photo)return `<span class="av img ${cls}"><img src="${esc(m.photo)}" alt="" loading="lazy"></span>`;const [f,e]=coul(m.id);return `<span class="av ${cls}" style="background:${f};color:${e}">${esc(ini(m.nom))}</span>`}
 function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
 const ICO={envoi:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
   loupe:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A6E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
@@ -213,6 +220,7 @@ async function demarrer(){
   }
   S.moi=moi;
   await Promise.all([chargerAnnuaire(),chargerMessages(),chargerRecos()]);
+  await chargerGroupe();
   ecouter();lancer();
 }
 function lancer(){$("nav").hidden=false;
@@ -228,7 +236,8 @@ function lienHash(){
   return false;
 }
 window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
-async function chargerAnnuaire(){const {data,error}=await sb.rpc("cap_annuaire");if(!error)S.annuaire=data||[]}
+async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[]}
+const moiFiche=()=>S.annuaire.find(m=>m.moi)||{};
 async function chargerMessages(){
   const {data,error}=await sb.from("messages_membres").select("id,de,a,texte,cree_le,lu_le").order("cree_le",{ascending:true}).limit(2000);
   if(!error)S.msgs=data||[];
@@ -246,6 +255,10 @@ function ecouter(){
     const i=(S.recos||[]).findIndex(x=>x.id===r.id);
     if(i>=0)S.recos[i]=r;else{(S.recos=S.recos||[]).unshift(r);if(r.a===S.moi.id)toast("Nouvelle recommandation de "+(membre(r.de)?.nom||"un membre"))}
     S.recosClub=undefined;if(["recos","annuaire","profil","messages"].includes(S.onglet))rendu(true);
+  }).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages_groupe"},p=>{
+    const r=p.new;if(!r||!r.id||r.club_id!==moiFiche().club_id)return;
+    if(!(S.grp||[]).some(x=>x.id===r.id)){(S.grp=S.grp||[]).push(r);if(r.membre_id!==S.moi.id&&S.onglet!=="groupe")toast("Groupe · "+r.auteur_nom+" : "+r.texte.slice(0,60))}
+    if(S.onglet==="groupe"){const t=$("g-txt"),v=t?t.value:"",f=document.activeElement===t;rendu(true);const n=$("g-txt");if(n){n.value=v;if(f)n.focus()}}else if(!["profil","conv","inviter","recos","fiche"].includes(S.onglet))rendu(true);else{const bn=$("nav-nl");const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length+grpNonLus();bn.hidden=!nl;bn.textContent=nl}
   }).subscribe();
 }
 const membre=id=>S.annuaire.find(m=>m.id===id);
@@ -255,14 +268,14 @@ function aller(o,extra){Object.assign(S,{onglet:o},extra||{});window.scrollTo(0,
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>aller(b.dataset.o));
 function rendu(garderDefilement){
   const y=window.scrollY;
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||(S.onglet==="conv"&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
-  const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
-  $("nav").hidden=S.onglet==="conv";
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||((S.onglet==="conv"||S.onglet==="groupe")&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
+  const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length+(S.onglet==="groupe"?0:grpNonLus());const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
+  $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe";
   const rc=(S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee").length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
-  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence}[S.onglet];
+  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence,groupe:vueGroupe}[S.onglet];
   $("app").innerHTML=v();
   brancher();
-  if(S.onglet==="conv"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
+  if(S.onglet==="conv"||S.onglet==="groupe"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
   else if(garderDefilement)window.scrollTo(0,y);
 }
 
@@ -302,11 +315,45 @@ function vueFiche(){
       ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}</div>
     <button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>
     ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
-    ${m.entreprise||m.activite?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Son entreprise</span>${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.activite?`<span style="font-size:14px">${esc(m.activite)}</span>`:""}</div>`:""}
+    ${m.entreprise||m.presentation||m.logo?`<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Son entreprise</span><div style="display:flex;gap:12px;align-items:center">${m.logo?`<img class="logo-ent" src="${esc(m.logo)}" alt="Logo ${esc(m.entreprise||"")}">`:""}<div style="min-width:0">${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.fonction?`<p class="sub" style="margin:2px 0 0">${esc(m.fonction)}</p>`:""}</div></div>${m.presentation?`<span style="font-size:14px;white-space:pre-line">${esc(m.presentation)}</span>`:""}${liensHTML(m)}</div>`:liensHTML(m)?`<div class="card">${liensHTML(m)}</div>`:""}
     ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
     <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Coordonnées</span>
       <div class="kv"><span>Ville</span><b>${esc(m.ville||"—")}</b></div>
       <div class="kv"><span>Téléphone</span><b>${tel?esc(m.telephone):"non partagé"}</b></div></div></div>`;
+}
+
+function lienUrl(u){u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u}
+function liensHTML(m){const l=[];if(m.site)l.push(`<a href="${esc(lienUrl(m.site))}" target="_blank" rel="noopener">🌐 Site</a>`);if(m.linkedin)l.push(`<a href="${esc(lienUrl(m.linkedin))}" target="_blank" rel="noopener">in LinkedIn</a>`);
+  String(m.reseaux||"").split(/[\s,;]+/).filter(x=>/\./.test(x)).slice(0,4).forEach(x=>{const n=/instagram/i.test(x)?"Instagram":/facebook/i.test(x)?"Facebook":/tiktok/i.test(x)?"TikTok":/youtube/i.test(x)?"YouTube":/x\.com|twitter/i.test(x)?"X":"Réseau";l.push(`<a href="${esc(lienUrl(x))}" target="_blank" rel="noopener">${n}</a>`)});
+  return l.length?`<div class="liens">${l.join("")}</div>`:""}
+
+/* ---------- Fil du groupe (v1.1.0) : les membres du club et leur animateur ---------- */
+async function chargerGroupe(){
+  const c=moiFiche().club_id;S.grp=S.grp||[];if(DEMO||!c)return;
+  const {data,error}=await sb.from("messages_groupe").select("id,club_id,auteur,auteur_nom,membre_id,texte,cree_le").eq("club_id",c).order("cree_le",{ascending:true}).limit(500);
+  if(!error)S.grp=data||[];
+}
+function grpNonLus(){const v=Number(localStorage.getItem("cap-grp-vu")||0);return (S.grp||[]).filter(x=>x.membre_id!==S.moi.id&&new Date(x.cree_le).getTime()>v).length}
+function vueGroupe(){
+  try{localStorage.setItem("cap-grp-vu",Date.now())}catch(e){}
+  const nomC=String(S.moi.club||moiFiche().club||"").replace(/^CAP\s+/,"");let jour="",h="";
+  for(const x of S.grp||[]){const d=new Date(x.cree_le),j=d.toDateString();
+    if(j!==jour){jour=j;const k=Math.round((new Date(new Date().toDateString())-new Date(j))/864e5);h+=`<span class="jour">${k===0?"Aujourd'hui":k===1?"Hier":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}</span>`}
+    const moi=x.membre_id===S.moi.id;const anim=!x.membre_id;
+    h+=`<div class="bulle ${moi?"moi":""}"><span class="aut">${esc(x.auteur_nom)}${anim?" · animateur":""}</span>${esc(x.texte)}</div><span class="heure ${moi?"moi":""}">${d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>`}
+  return `<div class="page" style="padding-bottom:0">
+    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="messages" aria-label="Retour aux messages">${ICO.retour}</button>
+      <span class="who">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="display:flex;flex-direction:column;min-width:0"><b style="font-size:15px">${esc(nomC||"Mon groupe")}</b><span style="font-size:12px;color:var(--muted)">Tous les membres du groupe et l'animateur</span></span></span></div>
+    <div class="fil">${h||`<p class="vide">Le fil du groupe est vide. Lance la discussion : une question, une info, un merci.</p>`}</div></div>
+    <div class="saisie"><form id="f-grp"><textarea id="g-txt" rows="1" placeholder="Écrire au groupe…" aria-label="Message au groupe" maxlength="2000"></textarea><button type="submit" aria-label="Envoyer">${ICO.envoi}</button></form></div>`;
+}
+async function envoyerGroupe(){
+  const t=$("g-txt"),txt=t.value.trim();if(!txt)return;t.value="";
+  const c=moiFiche().club_id;
+  if(DEMO){S.grp.push({id:"g"+Date.now(),club_id:c,auteur_nom:S.moi.nom,membre_id:S.moi.id,texte:txt,cree_le:new Date().toISOString()});rendu();$("g-txt").focus();return}
+  const {error}=await sb.rpc("cap_groupe_ecrire",{p_club:c,p_texte:txt});
+  if(error){t.value=txt;toast("Message non envoyé : "+error.message);return}
+  await chargerGroupe();rendu();$("g-txt").focus();
 }
 
 /* ---------- Messages ---------- */
@@ -320,8 +367,10 @@ function quand(iso){const d=new Date(iso),n=new Date();const j=Math.round((new D
 function vueMessages(){
   const c=conversations();
   return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mes messages</h1><p class="sub">Entre membres, en direct. Pas de groupes.</p></div></div>
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mes messages</h1><p class="sub">Le fil de ton groupe, et tes messages directs avec les autres membres.</p></div></div>
     ${bandeauNotif()}
+    ${moiFiche().club_id||DEMO?(()=>{const g=S.grp||[],d=g[g.length-1],n=grpNonLus(),nomC=String(S.moi.club||"").replace(/^CAP\s+/,"");return `<button class="row conv-row grp-row" style="width:100%;text-align:left" data-aller="groupe">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${n?"nl":""}">👥 ${esc(nomC||"Mon groupe")}</b>${d?`<span class="quand">${quand(d.cree_le)}</span>`:""}</span>
+        <span style="display:flex;justify-content:space-between;align-items:center;gap:8px;overflow:visible"><span class="${n?"nl":""}" style="overflow:hidden;text-overflow:ellipsis">${d?esc(d.auteur_nom.split(/\s+/)[0]+" : "+d.texte):"Le fil du groupe, avec ton animateur"}</span>${n?`<span class="badge">${n}</span>`:""}</span></span></button>`})():""}
     ${c.length?c.map((x,i)=>{const m=membre(x.id)||{id:x.id,nom:"Membre"};const de=x.dernier.de===S.moi.id?"Vous : ":"";
       return `<button class="row conv-row" style="--i:${Math.min(i,14)};width:100%;text-align:left" data-conv="${x.id}">${av(m)}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${x.nl?"nl":""}">${esc(m.nom)}</b><span class="quand">${quand(x.dernier.cree_le)}</span></span>
         <span style="display:flex;justify-content:space-between;align-items:center;gap:8px;overflow:visible"><span class="${x.nl?"nl":""}" style="overflow:hidden;text-overflow:ellipsis">${esc(de+x.dernier.texte)}</span>${x.nl?`<span class="badge">${x.nl}</span>`:""}</span></span></button>`}).join("")
@@ -365,6 +414,7 @@ function vueProfil(){
     <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mon profil</h1></div></div>
     <div class="card" style="display:flex;align-items:center;gap:14px">${av(m)}<div style="min-width:0"><b class="bri" style="font-size:18px">${esc(m.nom)}</b><p class="sub">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</p></div></div>
     ${carteNotif()}
+    ${ficheForm()}
     <form id="f-profil" class="card" style="display:flex;flex-direction:column;gap:14px">
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ce que je cherche</span>
         <textarea class="champ" id="p-cherche" maxlength="600" placeholder="Ex. : des promoteurs qui lancent un programme à Rabat, des gérants de franchises…">${esc(m.cherche||"")}</textarea></label>
@@ -377,7 +427,7 @@ function vueProfil(){
       <input class="code" id="c-new" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Nouveau code (6 chiffres ou plus)" aria-label="Nouveau code" style="font-size:18px;letter-spacing:.15em;height:52px">
       <button class="btn ghost" type="submit">Changer mon code</button>
     </form>
-    <p class="note">Ton nom, ton métier et ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
+    <p class="note">Ton nom, ton métier et le nom de ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
     <button class="btn ghost" id="p-out" type="button">Me déconnecter</button></div>`;
 }
 async function enregistrerProfil(){
@@ -386,6 +436,37 @@ async function enregistrerProfil(){
   Object.assign(S.moi,{cherche:v.p_cherche.trim()||null,tel_visible:v.p_tel_visible,annuaire_visible:v.p_annuaire});
   const me=S.annuaire.find(x=>x.moi);if(me)me.cherche=S.moi.cherche;
   toast("Profil enregistré");
+}
+
+/* ---------- Fiche signalétique (v1.1.0) : pré-remplie avec la demande d'adhésion ---------- */
+function ficheForm(){
+  const f=moiFiche(),ph=S.fPhoto!==undefined?S.fPhoto:f.photo,lg=S.fLogo!==undefined?S.fLogo:f.logo;
+  return `<form id="f-fiche" class="card" style="display:flex;flex-direction:column;gap:14px">
+    <div><span class="label">Ma fiche</span><p class="sub" style="margin:4px 0 0">Ce que les autres membres voient de toi dans l'annuaire.</p></div>
+    <div class="up">${ph?`<span class="av img" style="width:64px;height:64px"><img src="${esc(ph)}" alt="Ma photo"></span>`:av({id:S.moi.id,nom:S.moi.nom},"")}<label class="btn ghost">${ph?"Changer ma photo":"Ajouter ma photo"}<input type="file" accept="image/*" id="f-ph" hidden></label></div>
+    <div class="up">${lg?`<img class="logo-ent" src="${esc(lg)}" alt="Mon logo">`:`<span class="logo-ent" style="display:grid;place-items:center;color:var(--soft);font-size:11px">Logo</span>`}<label class="btn ghost">${lg?"Changer le logo":"Ajouter le logo de ma société"}<input type="file" accept="image/*" id="f-lg" hidden></label></div>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Présentation de mon activité</span><textarea class="champ" id="f-pres" maxlength="1500" placeholder="Ce que fait ta société, pour qui, ce qui te distingue…">${esc(f.presentation||"")}</textarea></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Site internet</span><input class="champ1" id="f-site" maxlength="300" inputmode="url" placeholder="www.masociete.ma" value="${esc(f.site||"")}"></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">LinkedIn</span><input class="champ1" id="f-li" maxlength="300" inputmode="url" placeholder="linkedin.com/in/…" value="${esc(f.linkedin||"")}"></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Autres réseaux</span><input class="champ1" id="f-rs" maxlength="300" placeholder="instagram.com/…, facebook.com/…" value="${esc(f.reseaux||"")}"></label>
+    <button class="btn" type="submit">Enregistrer ma fiche</button></form>`;
+}
+function reduireImage(file,max){return new Promise((ok,ko)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?ok(b):ko(new Error("image illisible")),"image/jpeg",.86)};img.onerror=()=>{URL.revokeObjectURL(u);ko(new Error("image illisible"))};img.src=u})}
+async function televerser(file,quoi){
+  try{const b=await reduireImage(file,quoi==="logo"?500:640);
+    if(DEMO){S[quoi==="logo"?"fLogo":"fPhoto"]=URL.createObjectURL(b);return rendu(true)}
+    const chemin=`${S.moi.id}/${quoi}-${Date.now()}.jpg`;
+    const {error}=await sb.storage.from("profils").upload(chemin,b,{contentType:"image/jpeg",upsert:true});
+    if(error)throw error;
+    S[quoi==="logo"?"fLogo":"fPhoto"]=sb.storage.from("profils").getPublicUrl(chemin).data.publicUrl;
+    toast((quoi==="logo"?"Logo":"Photo")+" prêt"+(quoi==="logo"?"":"e")+" : pense à enregistrer ta fiche");rendu(true);
+  }catch(e){toast("Envoi impossible : "+(e.message||e))}
+}
+async function enregistrerFiche(){
+  const v={p_presentation:$("f-pres").value,p_site:$("f-site").value,p_linkedin:$("f-li").value,p_reseaux:$("f-rs").value,p_photo:S.fPhoto||null,p_logo:S.fLogo||null};
+  if(!DEMO){const {error}=await sb.rpc("cap_membre_fiche_maj",v);if(error){toast("Non enregistrée : "+error.message);return}await chargerAnnuaire()}
+  else Object.assign(moiFiche(),{presentation:v.p_presentation,site:v.p_site,linkedin:v.p_linkedin,reseaux:v.p_reseaux,photo:v.p_photo||moiFiche().photo,logo:v.p_logo||moiFiche().logo});
+  S.fPhoto=S.fLogo=undefined;toast("Fiche enregistrée");rendu(true);
 }
 
 /* ---------- Notifications sur le téléphone (web push, même service worker que le CRM) ---------- */
@@ -439,9 +520,18 @@ function carteNotif(){
 /* ---------- Inviter quelqu'un à la prochaine réunion de mon club ---------- */
 const STATUT_INV={"À confirmer":["En attente","#7A6A6E"],"Intéressé":["Intéressé","#2C4A73"],"Non intéressé":["Pas intéressé","#7A6A6E"],"À intégrer":["Va nous rejoindre","#6B5420"],"Membre":["Membre 🎉","#2F5B33"]};
 async function chargerInviter(){
-  if(DEMO){S.prochaine=S.prochaine||{date:new Date(Date.now()+6*864e5).toISOString().slice(0,10),heure:"19:00",type:"SI",lieu:"Hôtel Farah",ville:"Rabat",club:"CAP Rabat Signature"};S.mesInvites=S.mesInvites||[];return}
+  if(DEMO){S.prochaine=S.prochaine||{date:new Date(Date.now()+6*864e5).toISOString().slice(0,10),heure:"19:00",type:"SI",lieu:"Hôtel Farah",ville:"Rabat",club:"CAP Rabat Signature"};S.mesInvites=S.mesInvites||[];S.invGroupe=S.invGroupe||[{id:"ig1",nom:"Hicham Berrada",entreprise:"Berrada Immobilier",metier:"Promoteur",tel:"0662112233",email:"h.berrada@exemple.ma",statut:"Intéressé",date:new Date(Date.now()+6*864e5).toISOString().slice(0,10),type:"SI",invite_par:"Lien du national",propose_par_nom:null},{id:"ig2",nom:"Sara Lahlou",entreprise:"SL Conseil",metier:"Consultante RH",tel:null,email:null,statut:"À intégrer",date:new Date(Date.now()-8*864e5).toISOString().slice(0,10),type:"SI",invite_par:null,propose_par_nom:"Nawal Mansouri"}];return}
   const [p,l]=await Promise.all([sb.rpc("cap_membre_prochaine_reunion"),sb.rpc("cap_membre_mes_invites")]);
   S.prochaine=p.error?null:p.data;S.mesInvites=l.error?[]:(l.data||[]);
+  const g=await sb.rpc("cap_membre_invites_groupe");S.invGroupe=g.error?[]:(g.data||[]);
+}
+function invGroupeHTML(){
+  const l=S.invGroupe||[];if(!l.length)return `<div class="label">Les invités du groupe</div><p class="vide" style="padding:12px">Aucun invité enregistré pour ton groupe.</p>`;
+  const auj=new Date().toISOString().slice(0,10),av_=l.filter(x=>x.date>=auj).reverse(),ap=l.filter(x=>x.date<auj);
+  const ligne=(x,i)=>{const [lb,c]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"];const t=x.tel?String(x.tel).replace(/[^\d+]/g,""):"";
+    return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>${esc(new Date(x.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}${x.propose_par_nom?" · invité par "+esc(x.propose_par_nom):x.invite_par?" · "+esc(x.invite_par):""}${x.email?" · "+esc(x.email):""}</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span style="font-size:12px;font-weight:700;color:${c};text-align:right">${esc(lb)}</span>${t?`<a class="ico" style="width:36px;height:36px" href="tel:${esc(t)}" aria-label="Appeler ${esc(x.nom)}">${ICO.tel}</a>`:""}</span></div>`};
+  return `<div class="label">Invités des prochaines réunions du groupe · ${av_.length}</div>${av_.length?av_.map(ligne).join(""):`<p class="vide" style="padding:12px">Personne d'inscrit pour l'instant.</p>`}
+    ${ap.length?`<details class="card" style="padding:12px"><summary class="label" style="cursor:pointer">Invités des réunions passées · ${ap.length}</summary><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">${ap.map(ligne).join("")}</div></details>`:""}`;
 }
 function dateReu(d,h){const x=new Date(d+"T12:00:00");return x.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+(h?" à "+h:"")}
 function vueInviter(){
@@ -463,6 +553,7 @@ function vueInviter(){
     <div class="label">Mes invités${S.mesInvites.length?" · "+S.mesInvites.length:""}</div>
     ${S.mesInvites.length?S.mesInvites.map((x,i)=>{const [l,c]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"];return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>Réunion du ${esc(new Date(x.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}</small></span><span style="font-size:12px;font-weight:700;color:${c};text-align:right">${esc(l)}</span></div>`}).join("")
       :`<p class="vide" style="padding:12px">Tu n'as encore proposé personne.</p>`}
+    ${invGroupeHTML()}
   </div>`;
 }
 async function proposerInvite(){
@@ -518,6 +609,8 @@ function vueRecos(){
     <div class="card club-tot">${c?`<span class="label" style="color:var(--or)">${esc(String(c.club||"").replace(/^CAP\s+/,""))} · ${esc(mois)}</span>
       <b class="bri gros">${esc(mad(c.mois_montant))}</b><span>d'affaires générées par le club ce mois-ci · ${c.mois_affaires} signée${c.mois_affaires>1?"s":""} · ${c.mois_recos} reco${c.mois_recos>1?"s":""}</span>
       <small>Depuis janvier : ${esc(mad(c.annee_montant))} · ${c.annee_affaires} affaire${c.annee_affaires>1?"s":""}</small>`:`<span>Chargement du total du club…</span>`}</div>
+    ${(()=>{const sg=(S.recos||[]).filter(r=>r.statut==="signee"),ap=sg.filter(r=>r.de===S.moi.id),re=sg.filter(r=>r.a===S.moi.id),s=a=>a.reduce((t,r)=>t+(Number(r.montant)||0),0);
+      return `<div class="ca-perso"><div><b>${esc(mad(s(ap)))}</b><span>CA que j'ai apporté · ${ap.length} affaire${ap.length>1?"s":""}</span></div><div><b>${esc(mad(s(re)))}</b><span>CA que j'ai reçu · ${re.length} affaire${re.length>1?"s":""}</span></div></div>`})()}
     <button class="btn" data-rdonner="">Donner une recommandation</button>
     <div class="seg" role="tablist"><button role="tab" aria-selected="${tab==="recues"}" class="${tab==="recues"?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${tab==="donnees"}" class="${tab==="donnees"?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
     ${l.length?l.map(r=>carteReco(r,tab==="recues")).join(""):`<p class="vide" style="padding:12px">${tab==="recues"?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
@@ -597,6 +690,10 @@ function brancher(){
   const f=$("f-msg");if(f){f.onsubmit=e=>{e.preventDefault();envoyer()};const t=$("m-txt");
     t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
     t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyer()}}}
+  const fg=$("f-grp");if(fg){fg.onsubmit=e=>{e.preventDefault();envoyerGroupe()};const t=$("g-txt");
+    t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
+    t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyerGroupe()}}}
+  const ff=$("f-fiche");if(ff){ff.onsubmit=e=>{e.preventDefault();enregistrerFiche()};$("f-ph").onchange=e=>{const f=e.target.files[0];if(f)televerser(f,"photo")};$("f-lg").onchange=e=>{const f=e.target.files[0];if(f)televerser(f,"logo")}}
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
   app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
   const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
@@ -620,7 +717,8 @@ function ouvrirConv(id){aller("conv",{conv:id});marquerLus(id).then(()=>{const b
 function demo(){
   const A=[["d1","Tarek Amar","Expert-comptable","Amar Conseil","CAP Rabat Signature","Rabat",true],["d2","Nawal Mansouri","Architecte d'intérieur","Atelier NM","CAP Rabat Signature","Rabat",true,"Des promoteurs et des gérants de franchises qui ouvrent de nouveaux points de vente."],
     ["d3","Kamal Idrissi","Assureur","Idrissi Assurances","CAP Casablanca Doyen","Casablanca",true],["d4","Salma Bennani","Photographe","Studio Lumière","CAP Rabat Capital Circle","Rabat",false],["d5","Youssef Alami","Imprimeur","Imprimerie du Bouregreg","CAP Salé Déclic","Salé",true]];
-  const annuaire=A.map(a=>({id:a[0],nom:a[1],metier:a[2],entreprise:a[3],club:a[4],ville:a[5],inscrit:a[6],cherche:a[7]||null,activite:null,telephone:a[0]==="d2"?"06 61 23 45 67":null,moi:a[0]==="d1"}));
+  const annuaire=A.map(a=>({id:a[0],nom:a[1],metier:a[2],entreprise:a[3],club:a[4],ville:a[5],inscrit:a[6],cherche:a[7]||null,activite:null,telephone:a[0]==="d2"?"06 61 23 45 67":null,moi:a[0]==="d1",club_id:a[4]==="CAP Rabat Signature"?"c1":"c"+a[0]}));
+  Object.assign(annuaire[1],{presentation:"Aménagement de bureaux, boutiques et cafés, du plan à la livraison.",site:"www.atelier-nm.ma",linkedin:"linkedin.com/in/nawal-mansouri",reseaux:"instagram.com/ateliernm",fonction:"Gérante"});
   const t=m=>new Date(Date.now()-m*6e4).toISOString();
   const msgs=[{id:"m1",de:"d1",a:"d2",texte:"Bonjour Nawal, un client à moi ouvre une deuxième agence à Agdal. Il cherche quelqu'un pour l'aménagement.",cree_le:t(40),lu_le:t(35)},
     {id:"m2",de:"d2",a:"d1",texte:"Bonjour Tarek ! Avec plaisir. Quelle surface, et pour quand ?",cree_le:t(30),lu_le:null},
@@ -629,7 +727,8 @@ function demo(){
   const recos=[{id:"r1",de:"d2",a:"d1",contact_nom:"Hicham Berrada",contact_tel:"06 62 11 22 33",contact_entreprise:"Berrada Immobilier",besoin:"Cherche un expert-comptable pour sa nouvelle SARL, dès ce mois.",statut:"envoyee",montant:null,cree_le:t(90)},
     {id:"r2",de:"d1",a:"d2",contact_nom:"Laila Fassi",contact_tel:null,contact_entreprise:"Franchise Café Doré",besoin:"Aménagement de deux points de vente à Agdal.",statut:"devis",montant:null,cree_le:t(4000)},
     {id:"r3",de:"d1",a:"d5",contact_nom:"Omar Tazi",contact_tel:null,contact_entreprise:"Tazi Events",besoin:null,statut:"signee",montant:18000,cree_le:t(9000)}];
-  return {moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs,recos};
+  const grp=[{id:"g1",club_id:"c1",auteur_nom:"Jean-Baptiste Chiotti",membre_id:null,texte:"Bonjour à tous ! Réunion jeudi 11 h au Limonadier. Pensez à vos invités.",cree_le:t(300)},{id:"g2",club_id:"c1",auteur_nom:"Nawal Mansouri",membre_id:"d2",texte:"J'amène une promotrice, elle cherche un expert-comptable 😉",cree_le:t(120)}];
+  return {grp,moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs,recos};
 }
 
 (async()=>{

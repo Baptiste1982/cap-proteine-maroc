@@ -290,6 +290,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Membres (vue liste) : colonne « Espace membre » (`mbEspCell`) → `mbAccesFiche(id)` (mobile modifiable `mbAccTel`, puis le code par `mbCodeAcces` et WhatsApp).
 - Équipe → fiche d'accès : bloc « Espace membre » (`accMembreBloc`) : fiche trouvée → `accMembreOuvrir` (lie `animateur_id`, reprend le mobile) ; sinon `accMembreCreer` l'ajoute comme vrai membre de son groupe (compte dans les stats). Banc `mbacc.mjs` 36/36.
 
+**✉ Message d'invitation par type de réunion (v0.46.1 / v0.47.0, 16/11/2026)** — JB : « c'est pas Protéine Maroc, c'est Protéine Rabat et Région » et, sur le message d'invitation WhatsApp, « le message d'accueil s'il te plaît, ça c'est nul ».
+- v0.46.1 : messages d'accès (`accMessage`, `embMessage`) = « Club d'Affaires Protéine Rabat et Région », sans émoji (👋 sortait en « � » dans WhatsApp). Ailleurs (connexion, espace membre, formulaire d'adhésion et son pied légal) « Protéine Maroc » reste.
+- v0.47.0 : `INV_MODELES` (SI, RL, autre) avec repères {jour} {heure} {lieu} {adresse} {groupe} {lien} {prenom}, remplis par `invRemplir`. « Envoyer par WhatsApp » de la fiche réunion ouvre `natInvWa(id)` : texte modifiable, WhatsApp / Copier, « Garder comme modèle » (`invGarder` remet les repères, localStorage `cap-invtpl-<type>`), « Revenir au texte d'origine ». Sans émoji. ⏳ JB veut plus tard préciser le type (information, lancement, traditionnelle, thématique…) : `TYPES` n'a que SI et RL. Banc `natinv.mjs` 39/39.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

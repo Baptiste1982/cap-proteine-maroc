@@ -276,6 +276,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Cartes des Demandes (`.dm-card`) : l'inclinaison du survol se joue à l'arrivée (classes `survol` + `incline` 450 ms) puis la carte se redresse pour la lecture ; `_horsCarte` garde la carte soulevée au ras de son bord (elle tremblait : soulevée de 3 px, elle sortait de sous la souris). Banc `survol.mjs` 5/5.
 - 16/11 : invitation **n° 108** créée au national pour jeudi 19/11 11h au Limonadier (copie de la n° 97), rattachée à la SI du 19/11 de CAP Rabat Prévilège. Chrystel marquée « membre, acté au national » (pas une demande en cours).
 
+**🎨 Thèmes revus (v0.44.1, 16/11/2026)** — JB : « le clair trop blanc, on voit mal les menus ; le sombre trop rosé, plutôt gris anthracite ». Bloc CSS `/*v045 thèmes*/` en fin de styles (il l'emporte sur les définitions d'avant) : clair = fond `#ECEAE9`, cartes blanches, filets et texte secondaire plus marqués, menu latéral sur `--side` `#E1DEDD`, onglet actif en carte blanche ; sombre = anthracite neutre (`#17181A` fond, `#222326` cartes, `#36383C` filets, plus aucune teinte rose sauf les accents crimson). Banc `theme.mjs` (captures clair / sombre / sombre téléphone).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

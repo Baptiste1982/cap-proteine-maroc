@@ -2010,7 +2010,7 @@ const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégre
 const APP_VERSION="1.0.0";
 const CHANGELOG=[
   {v:"1.0.0",date:"16 novembre 2026",notes:{
-    "Ajouté":["Version 1.0 : le CRM est connecté au CRM national (envoi des adhésions, signature Yousign, invitations, inscrits, suivi des signatures). Fin de la phase de test."],
+    "Ajouté":["Version 1.0 : le CRM est connecté au CRM national (envoi des adhésions, signature Yousign, invitations, inscrits, suivi des signatures). Fin de la phase de test.","Vue régionale cloisonnée : en vue Rabat · Salé · Kénitra, tout ce qui s'ouvre depuis un bouton (série de bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation, recommandations, rendement, archives, exports, comptes à embarquer) ne concerne que la région. La vue nationale garde l'accès à tout."],
     "Corrigé":["Constellation : le volet d'un groupe se ferme bien avec la croix (ou en touchant à côté). Sur téléphone, il monte du bas de l'écran, à la bonne taille."],
     "Modifié":["Constellation : au survol d'un groupe placé derrière, son orbite accélère et l'amène devant, puis il grandit. Il revient à sa place quand la souris s'en va."]}},
   {v:"0.51.3",date:"16 novembre 2026",notes:{
@@ -2815,7 +2815,9 @@ function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueReg
     lieux:DB.lieux.filter(l=>villes.includes(l.ville)||lieuxUtil.has(l.id)),
     animateurs:DB.animateurs.filter(a=>anims.has(a.id)||villes.includes(a.ville)),
     recos:(DB.recos||[]).filter(r=>ids.has(r.club_id)),presences:(DB.presences||[]).filter(p=>rids.has(p.reunion_id)),
-    zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v)))}}
+    zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v))),
+    acces:DB.acces?DB.acces.filter(x=>x.animateur_id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))):DB.acces,
+    aEmbarquer:DB.acces?DB.acces.filter(x=>x.animateur_id&&x.role!=="visiteur"&&x.id!==SESSION.id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))&&(x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire))).length:DB.aEmbarquer}}
 function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB;DB=p;try{return fn()}finally{DB=sv}}
 /* ---------- Accueil régional : cockpit + planning ---------- */
 const VILLE_TEINTE={Rabat:"#B0122E","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
@@ -5789,7 +5791,7 @@ function embEtat(u){
   return["w","Jamais connecté"];
 }
 function embRendu(){
-  const l=_emb.l,nR=l.filter(u=>u.mdp_initial).length,nJ=l.filter(u=>!u.derniere_connexion).length;
+  const pv=vuePortee(),l=pv?_emb.l.filter(u=>u.animateur_id&&pv.animateurs.some(a=>a.id===u.animateur_id)):_emb.l,nR=l.filter(u=>u.mdp_initial).length,nJ=l.filter(u=>!u.derniere_connexion).length;
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({ini:"🚀",title:"Embarquer l'équipe",sub:"Un mot de passe provisoire propre à chacun, et ses accès envoyés par WhatsApp. Il choisira le sien à la première connexion."})}
     ${ficheKpis([[l.length,"comptes"],[nR,"avec « cap2026 »",nR?"warn":""],[nJ,"jamais connectés",nJ?"warn":""]])}
@@ -6991,6 +6993,13 @@ function horlogeDemarrer(){horlogeMaj();clearTimeout(_horT);const suite=()=>{hor
 
 /* v0.38.0 : rendus partiels et listes ouvertes depuis la page suivent aussi la vue */
 for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){const f=window[n];if(typeof f==="function")window[n]=function(...a){return avecVue(()=>f.apply(this,a))}}
+/* v1.0.0 — Cloisonnement de la vue régionale : tout écran, liste ou série ouvert depuis un bouton ne lit que la région
+   (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
+   recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
+   (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
+["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+ "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
+  const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 </script>
 </body>
 </html>

@@ -1876,6 +1876,16 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 #cst-o .cst-gn{font-size:14px}#cst-o .cst-a.hov .cst-gn{font-size:15.5px}
 #cst-o .cst-subt{font-size:16px}#cst-o .cst-rt{font-size:24px}#cst-o .cst-rs{font-size:14px}#cst-o .cst-n{font-size:15px}
 #cst-o svg.pose .cst-a,#cst-o svg.pose .cst-a *{animation-name:none}#cst-o svg.pose .cst-a.hov .cst-onde,#cst-o svg.pose .cst-a.tap .cst-onde{animation-name:cstOnde}#cst-o svg.pose .cst-halo{animation-name:cstSouffle}
+#cst-o .cst-a.hov .cst-corps,#cst-o .cst-a:focus-visible .cst-corps{transform:scale(1.5);stroke:rgba(255,255,255,.3);stroke-width:1.5;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}#cst-o .cst-a.hov .cst-gn{fill:#F6E9EC}
+.cf-h{padding-right:34px}
+@media (max-width:899px){
+  #cst-o .cst-fiche{position:fixed;inset:0;z-index:120;align-items:flex-end;background:rgba(10,2,6,.55)}
+  #cst-o .cst-fiche .cf-in{width:100%;max-width:520px;max-height:86vh;border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 16px);box-sizing:border-box}
+  .cst-fiche.on .cf-in{animation-name:cfMonteBas}
+  .cst-ciel .cf-ring{width:60px;height:60px;flex:0 0 60px}
+  .cf-h h3{font-size:19px}.cf-h small{font-size:10px}.cf-k b{font-size:19px}.cf-k span{font-size:11px}
+}
+@keyframes cfMonteBas{from{transform:translateY(100%)}}
 /*v050.1 constellation : sous-régions, orbites inclinées qui tournent (profondeur), volet du groupe en superposition*/
 @keyframes cstVol{from{opacity:0;transform:scale(.2)}}
 .cst-a{opacity:var(--z,1);transform-box:fill-box;transform-origin:center}
@@ -1890,7 +1900,7 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 .cst-sub.lit .cst-subc{stroke:#fff;stroke-width:2.4}
 .cst-cp.b{animation-delay:1.5s}
 .cst-ciel{position:relative}
-.cst-fiche{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:3}
+.cst-fiche[hidden]{display:none!important}.cst-fiche{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:3}
 .cst-fiche .cf-in{pointer-events:auto;width:min(420px,92%);max-height:92%;overflow:auto;background:rgba(32,10,18,.86);border:1px solid rgba(233,207,142,.28);border-radius:22px;padding:22px 22px 18px;backdrop-filter:blur(14px);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset;position:relative;transform-origin:50% 60%}
 .cst-fiche.on .cf-in{animation:cfIn .55s cubic-bezier(.2,.9,.25,1.15) both}
 @keyframes cfIn{from{opacity:0;transform:perspective(900px) rotateX(18deg) translateY(30px) scale(.9)}}
@@ -1997,8 +2007,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.51.3";
+const APP_VERSION="1.0.0";
 const CHANGELOG=[
+  {v:"1.0.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Version 1.0 : le CRM est connecté au CRM national (envoi des adhésions, signature Yousign, invitations, inscrits, suivi des signatures). Fin de la phase de test.","Vue régionale cloisonnée : en vue Rabat · Salé · Kénitra, tout ce qui s'ouvre depuis un bouton (série de bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation, recommandations, rendement, archives, exports, comptes à embarquer) ne concerne que la région. La vue nationale garde l'accès à tout."],
+    "Corrigé":["Constellation : le volet d'un groupe se ferme bien avec la croix (ou en touchant à côté). Sur téléphone, il monte du bas de l'écran, à la bonne taille."],
+    "Modifié":["Constellation : au survol d'un groupe placé derrière, son orbite accélère et l'amène devant, puis il grandit. Il revient à sa place quand la souris s'en va."]}},
   {v:"0.51.3",date:"16 novembre 2026",notes:{
     "Modifié":["Constellation : toutes les régions suivent la même structure, même avec une seule ville (Marrakech…) : le centre de la région, le nœud de chaque ville avec ses membres, puis ses groupes autour."]}},
   {v:"0.51.2",date:"16 novembre 2026",notes:{
@@ -2801,7 +2815,9 @@ function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueReg
     lieux:DB.lieux.filter(l=>villes.includes(l.ville)||lieuxUtil.has(l.id)),
     animateurs:DB.animateurs.filter(a=>anims.has(a.id)||villes.includes(a.ville)),
     recos:(DB.recos||[]).filter(r=>ids.has(r.club_id)),presences:(DB.presences||[]).filter(p=>rids.has(p.reunion_id)),
-    zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v)))}}
+    zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v))),
+    acces:DB.acces?DB.acces.filter(x=>x.animateur_id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))):DB.acces,
+    aEmbarquer:DB.acces?DB.acces.filter(x=>x.animateur_id&&x.role!=="visiteur"&&x.id!==SESSION.id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))&&(x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire))).length:DB.aEmbarquer}}
 function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB;DB=p;try{return fn()}finally{DB=sv}}
 /* ---------- Accueil régional : cockpit + planning ---------- */
 const VILLE_TEINTE={Rabat:"#B0122E","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
@@ -5775,7 +5791,7 @@ function embEtat(u){
   return["w","Jamais connecté"];
 }
 function embRendu(){
-  const l=_emb.l,nR=l.filter(u=>u.mdp_initial).length,nJ=l.filter(u=>!u.derniere_connexion).length;
+  const pv=vuePortee(),l=pv?_emb.l.filter(u=>u.animateur_id&&pv.animateurs.some(a=>a.id===u.animateur_id)):_emb.l,nR=l.filter(u=>u.mdp_initial).length,nJ=l.filter(u=>!u.derniere_connexion).length;
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({ini:"🚀",title:"Embarquer l'équipe",sub:"Un mot de passe provisoire propre à chacun, et ses accès envoyés par WhatsApp. Il choisira le sien à la première connexion."})}
     ${ficheKpis([[l.length,"comptes"],[nR,"avec « cap2026 »",nR?"warn":""],[nJ,"jamais connectés",nJ?"warn":""]])}
@@ -6398,7 +6414,7 @@ function cstRender(){
   // v0.50.1 : une région à plusieurs villes se découpe en sous-régions (une par ville), chacune avec ses groupes.
   // Les groupes tournent sur une orbite inclinée : devant = plus grand et plus net, derrière = plus petit et plus pâle.
   const orbite=(hx,hy,R,liste,ri,ux,uy,d0)=>{
-    const o={hx,hy,R,items:[]};orbites.push(o);
+    const o={hx,hy,R,items:[],off:0,offT:0};orbites.push(o);
     orb+=`<ellipse class="cst-orb" data-o="${orbites.length-1}" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
     liste.forEach((g,gi)=>{
       const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=15+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
@@ -6460,9 +6476,15 @@ function cstRender(){
     orbites.forEach((ob,oi)=>{
       const tilt=calme?TILT:TILT+.16*Math.sin(ts*.11+oi*1.7),psi=calme?0:.22*Math.sin(ts*.07+oi*2.3),cs=Math.cos(psi),sn=Math.sin(psi);
       const el=ells[oi];if(el){el.setAttribute("ry",(ob.R*tilt).toFixed(1));el.setAttribute("transform",`rotate(${(psi*180/Math.PI).toFixed(2)} ${ob.hx.toFixed(1)} ${ob.hy.toFixed(1)})`)}
+      // Le groupe visé : l'orbite accélère pour l'amener devant (bas de l'orbite), puis il s'éclaire.
+      const vise=ob.items.find(it=>it.i===_cst.hov||it.i===_cst.sel);
+      if(vise){if(vise.i!==ob.vise){ob.vise=vise.i;const th0=vise.b0+rot*(oi%2?-1:1)+ob.off;let d=(Math.PI/2-th0)%(2*Math.PI);if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;ob.offT=ob.off+d}}
+      else if(ob.vise!=null){ob.vise=null;ob.offT=0}
+      ob.off+=(ob.offT-ob.off)*Math.min(1,dt/(calme?16:150));const arrive=Math.abs(ob.offT-ob.off)<.12;
       ob.items.forEach(it=>{
-        const cible=_cst.hov===it.i||_cst.sel===it.i?1:0;it.f+=(cible-it.f)*Math.min(1,dt/70);
-        const th=it.b0+rot*(oi%2?-1:1),z0=(Math.sin(th)+1)/2,z=Math.max(z0,it.f),lx=ob.R*Math.cos(th),ly=ob.R*tilt*Math.sin(th);
+        const cible=(_cst.hov===it.i||_cst.sel===it.i)&&arrive?1:0;it.f+=(cible-it.f)*Math.min(1,dt/70);
+        els[it.i].g.classList.toggle("hov",cible===1);
+        const th=it.b0+rot*(oi%2?-1:1)+ob.off,z0=(Math.sin(th)+1)/2,z=Math.max(z0,it.f),lx=ob.R*Math.cos(th),ly=ob.R*tilt*Math.sin(th);
         const px=ob.hx+lx*cs-ly*sn,py=ob.hy+lx*sn+ly*cs,k=.8+.32*z0+.42*it.f,e=els[it.i];
         e.pl.setAttribute("transform",`translate(${px.toFixed(1)},${py.toFixed(1)}) scale(${k.toFixed(3)})`);
         e.g.style.setProperty("--z",(.62+.38*z).toFixed(2));
@@ -6477,10 +6499,10 @@ function cstRender(){
   place(t0);
   const focus=(ri,i)=>{svg.classList.toggle("focus",ri!=null);o.querySelectorAll("[data-r]").forEach(e=>e.classList.toggle("lit",ri!=null&&+e.dataset.r===ri));o.querySelectorAll(".cst-a").forEach(e=>e.classList.toggle("hov",i!=null&&+e.dataset.i===i))};
   o.querySelectorAll(".cst-a").forEach(a=>{const i=+a.dataset.i,g=pos[i];
-    a.addEventListener("pointerenter",()=>{_cst.pause=true;_cst.hov=i;focus(g.ri,i);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
+    a.addEventListener("pointerenter",()=>{clearTimeout(_cst.lache);_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
     a.addEventListener("pointermove",e=>{const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"});
-    a.addEventListener("pointerleave",()=>{if(_cst.hov===i)_cst.hov=null;_cst.pause=_cst.sel!=null;focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel);tip.hidden=true});
-    const choisir=()=>{_cst.sel=i;_cst.pause=true;focus(g.ri,i);tip.hidden=true;cstFiche(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
+    a.addEventListener("pointerleave",()=>{tip.hidden=true;clearTimeout(_cst.lache);_cst.lache=setTimeout(()=>{if(a.matches(":hover"))return;if(_cst.hov===i)_cst.hov=null;_cst.pause=_cst.sel!=null;focus(_cst.sel!=null?pos[_cst.sel].ri:null,null)},650)});
+    const choisir=()=>{_cst.sel=i;_cst.pause=true;focus(g.ri,null);tip.hidden=true;cstFiche(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
     a.addEventListener("click",choisir);a.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choisir()}});
   });
   o.querySelectorAll(".cst-reg,.cst-sub").forEach(r=>{r.addEventListener("pointerenter",()=>focus(+r.dataset.r,null));r.addEventListener("pointerleave",()=>focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel))});
@@ -6510,7 +6532,7 @@ function cstFiche(g){
     <h4>Membres${mb.length?" ("+mb.length+")":""}</h4>
     <div class="cf-mb">${mb.length?mb.map((m,k)=>`<button class="cf-m" style="--i:${k}" onclick="closeConstellation();memberSheet('${m.clubId}','${m.id}')"><span class="cf-av">${esc((m.nom||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase())}</span><span><b>${esc(m.nom)}</b><small>${esc(mbMetier(m)||"")}</small></span></button>`).join(""):`<p class="cf-vide">Pas encore de membre dans ce groupe.</p>`}</div>
     <button class="cst-go" onclick="closeConstellation();openClub('${c.id}')">${act} ›</button></div>`;
-  f.hidden=false;f.classList.remove("on");void f.offsetWidth;f.classList.add("on");
+  f.hidden=false;f.classList.remove("on");void f.offsetWidth;f.classList.add("on");f.onclick=e=>{if(e.target===f)cstFicheFermer()};
 }
 function cstFicheFermer(){const f=document.getElementById("cst-fiche");if(f){f.hidden=true;f.classList.remove("on")}if(_cst){_cst.sel=null;_cst.pause=false;const o=document.getElementById("cst-o");if(o){o.querySelector("svg")?.classList.remove("focus");o.querySelectorAll(".lit,.hov").forEach(e=>e.classList.remove("lit","hov"))}}}
 function cstPanneau(g,t){
@@ -6971,6 +6993,13 @@ function horlogeDemarrer(){horlogeMaj();clearTimeout(_horT);const suite=()=>{hor
 
 /* v0.38.0 : rendus partiels et listes ouvertes depuis la page suivent aussi la vue */
 for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){const f=window[n];if(typeof f==="function")window[n]=function(...a){return avecVue(()=>f.apply(this,a))}}
+/* v1.0.0 — Cloisonnement de la vue régionale : tout écran, liste ou série ouvert depuis un bouton ne lit que la région
+   (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
+   recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
+   (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
+["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+ "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
+  const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 </script>
 </body>
 </html>

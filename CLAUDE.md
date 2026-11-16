@@ -58,7 +58,7 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 ## Design system
 
-- Palette **crimson & or** (charte Protéine). **Confirmé sur `index.html`** : crimson `#B0122E` (deep `#5C0A18`, darker `#3E0710`, tint `#F8E9EC`), or `#C8A24C`. Encre `#1B1416`, papier `#FAF6F4`.
+- Palette **crimson & bleu ardoise** (charte Protéine ; l'or `#C8A24C` remplacé par le bleu ardoise `#5B7FA3` en v0.44.2, à la demande de JB) : crimson `#B0122E` (deep `#5C0A18`, darker `#3E0710`, tint `#F8E9EC`). Encre `#1B1416`, papier `#FAF6F4`.
 - Typo : **Bricolage Grotesque** (titres) / **Inter** (corps).
 - **Mobile-first** : navigation basse + modales en bottom-sheet.
 
@@ -277,6 +277,7 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - 16/11 : invitation **n° 108** créée au national pour jeudi 19/11 11h au Limonadier (copie de la n° 97), rattachée à la SI du 19/11 de CAP Rabat Prévilège. Chrystel marquée « membre, acté au national » (pas une demande en cours).
 
 **🎨 Thèmes revus (v0.44.1, 16/11/2026)** — JB : « le clair trop blanc, on voit mal les menus ; le sombre trop rosé, plutôt gris anthracite ». Bloc CSS `/*v045 thèmes*/` en fin de styles (il l'emporte sur les définitions d'avant) : clair = fond `#ECEAE9`, cartes blanches, filets et texte secondaire plus marqués, menu latéral sur `--side` `#E1DEDD`, onglet actif en carte blanche ; sombre = anthracite neutre (`#17181A` fond, `#222326` cartes, `#36383C` filets, plus aucune teinte rose sauf les accents crimson). Banc `theme.mjs` (captures clair / sombre / sombre téléphone).
+- **v0.44.2 : le jaune doré remplacé par le bleu ardoise** (clic JB sur la maquette https://claude.ai/artifact/KqbEcFyKWXNcepS9k7eaRo, piste A) : alertes, bandeau « Vue nationale », pastilles « En création » / RL, compteur « À faire », carte paiement de la Synthèse vivante, constellation, toasts d'avertissement. Clair : accent `#5B7FA3`, foncé `#3B5B7A`/`#36556F`, fond `#E3EAF2`/`#E8EEF4` ; sombre : `#8FB0D1`/`#9DB7D1` sur `#1C2530`/`#223042`. `--gold` vaut désormais ce bleu (le nom du jeton reste). Restent volontairement dorées : les couleurs de ville (Salé), des groupes, des rôles et des confettis.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

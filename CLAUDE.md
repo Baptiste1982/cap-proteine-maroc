@@ -305,6 +305,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `national-adhesion` v6 : `signature: 'electronique'` par défaut dans `envoyer`. Nouvelle action `yousign`, ouverte aussi avec le jeton `x-suivi-jeton` : elle lance Yousign sur un contrat déjà créé, sans le réécrire. Garde-fous : `reference_procedure` déjà posé → refus (pas de 2e e-mail) ; contrat déjà signé → refus. Statut `yousign_envoye`.
 - 16/11 : Yousign lancé sur les contrats 121 (Dinia), 122 (Reda), 123 (Ibtissam El Hammoumi) et 124 (Nawar), qui étaient en papier. Le national a accepté les 4. Le contrat d'essai 119 et Chrystel n'ont pas été touchés.
 
+**🌗 Thème sombre et constellation (v0.49.1 → v0.51.0, 16/11/2026)** :
+- Sombre = une seule palette, bloc CSS `/*v050*/` en fin de styles (anthracite `#26282C` / cartes `#303237`, rouge du logo `#A81E3C`, `--crimson-txt` `#EE5A64` pour les textes rouges ; `color:var(--crimson)` est devenu `color:var(--crimson-txt,var(--crimson))` partout). Sombre = thème par défaut (`cap-theme` absent). Maquette « design clean » écartée par JB (https://claude.ai/artifact/A8LuRTqo51ZMqs87kYHBFw), à reprendre plus tard.
+- Constellation (`cstRender`) : cadre (viewBox) ajusté au contenu ; région à plusieurs villes = sous-régions (`.cst-sub`) ; groupes sur orbites inclinées animées par `requestAnimationFrame` (`_cst.raf`, `_cst.pause` au survol / volet ouvert) ; clic = volet `#cst-fiche` (`cstFiche`, `cstFicheFermer`, Échap ferme d'abord le volet). Banc `cst.mjs` 18/18.
+- Fiches Équipe créées pour Hassan Bahjoub (directeur national, compte `hassan`) et Ghita (bureau national), liées à leurs comptes, sans ville ni mobile.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

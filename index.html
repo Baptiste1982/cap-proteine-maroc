@@ -1873,6 +1873,53 @@ html.dark .vb-or{background:var(--gold-tint);--enc:#364658}html.dark .vb-or .vb-
 html.dark .ce-ty{color:#fff;border-color:color-mix(in srgb,var(--vc) 70%,transparent);background:color-mix(in srgb,var(--vc) 35%,transparent)}
 html.dark .map-embed{background:var(--soft)}
 html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;border-color:#64303A}
+#cst-o .cst-gn{font-size:14px}#cst-o .cst-a.hov .cst-gn{font-size:15.5px}
+#cst-o .cst-subt{font-size:16px}#cst-o .cst-rt{font-size:24px}#cst-o .cst-rs{font-size:14px}#cst-o .cst-n{font-size:15px}
+/*v050.1 constellation : sous-régions, orbites inclinées qui tournent (profondeur), volet du groupe en superposition*/
+@keyframes cstVol{from{opacity:0;transform:scale(.2)}}
+.cst-a{opacity:var(--z,1);transform-box:fill-box;transform-origin:center}
+.cst-a .cst-corps{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.cst-reflet{fill:#fff;opacity:.28;pointer-events:none}
+.cst-orb{fill:none;stroke:rgba(233,207,142,.32);stroke-dasharray:2 7;animation:none}
+.cst-sub{animation:cstPop .7s cubic-bezier(.3,1.5,.5,1) var(--d) both;transform-box:fill-box;transform-origin:center}
+.cst-subl{stroke:rgba(169,194,218,.35);stroke-width:1.2;stroke-dasharray:4 5}
+.cst-subc{fill:#2A1A22;stroke:#A9C2DA;stroke-width:1.6}
+.cst-subn{fill:#fff;font:800 14px "Bricolage Grotesque",sans-serif;text-anchor:middle;pointer-events:none}
+.cst-subt{fill:#C9DAEA;font:800 13.5px "Bricolage Grotesque",sans-serif;text-anchor:middle;letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
+.cst-sub.lit .cst-subc{stroke:#fff;stroke-width:2.4}
+.cst-cp.b{animation-delay:1.5s}
+.cst-ciel{position:relative}
+.cst-fiche{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:3}
+.cst-fiche .cf-in{pointer-events:auto;width:min(420px,92%);max-height:92%;overflow:auto;background:rgba(32,10,18,.86);border:1px solid rgba(233,207,142,.28);border-radius:22px;padding:22px 22px 18px;backdrop-filter:blur(14px);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset;position:relative;transform-origin:50% 60%}
+.cst-fiche.on .cf-in{animation:cfIn .55s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes cfIn{from{opacity:0;transform:perspective(900px) rotateX(18deg) translateY(30px) scale(.9)}}
+.cf-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:transparent;color:#F6E9EC;cursor:pointer}
+.cf-h{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.cf-h small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#C9AAB1}
+.cf-h h3{margin:2px 0;font:800 22px "Bricolage Grotesque",sans-serif;color:#fff}
+.cf-h span{font-size:13px;color:#E3CBD0}
+.cst-ciel .cf-ring{width:76px;height:76px;flex:0 0 76px;max-height:none;overflow:visible}.cf-h>div{min-width:0}
+.cf-rt{fill:none;stroke:rgba(255,255,255,.12);stroke-width:7}
+.cf-rv{fill:none;stroke:var(--c);stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:var(--off)}
+.cst-fiche.on .cf-rv{animation:cfRing 1.1s .2s cubic-bezier(.3,.8,.2,1) both}
+@keyframes cfRing{from{stroke-dashoffset:var(--full)}}
+.cf-ring text{fill:#fff;font:800 22px "Bricolage Grotesque",sans-serif;text-anchor:middle}
+.cf-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 12px}
+.cf-k div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.cst-fiche.on .cf-k div{animation:cfMonte .45s calc(.25s + var(--i)*.08s) both}
+.cf-k b{font:800 22px "Bricolage Grotesque",sans-serif;color:#fff}.cf-k b i{font-style:normal;font-size:13px;color:#C9AAB1}
+.cf-k span{font-size:11.5px;color:#D9C2C7;line-height:1.25}
+.cf-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;color:#D9C2C7}.cf-r b{color:#fff}
+.cst-fiche h4{margin:14px 0 6px;font:800 12px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#A9C2DA}
+.cf-mb{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.cf-m{display:flex;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:12px;padding:6px 8px;color:#F6E9EC;cursor:pointer;font:inherit}
+.cf-m:hover{background:rgba(255,255,255,.07)}
+.cst-fiche.on .cf-m{animation:cfMonte .4s calc(.45s + var(--i)*.06s) both}
+.cf-av{width:34px;height:34px;flex:0 0 34px;border-radius:50%;display:grid;place-items:center;font:700 12px Inter,sans-serif;background:color-mix(in srgb,var(--c) 30%,#2A0C14);border:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+.cf-m b{display:block;font-size:13.5px}.cf-m small{font-size:12px;color:#C9AAB1}
+.cf-vide{font-size:13px;color:#C9AAB1;margin:4px 0}
+@keyframes cfMonte{from{opacity:0;transform:translateY(10px)}}
+@media (prefers-reduced-motion:reduce){.cst-fiche .cf-in,.cf-k div,.cf-m,.cf-rv{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1949,8 +1996,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.50.0";
+const APP_VERSION="0.51.0";
 const CHANGELOG=[
+  {v:"0.51.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Constellation du réseau : une région à plusieurs villes se découpe en sous-régions (Rabat, Salé, Kénitra…), chacune avec ses groupes.","Les groupes tournent lentement sur des orbites inclinées : ceux de devant sont plus grands et plus nets, ceux de derrière plus petits. La rotation s'arrête quand on survole un groupe.","Toucher un groupe ouvre un volet par-dessus la carte : jauge de membres animée, bilans, affaires signées, dernière et prochaine réunion, liste des membres (chacun ouvre sa fiche)."],
+    "Corrigé":["Constellation en plein écran : plus rien ne sort par le haut ni par le bas, le dessin s'ajuste à l'écran et les noms de région ne chevauchent plus les groupes."]}},
   {v:"0.50.0",date:"16 novembre 2026",notes:{
     "Modifié":["Thème sombre refait : un gris anthracite plus clair et plus doux, une seule palette sur tous les écrans, le rouge du logo partout. Les pastilles (planifiée, lancement, recommandations, renouvellements, présences) n'ont plus de fond clair qui jurait. Le menu actif reste lisible.","Le sombre devient le thème par défaut. Ceux qui ont choisi le clair dans Paramètres le gardent."]}},
   {v:"0.49.1",date:"16 novembre 2026",notes:{
@@ -6327,57 +6377,125 @@ function openConstellation(){
   try{if(document.documentElement.requestFullscreen&&isWide())document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
   document.addEventListener("keydown",cstKey);
 }
-function closeConstellation(){const o=document.getElementById("cst-o");if(o)o.remove();document.removeEventListener("keydown",cstKey);clearInterval(_cst&&_cst.clk);try{if(document.fullscreenElement&&!document.getElementById("show-o"))document.exitFullscreen()}catch(e){}}
-function cstKey(e){if(e.key==="Escape")closeConstellation()}
+function closeConstellation(){const o=document.getElementById("cst-o");if(o)o.remove();if(_cst)cancelAnimationFrame(_cst.raf);document.removeEventListener("keydown",cstKey);clearInterval(_cst&&_cst.clk);try{if(document.fullscreenElement&&!document.getElementById("show-o"))document.exitFullscreen()}catch(e){}}
+function cstKey(e){if(e.key!=="Escape")return;const f=document.getElementById("cst-fiche");if(f&&!f.hidden)cstFicheFermer();else closeConstellation()}
 function cstRender(){
   const o=document.getElementById("cst-o");if(!o)return;
+  cancelAnimationFrame(_cst.raf);
   const regs=cstDonnees(),calme=_calme();
-  const W=1000,H=640,cx=W/2,cy=H/2+8,nR=regs.length;
+  const W=1000,H=640,cx=W/2,cy=H/2+8,nR=regs.length,TILT=.5;
   const tot=regs.reduce((a,r)=>a+r.nb,0),nG=regs.reduce((a,r)=>a+r.g.length,0);
   const nBil=regs.reduce((a,r)=>a+r.g.reduce((b,x)=>b+x.bil.length,0),0),nPlan=regs.reduce((a,r)=>a+r.g.filter(x=>x.plan).length,0),nSans=regs.reduce((a,r)=>a+r.g.filter(x=>x.anim).length,0);
-  let et="";for(let i=0;i<90;i++){const x=(i*137.5)%W,y=(i*89.3+i*i*.7)%H;et+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)*.5+.5}" style="animation-delay:${(i%9)*.45}s"/>`}
-  let liens="",orb="",astres="",com="";const pos=[];
+  let liens="",orb="",astres="",com="",subs="";const pos=[],orbites=[];
+  const bx={x0:cx-70,y0:cy-70,x1:cx+70,y1:cy+70},bord=(a,b,c,d)=>{bx.x0=Math.min(bx.x0,a);bx.y0=Math.min(bx.y0,b);bx.x1=Math.max(bx.x1,c);bx.y1=Math.max(bx.y1,d)};
+  // v0.50.1 : une région à plusieurs villes se découpe en sous-régions (une par ville), chacune avec ses groupes.
+  // Les groupes tournent sur une orbite inclinée : devant = plus grand et plus net, derrière = plus petit et plus pâle.
+  const orbite=(hx,hy,R,liste,ri,ux,uy,d0)=>{
+    const o={hx,hy,R,items:[]};orbites.push(o);
+    orb+=`<ellipse class="cst-orb" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
+    liste.forEach((g,gi)=>{
+      const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=15+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
+      const i=pos.length;pos.push({...g,ri,sz});o.items.push({i,b0,sz});
+      const lw=Math.max(sz*1.15,g.nom.length*5.2);bord(hx-R-lw,hy-R*TILT-sz*1.15-10,hx+R+lw,hy+R*TILT+sz*1.15+24);
+      const alerte=g.e==="sans"||g.e==="bil";
+      astres+=`<line class="cst-sl" data-sl="${i}" x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${hx}" y2="${hy}"/>
+      <g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} membre${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--d:${(d0+gi*.06).toFixed(2)}s">
+        <g class="cst-pl"><g class="cst-fl"><circle class="cst-halo" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" r="${sz.toFixed(1)}" stroke="${c}"/>
+        <circle class="cst-corps" r="${sz.toFixed(1)}" fill="${g.e==="sans"?"#2A0C14":c}" stroke="${g.e==="sans"?"#F2E5E8":"rgba(255,255,255,.25)"}"${g.e==="sans"?' stroke-dasharray="3 3"':""}/>
+        <circle class="cst-reflet" cx="${(-sz*.35).toFixed(1)}" cy="${(-sz*.38).toFixed(1)}" r="${(sz*.38).toFixed(1)}"/>
+        ${g.nb?`<text class="cst-n" y="4.5">${g.nb}</text>`:""}
+        ${g.bil.length?`<circle class="cst-pip" cx="${(sz*.72).toFixed(1)}" cy="${(-sz*.72).toFixed(1)}" r="8.5"/><text class="cst-pt" x="${(sz*.72).toFixed(1)}" y="${(-sz*.72+3.6).toFixed(1)}">${g.bil.length}</text>`:""}
+        <text class="cst-gn" y="${(sz+15).toFixed(1)}">${esc(g.nom)}</text></g></g></g>`;
+    });
+  };
   regs.forEach((r,ri)=>{
-    const a=-Math.PI/2+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:300,ry=nR<=1?0:205;
-    const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a),rr=Math.min(130,58+r.g.length*11);r.x=x;r.y=y;
-    const L=Math.hypot(x-cx,y-cy);
+    const a=-Math.PI/2+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:400,ry=nR<=1?0:270;
+    const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);r.x=x;r.y=y;
+    const ux=nR<=1?0:Math.cos(a),uy=nR<=1?-1:Math.sin(a),L=Math.hypot(x-cx,y-cy),d0=.45+ri*.12;
     liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
     if(!calme&&r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
-    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-orb" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr}"/><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" x="${x.toFixed(1)}" y="${(y-rr-16).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" x="${x.toFixed(1)}" y="${(y-rr-1).toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} membre${r.nb>1?"s":""}</text></g>`;
-    r.g.forEach((g,gi)=>{
-      const b=-Math.PI/2+(gi+.5)*2*Math.PI/r.g.length,gx=x+rr*Math.cos(b),gy=y+rr*Math.sin(b),sz=11+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
-      const i=pos.length;pos.push({...g,ri,gx,gy,sz});
-      const alerte=g.e==="sans"||g.e==="bil";
-      astres+=`<g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} membre${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--dx:${(x-gx).toFixed(1)}px;--dy:${(y-gy).toFixed(1)}px;--d:${(.45+ri*.12+gi*.06).toFixed(2)}s;--f:${(gi%4)*.7}s">
-        <line class="cst-sl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${gx.toFixed(1)}" y2="${gy.toFixed(1)}"/>
-        <g class="cst-fl"><circle class="cst-halo" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${sz.toFixed(1)}" stroke="${c}"/>
-        <circle class="cst-corps" cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="${sz.toFixed(1)}" fill="${g.e==="sans"?"#2A0C14":c}" stroke="${g.e==="sans"?"#F2E5E8":"rgba(255,255,255,.25)"}"${g.e==="sans"?' stroke-dasharray="3 3"':""}/>
-        ${g.nb?`<text class="cst-n" x="${gx.toFixed(1)}" y="${(gy+4.5).toFixed(1)}">${g.nb}</text>`:""}
-        ${g.bil.length?`<circle class="cst-pip" cx="${(gx+sz*.72).toFixed(1)}" cy="${(gy-sz*.72).toFixed(1)}" r="8.5"/><text class="cst-pt" x="${(gx+sz*.72).toFixed(1)}" y="${(gy-sz*.72+3.6).toFixed(1)}">${g.bil.length}</text>`:""}
-        <text class="cst-gn" x="${gx.toFixed(1)}" y="${(gy+sz+15).toFixed(1)}">${esc(g.nom)}</text></g></g>`;
-    });
+    const villes=[...new Set(r.g.map(g=>g.c.ville||"—"))];let ext;
+    if(villes.length>1){
+      const RR=270;ext=0;
+      villes.forEach((v,vi)=>{
+        const gs=r.g.filter(g=>(g.c.ville||"—")===v),b=Math.atan2(uy,ux)+(vi-(villes.length-1)/2)*1.15;
+        const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=gs.length===1,R=solo?0:62+gs.length*10,nb=gs.reduce((s,g)=>s+g.nb,0);
+        ext=Math.max(ext,Math.hypot(vx-x,vy-y)+R+30);
+        subs+=`<g class="cst-sub" data-r="${ri}" style="--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,15+Math.min(g.nb,12)*2.6),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
+        bord(vx-60,vy-R*TILT-60,vx+60,vy+R*TILT+40);
+        orbite(vx,vy,R,gs,ri,Math.cos(b),Math.sin(b),d0+.2+vi*.1);
+      });
+    }else{const R=Math.min(140,(r.g.length>1?64:84)+r.g.length*11);ext=R+20;orbite(x,y,R,r.g,ri,ux,uy,d0)}
+    const dT=ext+64,tx=x+ux*dT,ty=y+uy*dT*.85,ta=ux>.35?"start":ux<-.35?"end":"middle";
+    const tw=Math.max(r.nom.length*9.5,140),tx0=ta==="start"?tx:ta==="end"?tx-tw:tx-tw/2;bord(tx0,ty-34,tx0+tw,ty+6);
+    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${(ty-15).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} membre${r.nb>1?"s":""}</text></g>`;
   });
   _cst.pos=pos;
-  const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">membre${tot>1?"s":""}</text></g>`;
+  const m=18,X0=bx.x0-m,Y0=bx.y0-m,VW=bx.x1-bx.x0+2*m,VH=bx.y1-bx.y0+2*m;
+  let et="";for(let i=0;i<110;i++){const x=X0+(i*137.5)%VW,y=Y0+(i*89.3+i*i*.7)%VH;et+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)*.5+.5}" style="animation-delay:${(i%9)*.45}s"/>`}
+  const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle class="cst-cp b" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">membre${tot>1?"s":""}</text></g>`;
   const h=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   o.innerHTML=`<div class="cst-top"><span class="mono"><img src="logo-globe-192.png" alt=""></span><div><small>Club d'Affaires Protéine Maroc</small><b>Le réseau aujourd'hui</b></div><span class="cst-clk" id="cst-clk">${h}</span>
       <button class="cst-btn" onclick="closeConstellation();openPresentation()">▶ Diaporama</button><button class="cst-x" aria-label="Fermer" onclick="closeConstellation()">✕</button></div>
-    <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} membres"><defs><radialGradient id="cstg"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#5C0A18"/></radialGradient></defs>
-      <g class="cst-et">${et}</g>${liens}${com}${orb}${coeur}${astres}</svg><div class="cst-tip" id="cst-tip" hidden></div></div>
+    <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="${X0.toFixed(0)} ${Y0.toFixed(0)} ${VW.toFixed(0)} ${VH.toFixed(0)}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} membres"><defs><radialGradient id="cstg" cx="38%" cy="32%"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#5C0A18"/></radialGradient></defs>
+      <g class="cst-et">${et}</g>${liens}${com}${orb}${subs}${coeur}<g id="cst-astres">${astres}</g></svg><div class="cst-tip" id="cst-tip" hidden></div><div class="cst-fiche" id="cst-fiche" hidden></div></div>
       <aside class="cst-pan" id="cst-pan">${cstPanneau(null,{tot,nG,nBil,nPlan,nSans,nR})}</aside></div>
     <div class="cst-leg">${Object.keys(CST_COUL).map(k=>`<span><i style="background:${k==="sans"?"transparent":CST_COUL[k]};${k==="sans"?"border:1.5px dashed #F2E5E8":""}"></i>${CST_LIB[k]}</span>`).join("")}<span><i class="pip"></i>bilans en attente</span></div>`;
-  const svg=o.querySelector("svg"),tip=o.querySelector("#cst-tip"),ciel=o.querySelector("#cst-ciel");
+  const svg=o.querySelector("svg"),tip=o.querySelector("#cst-tip"),ciel=o.querySelector("#cst-ciel"),cont=o.querySelector("#cst-astres");
+  const els=pos.map((_,i)=>({g:o.querySelector(`.cst-a[data-i="${i}"]`),pl:o.querySelector(`.cst-a[data-i="${i}"] > .cst-pl`),sl:o.querySelector(`[data-sl="${i}"]`)}));
+  // Rotation : chaque orbite tourne lentement ; profondeur = position sur l'ellipse (bas = devant).
+  let t0=performance.now(),acc=0,last=t0;
+  const place=now=>{
+    const dt=now-last;last=now;if(!_cst.pause&&!calme)acc+=dt;
+    const rot=acc/1000*(2*Math.PI/70),ordre=[];
+    orbites.forEach((ob,oi)=>ob.items.forEach(it=>{
+      const th=it.b0+rot*(oi%2?-1:1),z=(Math.sin(th)+1)/2,px=ob.hx+ob.R*Math.cos(th),py=ob.hy+ob.R*TILT*Math.sin(th),k=.84+.3*z,e=els[it.i];
+      e.pl.setAttribute("transform",`translate(${px.toFixed(1)},${py.toFixed(1)}) scale(${k.toFixed(3)})`);
+      e.g.style.setProperty("--z",(.7+.3*z).toFixed(2));
+      e.sl.setAttribute("x2",px.toFixed(1));e.sl.setAttribute("y2",py.toFixed(1));
+      ordre.push([z,e.g]);
+    }));
+    _cst.raf=requestAnimationFrame(place);
+  };
+  place(t0);
   const focus=(ri,i)=>{svg.classList.toggle("focus",ri!=null);o.querySelectorAll("[data-r]").forEach(e=>e.classList.toggle("lit",ri!=null&&+e.dataset.r===ri));o.querySelectorAll(".cst-a").forEach(e=>e.classList.toggle("hov",i!=null&&+e.dataset.i===i))};
   o.querySelectorAll(".cst-a").forEach(a=>{const i=+a.dataset.i,g=pos[i];
-    a.addEventListener("pointerenter",()=>{focus(g.ri,i);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
+    a.addEventListener("pointerenter",()=>{_cst.pause=true;focus(g.ri,i);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
     a.addEventListener("pointermove",e=>{const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"});
-    a.addEventListener("pointerleave",()=>{focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel);tip.hidden=true});
-    const choisir=()=>{_cst.sel=i;focus(g.ri,i);o.querySelector("#cst-pan").innerHTML=cstPanneau(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
+    a.addEventListener("pointerleave",()=>{_cst.pause=_cst.sel!=null;focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel);tip.hidden=true});
+    const choisir=()=>{_cst.sel=i;_cst.pause=true;focus(g.ri,i);tip.hidden=true;cstFiche(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
     a.addEventListener("click",choisir);a.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choisir()}});
   });
-  o.querySelectorAll(".cst-reg").forEach(r=>{r.addEventListener("pointerenter",()=>focus(+r.dataset.r,null));r.addEventListener("pointerleave",()=>focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel))});
+  o.querySelectorAll(".cst-reg,.cst-sub").forEach(r=>{r.addEventListener("pointerenter",()=>focus(+r.dataset.r,null));r.addEventListener("pointerleave",()=>focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel))});
   _cst.clk=setInterval(()=>{const c=document.getElementById("cst-clk");if(!c)return clearInterval(_cst.clk);c.textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})},20000);
 }
+/* Volet en superposition : le groupe en détail, ses membres, ses chiffres. */
+function cstFiche(g){
+  const f=document.getElementById("cst-fiche");if(!f)return;const c=g.c;
+  const mb=DB.membres.filter(m=>m.clubId===c.id).sort((a,b)=>(a.num||99)-(b.num||99));
+  const auj=new Date().toISOString().slice(0,10);
+  const der=DB.reunions.filter(m=>m.clubId===c.id&&isPast(m.date)&&m.statut!=="annulee").sort((a,b)=>b.date.localeCompare(a.date))[0];
+  const pro=DB.reunions.filter(m=>m.clubId===c.id&&m.date>=auj&&m.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date))[0];
+  const recos=(DB.recos||[]).filter(r=>r.club_id===c.id),sign=recos.filter(r=>r.statut==="signee"),ca=sign.reduce((s,r)=>s+(+r.montant||0),0);
+  const obj=c.objectif||Math.max(g.nb,10),pct=Math.min(1,g.nb/obj),R=34,C=2*Math.PI*R;
+  const dt=d=>d?esc(dObj(d.date).toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})):"—";
+  const act=g.anim?"Nommer un animateur":g.bil.length?"Saisir les bilans":g.plan?"Planifier la prochaine réunion":"Ouvrir le groupe";
+  f.innerHTML=`<div class="cf-in" style="--c:${CST_COUL[g.e]}"><button class="cf-x" aria-label="Fermer le volet" onclick="cstFicheFermer()">✕</button>
+    <div class="cf-h"><svg class="cf-ring" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="${R}" class="cf-rt"/><circle cx="42" cy="42" r="${R}" class="cf-rv" style="stroke-dasharray:${C.toFixed(1)};--off:${(C*(1-pct)).toFixed(1)};--full:${C.toFixed(1)}"/><text x="42" y="47">${g.nb}</text></svg>
+      <div><small>${esc(c.ville||"")} · ${esc(CST_LIB[g.e])}</small><h3>${esc(g.nom)}</h3><span>${c.animId?"Animé par "+esc(animNom(c.animId)):"Animateur à nommer"}</span></div></div>
+    <div class="cf-k">
+      <div style="--i:0"><b>${g.nb}${c.objectif?"<i>/"+c.objectif+"</i>":""}</b><span>membres</span></div>
+      <div style="--i:1"><b>${g.bil.length}</b><span>bilan${g.bil.length>1?"s":""} en attente</span></div>
+      <div style="--i:2"><b>${sign.length}</b><span>affaire${sign.length>1?"s":""} signée${sign.length>1?"s":""}${ca?" · "+ca.toLocaleString("fr-FR")+" dh":""}</span></div>
+    </div>
+    <div class="cf-r"><span>Dernière réunion</span><b>${dt(der)}</b></div>
+    <div class="cf-r"><span>Prochaine réunion</span><b>${pro?dt(pro)+(pro.heure?" · "+esc(pro.heure):""):"à planifier"}</b></div>
+    <h4>Membres${mb.length?" ("+mb.length+")":""}</h4>
+    <div class="cf-mb">${mb.length?mb.map((m,k)=>`<button class="cf-m" style="--i:${k}" onclick="closeConstellation();memberSheet('${m.clubId}','${m.id}')"><span class="cf-av">${esc((m.nom||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase())}</span><span><b>${esc(m.nom)}</b><small>${esc(mbMetier(m)||"")}</small></span></button>`).join(""):`<p class="cf-vide">Pas encore de membre dans ce groupe.</p>`}</div>
+    <button class="cst-go" onclick="closeConstellation();openClub('${c.id}')">${act} ›</button></div>`;
+  f.hidden=false;f.classList.remove("on");void f.offsetWidth;f.classList.add("on");
+}
+function cstFicheFermer(){const f=document.getElementById("cst-fiche");if(f){f.hidden=true;f.classList.remove("on")}if(_cst){_cst.sel=null;_cst.pause=false;const o=document.getElementById("cst-o");if(o){o.querySelector("svg")?.classList.remove("focus");o.querySelectorAll(".lit,.hov").forEach(e=>e.classList.remove("lit","hov"))}}}
 function cstPanneau(g,t){
   if(!g)return `<h3>Ce que le réseau demande</h3><p>Passe sur un groupe pour le voir, touche-le pour sa fiche.</p>
     <div class="cst-k"><b>${t.tot}</b><span>membre${t.tot>1?"s":""} dans ${t.nG} groupes et ${t.nR} régions</span></div>

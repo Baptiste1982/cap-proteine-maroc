@@ -284,6 +284,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Équipe (superadmin) : colonne « Accès CRM » (`accCellule` : état + bouton « 🔑 Donner l'accès » / « Renvoyer »), même bouton dans la ligne mobile. `accDonner(animId)` : rôle, ce que le rôle permet (`ROLE_DROITS`), mobile (`accTel`), `accCreer` = mot de passe provisoire (`mdpProvisoire`) par `admin-users set_password` (ou `create` si l'animateur n'a pas de compte, identifiant = prénom sans accents), `cap_marquer_invite`, puis WhatsApp vers son mobile (`accMessage`, avec ses droits) et Copier. Confirmation avant de remplacer le mot de passe d'un compte déjà utilisé. Le mot de passe n'est affiché qu'une fois.
 - Au 16/11 : les 8 animateurs ont un compte, seule Chrystel a un mobile en base. Banc `acces.mjs` 21/21.
 
+**👥 Accès espace membre + animateurs membres (v0.45.1 / v0.46.0, 16/11/2026)** — JB : « les accès pour les membres de la région aussi », les animateurs « sont des vrais membres, mais tu les étiquettes comme animateurs, que je puisse les voir à part ».
+- v0.45.1 : anneaux de santé plus grands, pastilles « À faire » lisibles en sombre.
+- Migration `20261116152703_membres_animateur.sql` (appliquée) : `membres.animateur_id` (unique : la fiche qui porte l'espace membre de l'animateur). `mbAnim(m)` = ce lien, ou une fiche au même nom que l'animateur du groupe (JB a 3 fiches, une par groupe). Étiquette `.mb-anim`, filtre « Animateurs » dans Membres, mention dans la fiche.
+- Membres (vue liste) : colonne « Espace membre » (`mbEspCell`) → `mbAccesFiche(id)` (mobile modifiable `mbAccTel`, puis le code par `mbCodeAcces` et WhatsApp).
+- Équipe → fiche d'accès : bloc « Espace membre » (`accMembreBloc`) : fiche trouvée → `accMembreOuvrir` (lie `animateur_id`, reprend le mobile) ; sinon `accMembreCreer` l'ajoute comme vrai membre de son groupe (compte dans les stats). Banc `mbacc.mjs` 36/36.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

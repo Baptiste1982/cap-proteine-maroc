@@ -107,15 +107,15 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const { action, adhesion_id } = body;
     const opt = { offre: 'Aucune', justification: '', date_debut: '', signature: 'electronique', ...(body.options || {}) };
-    if (!['apercu', 'envoyer', 'contrat', 'prospect'].includes(action)) return json({ error: 'Action inconnue' }, 400);
-    if (user.id === null && action !== 'prospect') return json({ error: 'Non autorisé' }, 401);
+    if (!['apercu', 'envoyer', 'contrat', 'prospect', 'yousign'].includes(action)) return json({ error: 'Action inconnue' }, 400);
+    if (user.id === null && !['prospect', 'yousign'].includes(action)) return json({ error: 'Non autorisé' }, 401);
     if (!['electronique', 'papier', 'aucune'].includes(opt.signature)) return json({ error: 'Mode de signature inconnu' }, 400);
 
     const { data: a, error: aerr } = await admin.from('adhesions').select('*').eq('id', adhesion_id).single();
     if (aerr || !a) return json({ error: 'Adhésion introuvable' }, 404);
     const d = a.data || {};
     const nat: Record<string, any> = { ...(a.national || {}) };
-    surErreur = async () => { if (action === 'envoyer' || action === 'prospect') await admin.from('adhesions').update({ national: { ...nat, etapes, erreur: etapes[etapes.length - 1], maj: new Date().toISOString() } }).eq('id', a.id); };
+    surErreur = async () => { if (['envoyer', 'prospect', 'yousign'].includes(action)) await admin.from('adhesions').update({ national: { ...nat, etapes, erreur: etapes[etapes.length - 1], maj: new Date().toISOString() } }).eq('id', a.id); };
     const sauver = async (extra: Record<string, unknown> = {}) => {
       Object.assign(nat, extra, { maj: new Date().toISOString(), etapes, erreur: null });
       if (action !== 'apercu') await admin.from('adhesions').update({ national: nat }).eq('id', a.id);
@@ -125,6 +125,21 @@ Deno.serve(async (req) => {
       const chemin = await rangerContrat(admin, a, nat);
       etapes.push(...(nat.etapes || []), 'Contrat rangé dans le dossier du membre.');
       await sauver({ contrat_pdf: chemin });
+      return json({ ok: true, etapes, national: nat });
+    }
+
+    // Contrat déjà créé (papier ou sans signature) : lance seulement la procédure Yousign, sans réécrire le contrat.
+    if (action === 'yousign') {
+      if (!nat.contrat_id) return json({ error: 'Pas de contrat national pour cette demande' }, 400);
+      if (nat.reference_procedure) return json({ error: 'Yousign déjà lancé pour ce contrat' }, 400);
+      if (nat.signe_le) return json({ error: 'Contrat déjà signé' }, 400);
+      const N = new National();
+      etapes.push(...(nat.etapes || []), `Connecté au national : ${await N.connexion(Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '')}`);
+      const ys = await N.ecrire('/signatureNumerique/creerProcedure', { idContrat: String(nat.contrat_id) });
+      etapes.push(`Signature électronique lancée sur le contrat n° ${nat.contrat_id} : Yousign envoie le contrat au membre par e-mail.`);
+      for (const m of (Array.isArray(ys.messageLog) ? ys.messageLog : [])) etapes.push(String(m).replace(/<[^>]+>/g, ''));
+      await sauver({ statut: 'yousign_envoye', signature: 'electronique', yousign_le: new Date().toISOString(),
+        reference_procedure: ys.referenceProcedure || '', reference_signataire: ys.referenceSignataire || '', type_contrat: ys.type ?? null });
       return json({ ok: true, etapes, national: nat });
     }
 

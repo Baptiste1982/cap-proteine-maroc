@@ -1920,8 +1920,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.46.0";
+const APP_VERSION="0.46.1";
 const CHANGELOG=[
+  {v:"0.46.1",date:"16 novembre 2026",notes:{
+    "Corrigé":["Message d'accès au CRM : « Club d'Affaires Protéine Rabat et Région », sans l'émoji qui s'affichait mal dans WhatsApp."]}},
   {v:"0.46.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Membres : colonne « Espace membre » avec l'état de chaque membre et un bouton « 🔑 Donner l'accès » (code d'accès envoyé par WhatsApp).","Les animateurs sont de vrais membres de leur groupe, étiquetés « Animateur », avec un filtre pour les voir à part. Depuis Équipe, on leur donne aussi l'accès à l'espace membre pour les recommandations."]}},
   {v:"0.45.1",date:"16 novembre 2026",notes:{
@@ -5610,7 +5612,7 @@ function embRendu(){
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
 }
 function embMessage(u,pwd){const pr=(u.nom||"").split(/\s+/)[0];
-  return `Bonjour ${pr} 👋\nVoici ton accès au CRM du Club d'Affaires Protéine Maroc :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function embWa(u,pwd){const a=u.animateur_id&&anim(u.animateur_id);const t=a&&a.tel?String(a.tel).replace(/[^\d]/g,"").replace(/^0/,"212"):"";return "https://wa.me/"+t+"?text="+encodeURIComponent(embMessage(u,pwd))}
 async function embCopier(id){const u=_emb.l.find(x=>x.id===id),r=_emb.res[id];try{await navigator.clipboard.writeText(embMessage(u,r.pwd));toast("Message copié")}catch(e){prompt("Message :",embMessage(u,r.pwd))}}
 async function embTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();toast("Mobile enregistré")}
@@ -5693,7 +5695,7 @@ function accCellule(a){
 }
 function accLogin(a){return (a.nom||"").split(/\s+/)[0].normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
-  return `Bonjour ${pr} 👋\nVoici ton accès au CRM du Club d'Affaires Protéine Maroc :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
 function accDonner(animId){
   const a=anim(animId);if(!a||!accVisible())return;

@@ -13,7 +13,7 @@ import webpush from 'npm:web-push@3.6.7';
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-suivi-jeton', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const B = 'https://animateur.ma.caproteine.com';
 const VAPID_PUBLIC = 'BAKkMOISOmM62avwTzeE81_l592rvg9O-AiLBct4eGf7Xovoy_OswNK0lnQ0yokt6VDoRkL927x4LS5bFYnWbZM';
-const n = (t: unknown) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const n = (t: unknown) => String(t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 const COL_ATTENTE = ['', 'idPersonne', 'idEntreprise', 'nomEntreprise', 'activiteEntreprise', '', '', '', '', 'prenomPersonne', 'nomPersonne', 'fonctionPersonne', 'emailPersonne', 'tel1Personne', 'tel2Personne', 'adresseEntreprise', 'codePostalEntreprise', 'villeEntreprise'];
 const COL_MEMBRES = ['', 'idPersonne', 'idEntreprise', 'nomEntreprise', 'activiteEntreprise', '', '', '', 'dateRelancePaiement', '', 'prenomPersonne', 'nomPersonne', 'fonctionPersonne', 'emailPersonne', 'tel1Personne', 'tel2Personne', 'adresseEntreprise', 'codePostalEntreprise', 'villeEntreprise'];
 
@@ -51,6 +51,55 @@ class National {
   }
 }
 
+// Invitations du national (liste « Gestion de mes invitations »), la plus récente d'abord.
+async function invitationsListe(N: National): Promise<any[]> {
+  await N.req('GET', '/invitation');
+  const cols = ['', 'id', 'libelleType', 'dateDebut', 'dateFin', 'dateEnvoi', 'nomHote'];
+  const f: Record<string, string> = { draw: '1', start: '0', length: '50', 'search[value]': '', 'search[regex]': 'false', 'order[0][column]': '1', 'order[0][dir]': 'desc' };
+  cols.forEach((c, i) => Object.assign(f, { [`columns[${i}][data]`]: c, [`columns[${i}][name]`]: c, [`columns[${i}][searchable]`]: c ? 'true' : 'false', [`columns[${i}][orderable]`]: c ? 'true' : 'false', [`columns[${i}][search][value]`]: '', [`columns[${i}][search][regex]`]: 'false' }));
+  const j = await N.json('POST', '/invitation/lister', f);
+  return Array.isArray(j?.data) ? j.data : [];
+}
+
+// Écrit une invitation au national en reprenant le formulaire d'une invitation existante (body.source).
+// body.maj = true : on modifie cette invitation (dates, lieu, type) ; sinon on en crée une nouvelle (forcerCreation).
+async function invitationEcrire(N: National, body: any): Promise<any> {
+  const t = await (await N.req('GET', '/invitation/formulaireNew?id=' + encodeURIComponent(String(body.source)) + (body.maj ? '' : '&forcerCreation=true'))).text();
+  const dec = (x: string) => x.replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\u00a0').replace(/&amp;/g, '&');
+  const at = (tag: string, a: string) => dec((tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '');
+  const inputs = [...t.matchAll(/<input\b[^>]*>/g)].map(m => m[0]);
+  const val = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return tg ? at(tg, 'value') : ''; };
+  const coche = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return !!tg && /\schecked/.test(tg); };
+  const zone = (id: string) => dec((t.match(new RegExp(`<textarea[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</textarea>`)) || [])[1] ?? '');
+  const choix = (id: string) => { const m = t.match(new RegExp(`<select[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</select>`)); const o = m ? [...m[1].matchAll(/<option\b[^>]*>/g)].map(x => x[0]).find(x => /\sselected/.test(x)) : null; return o ? at(o, 'value') : ''; };
+  if (!val('libelleType')) throw new Error(`Invitation ${body.source} introuvable au national`);
+  const TYPES: Record<string, [string, string]> = { '7': ["Réunion d'information", 'à la '], '16': ['Réunion de lancement', 'à la '], '3': ['Réunion des membres', 'à la '] };
+  const idType = String(body.idType || choix('idType'));
+  const typ = idType !== choix('idType') && TYPES[idType] ? TYPES[idType] : [val('libelleType'), val('motDeLiaisonType')];
+  const f: Record<string, string> = {
+    id: body.maj ? String(body.source) : '', idHote: String(body.idHote || choix('listeHote')), idType,
+    motDeLiaisonType: typ[1], libelleType: typ[0],
+    dateDebut: String(body.dateDebut), dateFin: String(body.dateFin), dateRelance: String(body.dateRelance || ''), dateReponse: String(body.dateReponse || ''), dateRappel: String(body.dateRappel || ''),
+    montant: val('montant'), programme: zone('programme'), theme: String(body.theme || val('theme')), expediteur: val('expediteur'),
+    expediteurIsAnimateur: String(coche('expediteurIsAnimateurTrue')), informationsDestinataires: coche('informationsDestinatairesTrue') ? 'prenom' : 'civilite_nom',
+    urlSalleVisio: val('urlSalleVisio'), repasIsFacultatif: String(coche('repasIsFacultatifTrue')),
+    optionVisio: String(coche('deroulementEvenementVisio') || coche('deroulementEvenementMixte')), optionPhysique: String(coche('deroulementEvenementPresentiel') || coche('deroulementEvenementMixte')),
+    utilisationInscription: String(coche('utilisationInscriptionTrue')),
+    nbOptionsReponse: ['1', '2', '3'].find(k => coche('choixReponseOption' + k)) || '1',
+    texteOuiOption1: val('texteOuiOption1'), texteOuiOption2: val('texteOuiOption2'), texteOuiOption3: val('texteOuiOption3'),
+    metadata: zone('metadata'), template: zone('template'), refTemplate: zone('refTemplate'),
+  };
+  if (!/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateDebut) || !/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateFin)) throw new Error('Dates au format « JJ/MM/AAAA à HH:MM » attendues');
+  const resume = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v.length > 120 ? `(${v.length} caractères)` : v]));
+  if (body.essai) return { ok: true, essai: true, envoi: resume };
+  const r = await N.req('POST', '/invitation/enregistrer', f);
+  const brut = await r.text(); let j: any = null; try { j = JSON.parse(brut); } catch { /* */ }
+  const id = j?.tabDonnees?.id || (body.maj && j?.success ? body.source : null);
+  if (!j?.success || !id) return { ok: false, error: `Le national a refusé l'enregistrement (${r.status}).`, reponse: brut.slice(0, 1500), envoi: resume };
+  return { ok: true, id, lien: `${B}/invitation/inscription?ref=${id}`, qr: `${B}/invitation/qrCode?id=${id}&type=png`, envoi: resume };
+}
+
 Deno.serve(async (req) => {
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -73,6 +122,62 @@ Deno.serve(async (req) => {
       const N0 = new National(); await N0.connexion();
       const t = await (await N0.req('GET', String(body.page || '/connexion/extranet'))).text();
       return json({ ok: true, morceaux: [...t.matchAll(new RegExp(String(body.motif), 'g'))].slice(0, 6).map(m => t.slice(Math.max(0, m.index! - 200), m.index! + 700)) });
+    }
+    if (body.action === 'champs') {
+      // Lecture seule : liste des champs de formulaire d'une page (nom, id, type, valeur, options d'une liste).
+      const N0 = new National(); await N0.connexion();
+      const t = await (await N0.req('GET', String(body.page || '/'))).text();
+      const at = (tag: string, a: string) => (tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '';
+      const champs: any[] = [];
+      for (const m of t.matchAll(/<(input|textarea)\b[^>]*>/g)) champs.push({ t: m[1] === 'input' ? at(m[0], 'type') || 'text' : 'textarea', name: at(m[0], 'name'), id: at(m[0], 'id'), v: at(m[0], 'value').slice(0, 80), coche: /\schecked/.test(m[0]) || undefined });
+      for (const m of t.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/g)) champs.push({ t: 'select', name: at(m[0], 'name'), id: at(m[0], 'id'), options: [...m[2].matchAll(/<option\b([^>]*)>([^<]*)/g)].slice(0, 40).map(o => `${at(o[0], 'value')}=${o[2].trim()}${/selected/.test(o[1]) ? ' *' : ''}`) });
+      const forms = [...t.matchAll(/<form\b[^>]*>/g)].map(f => f[0]);
+      return json({ ok: true, forms, champs: champs.filter(c => c.name || c.id) });
+    }
+    if (body.action === 'lister') {
+      // Lecture seule d'une liste DataTables du national (ex. /invitation + /invitation/lister).
+      const N0 = new National(); await N0.connexion();
+      await N0.req('GET', String(body.index));
+      const nb = Number(body.nb) || 20, f: Record<string, string> = { draw: '1', start: '0', length: String(nb), 'search[value]': '', 'search[regex]': 'false', 'order[0][column]': '1', 'order[0][dir]': 'desc' };
+      (body.colonnes || []).map(String).forEach((c: string, i: number) => Object.assign(f, { [`columns[${i}][data]`]: c, [`columns[${i}][name]`]: c, [`columns[${i}][searchable]`]: c ? 'true' : 'false', [`columns[${i}][orderable]`]: c ? 'true' : 'false', [`columns[${i}][search][value]`]: '', [`columns[${i}][search][regex]`]: 'false' }));
+      const r = await N0.req('POST', String(body.liste), f);
+      return json({ ok: true, statut: r.status, brut: (await r.text()).slice(0, 20000) });
+    }
+    if (body.action === 'invitation_copier') {
+      // Nouvelle invitation au national à partir d'une existante (comme « Rédiger une nouvelle invitation à partir de celle-ci »).
+      // Entrée : source (n° d'invitation), dateDebut / dateFin (« JJ/MM/AAAA à HH:MM »), dateReponse / dateRelance / dateRappel (« JJ/MM/AAAA »),
+      // theme, idHote, idType facultatifs ; essai:true = rien n'est écrit, on renvoie ce qui serait envoyé.
+      const N0 = new National(); await N0.connexion();
+      return json(await invitationEcrire(N0, body));
+    }
+    if (body.action === 'invitation_reunion') {
+      // Invitation au national pour une réunion de notre CRM (création, ou mise à jour des dates si elle existe déjà).
+      // Modèle : la dernière invitation du national du même type (SI → Réunion d'information, RL → Réunion de lancement).
+      const { data: r, error: e1 } = await admin.from('reunions').select('id, type, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
+      if (e1 || !r) throw new Error('Réunion introuvable');
+      if (r.statut === 'annulee') throw new Error('Réunion annulée : pas d\'invitation.');
+      const { data: l } = r.lieu_id ? await admin.from('lieux').select('nom').eq('id', r.lieu_id).single() : { data: null };
+      const N0 = new National(); await N0.connexion();
+      const idType = r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3;
+      const invs = await invitationsListe(N0);
+      const nat = r.national || {};
+      const maj = nat.invitation_id && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';
+      const source = maj || String((invs.find(x => +x.idType === idType) || invs[0] || {}).id || '');
+      if (!source) throw new Error('Aucune invitation au national à prendre pour modèle : crée la première là-bas.');
+      // Lieu : celui du national dont le nom correspond au nôtre, sinon on refuse (le national exige un lieu existant).
+      const hotes = new Map<string, string>(); for (const x of invs) if (x.idHote) hotes.set(n(x.nomHote), String(x.idHote));
+      const idHote = l?.nom ? hotes.get(n(l.nom)) : (invs.find(x => String(x.id) === source)?.idHote ? String(invs.find(x => String(x.id) === source).idHote) : '');
+      if (!idHote) throw new Error(l?.nom ? `Le lieu « ${l.nom} » n'existe pas encore au national. Lieux connus là-bas : ${[...new Set(invs.map(x => x.nomHote))].join(', ') || 'aucun'}.` : 'Choisis d\'abord le lieu de la réunion.');
+      const d = new Date(r.date + 'T12:00:00Z'), j2 = (k: number) => { const x = new Date(d); x.setUTCDate(x.getUTCDate() - k); return x.toISOString().slice(0, 10).split('-').reverse().join('/'); };
+      const h = /^\d\d:\d\d/.test(r.heure || '') ? r.heure.slice(0, 5) : '11:00', hf = String(Math.min(23, +h.slice(0, 2) + 3)).padStart(2, '0') + h.slice(2);
+      const jour = j2(0);
+      const res = await invitationEcrire(N0, { source, maj: !!maj, idType, idHote, dateDebut: `${jour} à ${h}`, dateFin: `${jour} à ${hf}`, dateReponse: j2(1), dateRappel: j2(2), dateRelance: j2(3), essai: body.essai });
+      if (res.ok && !res.essai) {
+        const national = { invitation_id: res.id, lien: res.lien, qr: res.qr, date: r.date, heure: h, lieu: l?.nom || '', modele: maj ? nat.modele : source, cree_le: nat.cree_le || new Date().toISOString(), maj_le: new Date().toISOString() };
+        await admin.from('reunions').update({ national }).eq('id', r.id);
+        return json({ ...res, national, mise_a_jour: !!maj });
+      }
+      return json(res);
     }
     if (body.action === 'miroir') {
       // Ce que le national affiche dans « En attente de signature » et « Gestion des membres » (lecture seule).

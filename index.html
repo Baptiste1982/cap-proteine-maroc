@@ -836,7 +836,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-box a.btn{text-decoration:none}
 .nat-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson)}
-.nat-v{font-size:13px;color:var(--muted)}.nat-v b{color:var(--ink)}
+.nat-v{font-size:13px;color:var(--muted)}.ni-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ni-qr{width:96px;height:96px;flex:none;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px}.ni-qr svg{width:100%;height:100%;display:block}.ni-l{display:grid;gap:6px;min-width:0;flex:1 1 220px}@media(max-width:600px){.ni-qr{width:76px;height:76px}.ni-act{grid-column:1/-1}}.ni-lien{font-size:13px;font-weight:600;color:var(--crimson);word-break:break-all;user-select:all}.ni-act{display:flex;flex-wrap:wrap;gap:6px}.nat-v b{color:var(--ink)}
 .nat-ok{font-weight:600;color:#1f7a4d}.nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
 .nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .nat-plan{display:grid;gap:6px;margin:10px 0}.nat-plan div{display:flex;justify-content:space-between;gap:12px;font-size:13px}.nat-plan span{color:var(--muted)}.nat-plan b{text-align:right}
@@ -1345,7 +1345,8 @@ svg.focus .cst-l:not(.lit){opacity:.3}
   animation:dmEntre .45s cubic-bezier(.2,1.2,.4,1) calc(var(--i)*55ms) both;transition:transform .25s cubic-bezier(.2,1.4,.4,1),box-shadow .25s,border-color .25s}
 @keyframes dmEntre{from{opacity:0;transform:translateY(10px) scale(.97)}}
 .dm-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--vc);transition:width .3s}
-.dm-card:hover,.dm-card:focus-visible{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 16px 30px -18px rgba(92,10,24,.55);border-color:color-mix(in srgb,var(--vc) 45%,var(--line))}
+.dm-card.survol,.dm-card:focus-visible{transform:translateY(-3px);box-shadow:0 16px 30px -18px rgba(92,10,24,.55);border-color:color-mix(in srgb,var(--vc) 45%,var(--line))}
+.dm-card.survol.incline{transform:translateY(-3px) rotate(-.4deg)}
 .dm-card:hover::before{width:7px}
 .dm-card.late{border-color:color-mix(in srgb,var(--crimson) 40%,var(--line))}
 .dm-card.presse{transform:scale(.97)}
@@ -1885,7 +1886,7 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.43.0";
+const APP_VERSION="0.44.0";
 const CHANGELOG=[
   {v:"0.41.1",date:"10 novembre 2026",notes:{
     "Amélioré":[
@@ -2315,7 +2316,7 @@ function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[]}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
@@ -4120,12 +4121,22 @@ function navPill(){const nav=document.getElementById("nav"),pl=document.getEleme
 addEventListener("resize",()=>{clearTimeout(window._npT);window._npT=setTimeout(navPill,120)});
 /* La barre change de mise en page juste après un rendu (pastilles, onglets masqués) : on recale à chaque mouvement. */
 if(window.ResizeObserver)addEventListener("DOMContentLoaded",()=>{const nav=document.getElementById("nav");if(!nav)return;const ro=new ResizeObserver(()=>{clearTimeout(window._npR);window._npR=setTimeout(navPill,30)});nav.querySelectorAll("button").forEach(b=>ro.observe(b))});
-/* C — les cartes de club s'inclinent vers la souris et une lueur or la suit (ordinateur seulement). */
+/* C — les cartes de club s'inclinent vers la souris et une lueur or la suit (ordinateur seulement).
+   v0.44.0 : dès que la souris s'arrête, la carte se redresse (texte net pour lire) ; la lueur reste.
+   Une carte soulevée ne se « perd » plus quand la souris est au ras de son bord bas (elle tremblait). */
+function _horsCarte(el,e,m){const r=el.getBoundingClientRect();return e.clientX<r.left-m||e.clientX>r.right+m||e.clientY<r.top-m||e.clientY>r.bottom+m+4}
 document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"||_calme())return;const c=e.target.closest&&e.target.closest(".ck");
-  if(window._ckOn&&window._ckOn!==c){window._ckOn.style.transform="";window._ckOn.style.setProperty("--go",0);window._ckOn=null}
+  if(window._ckOn&&window._ckOn!==c){if(!c&&!_horsCarte(window._ckOn,e,2))return;clearTimeout(window._ckOn._pose);window._ckOn.style.transform="";window._ckOn.style.setProperty("--go",0);window._ckOn=null}
   if(!c)return;window._ckOn=c;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
   c.style.setProperty("--gx",x*100+"%");c.style.setProperty("--gy",y*100+"%");c.style.setProperty("--go",.3);
-  c.style.transform=`perspective(800px) rotateX(${((.5-y)*6).toFixed(2)}deg) rotateY(${((x-.5)*8).toFixed(2)}deg) translateY(-2px)`},{passive:true});
+  c.style.transform=`perspective(800px) rotateX(${((.5-y)*6).toFixed(2)}deg) rotateY(${((x-.5)*8).toFixed(2)}deg) translateY(-2px)`;
+  clearTimeout(c._pose);c._pose=setTimeout(()=>{if(window._ckOn===c)c.style.transform="translateY(-2px)"},220)},{passive:true});
+/* Cartes des demandes : la petite inclinaison se joue à l'arrivée de la souris, puis la carte se redresse pour qu'on lise. */
+document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const c=e.target.closest&&e.target.closest(".dm-card"),o=window._dmOn;
+  if(o&&o!==c){if(!c&&o.isConnected&&!_horsCarte(o,e,2))return;clearTimeout(o._inc);o.classList.remove("survol","incline");window._dmOn=null}
+  if(!c||window._dmOn===c)return;window._dmOn=c;c.classList.add("survol");if(_calme())return;
+  c.classList.add("incline");clearTimeout(c._inc);c._inc=setTimeout(()=>c.classList.remove("incline"),450)},{passive:true});
+document.addEventListener("mouseout",e=>{if(e.relatedTarget)return;const o=window._dmOn;if(o){o.classList.remove("survol","incline");window._dmOn=null}});
 /* E — la fiche s'ouvre depuis l'élément touché : elle « grandit » à partir de sa place. */
 let _morph=null;
 document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest(".rl-row,.ck,.row[onclick],.rank-row.link,.mb-card,.dem-card,.stat.link,.lieu-card,.cc,.tj-n,.km-mb,.reu-card,.meet,.dash-recos,.goal");
@@ -4372,6 +4383,7 @@ function meetingDetail(m,editable){
       <div class="tx"><div class="k">Lieu</div><div class="v">${esc(lieuNom(m.lieuId))}</div></div>${l?`<a href="#" onclick="event.stopPropagation();openLieu('${l.id}');return false">Fiche</a>`:""}</div>${l?lieuItineraire(l):""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div>
       <div class="tx"><div class="k">Animateur</div><div class="v">${esc(animNom(m.animId))}</div></div></div>
+    ${natInvBloc(m)}
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
     ${bilanBloc(m,editable)}
@@ -4383,8 +4395,48 @@ function meetingDetail(m,editable){
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
     <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
-  ficheOpen();
+  ficheOpen();natInvQr();
 }
+/* v0.44.0 : invitation du CRM national rattachée à une réunion.
+   La fonction national-suivi (action invitation_reunion) recopie la dernière invitation du national du même type
+   (texte, programme, modèle), avec la date, l'heure et le lieu de la réunion, puis renvoie le lien d'inscription.
+   Créer ou mettre à jour : superadmin (c'est son compte au national). Le lien se voit pour tous ceux qui voient la réunion. */
+const NAT_TYPE_REU={SI:"Réunion d'information",RL:"Réunion de lancement"};
+function natInvPerime(m){const n=m.nat;if(!n)return"";const r=[];
+  if(n.date!==m.date)r.push("la date");if((n.heure||"")!==(m.heure||"").slice(0,5))r.push("l'heure");
+  const ln=normTxt(lieuNom(m.lieuId)),nl=normTxt(n.lieu||"");if(m.lieuId&&nl&&ln!==nl)r.push("le lieu");
+  return r.length?r.join(", ").replace(/, ([^,]*)$/," et $1"):""}
+function normTxt(t){return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim()}
+function natInvMessage(m){const dt=dObj(m.date),c=club(m.clubId)||{};
+  return `${NAT_TYPE_REU[m.type]||"Réunion"} du Club d'affaires Protéine${c.nom?" ("+c.nom.replace(/^CAP\s+/,"")+")":""}\n${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" à "+m.heure.replace(":","h"):""}${m.lieuId?" · "+lieuNom(m.lieuId):""}\n\nInscription : ${m.nat.lien}`}
+function natInvBloc(m){
+  const su=SESSION&&SESSION.role==="superadmin",n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
+  if(!n){if(!su||!avenir)return"";
+    return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national</div>
+      <div class="nat-v">Crée l'invitation au national pour cette réunion : même texte et même programme que ta dernière ${esc(NAT_TYPE_REU[m.type]||"invitation")}, avec la date, l'heure et le lieu d'ici. Tu récupères le lien d'inscription à envoyer, et les inscrits arrivent au national.</div>
+      <button class="btn" onclick="natInvCreer('${m.id}',this)">🌐 Créer l'invitation au national</button></div>`}
+  const per=natInvPerime(m);
+  return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national · n° ${esc(n.invitation_id)}</div>
+    <div class="ni-row"><div class="ni-qr" data-niqr="${esc(n.lien)}" role="img" aria-label="QR code d'inscription"></div><div class="ni-l">
+      <div class="nat-v">Lien d'inscription à envoyer :</div>
+      <a class="ni-lien" href="${esc(n.lien)}" target="_blank" rel="noopener">${esc(n.lien.replace(/^https:\/\//,""))}</a>
+      <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener">Ouvrir</a></div></div></div>
+    ${per?`<div class="nat-err">Depuis l'envoi au national, ${per} ${per.includes(" et ")?"ont":"a"} changé ici.${su&&avenir?"":" Le directeur doit mettre l'invitation à jour."}</div>${su&&avenir?`<button class="btn" onclick="natInvCreer('${m.id}',this)">🔄 Mettre à jour au national</button>`:""}`:""}
+    <div class="nat-v">Au national : Communication → Invitations → n° ${esc(n.invitation_id)}. L'envoi par e-mail aux contacts du national se fait là-bas.</div></div>`}
+async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;
+  if(!m.lieuId){toast("Choisis d'abord le lieu de la réunion","w");return}
+  const t=btn.textContent;btn.disabled=true;btn.textContent="Envoi au national…";
+  const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"invitation_reunion",reunion_id:id}});
+  btn.disabled=false;btn.textContent=t;
+  let msg=r&&r.error;if(error&&!msg){try{msg=(await error.context.json()).error}catch(e){msg=error.message}}
+  if(!r||!r.ok){toast(msg||"Le national n'a pas répondu","e");return}
+  m.nat=r.national;toast(r.mise_a_jour?"Invitation mise à jour au national":"Invitation créée au national (n° "+r.national.invitation_id+")","s");
+  meetingDetail(m,canEditReunion(m));}
+/* Le QR du national exige une session chez eux : on le dessine ici à partir du lien d'inscription. */
+async function natInvQr(){const z=[...document.querySelectorAll("[data-niqr]:empty")];if(!z.length)return;
+  try{const qrcode=await qrLib();z.forEach(el=>{const q=qrcode(0,"M");q.addData(el.dataset.niqr);q.make();el.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true})})}catch(e){z.forEach(el=>el.remove())}}
+function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(m&&m.nat)window.open("https://wa.me/?text="+encodeURIComponent(natInvMessage(m)),"_blank","noopener")}
+async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;try{await navigator.clipboard.writeText(m.nat.lien);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",m.nat.lien)}}
 /* v0.43.0 : choix de l'heure sans molettes. Créneaux d'un clic (les réunions sont le matin) + heure et minutes
    dans deux listes. Le champ caché garde l'id d'origine : le code qui lit la valeur ne change pas. */
 const HEURE_DEF="11:00",HC_CRENEAUX=["08:00","08:30","09:00","10:00","11:00","12:00","13:00"];

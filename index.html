@@ -1831,6 +1831,18 @@ html.dark{--paper:#17181A;--card:#222326;--line:#36383C;--muted:#9EA0A5;--ink:#E
 html.dark .vb-or{background:#223042;--enc:#2B3A4B}
 html.dark{--gold:#8FB0D1}
 /*v044.2 : le jaune doré remplacé par le bleu ardoise (choix JB) — alertes, bandeau Vue nationale, pastilles, compteur À faire, constellation */
+/*v045.1 lisibilité : anneau de santé plus grand, piste visible en sombre, pastilles « À faire » contrastées*/
+.rs{width:40px;height:40px}.rs svg{width:40px;height:40px}.rs circle{stroke-width:3}.rs .tr{stroke:var(--line)}
+.rs b{font-size:13px;color:var(--ink)}
+.tbl .rs{width:46px;height:46px}.tbl .rs svg{width:46px;height:46px}.tbl .rs b{font-size:14.5px}
+.ck-ring{width:54px;height:54px}.ck-ring svg{width:54px;height:54px}.ck-ring .tr{stroke:var(--line)}.ck-ring b{font-size:16px}.ck-ring b small{font-size:10px}
+html.dark .rs.warn .fg{stroke:#8FB0D1}
+html.dark .tbl .act{background:#4A1E27;color:#FFB3BE;border:1px solid #6A2A35}
+html.dark .tbl .act.todo{background:#22344A;color:#C6DAEE;border-color:#34506E}
+html.dark .tbl .act.ok{background:#173326;color:#9FE0BD;border-color:#24503A}
+html.dark .ck-act.urgent{background:#4A1E27;color:#FFB3BE}
+html.dark .ck-act.todo{background:#22344A;color:#C6DAEE}
+html.dark .ck-act.ok{background:#173326;color:#9FE0BD}
 </style>
 </head>
 <body>
@@ -1907,8 +1919,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.45.0";
+const APP_VERSION="0.45.1";
 const CHANGELOG=[
+  {v:"0.45.1",date:"16 novembre 2026",notes:{
+    "Corrigé":["Clubs : l'anneau de santé est plus grand avec un chiffre lisible, et les pastilles « À faire » sont mieux contrastées en thème sombre."]}},
   {v:"0.45.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Équipe : une colonne « Accès CRM » montre où en est chaque animateur (mot de passe de départ, invité, connecté) et un bouton « 🔑 Donner l'accès » prépare son mot de passe et un message WhatsApp qui dit ce que son rôle permet."]}},
   {v:"0.41.1",date:"10 novembre 2026",notes:{
@@ -3590,7 +3604,7 @@ function clubNextAction(c){
   if(relance)return{label:relance+" membre"+(relance>1?"s":"")+" à relancer",act:`memberSheet('${c.id}','${relanceM.id}')`};
   const aInt=DB.reunions.filter(r=>r.clubId===c.id).flatMap(r=>r.guests||[]).filter(g=>g.statut==="À intégrer").length;
   if(aInt)return{label:aInt+" invité"+(aInt>1?"s":"")+" à intégrer",act:`closeSheet();go('agenda')`};
-  if(c.objectif&&membres.length<c.objectif)return{label:"Recruter "+(c.objectif-membres.length)+" membre(s)",act:`memberSheet('${c.id}')`};
+  if(c.objectif&&membres.length<c.objectif)return{label:"Recruter "+(c.objectif-membres.length)+" membre"+(c.objectif-membres.length>1?"s":""),act:`memberSheet('${c.id}')`};
   return{label:"Rien à signaler ✓",act:""};
 }
 function clubBadges(c){

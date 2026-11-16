@@ -320,6 +320,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Bancs `v110.mjs` 26/26 (espace membre, démo), `v110crm.mjs` 20/20, `membre.mjs` 63/63.
 - ⏳ Notifications push pour les messages du groupe : pas encore. Calquer l'app membre du national : JB doit dire comment y accéder.
 
+**📊 Tableau de bord chiffré + constellation (v1.2.0, 16/11/2026)** — JB : chiffres de la région et de son propre groupe pour les membres, jamais ceux des autres groupes ; mise à jour à chaque saisie ; « un tableau de bord propre pour les données chiffrées du groupe, CA reçu, transmis ».
+- Migration `20261117090000_tableau_membre_groupe_region.sql` (appliquée) : `unaccent_simple(t)` ; RPC `cap_membre_tableau()` (membre connecté) → `moi` (recos données/reçues, CA transmis = signées grâce à ses recos, CA reçu = affaires qu'il a signées, mois), `groupe` et `region` (nom, membres, groupes, recos mois/année, affaires, CA mois/année, en cours, série 12 mois). Région = zone dont `villes` contient la ville du club (sans accents), sinon la ville. Calcul à la volée sur `recommandations` : jamais de table de cumul à tenir.
+- `membre.html` : onglet Recos devient « Recos et chiffres » ; `tableauHTML()` (segment `S.tbVue` moi|groupe|region, barres 12 mois `barres`), recalcul quand une reco change (realtime) et toutes les 60 s sur l'onglet (les saisies des autres groupes de la région ne sont pas diffusées).
+- CRM `grpAffaires` : CA du mois, barres 12 mois (`.ga-bars`), tableau par membre (`.ga-tab` : recos données/reçues, CA transmis, CA reçu).
+- Constellation : la cible du survol est verrouillée (`pos[i].oi` = orbite) ; un voisin qui passe sous la souris immobile pendant la rotation ne vole plus la cible (avant : la cible changeait ~10 fois en 2 s) ; on change de cible sur un vrai mouvement de souris, on lâche quand la souris sort de la zone de l'orbite (ellipse élargie, 350 ms) ou du ciel. Rotation animée même en mouvement réduit.
+- Bancs `v110.mjs` 32/32, `grp.mjs` 40/40, `cst.mjs` 20/20, `v110crm.mjs` 20/20, `cloison.mjs` 5/5 ; sonde `cstprobe.mjs` (position d'un nœud du fond pendant le survol).
+- ⏳ Visite guidée à refaire avec la fiche membre, les invités du groupe, le fil et le tableau de bord, une fois validés par JB.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

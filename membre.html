@@ -54,6 +54,19 @@ a{color:var(--crimson)}
 .up{display:flex;align-items:center;gap:12px}.up .btn{height:40px;font-size:13.5px}
 .grp-row{border:1px solid var(--crimson)!important;background:var(--tint)!important}
 .bulle .aut{display:block;font-size:11.5px;font-weight:700;color:var(--crimson);margin-bottom:2px}.bulle.moi .aut{display:none}
+.tb{display:flex;flex-direction:column;gap:12px}.tb-seg{margin:0}.tb-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tb-k{border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:3px;min-width:0}.tb-k span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tb-k b{font-size:21px;font-weight:800;overflow-wrap:anywhere}.tb-k small{font-size:12px;color:var(--muted)}
+.tb-k.out{background:var(--tint)}.tb-k.out span{color:var(--crimson)}.tb-k.in{background:#E8EEF6}.tb-k.in span{color:#2C4A73}
+.tb-ligne{font-size:13.5px;color:var(--muted)}.tb-ligne span{font-weight:700;color:var(--ink);margin-right:6px}.tb-ligne b{color:var(--ink)}.tb-ligne.alerte{color:var(--crimson);font-weight:600}
+.tb-tete{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.tb-tete b{font-size:18px}.tb-tete span{font-size:12.5px;color:var(--muted)}
+.tb-gros{background:var(--deep);color:var(--tint);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px}.tb-gros span{font-size:12.5px}.tb-gros b{font-size:28px;color:#fff;font-weight:800}.tb-gros small{color:var(--or);font-size:12.5px;font-weight:600}
+.tb-bars{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;height:84px;align-items:end}.tb-bars span{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+.tb-bars i{display:block;width:100%;max-width:18px;background:#E3C9CF;border-radius:4px 4px 2px 2px;transform-origin:bottom;animation:tbMonte .6s ease both}.tb-bars span.cur i{background:var(--crimson)}
+.tb-bars em{font-style:normal;font-size:10px;color:var(--soft);text-transform:uppercase}@keyframes tbMonte{from{transform:scaleY(0)}}
+.tb-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tb-kpis div{display:flex;flex-direction:column;gap:1px;min-width:0}.tb-kpis b{font-family:"Bricolage Grotesque",sans-serif;font-size:20px}.tb-kpis span{font-size:11.5px;color:var(--muted)}
+@media(max-width:420px){.tb-kpis{grid-template-columns:repeat(2,1fr)}}.tb-maj{font-size:11.5px;color:var(--soft)}
+@media(prefers-reduced-motion:reduce){.tb-bars i{animation:none}}
 .ca-perso{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ca-perso div{background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}.ca-perso b{font-family:"Bricolage Grotesque",sans-serif;font-size:19px}.ca-perso span{font-size:12.5px;color:var(--muted)}
 .ico{width:44px;height:44px;border-radius:14px;border:0;background:var(--tint);color:var(--crimson);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ico:disabled{background:#F2EDEE;color:#B9AAAE;cursor:default}
@@ -224,6 +237,7 @@ async function demarrer(){
   ecouter();lancer();
 }
 function lancer(){$("nav").hidden=false;
+  setInterval(()=>{if(document.hidden||S.onglet!=="recos"||S.recoForm||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="recos"&&!S.recoForm)rendu(true)})},60000);
   if(!lienHash())rendu();
   notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil"].includes(S.onglet))rendu(true)});
   if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#[cpr]=.+$/i);if(h){location.hash=h[0]}});}
@@ -574,9 +588,37 @@ async function chargerRecos(){
   const {data,error}=await sb.from("recommandations").select("id,de,a,contact_nom,contact_tel,contact_entreprise,besoin,statut,montant,cree_le,maj_le").order("cree_le",{ascending:false}).limit(500);
   if(!error)S.recos=data||[];
 }
+/* v1.2.0 : tableau de bord chiffré (moi, mon groupe, ma région). La région ne donne que des totaux : jamais le détail
+   des autres groupes. Recalculé en base à chaque chargement, donc à jour à chaque saisie. */
 async function chargerRecosClub(){
-  if(DEMO){S.recosClub=S.recosClub||{club:S.moi.club,mois_montant:120000,mois_affaires:3,mois_recos:11,annee_montant:640000,annee_affaires:14,annee_recos:58};return}
-  const {data,error}=await sb.rpc("cap_membre_recos_club");S.recosClub=error?null:data;
+  if(DEMO){if(S.recosClub)return;const sg=(S.recos||[]).filter(r=>r.statut==="signee"),me=S.moi.id,su=a=>a.reduce((t,r)=>t+(Number(r.montant)||0),0);
+    const serie=k=>Array.from({length:12},(_,i)=>{const d=new Date();d.setMonth(d.getMonth()-11+i);return{mois:d.toISOString().slice(0,7),recos:Math.round((i+2)*k*.6),ca:Math.round(((i*37)%11+(i>8?6:1))*k*4000)}});
+    S.recosClub={moi:{donnees:(S.recos||[]).filter(r=>r.de===me).length,recues:(S.recos||[]).filter(r=>r.a===me).length,donnees_signees:sg.filter(r=>r.de===me).length,recues_signees:sg.filter(r=>r.a===me).length,ca_transmis:su(sg.filter(r=>r.de===me)),ca_recu:su(sg.filter(r=>r.a===me)),ca_transmis_mois:su(sg.filter(r=>r.de===me)),ca_recu_mois:0,recues_en_cours:(S.recos||[]).filter(r=>r.a===me&&!["signee","sans_suite"].includes(r.statut)).length},
+      groupe:{nom:S.moi.club,membres:14,recos_mois:11,recos_annee:58,affaires_mois:3,affaires_annee:14,ca_mois:120000,ca_annee:640000,en_cours:9,serie:serie(1)},
+      region:{nom:"Rabat · Salé · Kénitra",groupes:6,membres:48,recos_mois:37,recos_annee:212,affaires_mois:9,affaires_annee:51,ca_mois:410000,ca_annee:2150000,en_cours:30,serie:serie(3)},calcule_le:new Date().toISOString()};return}
+  const {data,error}=await sb.rpc("cap_membre_tableau");S.recosClub=error?null:data;
+}
+const moisCourt=k=>new Date(k+"-15").toLocaleDateString("fr-FR",{month:"short"}).replace(".","");
+function barres(serie,cle){const mx=Math.max(1,...serie.map(x=>Number(x[cle])||0));
+  return `<div class="tb-bars" role="img" aria-label="${cle==="ca"?"Chiffre d'affaires":"Recommandations"} sur 12 mois">${serie.map((x,i)=>`<span title="${esc(moisCourt(x.mois))} : ${cle==="ca"?esc(mad(x.ca)):x.recos+" reco"+(x.recos>1?"s":"")}" class="${i===serie.length-1?"cur":""}"><i style="height:${Math.max(3,Math.round((Number(x[cle])||0)/mx*100))}%"></i><em>${esc(moisCourt(x.mois)).slice(0,1)}</em></span>`).join("")}</div>`}
+function tableauHTML(){
+  const t=S.recosClub;if(t===undefined)return `<div class="card tb"><span class="sub">Chargement des chiffres…</span></div>`;
+  if(!t)return `<div class="card tb"><span class="sub">Chiffres indisponibles pour l'instant.</span></div>`;
+  const v=S.tbVue||"moi",mois=new Date().toLocaleDateString("fr-FR",{month:"long"}),an=new Date().getFullYear();
+  const seg=`<div class="seg tb-seg" role="tablist">${[["moi","Moi"],["groupe","Mon groupe"],["region","Ma région"]].map(([k,l])=>`<button role="tab" aria-selected="${v===k}" class="${v===k?"on":""}" data-tbvue="${k}">${l}</button>`).join("")}</div>`;
+  let corps;
+  if(v==="moi"){const m=t.moi||{};
+    corps=`<div class="tb-duo"><div class="tb-k out"><span>CA transmis</span><b class="bri">${esc(mad(m.ca_transmis))}</b><small>${m.donnees_signees||0} affaire${m.donnees_signees>1?"s":""} signée${m.donnees_signees>1?"s":""} grâce à moi · ${m.donnees||0} reco${m.donnees>1?"s":""} donnée${m.donnees>1?"s":""}</small></div>
+      <div class="tb-k in"><span>CA reçu</span><b class="bri">${esc(mad(m.ca_recu))}</b><small>${m.recues_signees||0} affaire${m.recues_signees>1?"s":""} signée${m.recues_signees>1?"s":""} · ${m.recues||0} reco${m.recues>1?"s":""} reçue${m.recues>1?"s":""}</small></div></div>
+      <div class="tb-ligne"><span>Ce mois-ci</span><b>${esc(mad(m.ca_transmis_mois))}</b> transmis · <b>${esc(mad(m.ca_recu_mois))}</b> reçu</div>
+      ${m.recues_en_cours?`<div class="tb-ligne alerte">${m.recues_en_cours} reco${m.recues_en_cours>1?"s":""} reçue${m.recues_en_cours>1?"s":""} à faire avancer</div>`:""}`}
+  else{const g=t[v]||{},nom=String(g.nom||"").replace(/^CAP\s+/,"");
+    corps=`<div class="tb-tete"><b class="bri">${esc(nom)}</b><span>${v==="region"?`${g.groupes} groupes · `:""}${g.membres} membres</span></div>
+      <div class="tb-gros"><span>CA généré en ${esc(mois)}</span><b class="bri">${esc(mad(g.ca_mois))}</b><small>Depuis janvier ${an} : ${esc(mad(g.ca_annee))}</small></div>
+      ${barres(g.serie||[],"ca")}
+      <div class="tb-kpis"><div><b>${g.recos_mois}</b><span>recos ce mois</span></div><div><b>${g.affaires_mois}</b><span>affaires signées ce mois</span></div><div><b>${g.recos_annee}</b><span>recos depuis janvier</span></div><div><b>${g.en_cours}</b><span>en cours</span></div></div>
+      ${v==="region"?`<p class="note" style="margin:0">Totaux de la région. Le détail des autres groupes n'est pas partagé.</p>`:""}`}
+  return `<div class="card tb">${seg}${corps}<small class="tb-maj">Mis à jour à chaque saisie · ${esc(new Date(t.calcule_le||Date.now()).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}))}</small></div>`;
 }
 function frise(st){
   if(st==="sans_suite")return `<div class="frise"><span class="fin ko">Sans suite</span></div>`;
@@ -603,14 +645,9 @@ function vueRecos(){
   if(S.recoForm)return vueDonnerReco();
   const tab=S.recoTab||"recues",l=(S.recos||[]).filter(r=>tab==="recues"?r.a===S.moi.id:r.de===S.moi.id);
   const nr=(S.recos||[]).filter(r=>r.a===S.moi.id).length,nd=(S.recos||[]).filter(r=>r.de===S.moi.id).length;
-  const c=S.recosClub;const mois=new Date().toLocaleDateString("fr-FR",{month:"long"});
-  return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recommandations</h1><p class="sub">Tu passes un contact qui a un besoin à un membre. Il te dit où ça en est.</p></div></div>
-    <div class="card club-tot">${c?`<span class="label" style="color:var(--or)">${esc(String(c.club||"").replace(/^CAP\s+/,""))} · ${esc(mois)}</span>
-      <b class="bri gros">${esc(mad(c.mois_montant))}</b><span>d'affaires générées par le club ce mois-ci · ${c.mois_affaires} signée${c.mois_affaires>1?"s":""} · ${c.mois_recos} reco${c.mois_recos>1?"s":""}</span>
-      <small>Depuis janvier : ${esc(mad(c.annee_montant))} · ${c.annee_affaires} affaire${c.annee_affaires>1?"s":""}</small>`:`<span>Chargement du total du club…</span>`}</div>
-    ${(()=>{const sg=(S.recos||[]).filter(r=>r.statut==="signee"),ap=sg.filter(r=>r.de===S.moi.id),re=sg.filter(r=>r.a===S.moi.id),s=a=>a.reduce((t,r)=>t+(Number(r.montant)||0),0);
-      return `<div class="ca-perso"><div><b>${esc(mad(s(ap)))}</b><span>CA que j'ai apporté · ${ap.length} affaire${ap.length>1?"s":""}</span></div><div><b>${esc(mad(s(re)))}</b><span>CA que j'ai reçu · ${re.length} affaire${re.length>1?"s":""}</span></div></div>`})()}
+    return `<div class="page">
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recos et chiffres</h1><p class="sub">Tes chiffres, ceux de ton groupe et de ta région. Tu passes un contact qui a un besoin à un membre : il te dit où ça en est.</p></div></div>
+    ${tableauHTML()}
     <button class="btn" data-rdonner="">Donner une recommandation</button>
     <div class="seg" role="tablist"><button role="tab" aria-selected="${tab==="recues"}" class="${tab==="recues"?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${tab==="donnees"}" class="${tab==="donnees"?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
     ${l.length?l.map(r=>carteReco(r,tab==="recues")).join(""):`<p class="vide" style="padding:12px">${tab==="recues"?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
@@ -697,6 +734,7 @@ function brancher(){
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
   app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
   const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
+  app.querySelectorAll("[data-tbvue]").forEach(b=>b.onclick=()=>{S.tbVue=b.dataset.tbvue;rendu(true)});
   app.querySelectorAll("[data-rtab]").forEach(b=>b.onclick=()=>{S.recoTab=b.dataset.rtab;rendu(true)});
   app.querySelectorAll("[data-rdonner]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:true,recoPour:b.dataset.rdonner||""}));
   app.querySelectorAll("[data-rannuler]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:false}));

@@ -1851,6 +1851,28 @@ html.dark .tbl .act.ok{background:#173326;color:#9FE0BD;border-color:#24503A}
 html.dark .ck-act.urgent{background:#4A1018;color:#F3DADD}
 html.dark .ck-act.todo{background:#22344A;color:#C6DAEE}
 html.dark .ck-act.ok{background:#173326;color:#9FE0BD}
+/*v050 thème sombre « anthracite » : une seule palette, plus claire (JB : « trop sombre, pas joli »), rouge du logo, plus aucun bloc clair codé en dur */
+html.dark{--paper:#26282C;--card:#303237;--side:#222428;--line:#41444A;--soft:#383B40;--hover:#373A40;--ink:#EEEEF0;--muted:#A7AAB1;
+  --topbar:rgba(38,40,44,.95);--land:#33363B;--sea:#24282E;
+  --crimson:#A81E3C;--crimson-txt:#EE5A64;--crimson-tint:#43262C;
+  --ok:#6CCB98;--ok-tint:#27392F;--info:#9BB4EC;--info-tint:#2A3245;--warn:#9DB7D1;--warn-tint:#2A3542;--gold:#9DB7D1;--gold-tint:#2C3A4A;
+  --shadow:0 1px 2px rgba(0,0,0,.25),0 6px 18px rgba(0,0,0,.25);--shadow-lg:0 12px 40px rgba(0,0,0,.4)}
+html.dark .hello{background:linear-gradient(120deg,#A81E3C,#8A1731 50%,#5A0E20);background-size:220% 220%}
+html.dark .hello.vivant{background:radial-gradient(60% 120% at var(--hax) 20%,#B42241 0,transparent 60%),radial-gradient(50% 100% at var(--hbx) 90%,#6A0F23 0,transparent 65%),linear-gradient(120deg,#9A1A37,#5A0E20)}
+@media(min-width:900px){html.dark .nav button.on,html.dark body.vue-nat .nav button.on{background:var(--card);color:#fff}
+  html.dark .nav button.on svg{color:var(--crimson-txt)}html.dark .nav button svg{color:#B4B7BD}}
+html.dark body.vue-nat .nav button.on{color:#fff}
+html.dark .st.planifiee{background:var(--soft);color:var(--muted)}
+html.dark .badge.rl,html.dark .ck-pill.creation,html.dark .rl-fact.y,html.dark .rl-type.rl,html.dark .k-bil,html.dark .renouv-j.w{background:var(--gold-tint);color:#B9CDE3}
+html.dark .reco-st{background:var(--soft);color:var(--muted)}
+html.dark .reco-st.contact,html.dark .reco-st.devis{background:var(--info-tint);color:#BFD0F2}
+html.dark .reco-st.signee,html.dark .renouv-j,html.dark .pres.on,html.dark .k-ok,html.dark .tj-ok{background:var(--ok-tint);color:#9FE0BD}
+html.dark .pres{background:var(--card)}
+html.dark .km-j{background:var(--soft)}
+html.dark .vb-or{background:var(--gold-tint);--enc:#364658}html.dark .vb-or .vb-n{color:#B9CDE3}
+html.dark .ce-ty{color:#fff;border-color:color-mix(in srgb,var(--vc) 70%,transparent);background:color-mix(in srgb,var(--vc) 35%,transparent)}
+html.dark .map-embed{background:var(--soft)}
+html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;border-color:#64303A}
 </style>
 </head>
 <body>
@@ -1927,8 +1949,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.49.1";
+const APP_VERSION="0.50.0";
 const CHANGELOG=[
+  {v:"0.50.0",date:"16 novembre 2026",notes:{
+    "Modifié":["Thème sombre refait : un gris anthracite plus clair et plus doux, une seule palette sur tous les écrans, le rouge du logo partout. Les pastilles (planifiée, lancement, recommandations, renouvellements, présences) n'ont plus de fond clair qui jurait. Le menu actif reste lisible."]}},
   {v:"0.49.1",date:"16 novembre 2026",notes:{
     "Modifié":["Thème sombre : le rouge est celui du logo Protéine (#A81E3C, bordeaux). Il tirait sur le rose saumon. Les petits textes rouges restent lisibles grâce à une teinte un peu plus claire, rouge et non rose. Les alertes passent sur un fond bordeaux."]}},
   {v:"0.49.0",date:"16 novembre 2026",notes:{

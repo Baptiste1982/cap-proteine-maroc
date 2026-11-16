@@ -1345,7 +1345,8 @@ svg.focus .cst-l:not(.lit){opacity:.3}
   animation:dmEntre .45s cubic-bezier(.2,1.2,.4,1) calc(var(--i)*55ms) both;transition:transform .25s cubic-bezier(.2,1.4,.4,1),box-shadow .25s,border-color .25s}
 @keyframes dmEntre{from{opacity:0;transform:translateY(10px) scale(.97)}}
 .dm-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--vc);transition:width .3s}
-.dm-card:hover,.dm-card:focus-visible{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 16px 30px -18px rgba(92,10,24,.55);border-color:color-mix(in srgb,var(--vc) 45%,var(--line))}
+.dm-card.survol,.dm-card:focus-visible{transform:translateY(-3px);box-shadow:0 16px 30px -18px rgba(92,10,24,.55);border-color:color-mix(in srgb,var(--vc) 45%,var(--line))}
+.dm-card.survol.incline{transform:translateY(-3px) rotate(-.4deg)}
 .dm-card:hover::before{width:7px}
 .dm-card.late{border-color:color-mix(in srgb,var(--crimson) 40%,var(--line))}
 .dm-card.presse{transform:scale(.97)}
@@ -4120,12 +4121,22 @@ function navPill(){const nav=document.getElementById("nav"),pl=document.getEleme
 addEventListener("resize",()=>{clearTimeout(window._npT);window._npT=setTimeout(navPill,120)});
 /* La barre change de mise en page juste après un rendu (pastilles, onglets masqués) : on recale à chaque mouvement. */
 if(window.ResizeObserver)addEventListener("DOMContentLoaded",()=>{const nav=document.getElementById("nav");if(!nav)return;const ro=new ResizeObserver(()=>{clearTimeout(window._npR);window._npR=setTimeout(navPill,30)});nav.querySelectorAll("button").forEach(b=>ro.observe(b))});
-/* C — les cartes de club s'inclinent vers la souris et une lueur or la suit (ordinateur seulement). */
+/* C — les cartes de club s'inclinent vers la souris et une lueur or la suit (ordinateur seulement).
+   v0.44.0 : dès que la souris s'arrête, la carte se redresse (texte net pour lire) ; la lueur reste.
+   Une carte soulevée ne se « perd » plus quand la souris est au ras de son bord bas (elle tremblait). */
+function _horsCarte(el,e,m){const r=el.getBoundingClientRect();return e.clientX<r.left-m||e.clientX>r.right+m||e.clientY<r.top-m||e.clientY>r.bottom+m+4}
 document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"||_calme())return;const c=e.target.closest&&e.target.closest(".ck");
-  if(window._ckOn&&window._ckOn!==c){window._ckOn.style.transform="";window._ckOn.style.setProperty("--go",0);window._ckOn=null}
+  if(window._ckOn&&window._ckOn!==c){if(!c&&!_horsCarte(window._ckOn,e,2))return;clearTimeout(window._ckOn._pose);window._ckOn.style.transform="";window._ckOn.style.setProperty("--go",0);window._ckOn=null}
   if(!c)return;window._ckOn=c;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
   c.style.setProperty("--gx",x*100+"%");c.style.setProperty("--gy",y*100+"%");c.style.setProperty("--go",.3);
-  c.style.transform=`perspective(800px) rotateX(${((.5-y)*6).toFixed(2)}deg) rotateY(${((x-.5)*8).toFixed(2)}deg) translateY(-2px)`},{passive:true});
+  c.style.transform=`perspective(800px) rotateX(${((.5-y)*6).toFixed(2)}deg) rotateY(${((x-.5)*8).toFixed(2)}deg) translateY(-2px)`;
+  clearTimeout(c._pose);c._pose=setTimeout(()=>{if(window._ckOn===c)c.style.transform="translateY(-2px)"},220)},{passive:true});
+/* Cartes des demandes : la petite inclinaison se joue à l'arrivée de la souris, puis la carte se redresse pour qu'on lise. */
+document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const c=e.target.closest&&e.target.closest(".dm-card"),o=window._dmOn;
+  if(o&&o!==c){if(!c&&o.isConnected&&!_horsCarte(o,e,2))return;clearTimeout(o._inc);o.classList.remove("survol","incline");window._dmOn=null}
+  if(!c||window._dmOn===c)return;window._dmOn=c;c.classList.add("survol");if(_calme())return;
+  c.classList.add("incline");clearTimeout(c._inc);c._inc=setTimeout(()=>c.classList.remove("incline"),450)},{passive:true});
+document.addEventListener("mouseout",e=>{if(e.relatedTarget)return;const o=window._dmOn;if(o){o.classList.remove("survol","incline");window._dmOn=null}});
 /* E — la fiche s'ouvre depuis l'élément touché : elle « grandit » à partir de sa place. */
 let _morph=null;
 document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest(".rl-row,.ck,.row[onclick],.rank-row.link,.mb-card,.dem-card,.stat.link,.lieu-card,.cc,.tj-n,.km-mb,.reu-card,.meet,.dash-recos,.goal");

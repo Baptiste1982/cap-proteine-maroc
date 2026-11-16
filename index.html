@@ -837,7 +837,8 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson)}
 .nat-v{font-size:13px;color:var(--muted)}.ni-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ni-qr{width:96px;height:96px;flex:none;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px}.ni-qr svg{width:100%;height:100%;display:block}.ni-l{display:grid;gap:6px;min-width:0;flex:1 1 220px}@media(max-width:600px){.ni-qr{width:76px;height:76px}.ni-act{grid-column:1/-1}}.ni-lien{font-size:13px;font-weight:600;color:var(--crimson);word-break:break-all;user-select:all}.ni-act{display:flex;flex-wrap:wrap;gap:6px}.nat-v b{color:var(--ink)}
-.nat-ok{font-weight:600;color:#1f7a4d}.nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
+.nat-ok{font-weight:600;color:#1f7a4d}.ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson)}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
+.nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
 .nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .nat-plan{display:grid;gap:6px;margin:10px 0}.nat-plan div{display:flex;justify-content:space-between;gap:12px;font-size:13px}.nat-plan span{color:var(--muted)}.nat-plan b{text-align:right}
 /*v020*/
@@ -1920,8 +1921,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.47.0";
+const APP_VERSION="0.48.0";
 const CHANGELOG=[
+  {v:"0.48.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Réunions : les personnes inscrites par le lien du national arrivent toutes seules dans la liste des invités (nom, entreprise, métier, téléphone), avec le nombre d'inscrits dans la fiche, un bouton pour vérifier tout de suite et une notification à chaque nouvel inscrit."]}},
   {v:"0.47.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Invitation à une réunion : un vrai message d'accueil selon le type (réunion d'information, de lancement), à relire et ajuster avant l'envoi par WhatsApp. Le texte retouché peut être gardé comme modèle."]}},
   {v:"0.46.1",date:"16 novembre 2026",notes:{
@@ -4516,7 +4519,16 @@ function natInvBloc(m){
       <a class="ni-lien" href="${esc(n.lien)}" target="_blank" rel="noopener">${esc(n.lien.replace(/^https:\/\//,""))}</a>
       <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener">Ouvrir</a></div></div></div>
     ${per?`<div class="nat-err">Depuis l'envoi au national, ${per} ${per.includes(" et ")?"ont":"a"} changé ici.${su&&avenir?"":" Le directeur doit mettre l'invitation à jour."}</div>${su&&avenir?`<button class="btn" onclick="natInvCreer('${m.id}',this)">🔄 Mettre à jour au national</button>`:""}`:""}
-    <div class="nat-v">Au national : Communication → Invitations → n° ${esc(n.invitation_id)}. L'envoi par e-mail aux contacts du national se fait là-bas.</div></div>`}
+    <div class="ni-insc"><b>${n.inscrits!=null?n.inscrits:"—"}</b> inscrit${n.inscrits>1?"s":""} par le lien${n.inscrits_le?` <small>· vérifié ${esc(adhDate(n.inscrits_le))}</small>`:""}${su?`<button class="btn ghost mini" onclick="natInscrits('${m.id}',this)">🔄 Récupérer les inscrits</button>`:""}</div>
+    <div class="nat-v">Les inscrits arrivent dans la liste des invités ci-dessous (vérification automatique chaque heure, de 8 h à 21 h). Au national : Communication → Invitations → n° ${esc(n.invitation_id)} → statistiques.</div></div>`}
+async function natInscrits(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;const t=btn.textContent;btn.disabled=true;btn.textContent="Lecture du national…";
+  const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"inscrits",reunion_id:id}});
+  btn.disabled=false;btn.textContent=t;
+  if(error||!r||!r.ok){let msg=r&&r.error;if(!msg&&error)try{msg=(await error.context.json()).error}catch(e){msg=error.message}toast(msg||"Le national n'a pas répondu","e");return}
+  const x=(r.reunions||[])[0]||{inscrits:0,nouveaux:0};
+  const [g,rr]=await Promise.all([sb.from("invites").select("*").eq("reunion_id",id),sb.from("reunions").select("national").eq("id",id).single()]);
+  if(!g.error)m.guests=(g.data||[]).map(mapGuest);if(!rr.error&&rr.data&&rr.data.national)m.nat={...m.nat,...rr.data.national};
+  openMeeting(id);render();toast(x.nouveaux?`${x.nouveaux} nouvel${x.nouveaux>1?"s":""} inscrit${x.nouveaux>1?"s":""} ajouté${x.nouveaux>1?"s":""} aux invités`:`${x.inscrits} inscrit${x.inscrits>1?"s":""}, rien de nouveau`)}
 async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;
   if(!m.lieuId){toast("Choisis d'abord le lieu de la réunion","w");return}
   const t=btn.textContent;btn.disabled=true;btn.textContent="Envoi au national…";

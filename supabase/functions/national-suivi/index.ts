@@ -100,6 +100,46 @@ async function invitationEcrire(N: National, body: any): Promise<any> {
   return { ok: true, id, lien: `${B}/invitation/inscription?ref=${id}`, qr: `${B}/invitation/qrCode?id=${id}&type=png`, envoi: resume };
 }
 
+// Inscrits d'une invitation : écran « Afficher les statistiques de l'invitation » (/invitation/statistique?id=…),
+// liste DataTables /destinataireInvitation/lister?id=… (etatInvitation 1 = accepté, etatPresence 1 = présent).
+async function inscritsLire(N: National, invId: string) {
+  const id = encodeURIComponent(invId);
+  await N.req('GET', `/invitation/statistique?id=${id}`);
+  const cols = ['', 'id', 'nomEntreprise', 'prenom', 'nom', 'email', 'dateReponse', 'dateOuverture', 'nombreOuvertures', 'informations'];
+  const f: Record<string, string> = { draw: '1', start: '0', length: '500', 'search[value]': '', 'search[regex]': 'false', 'order[0][column]': '1', 'order[0][dir]': 'desc' };
+  cols.forEach((c, i) => Object.assign(f, { [`columns[${i}][data]`]: c, [`columns[${i}][name]`]: c, [`columns[${i}][searchable]`]: c ? 'true' : 'false', [`columns[${i}][orderable]`]: c ? 'true' : 'false', [`columns[${i}][search][value]`]: '', [`columns[${i}][search][regex]`]: 'false' }));
+  const j = await N.json('POST', `/destinataireInvitation/lister?id=${id}`, f);
+  const inscrits = (Array.isArray(j?.data) ? j.data : []).map((x: any) => ({ id: String(x.id), entreprise: String(x.nomEntreprise || '').trim(), prenom: String(x.prenom || '').trim(), nom: String(x.nom || '').trim(),
+    email: String(x.email || '').trim(), tel: String(x.tel1 || '').trim(), activite: String(x.activite || '').trim(), reponse: String(x.dateReponse || ''), etat: Number(x.etatInvitation), present: Number(x.etatPresence) === 1 }));
+  return { inscrits };
+}
+async function pousser(admin: any, title: string, body: string, url: string, tag: string) {
+  try {
+    const { data: k } = await admin.rpc('cap_vapid_private'); if (!k) return;
+    webpush.setVapidDetails('https://cap-proteine-maroc.vercel.app', VAPID_PUBLIC, k as string);
+    const { data: profs } = await admin.from('profiles').select('id').eq('role', 'superadmin');
+    const { data: abos } = await admin.from('push_abonnements').select('id, endpoint, p256dh, auth').in('user_id', (profs || []).map((p: any) => p.id));
+    for (const ab of abos || []) { try { await webpush.sendNotification({ endpoint: ab.endpoint, keys: { p256dh: ab.p256dh, auth: ab.auth } }, JSON.stringify({ title, body, url, tag }), { TTL: 86400 }); } catch { /* */ } }
+  } catch { /* */ }
+}
+async function inscritsSync(admin: any, N: National, r: any) {
+  const invId = r?.national?.invitation_id; if (!invId) return { inscrits: 0, nouveaux: 0 };
+  const lu = await inscritsLire(N, String(invId));
+  const { data: deja } = await admin.from('invites').select('id, national_id, nom, email').eq('reunion_id', r.id);
+  let nouveaux = 0; const noms: string[] = [];
+  for (const x of lu.inscrits) {
+    const nom = [x.prenom, x.nom].filter(Boolean).join(' ').trim() || x.email;
+    const ex = (deja || []).find((d: any) => d.national_id === x.id || (x.email && n(d.email) === n(x.email)) || n(d.nom) === n(nom));
+    const note = `Inscrit par le lien du national${x.reponse ? ' le ' + x.reponse : ''}`;
+    if (ex) { if (!ex.national_id) await admin.from('invites').update({ national_id: x.id, email: x.email || null }).eq('id', ex.id); continue; }
+    const { error } = await admin.from('invites').insert({ reunion_id: r.id, nom, email: x.email || null, tel: x.tel || null, entreprise: x.entreprise || null, metier: x.activite || null, statut: x.etat === 2 ? 'Non intéressé' : 'Intéressé', invite_par: 'Lien du national', note, national_id: x.id });
+    if (!error) { nouveaux++; noms.push(nom); }
+  }
+  await admin.from('reunions').update({ national: { ...r.national, inscrits: lu.inscrits.length, inscrits_le: new Date().toISOString() } }).eq('id', r.id);
+  if (noms.length) await pousser(admin, `🗓 ${noms.length > 1 ? noms.length + ' nouveaux inscrits' : 'Nouvel inscrit'} à la réunion du ${String(r.date).split('-').reverse().join('/')}`, noms.join(', '), '/?reunion=' + r.id, 'insc-' + r.id);
+  return { inscrits: lu.inscrits.length, nouveaux };
+}
+
 Deno.serve(async (req) => {
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -117,6 +157,15 @@ Deno.serve(async (req) => {
     if (!ok) return json({ error: 'Non autorisé' }, 401);
 
     const body = await req.json().catch(() => ({}));
+    if (body.action === 'inscrits') {
+      // Inscrits d'une réunion (ou de toutes les réunions à venir qui ont une invitation) rapatriés dans les invités.
+      const N0 = new National(); await N0.connexion();
+      let q = admin.from('reunions').select('id, date, national').not('national', 'is', null);
+      q = body.reunion_id ? q.eq('id', body.reunion_id) : q.gte('date', new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10));
+      const { data: rs } = await q; const out: any[] = [];
+      for (const r of rs || []) out.push({ reunion_id: r.id, ...(await inscritsSync(admin, N0, r)) });
+      return json({ ok: true, reunions: out });
+    }
     if (body.action === 'regarder') {
       // Lecture seule d'une page du national, morceaux autour d'un motif (pour relever la navigation).
       const N0 = new National(); await N0.connexion();
@@ -264,6 +313,12 @@ Deno.serve(async (req) => {
         }
       }
     }
+
+    // 2 bis · Inscrits des invitations des réunions à venir.
+    try {
+      const { data: rs } = await admin.from('reunions').select('id, date, national').not('national', 'is', null).gte('date', new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10));
+      for (const r of rs || []) await inscritsSync(admin, N, r);
+    } catch (e) { res.erreurs.push('Inscrits : ' + (e as Error).message); }
 
     // 3 · Notification des signatures aux superadmins.
     if (res.signes.length) {

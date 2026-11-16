@@ -1942,6 +1942,14 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 .gf-m.moi{align-self:flex-end;background:var(--crimson-tint);border-radius:14px 14px 4px 14px}.gf-m p{margin:2px 0;white-space:pre-line;font-size:14px}
 .gf-a{font-size:11.5px;font-weight:700;color:var(--crimson-txt,var(--crimson))}.gf-m small{font-size:11px;opacity:.65}
 .gf-in{display:flex;gap:8px;align-items:flex-end;padding-right:72px;margin-bottom:40px}.gf-in .btn{flex:0 0 auto!important;width:auto!important}.gf-in textarea{flex:1;min-width:0;resize:vertical;font:inherit;padding:10px;border-radius:12px;border:1px solid var(--line,#ddd);background:var(--card,#fff);color:inherit}
+.ga-bars{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;height:90px;align-items:end;margin-bottom:6px}.ga-bars span{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+.ga-bars i{width:100%;max-width:20px;background:var(--crimson-tint);border-radius:4px 4px 2px 2px}.ga-bars span.cur i{background:var(--crimson)}.ga-bars em{font-style:normal;font-size:10px;opacity:.6;text-transform:uppercase}
+.ga-tab{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.ga-h,.ga-r{display:grid;grid-template-columns:minmax(0,1.6fr) 1fr 1fr 1fr;gap:8px;padding:9px 12px;align-items:center;font-size:13px}
+.ga-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.7;border-bottom:1px solid var(--line)}
+.ga-r+.ga-r{border-top:1px solid var(--line)}.ga-r.link{cursor:pointer}.ga-r.link:hover{background:var(--crimson-tint)}.ga-n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ga-out{color:var(--crimson-txt,var(--crimson))}.ga-in{color:var(--gold)}
+@media(max-width:600px){.ga-h span:nth-child(2),.ga-r span:nth-child(2){display:none}.ga-h,.ga-r{grid-template-columns:minmax(0,1.4fr) 1fr 1fr}}
 </style>
 </head>
 <body>
@@ -2018,8 +2026,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.1.0";
+const APP_VERSION="1.2.0";
 const CHANGELOG=[
+  {v:"1.2.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Espace membre, onglet « Recos et chiffres » : un tableau de bord Moi / Mon groupe / Ma région. Moi : CA transmis et CA reçu, recos données et reçues. Groupe et région : CA du mois et de l'année, recos, affaires signées, courbe sur 12 mois. La région ne donne que des totaux, jamais le détail des autres groupes. Les chiffres sont recalculés à chaque saisie.","CRM, espace Groupe › Affaires : CA du mois, courbe des 12 derniers mois et tableau par membre (recos données et reçues, CA transmis, CA reçu)."],
+    "Corrigé":["Constellation : quand on vise un groupe placé derrière, l'orbite l'amène vraiment au premier plan puis il grandit. Avant, un voisin passait sous la souris pendant la rotation et prenait sa place, en boucle."]}},
   {v:"1.1.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Fiche signalétique du membre : photo, logo de la société, présentation de l'activité, site, LinkedIn et réseaux. Elle reprend d'office l'activité et le site de la demande d'adhésion. Le membre la complète lui-même dans son espace, l'animateur depuis la fiche membre du CRM.","Espace membre : les invités des réunions de son groupe (à venir et passées), avec leurs coordonnées. Un groupe ne voit jamais les invités d'un autre groupe.","Fil de discussion du groupe : les membres du groupe et leur animateur, dans l'onglet Messages de l'espace membre et dans l'onglet « Discussion » de l'espace Groupe du CRM.","Espace membre, onglet Recos : le chiffre d'affaires que j'ai apporté et celui que j'ai reçu."]}},
   {v:"1.0.0",date:"16 novembre 2026",notes:{
@@ -3347,15 +3358,21 @@ function grpCR(c,D){
 function grpAffaires(c,D){
   const ed=canEditClubId(c.id),etapes=["envoyee","contact","devis","signee","sans_suite"];
   const cnt=k=>D.recos.filter(r=>r.statut===k).length,mx=Math.max(1,...etapes.map(cnt));
-  const par={};D.recos.forEach(r=>{(par[r.de]=par[r.de]||{d:0,ca:0,r:0}).d++;if(r.statut==="signee")par[r.de].ca+=Number(r.montant||0);(par[r.a]=par[r.a]||{d:0,ca:0,r:0}).r++});
-  const top=Object.entries(par).filter(([id])=>DB.membres.some(m=>m.id===id&&m.clubId===c.id)).sort((a,b)=>b[1].ca-a[1].ca||b[1].d-a[1].d).slice(0,6);
-  return `<div class="grp-stats petit">${grpStat(madFmt(D.ca).replace(" MAD","<small> MAD</small>"),"d'affaires signées",null,"or")}${grpStat(madFmt(D.caAn).replace(" MAD","<small> MAD</small>"),"en "+TODAY.getFullYear())}${grpStat(D.recos.length,"recommandations")}${grpStat(D.recos.length?Math.round(D.signees.length/D.recos.length*100)+" %":"—","transformées")}</div>
+  // v1.2.0 : CA transmis (affaires signées grâce aux recos qu'il a données) et CA reçu (affaires qu'il a signées), par membre.
+  const toutes=(DB.recos||[]),par={};D.membres.forEach(m=>par[m.id]={d:0,r:0,ca:0,rc:0});
+  toutes.forEach(r=>{const sg=r.statut==="signee",mt=Number(r.montant||0);if(par[r.de]){par[r.de].d++;if(sg)par[r.de].ca+=mt}if(par[r.a]){par[r.a].r++;if(sg)par[r.a].rc+=mt}});
+  const top=Object.entries(par).sort((a,b)=>(b[1].ca+b[1].rc)-(a[1].ca+a[1].rc)||(b[1].d+b[1].r)-(a[1].d+a[1].r));
+  const moisK=TODAY.getFullYear()+"-"+String(TODAY.getMonth()+1).padStart(2,"0"),caMois=D.signees.filter(r=>(r.maj_le||r.cree_le||"").startsWith(moisK)).reduce((a,r)=>a+Number(r.montant||0),0);
+  const ser=Array.from({length:12},(_,i)=>{const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-11+i,1),k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");return{lab:MOIS[d.getMonth()],ca:D.signees.filter(r=>(r.maj_le||r.cree_le||"").startsWith(k)).reduce((a,r)=>a+Number(r.montant||0),0),cur:i===11}}),smx=Math.max(1,...ser.map(x=>x.ca));
+  return `<div class="grp-stats petit">${grpStat(madFmt(caMois).replace(" MAD","<small> MAD</small>"),"CA ce mois-ci",null,"or")}${grpStat(madFmt(D.ca).replace(" MAD","<small> MAD</small>"),"d'affaires signées")}${grpStat(madFmt(D.caAn).replace(" MAD","<small> MAD</small>"),"en "+TODAY.getFullYear())}${grpStat(D.recos.length,"recommandations")}${grpStat(D.recos.length?Math.round(D.signees.length/D.recos.length*100)+" %":"—","transformées")}</div>
     ${ed?`<button class="btn" style="margin:4px 0 10px" onclick="grpRecoForm()">+ Noter une affaire annoncée en réunion</button>`:""}
     <div class="grp-2col"><div>
       <div class="month-label">Où en sont les recommandations</div>
       <div class="grp-pipe">${etapes.map(k=>`<div class="gpi"><span>${esc(RECO_LIB[k])}</span><div><i class="${k}" style="width:${cnt(k)/mx*100}%"></i></div><b>${cnt(k)}</b></div>`).join("")}</div>
-      <div class="month-label">Membres qui font tourner le groupe</div>
-      ${top.length?`<div class="rank">${top.map(([id,x],i)=>`<div class="rank-row link" onclick="memberSheet('${c.id}','${id}')"><span class="rk">${i+1}</span><div class="rn">${esc(membreNom(id))}<small>${x.d} donnée${x.d>1?"s":""} · ${x.r} reçue${x.r>1?"s":""}</small></div><b>${x.ca?esc(madFmt(x.ca)):""}</b></div>`).join("")}</div>`:`<p class="fh-empty">Pas encore d'affaire dans le groupe.</p>`}
+      <div class="month-label">CA signé, 12 derniers mois</div>
+      <div class="ga-bars">${ser.map(x=>`<span class="${x.cur?"cur":""}" title="${esc(x.lab)} : ${esc(madFmt(x.ca))}"><i style="height:${Math.max(3,Math.round(x.ca/smx*100))}%"></i><em>${esc(x.lab).slice(0,1)}</em></span>`).join("")}</div>
+      <div class="month-label">Par membre : transmis et reçu</div>
+      ${top.length?`<div class="ga-tab"><div class="ga-h"><span>Membre</span><span>Recos données / reçues</span><span>CA transmis</span><span>CA reçu</span></div>${top.map(([id,x])=>`<div class="ga-r link" onclick="memberSheet('${c.id}','${id}')"><span class="ga-n">${esc(membreNom(id))}</span><span>${x.d} / ${x.r}</span><b class="ga-out">${x.ca?esc(madFmt(x.ca)):"—"}</b><b class="ga-in">${x.rc?esc(madFmt(x.rc)):"—"}</b></div>`).join("")}</div>`:`<p class="fh-empty">Pas encore de membre dans le groupe.</p>`}
     </div><div>
       <div class="month-label">Dernières recommandations</div>
       ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(r.contact_nom)}${r.contact_entreprise?` · ${esc(r.contact_entreprise)}`:""}<small>${esc(membreNom(r.de))} → ${esc(membreNom(r.a))} · ${esc(adhDate(r.cree_le))}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
@@ -6501,7 +6518,7 @@ function cstRender(){
     orb+=`<ellipse class="cst-orb" data-o="${orbites.length-1}" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
     liste.forEach((g,gi)=>{
       const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=15+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
-      const i=pos.length;pos.push({...g,ri,sz});o.items.push({i,b0,sz,f:0});
+      const i=pos.length;pos.push({...g,ri,sz,oi:orbites.length-1});o.items.push({i,b0,sz,f:0});
       const lw=Math.max(sz*1.15,g.nom.length*5.2);bord(hx-R-lw,hy-R*TILT-sz*1.15-10,hx+R+lw,hy+R*TILT+sz*1.15+24);
       const alerte=g.e==="sans"||g.e==="bil";
       astres+=`<line class="cst-sl" data-sl="${i}" x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${hx}" y2="${hy}"/>
@@ -6563,7 +6580,7 @@ function cstRender(){
       const vise=ob.items.find(it=>it.i===_cst.hov||it.i===_cst.sel);
       if(vise){if(vise.i!==ob.vise){ob.vise=vise.i;const th0=vise.b0+rot*(oi%2?-1:1)+ob.off;let d=(Math.PI/2-th0)%(2*Math.PI);if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;ob.offT=ob.off+d}}
       else if(ob.vise!=null){ob.vise=null;ob.offT=0}
-      ob.off+=(ob.offT-ob.off)*Math.min(1,dt/(calme?16:150));const arrive=Math.abs(ob.offT-ob.off)<.12;
+      ob.off+=(ob.offT-ob.off)*Math.min(1,dt/110);const arrive=Math.abs(ob.offT-ob.off)<.12;
       ob.items.forEach(it=>{
         const cible=(_cst.hov===it.i||_cst.sel===it.i)&&arrive?1:0;it.f+=(cible-it.f)*Math.min(1,dt/70);
         els[it.i].g.classList.toggle("hov",cible===1);
@@ -6582,12 +6599,21 @@ function cstRender(){
   place(t0);
   const focus=(ri,i)=>{svg.classList.toggle("focus",ri!=null);o.querySelectorAll("[data-r]").forEach(e=>e.classList.toggle("lit",ri!=null&&+e.dataset.r===ri));o.querySelectorAll(".cst-a").forEach(e=>e.classList.toggle("hov",i!=null&&+e.dataset.i===i))};
   o.querySelectorAll(".cst-a").forEach(a=>{const i=+a.dataset.i,g=pos[i];
-    a.addEventListener("pointerenter",()=>{clearTimeout(_cst.lache);_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false});
-    a.addEventListener("pointermove",e=>{const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"});
-    a.addEventListener("pointerleave",()=>{tip.hidden=true;clearTimeout(_cst.lache);_cst.lache=setTimeout(()=>{if(a.matches(":hover"))return;if(_cst.hov===i)_cst.hov=null;_cst.pause=_cst.sel!=null;focus(_cst.sel!=null?pos[_cst.sel].ri:null,null)},650)});
+    // v1.1.1 : la cible est VERROUILLÉE. Quand l'orbite tourne pour amener le groupe devant, un voisin passe sous la souris
+    // immobile : il ne doit pas voler la cible (sinon l'orbite repart dans l'autre sens, en boucle). On change de cible
+    // seulement sur un vrai mouvement de souris, et on lâche quand la souris sort de la zone de l'orbite.
+    const viser=()=>{clearTimeout(_cst.lache);_cst.lache=null;_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false};
+    a.addEventListener("pointerenter",()=>{const h=_cst.hov;if(h==null||pos[h].oi!==g.oi)viser()});
+    a.addEventListener("pointermove",e=>{if(_cst.hov!==i&&(e.movementX||e.movementY))viser();if(_cst.hov===i){const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"}});
+    a.addEventListener("pointerleave",()=>{if(_cst.hov===i)tip.hidden=true});
     const choisir=()=>{_cst.sel=i;_cst.pause=true;focus(g.ri,null);tip.hidden=true;cstFiche(g);a.classList.remove("tap");void a.getBBox();a.classList.add("tap")};
     a.addEventListener("click",choisir);a.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choisir()}});
   });
+  const lacher=()=>{_cst.hov=null;tip.hidden=true;_cst.pause=_cst.sel!=null;focus(_cst.sel!=null?pos[_cst.sel].ri:null,null)};
+  svg.addEventListener("pointermove",e=>{if(_cst.hov==null)return;const ob=orbites[pos[_cst.hov].oi],m=svg.getScreenCTM();if(!ob||!m)return;
+    const q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m.inverse()),dx=(q.x-ob.hx)/(ob.R+55),dy=(q.y-ob.hy)/(ob.R*TILT+75);
+    if(dx*dx+dy*dy>1){if(!_cst.lache)_cst.lache=setTimeout(()=>{_cst.lache=null;lacher()},350)}else{clearTimeout(_cst.lache);_cst.lache=null}});
+  svg.addEventListener("pointerleave",()=>{clearTimeout(_cst.lache);_cst.lache=setTimeout(()=>{_cst.lache=null;lacher()},350)});
   o.querySelectorAll(".cst-reg,.cst-sub").forEach(r=>{r.addEventListener("pointerenter",()=>focus(+r.dataset.r,null));r.addEventListener("pointerleave",()=>focus(_cst.sel!=null?pos[_cst.sel].ri:null,_cst.sel))});
   _cst.clk=setInterval(()=>{const c=document.getElementById("cst-clk");if(!c)return clearInterval(_cst.clk);c.textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})},20000);
 }

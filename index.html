@@ -837,7 +837,9 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px}
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson)}
 .nat-v{font-size:13px;color:var(--muted)}.ni-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ni-qr{width:96px;height:96px;flex:none;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px}.ni-qr svg{width:100%;height:100%;display:block}.ni-l{display:grid;gap:6px;min-width:0;flex:1 1 220px}@media(max-width:600px){.ni-qr{width:76px;height:76px}.ni-act{grid-column:1/-1}}.ni-lien{font-size:13px;font-weight:600;color:var(--crimson);word-break:break-all;user-select:all}.ni-act{display:flex;flex-wrap:wrap;gap:6px}.nat-v b{color:var(--ink)}
-.nat-ok{font-weight:600;color:#1f7a4d}.ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson)}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
+.nat-ok{font-weight:600;color:#1f7a4d}.gv-seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-left:auto;margin-right:8px}.gv-seg button{border:0;background:none;padding:5px 11px;font:600 12px Inter,sans-serif;color:var(--muted);cursor:pointer}.gv-seg button.on{background:var(--crimson);color:#fff}
+.gl{display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}.gl-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:13px;line-height:1.3}.gl-r:first-child{border-top:0}.gl-n{min-width:0;display:flex;flex-direction:column}.gl-n b,.gl-n small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-n small{color:var(--muted);font-size:11.5px}.gl-t{color:var(--crimson);text-decoration:none;font-variant-numeric:tabular-nums}.gl-s{padding:3px 6px;font-size:12px;min-height:0}
+.ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson)}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
 .nat-err{font-size:13px;color:var(--crimson);background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
 .nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .nat-plan{display:grid;gap:6px;margin:10px 0}.nat-plan div{display:flex;justify-content:space-between;gap:12px;font-size:13px}.nat-plan span{color:var(--muted)}.nat-plan b{text-align:right}
@@ -1921,8 +1923,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.48.0";
+const APP_VERSION="0.48.1";
 const CHANGELOG=[
+  {v:"0.48.1",date:"16 novembre 2026",notes:{
+    "Ajouté":["Invités d'une réunion : affichage « Liste » compact (nom, entreprise, téléphone, statut sur une ligne) à côté de l'affichage détaillé. Le choix est gardé."]}},
   {v:"0.48.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Réunions : les personnes inscrites par le lien du national arrivent toutes seules dans la liste des invités (nom, entreprise, métier, téléphone), avec le nombre d'inscrits dans la fiche, un bouton pour vérifier tout de suite et une notification à chaque nouvel inscrit."]}},
   {v:"0.47.0",date:"16 novembre 2026",notes:{
@@ -2364,6 +2368,8 @@ function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",ema
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[]}}
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null}}
+function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
+function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
 function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
@@ -4418,7 +4424,11 @@ function openMeeting(id){
 function meetingDetail(m,editable){
   const c=club(m.clubId),l=lieu(m.lieuId),dt=dObj(m.date);
   const guests=m.guests||[];
-  const guestsHtml=guests.length?guests.map((g,i)=>`
+  const gvl=guestVue()==="liste";
+  const guestsHtml=guests.length&&gvl?`<div class="gl">${guests.map((g,i)=>{const t=String(g.tel||"").replace(/[^\d+]/g,"");return `<div class="gl-r" title="${esc([g.entreprise,g.metier,g.par?"invité par "+g.par:"",g.note].filter(Boolean).join(" · "))}">
+      <span class="gl-n"><b>${esc(g.nom)}</b><small>${t?`<a class="gl-t" href="tel:${esc(t)}">${esc(g.tel)}</a>${g.entreprise||g.metier?" · ":""}`:""}${esc(g.entreprise||g.metier||"")}</small></span>
+      <select class="gstat gl-s" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select></div>`}).join("")}</div>`
+  :guests.length?guests.map((g,i)=>`
     <div class="guest"><div class="gav">${initiales(g.nom)}</div>
       <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
@@ -4440,7 +4450,7 @@ function meetingDetail(m,editable){
     ${crBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>
+      <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>${guests.length?`<div class="gv-seg"><button class="${gvl?"":"on"}" onclick="guestVueChoisir('det','${m.id}')">Détaillé</button><button class="${gvl?"on":""}" onclick="guestVueChoisir('liste','${m.id}')">Liste</button></div>`:""}
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
     <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;

@@ -51,6 +51,55 @@ class National {
   }
 }
 
+// Invitations du national (liste « Gestion de mes invitations »), la plus récente d'abord.
+async function invitationsListe(N: National): Promise<any[]> {
+  await N.req('GET', '/invitation');
+  const cols = ['', 'id', 'libelleType', 'dateDebut', 'dateFin', 'dateEnvoi', 'nomHote'];
+  const f: Record<string, string> = { draw: '1', start: '0', length: '50', 'search[value]': '', 'search[regex]': 'false', 'order[0][column]': '1', 'order[0][dir]': 'desc' };
+  cols.forEach((c, i) => Object.assign(f, { [`columns[${i}][data]`]: c, [`columns[${i}][name]`]: c, [`columns[${i}][searchable]`]: c ? 'true' : 'false', [`columns[${i}][orderable]`]: c ? 'true' : 'false', [`columns[${i}][search][value]`]: '', [`columns[${i}][search][regex]`]: 'false' }));
+  const j = await N.json('POST', '/invitation/lister', f);
+  return Array.isArray(j?.data) ? j.data : [];
+}
+
+// Écrit une invitation au national en reprenant le formulaire d'une invitation existante (body.source).
+// body.maj = true : on modifie cette invitation (dates, lieu, type) ; sinon on en crée une nouvelle (forcerCreation).
+async function invitationEcrire(N: National, body: any): Promise<any> {
+  const t = await (await N.req('GET', '/invitation/formulaireNew?id=' + encodeURIComponent(String(body.source)) + (body.maj ? '' : '&forcerCreation=true'))).text();
+  const dec = (x: string) => x.replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\u00a0').replace(/&amp;/g, '&');
+  const at = (tag: string, a: string) => dec((tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '');
+  const inputs = [...t.matchAll(/<input\b[^>]*>/g)].map(m => m[0]);
+  const val = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return tg ? at(tg, 'value') : ''; };
+  const coche = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return !!tg && /\schecked/.test(tg); };
+  const zone = (id: string) => dec((t.match(new RegExp(`<textarea[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</textarea>`)) || [])[1] ?? '');
+  const choix = (id: string) => { const m = t.match(new RegExp(`<select[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</select>`)); const o = m ? [...m[1].matchAll(/<option\b[^>]*>/g)].map(x => x[0]).find(x => /\sselected/.test(x)) : null; return o ? at(o, 'value') : ''; };
+  if (!val('libelleType')) throw new Error(`Invitation ${body.source} introuvable au national`);
+  const TYPES: Record<string, [string, string]> = { '7': ["Réunion d'information", 'à la '], '16': ['Réunion de lancement', 'à la '], '3': ['Réunion des membres', 'à la '] };
+  const idType = String(body.idType || choix('idType'));
+  const typ = idType !== choix('idType') && TYPES[idType] ? TYPES[idType] : [val('libelleType'), val('motDeLiaisonType')];
+  const f: Record<string, string> = {
+    id: body.maj ? String(body.source) : '', idHote: String(body.idHote || choix('listeHote')), idType,
+    motDeLiaisonType: typ[1], libelleType: typ[0],
+    dateDebut: String(body.dateDebut), dateFin: String(body.dateFin), dateRelance: String(body.dateRelance || ''), dateReponse: String(body.dateReponse || ''), dateRappel: String(body.dateRappel || ''),
+    montant: val('montant'), programme: zone('programme'), theme: String(body.theme || val('theme')), expediteur: val('expediteur'),
+    expediteurIsAnimateur: String(coche('expediteurIsAnimateurTrue')), informationsDestinataires: coche('informationsDestinatairesTrue') ? 'prenom' : 'civilite_nom',
+    urlSalleVisio: val('urlSalleVisio'), repasIsFacultatif: String(coche('repasIsFacultatifTrue')),
+    optionVisio: String(coche('deroulementEvenementVisio') || coche('deroulementEvenementMixte')), optionPhysique: String(coche('deroulementEvenementPresentiel') || coche('deroulementEvenementMixte')),
+    utilisationInscription: String(coche('utilisationInscriptionTrue')),
+    nbOptionsReponse: ['1', '2', '3'].find(k => coche('choixReponseOption' + k)) || '1',
+    texteOuiOption1: val('texteOuiOption1'), texteOuiOption2: val('texteOuiOption2'), texteOuiOption3: val('texteOuiOption3'),
+    metadata: zone('metadata'), template: zone('template'), refTemplate: zone('refTemplate'),
+  };
+  if (!/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateDebut) || !/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateFin)) throw new Error('Dates au format « JJ/MM/AAAA à HH:MM » attendues');
+  const resume = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v.length > 120 ? `(${v.length} caractères)` : v]));
+  if (body.essai) return { ok: true, essai: true, envoi: resume };
+  const r = await N.req('POST', '/invitation/enregistrer', f);
+  const brut = await r.text(); let j: any = null; try { j = JSON.parse(brut); } catch { /* */ }
+  const id = j?.tabDonnees?.id || (body.maj && j?.success ? body.source : null);
+  if (!j?.success || !id) return { ok: false, error: `Le national a refusé l'enregistrement (${r.status}).`, reponse: brut.slice(0, 1500), envoi: resume };
+  return { ok: true, id, lien: `${B}/invitation/inscription?ref=${id}`, qr: `${B}/invitation/qrCode?id=${id}&type=png`, envoi: resume };
+}
+
 Deno.serve(async (req) => {
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -99,37 +148,36 @@ Deno.serve(async (req) => {
       // Entrée : source (n° d'invitation), dateDebut / dateFin (« JJ/MM/AAAA à HH:MM »), dateReponse / dateRelance / dateRappel (« JJ/MM/AAAA »),
       // theme, idHote, idType facultatifs ; essai:true = rien n'est écrit, on renvoie ce qui serait envoyé.
       const N0 = new National(); await N0.connexion();
-      const t = await (await N0.req('GET', '/invitation/formulaireNew?id=' + encodeURIComponent(String(body.source)) + '&forcerCreation=true')).text();
-      const dec = (x: string) => x.replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
-        .replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, '\u00a0').replace(/&amp;/g, '&');
-      const at = (tag: string, a: string) => dec((tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '');
-      const inputs = [...t.matchAll(/<input\b[^>]*>/g)].map(m => m[0]);
-      const val = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return tg ? at(tg, 'value') : ''; };
-      const coche = (id: string) => { const tg = inputs.find(x => at(x, 'id') === id); return !!tg && /\schecked/.test(tg); };
-      const zone = (id: string) => dec((t.match(new RegExp(`<textarea[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</textarea>`)) || [])[1] ?? '');
-      const choix = (id: string) => { const m = t.match(new RegExp(`<select[^>]*\\sid="${id}"[^>]*>([\\s\\S]*?)</select>`)); const o = m ? [...m[1].matchAll(/<option\b[^>]*>/g)].map(x => x[0]).find(x => /\sselected/.test(x)) : null; return o ? at(o, 'value') : ''; };
-      if (!val('libelleType')) throw new Error(`Invitation ${body.source} introuvable au national`);
-      const f: Record<string, string> = {
-        id: '', idHote: String(body.idHote || choix('listeHote')), idType: String(body.idType || choix('idType')),
-        motDeLiaisonType: val('motDeLiaisonType'), libelleType: val('libelleType'),
-        dateDebut: String(body.dateDebut), dateFin: String(body.dateFin), dateRelance: String(body.dateRelance || ''), dateReponse: String(body.dateReponse || ''), dateRappel: String(body.dateRappel || ''),
-        montant: val('montant'), programme: zone('programme'), theme: String(body.theme || val('theme')), expediteur: val('expediteur'),
-        expediteurIsAnimateur: String(coche('expediteurIsAnimateurTrue')), informationsDestinataires: coche('informationsDestinatairesTrue') ? 'prenom' : 'civilite_nom',
-        urlSalleVisio: val('urlSalleVisio'), repasIsFacultatif: String(coche('repasIsFacultatifTrue')),
-        optionVisio: String(coche('deroulementEvenementVisio') || coche('deroulementEvenementMixte')), optionPhysique: String(coche('deroulementEvenementPresentiel') || coche('deroulementEvenementMixte')),
-        utilisationInscription: String(coche('utilisationInscriptionTrue')),
-        nbOptionsReponse: ['1', '2', '3'].find(k => coche('choixReponseOption' + k)) || '1',
-        texteOuiOption1: val('texteOuiOption1'), texteOuiOption2: val('texteOuiOption2'), texteOuiOption3: val('texteOuiOption3'),
-        metadata: zone('metadata'), template: zone('template'), refTemplate: zone('refTemplate'),
-      };
-      if (!/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateDebut) || !/^\d\d\/\d\d\/\d{4} à \d\d:\d\d$/.test(f.dateFin)) throw new Error('Dates au format « JJ/MM/AAAA à HH:MM » attendues');
-      const resume = Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v.length > 120 ? `(${v.length} caractères)` : v]));
-      if (body.essai) return json({ ok: true, essai: true, envoi: resume });
-      const r = await N0.req('POST', '/invitation/enregistrer', f);
-      const brut = await r.text(); let j: any = null; try { j = JSON.parse(brut); } catch { /* */ }
-      const id = j?.tabDonnees?.id;
-      if (!j?.success || !id) return json({ ok: false, statut: r.status, reponse: brut.slice(0, 1500), envoi: resume });
-      return json({ ok: true, id, lien: `${B}/invitation/inscription?ref=${id}`, qr: `${B}/invitation/qrCode?id=${id}&type=png`, envoi: resume });
+      return json(await invitationEcrire(N0, body));
+    }
+    if (body.action === 'invitation_reunion') {
+      // Invitation au national pour une réunion de notre CRM (création, ou mise à jour des dates si elle existe déjà).
+      // Modèle : la dernière invitation du national du même type (SI → Réunion d'information, RL → Réunion de lancement).
+      const { data: r, error: e1 } = await admin.from('reunions').select('id, type, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
+      if (e1 || !r) throw new Error('Réunion introuvable');
+      if (r.statut === 'annulee') throw new Error('Réunion annulée : pas d\'invitation.');
+      const { data: l } = r.lieu_id ? await admin.from('lieux').select('nom').eq('id', r.lieu_id).single() : { data: null };
+      const N0 = new National(); await N0.connexion();
+      const idType = r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3;
+      const invs = await invitationsListe(N0);
+      const nat = r.national || {};
+      const maj = nat.invitation_id && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';
+      const source = maj || String((invs.find(x => +x.idType === idType) || invs[0] || {}).id || '');
+      if (!source) throw new Error('Aucune invitation au national à prendre pour modèle : crée la première là-bas.');
+      // Lieu : celui du national dont le nom correspond au nôtre, sinon on refuse (le national exige un lieu existant).
+      const hotes = new Map<string, string>(); for (const x of invs) if (x.idHote) hotes.set(n(x.nomHote), String(x.idHote));
+      const idHote = l?.nom ? hotes.get(n(l.nom)) : (invs.find(x => String(x.id) === source)?.idHote ? String(invs.find(x => String(x.id) === source).idHote) : '');
+      if (!idHote) throw new Error(l?.nom ? `Le lieu « ${l.nom} » n'existe pas encore au national. Lieux connus là-bas : ${[...new Set(invs.map(x => x.nomHote))].join(', ') || 'aucun'}.` : 'Choisis d\'abord le lieu de la réunion.');
+      const d = new Date(r.date + 'T12:00:00Z'), j2 = (k: number) => { const x = new Date(d); x.setUTCDate(x.getUTCDate() - k); return x.toISOString().slice(0, 10).split('-').reverse().join('/'); };
+      const h = /^\d\d:\d\d/.test(r.heure || '') ? r.heure.slice(0, 5) : '11:00', hf = String(Math.min(23, +h.slice(0, 2) + 3)).padStart(2, '0') + h.slice(2);
+      const jour = j2(0);
+      const res = await invitationEcrire(N0, { source, maj: !!maj, idType, idHote, dateDebut: `${jour} à ${h}`, dateFin: `${jour} à ${hf}`, dateReponse: j2(1), dateRappel: j2(2), dateRelance: j2(3), essai: body.essai });
+      if (res.ok && !res.essai) {
+        const national = { invitation_id: res.id, lien: res.lien, qr: res.qr, date: r.date, heure: h, lieu: l?.nom || '', modele: maj ? nat.modele : source, cree_le: nat.cree_le || new Date().toISOString(), maj_le: new Date().toISOString() };
+        await admin.from('reunions').update({ national }).eq('id', r.id);
+        return json({ ...res, national, mise_a_jour: !!maj });
+      }
+      return json(res);
     }
     if (body.action === 'miroir') {
       // Ce que le national affiche dans « En attente de signature » et « Gestion des membres » (lecture seule).

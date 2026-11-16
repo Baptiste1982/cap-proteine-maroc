@@ -300,6 +300,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - v0.48.1 : invités en « Détaillé » ou « Liste » (`guestVue`, localStorage `cap-gvue`, `.gl-r` : nom, téléphone cliquable + entreprise, statut).
 - Fiche réunion : ligne « N inscrits par le lien · vérifié … » et bouton « 🔄 Récupérer les inscrits » (`natInscrits`, superadmin). 16/11 : 4 inscrits rapatriés pour le 19/11 (Benyahya, El Meliani, Chrystel, Koita). Banc `natinv.mjs` 43/43.
 
+**✍️ Signature Yousign automatique (v0.49.0, 16/11/2026)** — JB : « que ça déclenche la procédure pour la signature numérique, sinon ça n'a aucun intérêt » (Hassan, au national : le lien bascule normalement sur Yousign).
+- Au national, le bouton « Lancer la procédure de signature » appelle `POST /signatureNumerique/creerProcedure {idContrat}`. La réponse porte `referenceProcedure`, `referenceSignataire`, `referenceSignatairePrincipal`, `logYousign`, `type` et `messageLog`. Le national crée lui-même la procédure Yousign et envoie les e-mails (membre, Faïçal, animateur, délégué). Aucun autre appel n'est nécessaire.
+- `national-adhesion` v6 : `signature: 'electronique'` par défaut dans `envoyer`. Nouvelle action `yousign`, ouverte aussi avec le jeton `x-suivi-jeton` : elle lance Yousign sur un contrat déjà créé, sans le réécrire. Garde-fous : `reference_procedure` déjà posé → refus (pas de 2e e-mail) ; contrat déjà signé → refus. Statut `yousign_envoye`.
+- 16/11 : Yousign lancé sur les contrats 121 (Dinia), 122 (Reda), 123 (Ibtissam El Hammoumi) et 124 (Nawar), qui étaient en papier. Le national a accepté les 4. Le contrat d'essai 119 et Chrystel n'ont pas été touchés.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

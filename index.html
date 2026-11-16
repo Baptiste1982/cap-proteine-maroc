@@ -1996,8 +1996,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.51.0";
+const APP_VERSION="0.51.1";
 const CHANGELOG=[
+  {v:"0.51.1",date:"16 novembre 2026",notes:{
+    "Modifié":["Constellation : chaque sous-région (Salé, Kénitra, Bouskoura, Dar Bouazza…) a son propre nœud avec son nombre de membres au centre, et ses groupes tournent autour, comme pour Rabat."]}},
   {v:"0.51.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Constellation du réseau : une région à plusieurs villes se découpe en sous-régions (Rabat, Salé, Kénitra…), chacune avec ses groupes.","Les groupes tournent lentement sur des orbites inclinées : ceux de devant sont plus grands et plus nets, ceux de derrière plus petits. La rotation s'arrête quand on survole un groupe.","Toucher un groupe ouvre un volet par-dessus la carte : jauge de membres animée, bilans, affaires signées, dernière et prochaine réunion, liste des membres (chacun ouvre sa fiche)."],
     "Corrigé":["Constellation en plein écran : plus rien ne sort par le haut ni par le bas, le dessin s'ajuste à l'écran et les noms de région ne chevauchent plus les groupes."]}},
@@ -6419,7 +6421,7 @@ function cstRender(){
       const RR=270;ext=0;
       villes.forEach((v,vi)=>{
         const gs=r.g.filter(g=>(g.c.ville||"—")===v),b=Math.atan2(uy,ux)+(vi-(villes.length-1)/2)*1.15;
-        const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=gs.length===1,R=solo?0:62+gs.length*10,nb=gs.reduce((s,g)=>s+g.nb,0);
+        const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=false,R=gs.length>1?62+gs.length*10:66,nb=gs.reduce((s,g)=>s+g.nb,0);
         ext=Math.max(ext,Math.hypot(vx-x,vy-y)+R+30);
         subs+=`<g class="cst-sub" data-r="${ri}" style="--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,15+Math.min(g.nb,12)*2.6),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
         bord(vx-60,vy-R*TILT-60,vx+60,vy+R*TILT+40);

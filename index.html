@@ -637,7 +637,7 @@ div.stp{cursor:default}
 @media (prefers-reduced-motion:reduce){.pill,.page.slide-next,.page.slide-prev,.sk,.toast.show,.auth-brand,.auth-hero *,.auth-card,.demo-note,.hello,.spark-c path,.confetti i,.gauge i,.rd-k,.acc,.cl,.btn .chk path{animation:none!important;transition:none!important}.spark-c path.l{stroke-dashoffset:0}.spark-c path.a{opacity:1}.btn .chk path{stroke-dashoffset:0}}
 /* mode sombre : suit le réglage du téléphone */
 /* Mode sombre : choisi dans Paramètres (html.dark), clair par défaut */
-html.dark{--crimson:#E2475F;--crimson-tint:#3A1A20;--ink:#F3ECEA;--muted:#A99A9D;--paper:#1A1214;--card:#241A1D;--line:#3A2D30;
+html.dark{--crimson:#CC2240;--crimson-tint:#3A141B;--ink:#F3ECEA;--muted:#A99A9D;--paper:#1A1214;--card:#241A1D;--line:#3A2D30;
     --ok:#5FC08E;--ok-tint:#1D3229;--info:#8EA9E8;--info-tint:#1E2638;--warn:#8FB0D1;--warn-tint:#1C2530;--gold-tint:#223042;--hover:#2C2024;--soft:#33262A;--topbar:rgba(26,18,20,.92);
     --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.35);--shadow-lg:0 12px 40px rgba(0,0,0,.5);color-scheme:dark}
 html.dark .field input,html.dark .field select,html.dark .field textarea,html.dark .icon-btn,html.dark .seg,html.dark .chip:not(.on),html.dark .searchbar,html.dark .gstat,html.dark .stp,html.dark .fh-link .btn,html.dark .seg-sc .knob{background-color:var(--card)}
@@ -1841,10 +1841,10 @@ html.dark{--gold:#8FB0D1}
 .tbl .rs{width:46px;height:46px}.tbl .rs svg{width:46px;height:46px}.tbl .rs b{font-size:14.5px}
 .ck-ring{width:54px;height:54px}.ck-ring svg{width:54px;height:54px}.ck-ring .tr{stroke:var(--line)}.ck-ring b{font-size:16px}.ck-ring b small{font-size:10px}
 html.dark .rs.warn .fg{stroke:#8FB0D1}
-html.dark .tbl .act{background:#4A1E27;color:#FFB3BE;border:1px solid #6A2A35}
+html.dark .tbl .act{background:#4A1018;color:#F3DADD;border:1px solid #6E1A27}
 html.dark .tbl .act.todo{background:#22344A;color:#C6DAEE;border-color:#34506E}
 html.dark .tbl .act.ok{background:#173326;color:#9FE0BD;border-color:#24503A}
-html.dark .ck-act.urgent{background:#4A1E27;color:#FFB3BE}
+html.dark .ck-act.urgent{background:#4A1018;color:#F3DADD}
 html.dark .ck-act.todo{background:#22344A;color:#C6DAEE}
 html.dark .ck-act.ok{background:#173326;color:#9FE0BD}
 </style>
@@ -1923,8 +1923,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.49.0";
+const APP_VERSION="0.49.1";
 const CHANGELOG=[
+  {v:"0.49.1",date:"16 novembre 2026",notes:{
+    "Modifié":["Thème sombre : le rouge redevient le rouge Protéine (il tirait sur le rose saumon). Les alertes passent sur un fond bordeaux."]}},
   {v:"0.49.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Envoi au CRM national : la signature électronique Yousign est lancée automatiquement, comme le bouton « Lancer la procédure de signature » du national. Le membre reçoit le contrat par e-mail et signe en ligne. C'est le choix par défaut ; le papier reste possible. Une signature Yousign ne peut pas partir deux fois pour le même contrat."]}},
   {v:"0.48.2",date:"16 novembre 2026",notes:{

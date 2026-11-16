@@ -13,7 +13,7 @@ import webpush from 'npm:web-push@3.6.7';
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-suivi-jeton', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const B = 'https://animateur.ma.caproteine.com';
 const VAPID_PUBLIC = 'BAKkMOISOmM62avwTzeE81_l592rvg9O-AiLBct4eGf7Xovoy_OswNK0lnQ0yokt6VDoRkL927x4LS5bFYnWbZM';
-const n = (t: unknown) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const n = (t: unknown) => String(t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 const COL_ATTENTE = ['', 'idPersonne', 'idEntreprise', 'nomEntreprise', 'activiteEntreprise', '', '', '', '', 'prenomPersonne', 'nomPersonne', 'fonctionPersonne', 'emailPersonne', 'tel1Personne', 'tel2Personne', 'adresseEntreprise', 'codePostalEntreprise', 'villeEntreprise'];
 const COL_MEMBRES = ['', 'idPersonne', 'idEntreprise', 'nomEntreprise', 'activiteEntreprise', '', '', '', 'dateRelancePaiement', '', 'prenomPersonne', 'nomPersonne', 'fonctionPersonne', 'emailPersonne', 'tel1Personne', 'tel2Personne', 'adresseEntreprise', 'codePostalEntreprise', 'villeEntreprise'];
 
@@ -73,6 +73,17 @@ Deno.serve(async (req) => {
       const N0 = new National(); await N0.connexion();
       const t = await (await N0.req('GET', String(body.page || '/connexion/extranet'))).text();
       return json({ ok: true, morceaux: [...t.matchAll(new RegExp(String(body.motif), 'g'))].slice(0, 6).map(m => t.slice(Math.max(0, m.index! - 200), m.index! + 700)) });
+    }
+    if (body.action === 'champs') {
+      // Lecture seule : liste des champs de formulaire d'une page (nom, id, type, valeur, options d'une liste).
+      const N0 = new National(); await N0.connexion();
+      const t = await (await N0.req('GET', String(body.page || '/'))).text();
+      const at = (tag: string, a: string) => (tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '';
+      const champs: any[] = [];
+      for (const m of t.matchAll(/<(input|textarea)\b[^>]*>/g)) champs.push({ t: m[1] === 'input' ? at(m[0], 'type') || 'text' : 'textarea', name: at(m[0], 'name'), id: at(m[0], 'id'), v: at(m[0], 'value').slice(0, 80), coche: /\schecked/.test(m[0]) || undefined });
+      for (const m of t.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/g)) champs.push({ t: 'select', name: at(m[0], 'name'), id: at(m[0], 'id'), options: [...m[2].matchAll(/<option\b([^>]*)>([^<]*)/g)].slice(0, 40).map(o => `${at(o[0], 'value')}=${o[2].trim()}${/selected/.test(o[1]) ? ' *' : ''}`) });
+      const forms = [...t.matchAll(/<form\b[^>]*>/g)].map(f => f[0]);
+      return json({ ok: true, forms, champs: champs.filter(c => c.name || c.id) });
     }
     if (body.action === 'miroir') {
       // Ce que le national affiche dans « En attente de signature » et « Gestion des membres » (lecture seule).

@@ -1,0 +1,64 @@
+<title>Teinte des alertes CAP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Une ligne par piste de couleur, avec le même extrait du CRM en clair et en sombre côte à côte. */
+:root{--bg:#F4F2F1;--fg:#1B1416;--muted:#6B6366;--line:#D9D4D3;--crimson:#B0122E;
+  --f:"Inter",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121315;--fg:#ECECEE;--muted:#9EA0A5;--line:#36383C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121315;--fg:#ECECEE;--muted:#9EA0A5;--line:#36383C;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f);padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:28px}
+h1{font-size:24px;margin:0;text-wrap:balance}
+.intro{color:var(--muted);margin:6px 0 0;max-width:64ch;line-height:1.5}
+.piste{display:grid;gap:10px}
+.piste h2{font-size:16px;margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.piste h2 small{font-weight:500;color:var(--muted);font-size:13px}
+.lettre{width:26px;height:26px;border-radius:8px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-size:13px}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+/* Écran du CRM : chaque thème porte ses propres couleurs, quel que soit le thème de la page */
+.ecran{border-radius:14px;padding:14px;display:grid;gap:10px;min-width:0;border:1px solid var(--line)}
+.ecran.clair{background:#ECEAE9;color:#1B1416;--card:#fff;--mut:#6B6366;--lin:#D9D4D3}
+.ecran.sombre{background:#17181A;color:#ECECEE;--card:#222326;--mut:#9EA0A5;--lin:#36383C}
+.lab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.alerte{display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:12px;background:var(--at);border:1px solid var(--ab)}
+.alerte b.n{font-size:22px;color:var(--an);font-variant-numeric:tabular-nums}
+.alerte div{min-width:0}.alerte strong{display:block;font-size:13px}.alerte span{font-size:12px;color:var(--mut)}
+.bande{border-radius:12px;padding:12px 14px;background:var(--bb);color:#fff;display:grid;gap:2px;border-bottom:3px solid var(--bl)}
+.bande .k{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--bk)}
+.bande b{font-size:17px}.bande span{font-size:12px;opacity:.75}
+.ligne{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pas{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--pt);color:var(--pc)}
+.chiffre{background:var(--card);border:1px solid var(--lin);border-radius:12px;padding:8px 12px;display:flex;align-items:baseline;gap:6px}
+.chiffre b{font-size:22px;color:var(--pc)}.chiffre small{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--mut)}
+/* Pistes : couleurs pour le clair puis le sombre */
+.p0 .clair{--at:#FBF0DA;--ab:#F1DDB0;--an:#B8862A;--bb:#2E2618;--bl:#C8A24C;--bk:#C8A24C;--pt:#F6EED9;--pc:#9A7322}
+.p0 .sombre{--at:#352A16;--ab:#4A3C22;--an:#E3AE4A;--bb:#2E2618;--bl:#C8A24C;--bk:#E3C27A;--pt:#3A3020;--pc:#E3C27A}
+.p1 .clair{--at:#E8EEF4;--ab:#C9D6E3;--an:#3B5B7A;--bb:#1E2A36;--bl:#5B7FA3;--bk:#9DB7D1;--pt:#E3EAF2;--pc:#36556F}
+.p1 .sombre{--at:#1C2530;--ab:#2B3A4B;--an:#8FB0D1;--bb:#1B2430;--bl:#5B7FA3;--bk:#9DB7D1;--pt:#223042;--pc:#9DB7D1}
+.p2 .clair{--at:#E6F0EA;--ab:#C5DBCD;--an:#3F6E52;--bb:#1D2A23;--bl:#5E8F70;--bk:#9CC4AA;--pt:#E1EDE5;--pc:#3A6A4E}
+.p2 .sombre{--at:#1B2620;--ab:#2B3D32;--an:#8EC2A0;--bb:#1B2620;--bl:#5E8F70;--bk:#9CC4AA;--pt:#203029;--pc:#9CC4AA}
+.p3 .clair{--at:#F8E9EC;--ab:#EBC3CB;--an:#B0122E;--bb:#26282C;--bl:#B0122E;--bk:#E58A9A;--pt:#F3E3E6;--pc:#9C1029}
+.p3 .sombre{--at:#2A1C1F;--ab:#4A2A31;--an:#F07A8D;--bb:#26282C;--bl:#E2475F;--bk:#F07A8D;--pt:#36222A;--pc:#F07A8D}
+.p4 .clair{--at:#FCEBDD;--ab:#F2CBA8;--an:#C2621B;--bb:#2A211C;--bl:#D9782E;--bk:#F0A86C;--pt:#FBE6D5;--pc:#A9531A}
+.p4 .sombre{--at:#33241A;--ab:#4C3422;--an:#F0A86C;--bb:#2A211C;--bl:#D9782E;--bk:#F0A86C;--pt:#3A2A1E;--pc:#F0A86C}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Quelle teinte pour les alertes et le bandeau « Vue nationale » ?</h1>
+    <p class="intro">Chaque ligne montre le même extrait du CRM : le rappel des bilans, le bandeau du réseau, une pastille « En création » et le compteur « À faire ». À gauche le thème clair, à droite le thème sombre anthracite. Le rouge Protéine ne change pas.</p>
+  </header>
+
+  <section class="piste p0"><h2><span class="lettre">0</span>Aujourd'hui <small>jaune doré, celui que tu n'aimes pas</small></h2><div class="duo" data-ex></div></section>
+  <section class="piste p1"><h2><span class="lettre">A</span>Bleu ardoise <small>calme, sérieux, se marie bien avec le rouge</small></h2><div class="duo" data-ex></div></section>
+  <section class="piste p2"><h2><span class="lettre">B</span>Vert sauge <small>doux, lecture apaisée</small></h2><div class="duo" data-ex></div></section>
+  <section class="piste p3"><h2><span class="lettre">C</span>Rouge Protéine seul <small>une seule couleur de marque, bandeau anthracite</small></h2><div class="duo" data-ex></div></section>
+  <section class="piste p4"><h2><span class="lettre">D</span>Orange cuivré <small>reste une couleur d'alerte, plus franche que le jaune</small></h2><div class="duo" data-ex></div></section>
+</div>
+<script>
+const ex=t=>`<div class="ecran ${t}"><div class="lab">Thème ${t}</div>
+  <div class="alerte"><b class="n">2</b><div><strong>2 réunions attendent leur bilan</strong><span>La plus ancienne date du 7 octobre.</span></div></div>
+  <div class="bande"><span class="k">VUE NATIONALE</span><b>Le réseau CAP Maroc</b><span>2 zones · 7 villes · 11 groupes · 7 animateurs</span></div>
+  <div class="ligne"><span class="pas">En création</span><span class="pas">RL</span><div class="chiffre"><b>12</b><small>À FAIRE</small></div></div></div>`;
+document.querySelectorAll("[data-ex]").forEach(d=>d.innerHTML=ex("clair")+ex("sombre"));
+</script>

@@ -1512,6 +1512,7 @@ html.dark .vb-or{background:#223042;--enc:#2B3A4B}html.dark .vb-or .vb-n{color:#
 .emb-h{display:flex;gap:10px;align-items:flex-start}.emb-h .av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
 .emb-h div{display:flex;flex-direction:column;min-width:0}.emb-h b{font-size:14px}.emb-h small{font-size:12px;color:var(--muted)}.emb-h code{font-size:12px;background:var(--soft);padding:0 5px;border-radius:5px}
 .acc-c{display:flex;flex-direction:column;gap:4px;align-items:flex-start}.acc-e{font-size:12px;font-weight:700}.acc-e.r{color:var(--crimson)}.acc-e.w{color:var(--warn)}.acc-e.ok{color:var(--ok)}.acc-e.n{color:var(--muted)}
+.mb-anim{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;font:700 10.5px Inter,sans-serif;background:var(--gold-tint,#E3EAF2);color:var(--gold);vertical-align:middle;letter-spacing:.02em}.acc-mb{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:6px;font-size:14px}.mbl-e{white-space:nowrap}
 .acc-go{padding:5px 10px;font-size:12px;min-height:0}.acc-mob{margin:8px 0}.acc-mob .acc-c{flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px}
 .acc-sheet{display:grid;gap:12px;margin-top:12px}.acc-role{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}.acc-role ul{margin:6px 0 0;padding-left:18px;display:grid;gap:3px;font-size:14px}.acc-big{width:100%}.acc-n{font-size:12px;margin:-4px 0 0}
 .emb-e{font-size:12px;font-weight:700;margin-top:3px}.emb-e.r{color:var(--crimson)}.emb-e.w{color:var(--warn)}.emb-e.ok{color:var(--ok)}
@@ -1919,8 +1920,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.45.1";
+const APP_VERSION="0.46.0";
 const CHANGELOG=[
+  {v:"0.46.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Membres : colonne « Espace membre » avec l'état de chaque membre et un bouton « 🔑 Donner l'accès » (code d'accès envoyé par WhatsApp).","Les animateurs sont de vrais membres de leur groupe, étiquetés « Animateur », avec un filtre pour les voir à part. Depuis Équipe, on leur donne aussi l'accès à l'espace membre pour les recommandations."]}},
   {v:"0.45.1",date:"16 novembre 2026",notes:{
     "Corrigé":["Clubs : l'anneau de santé est plus grand avec un chiffre lisible, et les pastilles « À faire » sont mieux contrastées en thème sombre."]}},
   {v:"0.45.0",date:"16 novembre 2026",notes:{
@@ -2355,7 +2358,7 @@ function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null}}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||""}}
+function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -2853,14 +2856,14 @@ function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(
 function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.metier_precis,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
 function mbListe(){
   const ids=new Set(scopedClubIds());const q=predMots(window._q4||"");
-  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
+  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(filter!=="anim"||mbAnim(m))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
     .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
 }
 function mbCarte(m,i){
   const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
   return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <span class="mb-av">${esc(initiales(m.nom))}</span>
-    <span class="mb-t"><b>${esc(m.nom)}${m.inscrit?` <span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"● espace membre":"○ code envoyé"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    <span class="mb-t"><b>${esc(m.nom)}${mbAnim(m)?` <span class="mb-anim">Animateur</span>`:""}${m.inscrit?` <span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"● espace membre":"○ code envoyé"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
     ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
   </div>`;
 }
@@ -2871,15 +2874,15 @@ function mbChoisirMode(m){try{localStorage.setItem("cap-mbvue",m)}catch(e){}docu
 function vModes(modes,cur,fn){return `<div class="vmode" role="tablist" aria-label="Mode d'affichage">${modes.map(([k,ic,l])=>`<button type="button" role="tab" data-m="${k}" class="${cur===k?"on":""}" aria-selected="${cur===k}" onclick="${fn}('${k}')" title="${esc(l)}"><span aria-hidden="true">${ic}</span><em>${esc(l)}</em></button>`).join("")}</div>`}
 function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
   return `<tr style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
-    <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b></span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
-    <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(tel)}</a>`:"—"}</td></tr>`}
+    <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}</span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
+    <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(tel)}</a>`:"—"}</td><td class="mbl-e" onclick="event.stopPropagation()">${mbEspCell(m)}</td></tr>`}
 function mbGroupes(l,cle,titre){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});let i=0;
   return Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr")).map(k=>`<section class="mbg"><div class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></div><div class="mb-grid">${g[k].map(m=>mbCarte(m,i++)).join("")}</div></section>`).join("")}
 function mbResultats(){
   const l=mbListe(),mode=mbMode();
   if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
   const n=`<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div>`;
-  if(mode==="liste")return n+`<div class="mbl-w"><table class="mbl"><thead><tr><th>Membre</th><th>Entreprise</th><th>Métier</th><th>Groupe</th><th>Téléphone</th></tr></thead><tbody>${l.map(mbLigne).join("")}</tbody></table></div>`;
+  if(mode==="liste")return n+`<div class="mbl-w"><table class="mbl"><thead><tr><th>Membre</th><th>Entreprise</th><th>Métier</th><th>Groupe</th><th>Téléphone</th><th>Espace membre</th></tr></thead><tbody>${l.map(mbLigne).join("")}</tbody></table></div>`;
   if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")});
   if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k);
   return n+`<div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
@@ -2891,7 +2894,7 @@ function viewMembres(){
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} dans tout le réseau</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="mb-q" type="search" data-pred="membres" placeholder="Tape les premières lettres : nom, entreprise, métier, club…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
-    <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
+    <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
     <div id="mb-res">${mbResultats()}</div><div style="height:8px"></div></div>`;
 }
 
@@ -4769,7 +4772,7 @@ function memberSheet(clubId,id){
     openSheet();mbDocsCharger(m,false);return;
   }
   document.getElementById("sheet-content").innerHTML=`
-    ${editing?ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Suivi d'intégration · "+esc(club(clubId).nom.replace(/^CAP\s+/,""))}):`<h3>Nouveau membre</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>`}
+    ${editing?ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Suivi d'intégration · "+esc(club(clubId).nom.replace(/^CAP\s+/,""))+(mbAnim(m)?" · Animateur":"")}):`<h3>Nouveau membre</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>`}
     <div class="field"><label>Nom complet</label><input id="m-nom" value="${esc(m.nom)}" placeholder="Prénom Nom"></div>
     <div class="field"><label>Spécialité</label><input id="m-specialite" value="${esc(m.specialite)}" placeholder="Métier / secteur"></div>
     <div style="margin:6px 0 4px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--crimson)">Étapes d'intégration</div>
@@ -4903,7 +4906,7 @@ async function saveMembre(clubId,id){
   if(id){
     const {error}=await sb.from("membres").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}
-    {const old=DB.membres.find(x=>x.id===id);Object.assign(old,mapMembre({id,created_at:old.createdAt,user_id:old.inscrit?"x":null,infos:old.infos,relance_renouv_le:old.relanceRenouvLe,...row}),{vuLe:old.vuLe});}toast("Membre mis à jour");
+    {const old=DB.membres.find(x=>x.id===id);Object.assign(old,mapMembre({id,created_at:old.createdAt,user_id:old.inscrit?"x":null,infos:old.infos,animateur_id:old.animId,relance_renouv_le:old.relanceRenouvLe,...row}),{vuLe:old.vuLe});}toast("Membre mis à jour");
   }else{
     const nextNum=(DB.membres.filter(x=>x.clubId===clubId).reduce((a,b)=>Math.max(a,b.num||0),0))+1;
     const {data,error}=await sb.from("membres").insert({...row,num:nextNum}).select().single();
@@ -5622,6 +5625,45 @@ async function embInviter(id){
   _emb.res[id]={pwd};delete _emb.conf[id];DB.aEmbarquer=_emb.l.filter(x=>x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire)).length;embRendu();toast("Accès prêts : envoie-les maintenant, le mot de passe ne sera plus affiché ensuite");
 }
 
+
+/* v0.46.0 : les animateurs sont de vrais membres de leur groupe, étiquetés « Animateur ».
+   La fiche est liée par membres.animateur_id (une seule par animateur : celle de l'espace membre) ;
+   une fiche au même nom que l'animateur du groupe est aussi reconnue. */
+function mbNomCle(n){return mbNorm(n||"").replace(/[^a-z]/g,"")}
+function mbAnim(m){if(m.animId)return m.animId;const c=club(m.clubId);if(!c||!c.animId)return null;const a=anim(c.animId);return a&&mbNomCle(a.nom)===mbNomCle(m.nom)?a.id:null}
+function animFiche(animId){return DB.membres.find(m=>m.animId===animId)||DB.membres.find(m=>!m.animId&&mbAnim(m)===animId)||null}
+function mbEspEtat(m){const tel=(m.infos||{}).m_tel;return m.inscrit?(m.vuLe?["ok","Connecté le "+adhDate(m.vuLe)]:["w","Code créé, jamais connecté"]):tel?["n","Pas encore d'accès"]:["r","Mobile manquant"]}
+function mbEspCell(m){const [t,txt]=mbEspEtat(m),ed=canEditClubId(m.clubId);
+  return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span>${ed?`<button class="btn ${m.inscrit?"ghost":""} acc-go" onclick="event.stopPropagation();mbAccesFiche('${m.id}')">🔑 ${m.inscrit?"Nouveau code":"Donner l'accès"}</button>`:""}</div>`}
+function mbAccesFiche(id){const m=DB.membres.find(x=>x.id===id);if(!m)return;const c=club(m.clubId),ed=canEditClubId(m.clubId),d=m.infos||{};
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),ini:initiales(m.nom),round:true,title:m.nom,sub:`Espace membre · ${esc((c.nom||"").replace(/^CAP\s+/,""))}${mbAnim(m)?" · Animateur":""}`})}
+    <p class="fh-note">L'espace membre sert à l'annuaire, aux messages entre membres, aux recommandations données et reçues et aux invités proposés.</p>
+    ${ed?`<div class="field"><label>Mobile (identifiant de connexion)</label><input id="mba-tel" type="tel" inputmode="tel" value="${esc(d.m_tel||"")}" placeholder="06 …" onchange="mbAccTel('${id}',this.value)"></div>`:""}
+    <div id="mba-esp">${mbEspaceHTML(m,d,ed)}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="memberSheet('${m.clubId}','${id}')">Ouvrir sa fiche</button><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet()}
+async function mbAccTel(id,v){const m=DB.membres.find(x=>x.id===id);if(!m)return;const infos={...(m.infos||{}),m_tel:v.trim()};
+  const {error}=await sb.from("membres").update({infos}).eq("id",id);if(error){toast(rlsMsg(error));return}
+  m.infos=infos;toast("Mobile enregistré");const b=document.getElementById("mba-esp");if(b)b.innerHTML=mbEspaceHTML(m,infos,canEditClubId(m.clubId))}
+/* Depuis Équipe : l'espace membre de l'animateur (sa fiche membre, créée ou liée au besoin). */
+function accMembreBloc(a){
+  const m=animFiche(a.id),clubs=DB.clubs.filter(c=>c.animId===a.id);
+  if(m){const [t,txt]=mbEspEtat(m);return `<div class="acc-role"><b>Espace membre (recommandations)</b><div class="acc-mb"><span>Membre de ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))} · <span class="acc-e ${t}">${esc(txt)}</span></span><button class="btn ghost acc-go" onclick="accMembreOuvrir('${a.id}','${m.id}')">🔑 ${m.inscrit?"Nouveau code":"Donner l'accès"}</button></div></div>`}
+  if(!clubs.length)return `<div class="acc-role"><b>Espace membre (recommandations)</b><p class="mut acc-n" style="margin:6px 0 0">Il n'anime aucun groupe : ajoute-le d'abord comme membre d'un groupe.</p></div>`;
+  return `<div class="acc-role"><b>Espace membre (recommandations)</b><p class="mut acc-n" style="margin:6px 0 8px">Il n'a pas encore de fiche membre. Il comptera comme membre de son groupe, étiqueté « Animateur ».</p>
+    <div class="acc-mb">${clubs.length>1?`<select id="acc-club">${clubs.map(c=>`<option value="${c.id}">${esc(c.nom.replace(/^CAP\s+/,""))}</option>`).join("")}</select>`:`<span>${esc(clubs[0].nom.replace(/^CAP\s+/,""))}</span>`}<button class="btn acc-go" onclick="accMembreCreer('${a.id}')">L'ajouter comme membre</button></div></div>`;
+}
+async function accMembreLier(a,m){if(m.animId===a.id)return true;
+  const infos=(m.infos&&m.infos.m_tel)||!a.tel?m.infos:{...(m.infos||{}),m_tel:a.tel};
+  const {error}=await sb.from("membres").update({animateur_id:a.id,infos}).eq("id",m.id);if(error){toast(rlsMsg(error));return false}
+  m.animId=a.id;m.infos=infos;return true}
+async function accMembreOuvrir(animId,mid){const a=anim(animId),m=DB.membres.find(x=>x.id===mid);if(!a||!m)return;if(!await accMembreLier(a,m))return;mbAccesFiche(mid)}
+async function accMembreCreer(animId){const a=anim(animId);if(!a)return;
+  const sel=document.getElementById("acc-club"),cid=sel?sel.value:(DB.clubs.find(c=>c.animId===animId)||{}).id;if(!cid)return;
+  const num=(DB.membres.filter(x=>x.clubId===cid).reduce((x,y)=>Math.max(x,y.num||0),0))+1;
+  const {data,error}=await sb.from("membres").insert({club_id:cid,num,nom:a.nom,specialite:"Animateur du groupe",animateur_id:animId,infos:a.tel?{m_tel:a.tel}:null}).select().single();
+  if(error){toast(rlsMsg(error));return}
+  DB.membres.push(mapMembre(data));render();toast(a.nom+" ajouté comme membre de son groupe");mbAccesFiche(data.id)}
 /* ============================================================
    ACCÈS PAR RÔLE (v0.45.0) — donner ses identifiants à un membre de l'équipe,
    depuis la page Équipe, avec un message qui dit ce que son rôle permet.
@@ -5663,6 +5705,7 @@ function accDonner(animId){
     <div class="acc-sheet">
       <span class="acc-e ${t}">${esc(txt)}</span>
       <div class="acc-role"><b>Ce que son rôle permet</b><ul>${dr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      ${accMembreBloc(a)}
       <div class="field"><label>Mobile WhatsApp</label><input id="acc-tel" type="tel" inputmode="tel" value="${esc(tel)}" placeholder="06 …" onchange="accTel('${animId}',this.value)"></div>
       ${r?`<div class="emb-ok"><div>Mot de passe provisoire : <b>${esc(r.pwd)}</b></div><small>Il ne sera plus affiché après. Envoie-le maintenant.${a.tel?"":" Sans mobile enregistré, WhatsApp te demandera à qui l'envoyer."}</small>
           <div class="emb-2"><a class="btn" href="https://wa.me/${accTelWa(a.tel)}?text=${encodeURIComponent(accMessage(r.u,a,r.pwd))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost" onclick="accCopier('${animId}')">Copier le message</button></div></div>`
@@ -6616,7 +6659,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav"))},true);
-const FIL_FICHES=["accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -6636,7 +6679,7 @@ function filFicheRendu(){
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
 const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
-const FIL_FILTRES={todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
+const FIL_FILTRES={anim:"Animateurs",todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}
   if(_filMenu||!_filPage.length){_filPage=[{tab:t,filter:"all"}];_filMenu=false;return}

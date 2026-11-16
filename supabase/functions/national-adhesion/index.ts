@@ -247,7 +247,7 @@ Deno.serve(async (req) => {
     // Une procédure Yousign déjà lancée ne se relance pas (le membre recevrait un 2e e-mail) ;
     // un contrat déjà passé en papier au national ne bascule plus en électronique (le national bloque l'onglet).
     if (nat.reference_procedure) throw new Error('La signature Yousign est déjà lancée pour ce contrat : rien à renvoyer.');
-    if (opt.signature === 'electronique' && nat.signature === 'papier') throw new Error('Ce contrat est déjà en signature papier au national : la signature électronique se lance là-bas.');
+    if (opt.signature === 'electronique' && nat.signature === 'papier' && !opt.basculer) throw new Error('Ce contrat est déjà en signature papier au national : cocher « passer en Yousign » pour le basculer.');
     const page = await (await N.req('GET', `/prospectMembre/formulaireAjoutAttenteSignature?idPersonne=${pers.id}`)).text();
     const montant = (page.match(/id="montantTotal"[^>]*value="([^"]*)"/) || [])[1] || '';
     const idFormule = (page.match(/id="idFormule"[^>]*value="([^"]*)"/) || [])[1] || '';

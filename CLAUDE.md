@@ -328,6 +328,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Bancs `v110.mjs` 32/32, `grp.mjs` 40/40, `cst.mjs` 20/20, `v110crm.mjs` 20/20, `cloison.mjs` 5/5 ; sonde `cstprobe.mjs` (position d'un nœud du fond pendant le survol).
 - ⏳ Visite guidée à refaire avec la fiche membre, les invités du groupe, le fil et le tableau de bord, une fois validés par JB.
 
+**🏠 Accueil « Groupe » de l'espace membre + vue membre pour la direction (v1.3.0, 17/11/2026)** — JB : « un tableau de bord intermédiaire pour les membres quand ils accèdent à leur groupe » (constat : tout était éparpillé sur 4 onglets) ; clics : onglet « Mon groupe » + « Voir comme un membre » ET écrire dans le fil.
+- Migrations `20261117110000_vue_groupe_membre_direction.sql` + `groupe_vue_metier_specialite` (appliquées). `cap_peut_voir_groupe(club)` = membre du club OU équipe avec `cap_can_edit_club` (animateur, directeur de zone, direction nationale, superadmin). `cap_tableau_club(club, mb)` = calcul des chiffres groupe/région (+ moi), vérifie l'accès lui-même ; `cap_membre_tableau()` passe par lui. `cap_groupe_vue(p_club)` (vide = groupe du membre) : club (animateur, rythme, lieu, métiers recherchés), prochaine réunion, réunions, membres, invités de la prochaine réunion avec coordonnées, 8 dernières recos, 4 derniers messages, chiffres, `vue_equipe`. `cap_metier_membre(infos, specialite)` : spécialité, puis métier sauf « - Autre - » (aussi dans `cap_annuaire_fiche`).
+- `membre.html` : onglet `accueil` (« Groupe », premier, onglet par défaut ; `vueAccueil`, `chargerGv`, `rythmeTxt`, `demoGv`) ; barre à 6 onglets (« Profil »). `#equipe=<club>` = vue membre pour l'équipe : client Supabase à la clé de stockage par défaut (la session du CRM, même site), `demarrerEquipe`, bandeau `.eq-band`, pas de barre du bas, fiches et fil (écriture permise par `cap_groupe_acces`). `clubId()` = club de la vue.
+- CRM : bouton « 👁 Vue membre » dans l'en-tête de l'espace Groupe (`membre.html#equipe=<id>`, nouvel onglet).
+- Bancs `v110.mjs` 36/36, `v130eq.mjs` 14/14, `membre.mjs` 65/65 (recalé : l'accueil est le groupe), `grp.mjs` 40/40, `v110crm.mjs` 20/20, `cst.mjs` 20/20, `cloison.mjs` 5/5.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -2026,8 +2026,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.2.0";
+const APP_VERSION="1.3.0";
 const CHANGELOG=[
+  {v:"1.3.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Espace membre : nouvel onglet « Groupe », la page d'accueil du membre. Il rassemble en un écran la prochaine réunion, le CA du groupe du mois et de l'année, la courbe sur 12 mois, la ligne de la région, les membres et leurs métiers, les métiers recherchés, les invités de la prochaine réunion, les dernières recommandations et le fil du groupe.","CRM, espace Groupe : bouton « 👁 Vue membre ». L'animateur, le directeur de zone et la direction nationale voient le groupe exactement comme ses membres, pour tout groupe de leur périmètre, et peuvent écrire dans son fil."],
+    "Modifié":["Le métier affiché d'un membre est sa spécialité quand il avait choisi « - Autre - » dans le formulaire d'adhésion."]}},
   {v:"1.2.0",date:"16 novembre 2026",notes:{
     "Ajouté":["Espace membre, onglet « Recos et chiffres » : un tableau de bord Moi / Mon groupe / Ma région. Moi : CA transmis et CA reçu, recos données et reçues. Groupe et région : CA du mois et de l'année, recos, affaires signées, courbe sur 12 mois. La région ne donne que des totaux, jamais le détail des autres groupes. Les chiffres sont recalculés à chaque saisie.","CRM, espace Groupe › Affaires : CA du mois, courbe des 12 derniers mois et tableau par membre (recos données et reçues, CA transmis, CA reçu)."],
     "Corrigé":["Constellation : quand on vise un groupe placé derrière, l'orbite l'amène vraiment au premier plan puis il grandit. Avant, un voisin passait sous la souris pendant la rotation et prenait sa place, en boucle."]}},
@@ -3245,7 +3248,7 @@ function viewGroupe(){
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
       <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
-      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
+      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button><a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
     </section>
     ${onglets}<div class="grp-corps">${corps}</div><div style="height:8px"></div></div>`;
 }

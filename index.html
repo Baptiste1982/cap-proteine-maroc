@@ -1997,8 +1997,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.51.2";
+const APP_VERSION="0.51.3";
 const CHANGELOG=[
+  {v:"0.51.3",date:"16 novembre 2026",notes:{
+    "Modifié":["Constellation : toutes les régions suivent la même structure, même avec une seule ville (Marrakech…) : le centre de la région, le nœud de chaque ville avec ses membres, puis ses groupes autour."]}},
   {v:"0.51.2",date:"16 novembre 2026",notes:{
     "Modifié":["Constellation : les orbites tournent sur plusieurs axes (elles se penchent et pivotent), les groupes passent vraiment devant et derrière les autres.","Au survol, le groupe avance d'un coup au premier plan, plus grand et net, puis reprend sa place quand la souris s'en va."]}},
   {v:"0.51.1",date:"16 novembre 2026",notes:{
@@ -6420,8 +6422,8 @@ function cstRender(){
     liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
     if(!calme&&r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
     const villes=[...new Set(r.g.map(g=>g.c.ville||"—"))];let ext;
-    if(villes.length>1){
-      const RR=270;ext=0;
+    if(villes.length>=1){
+      const RR=villes.length>1?270:170;ext=0;
       villes.forEach((v,vi)=>{
         const gs=r.g.filter(g=>(g.c.ville||"—")===v),b=Math.atan2(uy,ux)+(vi-(villes.length-1)/2)*1.15;
         const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=false,R=gs.length>1?62+gs.length*10:66,nb=gs.reduce((s,g)=>s+g.nb,0);

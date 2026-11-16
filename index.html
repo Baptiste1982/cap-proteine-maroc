@@ -1877,6 +1877,15 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 #cst-o .cst-subt{font-size:16px}#cst-o .cst-rt{font-size:24px}#cst-o .cst-rs{font-size:14px}#cst-o .cst-n{font-size:15px}
 #cst-o svg.pose .cst-a,#cst-o svg.pose .cst-a *{animation-name:none}#cst-o svg.pose .cst-a.hov .cst-onde,#cst-o svg.pose .cst-a.tap .cst-onde{animation-name:cstOnde}#cst-o svg.pose .cst-halo{animation-name:cstSouffle}
 #cst-o .cst-a.hov .cst-corps,#cst-o .cst-a:focus-visible .cst-corps{transform:scale(1.5);stroke:rgba(255,255,255,.3);stroke-width:1.5;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}#cst-o .cst-a.hov .cst-gn{fill:#F6E9EC}
+.cf-h{padding-right:34px}
+@media (max-width:899px){
+  #cst-o .cst-fiche{position:fixed;inset:0;z-index:120;align-items:flex-end;background:rgba(10,2,6,.55)}
+  #cst-o .cst-fiche .cf-in{width:100%;max-width:520px;max-height:86vh;border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 16px);box-sizing:border-box}
+  .cst-fiche.on .cf-in{animation-name:cfMonteBas}
+  .cst-ciel .cf-ring{width:60px;height:60px;flex:0 0 60px}
+  .cf-h h3{font-size:19px}.cf-h small{font-size:10px}.cf-k b{font-size:19px}.cf-k span{font-size:11px}
+}
+@keyframes cfMonteBas{from{transform:translateY(100%)}}
 /*v050.1 constellation : sous-régions, orbites inclinées qui tournent (profondeur), volet du groupe en superposition*/
 @keyframes cstVol{from{opacity:0;transform:scale(.2)}}
 .cst-a{opacity:var(--z,1);transform-box:fill-box;transform-origin:center}
@@ -1998,11 +2007,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.51.4";
+const APP_VERSION="1.0.0";
 const CHANGELOG=[
-  {v:"0.51.4",date:"16 novembre 2026",notes:{
-    "Corrigé":["Constellation : le volet d'un groupe se ferme bien avec la croix."],
-    "Modifié":["Constellation : au survol d'un groupe placé derrière, son orbite accélère et l'amène devant, puis il s'éclaire. Il revient à sa place quand la souris s'en va."]}},
+  {v:"1.0.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Version 1.0 : le CRM est connecté au CRM national (envoi des adhésions, signature Yousign, invitations, inscrits, suivi des signatures). Fin de la phase de test."],
+    "Corrigé":["Constellation : le volet d'un groupe se ferme bien avec la croix (ou en touchant à côté). Sur téléphone, il monte du bas de l'écran, à la bonne taille."],
+    "Modifié":["Constellation : au survol d'un groupe placé derrière, son orbite accélère et l'amène devant, puis il grandit. Il revient à sa place quand la souris s'en va."]}},
   {v:"0.51.3",date:"16 novembre 2026",notes:{
     "Modifié":["Constellation : toutes les régions suivent la même structure, même avec une seule ville (Marrakech…) : le centre de la région, le nœud de chaque ville avec ses membres, puis ses groupes autour."]}},
   {v:"0.51.2",date:"16 novembre 2026",notes:{
@@ -6520,7 +6530,7 @@ function cstFiche(g){
     <h4>Membres${mb.length?" ("+mb.length+")":""}</h4>
     <div class="cf-mb">${mb.length?mb.map((m,k)=>`<button class="cf-m" style="--i:${k}" onclick="closeConstellation();memberSheet('${m.clubId}','${m.id}')"><span class="cf-av">${esc((m.nom||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase())}</span><span><b>${esc(m.nom)}</b><small>${esc(mbMetier(m)||"")}</small></span></button>`).join(""):`<p class="cf-vide">Pas encore de membre dans ce groupe.</p>`}</div>
     <button class="cst-go" onclick="closeConstellation();openClub('${c.id}')">${act} ›</button></div>`;
-  f.hidden=false;f.classList.remove("on");void f.offsetWidth;f.classList.add("on");
+  f.hidden=false;f.classList.remove("on");void f.offsetWidth;f.classList.add("on");f.onclick=e=>{if(e.target===f)cstFicheFermer()};
 }
 function cstFicheFermer(){const f=document.getElementById("cst-fiche");if(f){f.hidden=true;f.classList.remove("on")}if(_cst){_cst.sel=null;_cst.pause=false;const o=document.getElementById("cst-o");if(o){o.querySelector("svg")?.classList.remove("focus");o.querySelectorAll(".lit,.hov").forEach(e=>e.classList.remove("lit","hov"))}}}
 function cstPanneau(g,t){

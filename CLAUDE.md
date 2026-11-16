@@ -310,6 +310,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Constellation (`cstRender`) : cadre (viewBox) ajusté au contenu ; région à plusieurs villes = sous-régions (`.cst-sub`) ; groupes sur orbites inclinées animées par `requestAnimationFrame` (`_cst.raf`, `_cst.pause` au survol / volet ouvert) ; clic = volet `#cst-fiche` (`cstFiche`, `cstFicheFermer`, Échap ferme d'abord le volet). Banc `cst.mjs` 18/18.
 - Fiches Équipe créées pour Hassan Bahjoub (directeur national, compte `hassan`) et Ghita (bureau national), liées à leurs comptes, sans ville ni mobile.
 
+**🎉 v1.0.0 (16/11/2026)** : JB déclare le CRM opérationnel (connecté au CRM national). Constellation : survol = l'orbite amène le groupe devant puis il grandit (`ob.off`/`ob.offT`, relâche 650 ms après la sortie) ; volet `#cst-fiche` en bas d'écran sous 900 px. Banc `cst.mjs` 20/20.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

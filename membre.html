@@ -54,6 +54,20 @@ a{color:var(--crimson)}
 .up{display:flex;align-items:center;gap:12px}.up .btn{height:40px;font-size:13.5px}
 .grp-row{border:1px solid var(--crimson)!important;background:var(--tint)!important}
 .bulle .aut{display:block;font-size:11.5px;font-weight:700;color:var(--crimson);margin-bottom:2px}.bulle.moi .aut{display:none}
+.gv-tete h1{margin:0}.gv-ry{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+.gv-reu{display:flex;flex-direction:column;gap:4px;background:var(--deep);color:var(--tint);border-color:transparent}.gv-reu b{color:#fff}
+.gv-reu-b{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}.gv-reu-b span{font-size:13px;color:var(--or);font-weight:600}
+.gv-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.gv-k{background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.gv-k b{font-size:22px;font-weight:800}.gv-k span{font-size:11.5px;color:var(--muted)}.gv-k.fort{grid-column:1/-1;background:var(--tint);border-color:transparent}
+.gv-k.fort span{color:var(--crimson);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11px}.gv-k.fort b{font-size:28px}.gv-k.fort small{font-size:12.5px;color:var(--muted)}
+.gv-moi,.gv-reg{font-size:13.5px;color:var(--muted);background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:10px 12px}.gv-moi span{font-weight:700;color:var(--ink)}.gv-moi b,.gv-reg b{color:var(--ink)}.gv-moi em{color:var(--crimson);font-style:normal;font-weight:600}.gv-reg span{font-weight:700;color:var(--ink);margin-right:6px}
+.gv-mb{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}.gv-m{display:flex;align-items:center;gap:10px;text-align:left;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:8px 10px;min-width:0;color:inherit;font:inherit}
+.gv-m .av{width:38px;height:38px;font-size:13px}.gv-m span{display:flex;flex-direction:column;min-width:0}.gv-m b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gv-m small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gv-m.moi{border-color:var(--crimson)}
+.gv-chips{display:flex;flex-wrap:wrap;gap:6px}.gv-chips span{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:10px;border:1px dashed var(--crimson);color:var(--crimson)}
+.gv-recos{display:flex;flex-direction:column;gap:8px;padding:12px}.gv-recos div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13.5px}.gv-recos em{font-style:normal;font-size:12px;font-weight:700;border-radius:8px;padding:3px 8px}
+.gv-fil{display:flex;flex-direction:column;gap:6px;text-align:left;color:inherit;font:inherit;width:100%}.gv-fil span{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gv-fil em{font-style:normal;color:var(--crimson);font-weight:700;font-size:13px}
+.eq-band{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#E8EEF6;color:#2C4A73;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:600}
+@media(max-width:420px){.gv-kpis{grid-template-columns:repeat(2,1fr)}}
 .tb{display:flex;flex-direction:column;gap:12px}.tb-seg{margin:0}.tb-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tb-k{border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:3px;min-width:0}.tb-k span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .tb-k b{font-size:21px;font-weight:800;overflow-wrap:anywhere}.tb-k small{font-size:12px;color:var(--muted)}
@@ -159,19 +173,23 @@ textarea.champ:focus{border-color:var(--crimson)}
 <body>
 <div class="app" id="app"></div>
 <nav class="bas" id="nav" hidden><div class="in">
+  <button data-o="accueil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>Groupe</button>
   <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Annuaire</button>
   <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
   <button data-o="inviter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>Inviter</button>
   <button data-o="recos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11l4-4 3 3 5-5"/><path d="M14 5h5v5"/><path d="M4 20h16"/><path d="M6 16v4M11 13v7M16 15v5"/></svg>Recos<span class="badge" id="nav-rc" hidden></span></button>
-  <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon profil</button>
+  <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
 </div></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
 const DEMO=location.hash==="#demo";
 /* Clé de session distincte du CRM : se connecter ici ne déconnecte pas le CRM ouvert dans le même navigateur. */
-const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
-const S={moi:null,annuaire:[],msgs:[],onglet:"annuaire",fiche:null,conv:null,q:"",filtre:"tous",tel:"",etape:"tel",canal:null};
+/* v1.3.0 : #equipe=<club> = la direction (CRM) regarde un groupe comme un membre. On reprend la session du CRM
+   (même site, clé de stockage par défaut). Lecture du groupe et écriture dans son fil seulement. */
+const EQ=(location.hash.match(/^#equipe=([0-9a-f-]{36})$/i)||[])[1]||null;
+const sb=EQ?window.supabase.createClient(SB_URL,SB_KEY):window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
+const S={moi:null,annuaire:[],msgs:[],onglet:"accueil",fiche:null,conv:null,q:"",filtre:"tous",tel:"",etape:"tel",canal:null};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
@@ -233,7 +251,7 @@ async function demarrer(){
   }
   S.moi=moi;
   await Promise.all([chargerAnnuaire(),chargerMessages(),chargerRecos()]);
-  await chargerGroupe();
+  await chargerGv();await chargerGroupe();
   ecouter();lancer();
 }
 function lancer(){$("nav").hidden=false;
@@ -252,6 +270,7 @@ function lienHash(){
 window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
 async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[]}
 const moiFiche=()=>S.annuaire.find(m=>m.moi)||{};
+const clubId=()=>(S.gv&&S.gv.club&&S.gv.club.id)||moiFiche().club_id;
 async function chargerMessages(){
   const {data,error}=await sb.from("messages_membres").select("id,de,a,texte,cree_le,lu_le").order("cree_le",{ascending:true}).limit(2000);
   if(!error)S.msgs=data||[];
@@ -270,7 +289,7 @@ function ecouter(){
     if(i>=0)S.recos[i]=r;else{(S.recos=S.recos||[]).unshift(r);if(r.a===S.moi.id)toast("Nouvelle recommandation de "+(membre(r.de)?.nom||"un membre"))}
     S.recosClub=undefined;if(["recos","annuaire","profil","messages"].includes(S.onglet))rendu(true);
   }).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages_groupe"},p=>{
-    const r=p.new;if(!r||!r.id||r.club_id!==moiFiche().club_id)return;
+    const r=p.new;if(!r||!r.id||r.club_id!==clubId())return;
     if(!(S.grp||[]).some(x=>x.id===r.id)){(S.grp=S.grp||[]).push(r);if(r.membre_id!==S.moi.id&&S.onglet!=="groupe")toast("Groupe · "+r.auteur_nom+" : "+r.texte.slice(0,60))}
     if(S.onglet==="groupe"){const t=$("g-txt"),v=t?t.value:"",f=document.activeElement===t;rendu(true);const n=$("g-txt");if(n){n.value=v;if(f)n.focus()}}else if(!["profil","conv","inviter","recos","fiche"].includes(S.onglet))rendu(true);else{const bn=$("nav-nl");const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length+grpNonLus();bn.hidden=!nl;bn.textContent=nl}
   }).subscribe();
@@ -282,16 +301,68 @@ function aller(o,extra){Object.assign(S,{onglet:o},extra||{});window.scrollTo(0,
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>aller(b.dataset.o));
 function rendu(garderDefilement){
   const y=window.scrollY;
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||((S.onglet==="conv"||S.onglet==="groupe")&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o==="annuaire")));
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||((S.onglet==="conv"||S.onglet==="groupe")&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o===(S.ficheDe||"annuaire"))));
   const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length+(S.onglet==="groupe"?0:grpNonLus());const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
-  $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe";
+  $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe"||!!S.eq;
   const rc=(S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee").length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
-  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence,groupe:vueGroupe}[S.onglet];
+  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence,groupe:vueGroupe,accueil:vueAccueil}[S.onglet];
   $("app").innerHTML=v();
   brancher();
   if(S.onglet==="conv"||S.onglet==="groupe"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
   else if(garderDefilement)window.scrollTo(0,y);
 }
+
+/* ---------- Mon groupe (v1.3.0) : l'accueil du groupe en un écran ---------- */
+async function chargerGv(){
+  if(DEMO){if(!S.gv){S.gv=demoGv();await chargerRecosClub();S.gv.chiffres=S.recosClub}return}
+  const {data,error}=await sb.rpc("cap_groupe_vue",EQ?{p_club:EQ}:{});S.gv=error?{erreur:error.message}:data;
+}
+const JOURS=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
+function rythmeTxt(c){if(!c||!c.rythme_jour)return"";const j=JOURS[c.rythme_jour]||"";
+  const r=c.rythme_pas==2?"Un "+j+" sur deux":c.rythme_rang>0?["","1er","2e","3e","4e"][c.rythme_rang]+" "+j+" du mois":c.rythme_rang==-1?"Dernier "+j+" du mois":"Chaque "+j;
+  return r+(c.heure?" · "+String(c.heure).slice(0,5).replace(":"," h "):"")+(c.lieu?" · "+c.lieu:"")}
+function vueAccueil(){
+  const g=S.gv;
+  if(g===undefined){chargerGv().then(()=>{if(S.onglet==="accueil")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
+  if(!g||g.erreur)return `<div class="page"><div class="card"><b>Groupe indisponible</b><p class="sub">${esc(g&&g.erreur||"")}</p></div></div>`;
+  const c=g.club||{},nom=String(c.nom||"").replace(/^CAP\s+/,""),p=g.prochaine,ch=g.chiffres||{},gr=ch.groupe||{},rg=ch.region||{},mb=g.membres||[],mr=c.metiers_recherches||[];
+  const quandR=p?dateReu(p.date,p.heure?String(p.heure).slice(0,5):""):"";
+  const ST={"envoyee":"Envoyée","contact":"Contact pris","devis":"Devis","signee":"Signée","sans_suite":"Sans suite"};
+  return `<div class="page">
+    ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" onclick="window.close()">Fermer</button></div>`:""}
+    <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
+      <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
+    ${p?`<div class="card gv-reu"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(p.type==="RL"?"Lancement":p.type==="SI"?"Session d'information":p.type||"")}</span>
+      <b class="bri" style="font-size:20px">${esc(quandR)}</b><span>${esc([p.lieu||"Lieu à confirmer",p.ville].filter(Boolean).join(" · "))}</span>
+      <div class="gv-reu-b"><span>${p.invites} invité${p.invites>1?"s":""} inscrit${p.invites>1?"s":""}</span>${S.eq?"":`<button class="btn mini" data-aller="inviter">Inviter quelqu'un</button>`}</div></div>`
+      :`<div class="card"><b>Pas de réunion planifiée.</b><p class="sub">Elle apparaîtra ici dès que l'animateur l'aura programmée.</p></div>`}
+    <div class="gv-kpis">
+      <div class="gv-k fort"><span>CA du groupe · ${esc(new Date().toLocaleDateString("fr-FR",{month:"long"}))}</span><b class="bri">${esc(mad(gr.ca_mois))}</b><small>Depuis janvier : ${esc(mad(gr.ca_annee))}</small></div>
+      <div class="gv-k"><b class="bri">${gr.recos_mois??0}</b><span>recos ce mois</span></div>
+      <div class="gv-k"><b class="bri">${gr.affaires_mois??0}</b><span>affaires signées</span></div>
+      <div class="gv-k"><b class="bri">${mb.length}</b><span>membres</span></div>
+      <div class="gv-k"><b class="bri">${g.reunions&&g.reunions.faites_annee||0}</b><span>réunions tenues en ${new Date().getFullYear()}</span></div>
+    </div>
+    ${ch.moi?`<div class="gv-moi"><span>Toi :</span> <b>${esc(mad(ch.moi.ca_transmis))}</b> transmis · <b>${esc(mad(ch.moi.ca_recu))}</b> reçu${ch.moi.recues_en_cours?` · <em>${ch.moi.recues_en_cours} reco${ch.moi.recues_en_cours>1?"s":""} à faire avancer</em>`:""}</div>`:""}
+    ${gr.serie?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">CA signé par le groupe, 12 mois</span>${barres(gr.serie,"ca")}</div>`:""}
+    ${rg.nom?`<div class="gv-reg"><span>🌍 ${esc(rg.nom)}</span><b>${esc(mad(rg.ca_mois))}</b> ce mois · ${rg.recos_mois} recos · ${rg.groupes} groupes</div>`:""}
+    ${S.eq?"":`<button class="btn ghost" data-aller="recos">Voir tous les chiffres et mes recos</button>`}
+    <div class="label">Membres et métiers · ${mb.length}</div>
+    <div class="gv-mb">${mb.map(m=>`<button class="gv-m${m.moi?" moi":""}" ${S.eq&&!membre(m.id)?"":`data-fiche="${m.id}"`}>${av({id:m.id,nom:m.nom,photo:m.photo})}<span><b>${esc(m.nom)}${m.moi?" · toi":""}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Métier à renseigner")}</small></span></button>`).join("")}</div>
+    ${mr.length?`<div class="label">Métiers recherchés par le groupe</div><div class="gv-chips">${mr.map(x=>`<span>${esc(x)}</span>`).join("")}</div><p class="note" style="margin:0">Tu connais quelqu'un ? Invite-le à la prochaine réunion.</p>`:""}
+    ${p?`<div class="label">Invités de la prochaine réunion · ${(g.invites||[]).length}</div>${(g.invites||[]).length?(g.invites||[]).map((x,i)=>{const [lb,co]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"],t=x.tel?String(x.tel).replace(/[^\d+]/g,""):"";return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>${x.invite_par?(/lien/i.test(x.invite_par)?"Inscrit par le lien d'invitation":"Invité par "+esc(x.invite_par)):""}${x.email?" · "+esc(x.email):""}</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span style="font-size:12px;font-weight:700;color:${co}">${esc(lb)}</span>${t?`<a class="ico" style="width:36px;height:36px" href="tel:${esc(t)}" aria-label="Appeler ${esc(x.nom)}">${ICO.tel}</a>`:""}</span></div>`}).join(""):`<p class="vide" style="padding:12px">Pas encore d'invité.</p>`}`:""}
+    <div class="label">Dernières recommandations du groupe</div>
+    ${(g.recos||[]).length?`<div class="card gv-recos">${g.recos.map(x=>`<div><span>${esc(String(x.de_nom||"?").split(" ")[0])} → ${esc(String(x.a_nom||"?").split(" ")[0])}</span><em class="chip-st ${x.statut}">${esc(ST[x.statut]||x.statut)}${x.statut==="signee"&&x.montant!=null?" · "+esc(mad(x.montant)):""}</em></div>`).join("")}</div>`:`<p class="vide" style="padding:12px">Pas encore de recommandation dans le groupe.</p>`}
+    <div class="label">Fil du groupe</div>
+    <button class="card gv-fil" data-aller="groupe">${(g.messages||[]).length?g.messages.slice(-3).map(x=>`<span><b>${esc(String(x.auteur_nom).split(" ")[0])}</b> ${esc(x.texte.slice(0,90))}</span>`).join(""):`<span>Aucun message. Lance la discussion.</span>`}<em>Ouvrir le fil ›</em></button>
+  </div>`;
+}
+function demoGv(){const a=S.annuaire||[];return{club:{id:"c1",nom:S.moi.club,ville:"Rabat",animateur:"Jean-Baptiste Chiotti",rythme_jour:4,rythme_rang:2,heure:"11:00",lieu:"Le Limonadier",metiers_recherches:["Notaire","Agent immobilier","Banquier"]},
+  prochaine:{date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),heure:"11:00",type:"SI",lieu:"Le Limonadier",ville:"Rabat",invites:2},reunions:{faites_annee:14},
+  membres:a.filter(m=>m.club===S.moi.club).map(m=>({id:m.id,nom:m.nom,metier:m.metier,entreprise:m.entreprise,photo:m.photo,moi:!!m.moi})),
+  invites:[{id:"ig1",nom:"Hicham Berrada",entreprise:"Berrada Immobilier",metier:"Promoteur",tel:"0662112233",email:"h.berrada@exemple.ma",statut:"Intéressé",invite_par:"Nawal Mansouri"},{id:"ig3",nom:"Sara Lahlou",entreprise:"SL Conseil",metier:"Consultante RH",statut:"À confirmer",invite_par:"Lien du national"}],
+  recos:[{de_nom:"Nawal Mansouri",a_nom:"Tarek Amar",statut:"envoyee"},{de_nom:"Tarek Amar",a_nom:"Nawal Mansouri",statut:"devis"},{de_nom:"Tarek Amar",a_nom:"Youssef Alami",statut:"signee",montant:18000}],
+  messages:S.grp||[],chiffres:null}}
 
 /* ---------- Annuaire ---------- */
 function filtrer(){
@@ -322,12 +393,12 @@ function vueFiche(){
   const m=membre(S.fiche);if(!m)return vueAnnuaire();
   const tel=m.telephone?String(m.telephone).replace(/[^\d+]/g,""):"";
   return `<div class="page">
-    <div class="fiche-top"><button class="retour" data-aller="annuaire">${ICO.retour}Annuaire</button>
+    <div class="fiche-top"><button class="retour" data-aller="${S.ficheDe||"annuaire"}">${ICO.retour}${S.ficheDe==="accueil"?(S.eq?"Le groupe":"Mon groupe"):"Annuaire"}</button>
       <div style="display:flex;align-items:center;gap:16px">${av(m)}<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><h2>${esc(m.nom)}</h2><span style="color:var(--tint);font-size:14px">${esc(m.metier||"Membre du réseau")}</span>${m.club?`<span class="pill-or">Membre · ${esc(m.club.replace(/^CAP\s+/,""))}</span>`:""}</div></div></div>
     <div style="display:flex;gap:10px">
       <button class="btn" style="flex:1" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"}>${ICO.envoi}${m.inscrit?"Écrire un message":"Pas encore inscrit"}</button>
       ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}</div>
-    <button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>
+    ${S.eq?"":`<button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>`}
     ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
     ${m.entreprise||m.presentation||m.logo?`<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Son entreprise</span><div style="display:flex;gap:12px;align-items:center">${m.logo?`<img class="logo-ent" src="${esc(m.logo)}" alt="Logo ${esc(m.entreprise||"")}">`:""}<div style="min-width:0">${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.fonction?`<p class="sub" style="margin:2px 0 0">${esc(m.fonction)}</p>`:""}</div></div>${m.presentation?`<span style="font-size:14px;white-space:pre-line">${esc(m.presentation)}</span>`:""}${liensHTML(m)}</div>`:liensHTML(m)?`<div class="card">${liensHTML(m)}</div>`:""}
     ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
@@ -343,7 +414,7 @@ function liensHTML(m){const l=[];if(m.site)l.push(`<a href="${esc(lienUrl(m.site
 
 /* ---------- Fil du groupe (v1.1.0) : les membres du club et leur animateur ---------- */
 async function chargerGroupe(){
-  const c=moiFiche().club_id;S.grp=S.grp||[];if(DEMO||!c)return;
+  const c=clubId();S.grp=S.grp||[];if(DEMO||!c)return;
   const {data,error}=await sb.from("messages_groupe").select("id,club_id,auteur,auteur_nom,membre_id,texte,cree_le").eq("club_id",c).order("cree_le",{ascending:true}).limit(500);
   if(!error)S.grp=data||[];
 }
@@ -356,14 +427,14 @@ function vueGroupe(){
     const moi=x.membre_id===S.moi.id;const anim=!x.membre_id;
     h+=`<div class="bulle ${moi?"moi":""}"><span class="aut">${esc(x.auteur_nom)}${anim?" · animateur":""}</span>${esc(x.texte)}</div><span class="heure ${moi?"moi":""}">${d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>`}
   return `<div class="page" style="padding-bottom:0">
-    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="messages" aria-label="Retour aux messages">${ICO.retour}</button>
+    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="${S.eq?"accueil":"messages"}" aria-label="Retour">${ICO.retour}</button>
       <span class="who">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="display:flex;flex-direction:column;min-width:0"><b style="font-size:15px">${esc(nomC||"Mon groupe")}</b><span style="font-size:12px;color:var(--muted)">Tous les membres du groupe et l'animateur</span></span></span></div>
     <div class="fil">${h||`<p class="vide">Le fil du groupe est vide. Lance la discussion : une question, une info, un merci.</p>`}</div></div>
     <div class="saisie"><form id="f-grp"><textarea id="g-txt" rows="1" placeholder="Écrire au groupe…" aria-label="Message au groupe" maxlength="2000"></textarea><button type="submit" aria-label="Envoyer">${ICO.envoi}</button></form></div>`;
 }
 async function envoyerGroupe(){
   const t=$("g-txt"),txt=t.value.trim();if(!txt)return;t.value="";
-  const c=moiFiche().club_id;
+  const c=clubId();
   if(DEMO){S.grp.push({id:"g"+Date.now(),club_id:c,auteur_nom:S.moi.nom,membre_id:S.moi.id,texte:txt,cree_le:new Date().toISOString()});rendu();$("g-txt").focus();return}
   const {error}=await sb.rpc("cap_groupe_ecrire",{p_club:c,p_texte:txt});
   if(error){t.value=txt;toast("Message non envoyé : "+error.message);return}
@@ -383,7 +454,7 @@ function vueMessages(){
   return `<div class="page">
     <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mes messages</h1><p class="sub">Le fil de ton groupe, et tes messages directs avec les autres membres.</p></div></div>
     ${bandeauNotif()}
-    ${moiFiche().club_id||DEMO?(()=>{const g=S.grp||[],d=g[g.length-1],n=grpNonLus(),nomC=String(S.moi.club||"").replace(/^CAP\s+/,"");return `<button class="row conv-row grp-row" style="width:100%;text-align:left" data-aller="groupe">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${n?"nl":""}">👥 ${esc(nomC||"Mon groupe")}</b>${d?`<span class="quand">${quand(d.cree_le)}</span>`:""}</span>
+    ${clubId()||DEMO?(()=>{const g=S.grp||[],d=g[g.length-1],n=grpNonLus(),nomC=String(S.moi.club||"").replace(/^CAP\s+/,"");return `<button class="row conv-row grp-row" style="width:100%;text-align:left" data-aller="groupe">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${n?"nl":""}">👥 ${esc(nomC||"Mon groupe")}</b>${d?`<span class="quand">${quand(d.cree_le)}</span>`:""}</span>
         <span style="display:flex;justify-content:space-between;align-items:center;gap:8px;overflow:visible"><span class="${n?"nl":""}" style="overflow:hidden;text-overflow:ellipsis">${d?esc(d.auteur_nom.split(/\s+/)[0]+" : "+d.texte):"Le fil du groupe, avec ton animateur"}</span>${n?`<span class="badge">${n}</span>`:""}</span></span></button>`})():""}
     ${c.length?c.map((x,i)=>{const m=membre(x.id)||{id:x.id,nom:"Membre"};const de=x.dernier.de===S.moi.id?"Vous : ":"";
       return `<button class="row conv-row" style="--i:${Math.min(i,14)};width:100%;text-align:left" data-conv="${x.id}">${av(m)}<span class="t" style="flex:1"><span style="display:flex;justify-content:space-between;gap:8px;overflow:visible"><b class="${x.nl?"nl":""}">${esc(m.nom)}</b><span class="quand">${quand(x.dernier.cree_le)}</span></span>
@@ -718,7 +789,7 @@ function vuePresence(){
 /* ---------- Écouteurs ---------- */
 function brancher(){
   const app=$("app");
-  app.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));
+  app.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche,ficheDe:S.onglet==="accueil"?"accueil":"annuaire"}));
   app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
   app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));
@@ -769,7 +840,16 @@ function demo(){
   return {grp,moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs,recos};
 }
 
+async function demarrerEquipe(){
+  $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){$("app").innerHTML=`<div class="page"><div class="card"><b>Connecte-toi d'abord au CRM.</b><p class="sub">La vue membre s'ouvre depuis l'espace Groupe du CRM, avec ta session d'animateur ou de direction.</p></div></div>`;return}
+  S.eq=true;S.moi={id:null,nom:"Équipe",club:""};S.onglet="accueil";
+  await chargerGv();if(S.gv&&S.gv.club)S.moi.club=S.gv.club.nom;
+  await Promise.all([chargerAnnuaire(),chargerGroupe()]);ecouter();rendu();
+}
 (async()=>{
+  if(EQ)return demarrerEquipe();
   if(DEMO)return vueLogin({ok:true,t:"Démonstration : entre n'importe quel mobile et le code 123456. Rien n'est enregistré."});
   const {data:{session}}=await sb.auth.getSession();
   if(session)demarrer();else vueLogin();

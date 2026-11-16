@@ -1923,8 +1923,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="0.48.2";
+const APP_VERSION="0.49.0";
 const CHANGELOG=[
+  {v:"0.49.0",date:"16 novembre 2026",notes:{
+    "Ajouté":["Envoi au CRM national : la signature électronique Yousign est lancée automatiquement, comme le bouton « Lancer la procédure de signature » du national. Le membre reçoit le contrat par e-mail et signe en ligne. C'est le choix par défaut ; le papier reste possible. Une signature Yousign ne peut pas partir deux fois pour le même contrat."]}},
   {v:"0.48.2",date:"16 novembre 2026",notes:{
     "Modifié":["Message d'invitation des réunions de lancement : il précise aussi le repas, 250 dirhams réglés sur place."]}},
   {v:"0.48.1",date:"16 novembre 2026",notes:{
@@ -5374,8 +5376,8 @@ async function adhPdf(id){
 /* ---- Envoi au CRM national Protéine (fonction serveur national-adhesion, superadmin) ----
    Aperçu (lecture seule au national) → choix de l'offre, de la date et de la signature → envoi.
    La fonction crée ou complète prospect, entreprise et personne, génère le contrat et, en mode
-   papier, le met à disposition pour impression. Elle ne lance jamais la signature électronique. */
-const NAT_STATUTS={contrat_genere:"Contrat généré",contrat_papier:"Contrat papier prêt à signer"};
+   papier, le met à disposition pour impression ; en électronique (défaut), lance Yousign comme le bouton du national. */
+const NAT_STATUTS={contrat_genere:"Contrat généré",contrat_papier:"Contrat papier prêt à signer",yousign_envoye:"Yousign envoyé au membre, en attente de sa signature"};
 function adhNationalBloc(a){
   const n=a.national||{},lien=n.url_contrat_papier||n.url_contrat;
   return `<div class="nat-box">
@@ -5410,8 +5412,8 @@ async function adhNational(id){
     <div class="field"><label>Offre spéciale</label><select id="nat-offre" onchange="document.getElementById('nat-just-f').hidden=this.value==='Aucune'"><option>Aucune</option><option>1 mois offert</option><option>2 mois offert</option></select></div>
     <div class="field" id="nat-just-f" hidden><label>Justification de l'offre</label><textarea id="nat-just" rows="2"></textarea></div>
     <div class="field"><label>Début de l'abonnement</label><input type="date" id="nat-debut" value="${isoJour(auj)}" max="${isoJour(max)}"></div>
-    <div class="field"><label>Signature</label><select id="nat-sig"><option value="papier">Contrat papier à imprimer et faire signer (aucun e-mail envoyé)</option><option value="aucune">Générer le contrat, je choisis la signature au national</option></select></div>
-    <p class="fh-note">La signature électronique n'est pas lancée d'ici : elle enverrait le contrat au membre et au siège.</p>
+    <div class="field"><label>Signature</label><select id="nat-sig"><option value="electronique">Signature électronique Yousign (e-mail au membre, recommandé)</option><option value="papier">Contrat papier à imprimer et faire signer (aucun e-mail envoyé)</option><option value="aucune">Générer le contrat, je choisis la signature au national</option></select></div>
+    <p class="fh-note">Yousign envoie le contrat par e-mail au membre (${esc(a.data.m_email||"son adresse")}), qui signe en ligne. On ne peut le lancer qu'une fois par contrat.</p>
     <div class="sheet-actions"><button class="btn ghost" onclick="adhDetail('${id}')">Annuler</button><button class="btn" id="nat-go" onclick="adhNationalEnvoyer('${id}')">Confirmer l'envoi</button></div>`;
   pillify(sc);
 }
@@ -5433,7 +5435,7 @@ async function adhNationalEnvoyer(id){
   const err=natErr(error?(await error.context?.json?.().catch(()=>null))?.error||error.message:(r?.ok?null:r?.error));
   const {data:row}=await sb.from("adhesions").select("*").eq("id",id).single();
   if(row){const i=DB.adhesions.findIndex(x=>x.id===id);if(i>=0)DB.adhesions[i]=row}
-  toast(err?"Envoi interrompu : "+err:"Envoyée au CRM national : contrat prêt",err?"e":"s");
+  toast(err?"Envoi interrompu : "+err:v("nat-sig")==="electronique"?"Envoyée au national : Yousign part au membre":"Envoyée au CRM national : contrat prêt",err?"e":"s");
   adhDetail(id);
 }
 function adhASaisir(){return(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee")}
@@ -6598,7 +6600,7 @@ function natCarte(a,i,col){
   const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g),n=a.national||{},su=SESSION&&SESSION.role==="superadmin";
   const lignes=[["Reçue",adhDate(a.created_at)]];
   if(a.saisie_proteine_le||n.maj)lignes.push(["Envoyée",adhDate(a.saisie_proteine_le||n.maj)]);
-  if(n.contrat_id)lignes.push(["Contrat nat.",`n° ${n.contrat_id}${n.signature==="papier"?" · papier":""}`]);
+  if(n.contrat_id)lignes.push(["Contrat nat.",`n° ${n.contrat_id}${n.signature==="papier"?" · papier":n.signature==="electronique"?" · Yousign":""}`]);
   if(n.etat_signature&&col!=="signe")lignes.push(["État",n.etat_signature]);
   if(n.verifie_le&&col!=="signe")lignes.push(["Vérifié",adhDate(n.verifie_le)]);
   if(col==="envoyer"&&n.prospect_id)lignes.push(["Annuaire",`fiche n° ${n.prospect_id}`]);

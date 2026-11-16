@@ -6,9 +6,11 @@
 //   action "contrat" : range le PDF du contrat (déjà généré) dans le dossier du membre.
 //   action "prospect": prospect → entreprise → personne, sans contrat (fiche « Sans contrat » remplie à l'arrivée).
 //   action "envoyer" : prospect → entreprise → personne → contrat + abonnement → PDF du contrat.
+//                      signature "electronique" (défaut depuis le 16/11/2026) : lance la procédure Yousign
+//                        comme le bouton « Lancer la procédure de signature » du national
+//                        (POST /signatureNumerique/creerProcedure {idContrat}) → e-mail Yousign au membre ;
 //                      signature "papier" : contrat papier à imprimer (aucun e-mail ne part) ;
 //                      signature "aucune" : s'arrête une fois le contrat généré.
-//                      La signature électronique n'est jamais lancée d'ici.
 //
 // Réservé au superadmin. Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT et
 // CAP_NATIONAL_MOT_DE_PASSE (jamais dans le code). Chaque étape réussie est enregistrée dans
@@ -104,10 +106,10 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const { action, adhesion_id } = body;
-    const opt = { offre: 'Aucune', justification: '', date_debut: '', signature: 'papier', ...(body.options || {}) };
+    const opt = { offre: 'Aucune', justification: '', date_debut: '', signature: 'electronique', ...(body.options || {}) };
     if (!['apercu', 'envoyer', 'contrat', 'prospect'].includes(action)) return json({ error: 'Action inconnue' }, 400);
     if (user.id === null && action !== 'prospect') return json({ error: 'Non autorisé' }, 401);
-    if (!['papier', 'aucune'].includes(opt.signature)) return json({ error: 'Signature électronique non prise en charge ici' }, 400);
+    if (!['electronique', 'papier', 'aucune'].includes(opt.signature)) return json({ error: 'Mode de signature inconnu' }, 400);
 
     const { data: a, error: aerr } = await admin.from('adhesions').select('*').eq('id', adhesion_id).single();
     if (aerr || !a) return json({ error: 'Adhésion introuvable' }, 404);
@@ -242,6 +244,10 @@ Deno.serve(async (req) => {
     }
 
     // 4 · Contrat + abonnement + PDF.
+    // Une procédure Yousign déjà lancée ne se relance pas (le membre recevrait un 2e e-mail) ;
+    // un contrat déjà passé en papier au national ne bascule plus en électronique (le national bloque l'onglet).
+    if (nat.reference_procedure) throw new Error('La signature Yousign est déjà lancée pour ce contrat : rien à renvoyer.');
+    if (opt.signature === 'electronique' && nat.signature === 'papier') throw new Error('Ce contrat est déjà en signature papier au national : la signature électronique se lance là-bas.');
     const page = await (await N.req('GET', `/prospectMembre/formulaireAjoutAttenteSignature?idPersonne=${pers.id}`)).text();
     const montant = (page.match(/id="montantTotal"[^>]*value="([^"]*)"/) || [])[1] || '';
     const idFormule = (page.match(/id="idFormule"[^>]*value="([^"]*)"/) || [])[1] || '';
@@ -273,6 +279,12 @@ Deno.serve(async (req) => {
       await N.ecrire('/contrat/enregistrer', contrat(String(c1.id), '1', pdf.nomFichier || ''));
       etapes.push('Signature papier choisie : contrat à imprimer en deux exemplaires.');
       await sauver({ statut: 'contrat_papier', signature: 'papier' });
+    } else if (opt.signature === 'electronique') {
+      const ys = await N.ecrire('/signatureNumerique/creerProcedure', { idContrat: String(c1.id) });
+      etapes.push('Signature électronique lancée : Yousign envoie le contrat au membre par e-mail.');
+      for (const m of (Array.isArray(ys.messageLog) ? ys.messageLog : [])) etapes.push(String(m).replace(/<[^>]+>/g, ''));
+      await sauver({ statut: 'yousign_envoye', signature: 'electronique', yousign_le: new Date().toISOString(),
+        reference_procedure: ys.referenceProcedure || '', reference_signataire: ys.referenceSignataire || '' });
     }
     try { const chemin = await rangerContrat(admin, a, nat); etapes.push('Contrat rangé dans le dossier du membre.'); await sauver({ contrat_pdf: chemin }); }
     catch (e) { etapes.push('⚠ ' + String((e as Error)?.message || e) + ' (bouton « Ranger le contrat » pour réessayer)'); await sauver(); }

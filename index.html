@@ -1950,6 +1950,17 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 .ga-r+.ga-r{border-top:1px solid var(--line)}.ga-r.link{cursor:pointer}.ga-r.link:hover{background:var(--crimson-tint)}.ga-n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ga-out{color:var(--crimson-txt,var(--crimson))}.ga-in{color:var(--gold)}
 @media(max-width:600px){.ga-h span:nth-child(2),.ga-r span:nth-child(2){display:none}.ga-h,.ga-r{grid-template-columns:minmax(0,1.4fr) 1fr 1fr}}
+.rg-tot{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:4px 0 10px}.rg-tot span{font-size:13px;opacity:.75}.rg-tot b{font-family:"Bricolage Grotesque",sans-serif;font-size:22px}.rg-tot small{font-size:12px;opacity:.7}
+.rg{border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden;background:var(--card)}
+.rg>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}.rg>summary::-webkit-details-marker{display:none}
+.rg>summary i{width:10px;height:10px;border-radius:50%;background:var(--vc);flex-shrink:0}.rg-n{flex:1;min-width:0;font-weight:700;display:flex;flex-direction:column}.rg-n small{font-weight:500;font-size:12px;opacity:.7}
+.rg>summary b{font-size:15px;white-space:nowrap}.rg>summary em{font-style:normal;transition:transform .2s;opacity:.6}.rg[open]>summary em{transform:rotate(90deg)}.rg[open]>summary{border-bottom:1px solid var(--line)}
+.rg .rank{border:0;border-radius:0;margin:0}
+.bil-grp{display:flex;flex-direction:column;gap:1px;border-left:4px solid var(--vc);background:var(--crimson-tint);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.bil-grp-l{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7}.bil-grp b{font-family:"Bricolage Grotesque",sans-serif;font-size:20px}.bil-grp small{font-size:12.5px;opacity:.75}
+.bil-sec{border-top:1px solid var(--line);padding-top:12px;margin-top:12px;display:flex;flex-direction:column;gap:8px}.bil-sec-t{font-weight:700;font-size:13.5px}
+.bil-sec textarea{width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;resize:vertical}
+.bil-note{font-size:13px;opacity:.85;white-space:pre-line;margin:6px 0}
 </style>
 </head>
 <body>
@@ -2026,8 +2037,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.4.0";
+const APP_VERSION="1.5.0";
 const CHANGELOG=[
+  {v:"1.5.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Recommandations à la façon du BNI. Celui qui donne la reco l'a à son actif (CA transmis). Celui qui la reçoit est prévenu, la fait avancer (contact pris, devis, signée, sans suite ou annulée avec la raison) et saisit lui-même le montant signé, qu'il peut corriger (son CA reçu).","La fiche de la reco s'enrichit pour aider celui qui la reçoit : prénom et nom, mobile et/ou e-mail (au moins un des deux), entreprise, fonction, ville, besoin, chaleur de 1 (simple piste) à 5 (prêt à signer), et s'il sait qu'on va l'appeler. Boutons Appeler, WhatsApp et E-mail.","« 🪪 Mon espace membre » : un animateur ou un directeur qui est aussi membre ouvre son espace membre en pleine page depuis le CRM (en-tête du groupe et sa fiche membre), sans code d'accès, pour donner ses recos et suivre ses chiffres.","Bilan de réunion : le groupe est rappelé en tête, et deux nouveaux blocs : les recommandations passées pendant la réunion (nombre et montant, ou noter une reco en détail sans quitter le bilan) et des notes particulières."],
+    "Modifié":["Recommandations du CRM rangées par groupe : une étiquette par groupe (nom, nombre de recos, CA signé) qui se déplie sur le détail. Le client final n'apparaît plus dans le CRM : on voit qui a recommandé qui, l'étape, le montant et la note de suivi. Le super admin peut mettre à jour une reco dans les deux sens en cliquant dessus."]}},
   {v:"1.4.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Notifications du fil de groupe : chaque message prévient les membres du groupe (ceux qui ont un compte) et l'animateur du groupe, jamais l'auteur. Sur un même groupe, la dernière notification remplace la précédente. Le clic ouvre le fil : dans l'espace membre pour un membre, dans Groupe › Discussion du CRM pour l'animateur."]}},
   {v:"1.3.0",date:"17 novembre 2026",notes:{
@@ -2500,6 +2514,7 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[]}}
+const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi";
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
@@ -2539,7 +2554,7 @@ async function loadDB(){
   if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.recos=[];DB.presences=[];
-  try{const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
+  try{const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
     if(!rr.error){DB.recos=rr.data||[];DB._recosVus=true}if(!pp.error)DB.presences=pp.data||[];}catch(e){console.warn(e)}
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
   (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
@@ -3256,7 +3271,7 @@ function viewGroupe(){
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
       <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
-      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button><a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
+      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${maFiche(c.id)?`<a class="btn mini" href="membre.html#moi=${maFiche(c.id).id}" target="_blank" rel="noopener" title="Ton espace membre : tes recos, tes chiffres, ton groupe">🪪 Mon espace membre</a>`:""}<a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
     </section>
     ${onglets}<div class="grp-corps">${corps}</div><div style="height:8px"></div></div>`;
 }
@@ -3386,7 +3401,7 @@ function grpAffaires(c,D){
       ${top.length?`<div class="ga-tab"><div class="ga-h"><span>Membre</span><span>Recos données / reçues</span><span>CA transmis</span><span>CA reçu</span></div>${top.map(([id,x])=>`<div class="ga-r link" onclick="memberSheet('${c.id}','${id}')"><span class="ga-n">${esc(membreNom(id))}</span><span>${x.d} / ${x.r}</span><b class="ga-out">${x.ca?esc(madFmt(x.ca)):"—"}</b><b class="ga-in">${x.rc?esc(madFmt(x.rc)):"—"}</b></div>`).join("")}</div>`:`<p class="fh-empty">Pas encore de membre dans le groupe.</p>`}
     </div><div>
       <div class="month-label">Dernières recommandations</div>
-      ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(r.contact_nom)}${r.contact_entreprise?` · ${esc(r.contact_entreprise)}`:""}<small>${esc(membreNom(r.de))} → ${esc(membreNom(r.a))} · ${esc(adhDate(r.cree_le))}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
+      ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>Reco du ${esc(adhDate(r.cree_le))}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
     </div></div>`;
 }
 function grpRecoForm(id){
@@ -3395,11 +3410,11 @@ function grpRecoForm(id){
   const opt=sel=>ms.map(m=>`<option value="${m.id}" ${m.id===sel?"selected":""}>${esc(m.nom)}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({vc:villeColor(c.ville),ini:"🤝",title:r?"Affaire":"Noter une affaire",sub:esc(c.nom.replace(/^CAP\s+/,""))+" · recommandation entre deux membres"})}
-    <div class="frow"><div class="field"><label>Donnée par</label><select id="rc-de" ${r?"disabled":""}>${opt(r?r.de:ms[0]&&ms[0].id)}</select></div><div class="field"><label>Pour</label><select id="rc-a" ${r?"disabled":""}>${opt(r?r.a:ms[1]&&ms[1].id)}</select></div></div>
-    <div class="frow"><div class="field"><label>Contact recommandé</label><input id="rc-nom" value="${esc(r?r.contact_nom:"")}" ${r?"disabled":""}></div><div class="field"><label>Entreprise</label><input id="rc-ent" value="${esc(r?r.contact_entreprise||"":"")}" ${r?"disabled":""}></div></div>
-    ${r?"":`<div class="field"><label>Besoin</label><input id="rc-bes" placeholder="Ce que cherche le contact"></div>`}
-    <div class="frow"><div class="field"><label>Où en est l'affaire</label><select id="rc-st" onchange="document.getElementById('rc-mt-f').hidden=this.value!=='signee'">${Object.entries(RECO_LIB).map(([k,l])=>`<option value="${k}" ${(r?r.statut:"envoyee")===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+    <div class="frow"><div class="field"><label>Donnée par · CA transmis</label><select id="rc-de" ${r?"disabled":""}>${opt(r?r.de:ms[0]&&ms[0].id)}</select></div><div class="field"><label>Reçue par · CA reçu</label><select id="rc-a" ${r?"disabled":""}>${opt(r?r.a:ms[1]&&ms[1].id)}</select></div></div>
+    <p class="fh-note" style="margin:0 0 10px">Celui qui donne la reco l'a à son actif (CA transmis). Celui qui la reçoit la fait avancer et saisit le montant signé (CA reçu). Le client final reste entre eux : il n'apparaît pas dans le CRM.</p>
+    <div class="frow"><div class="field"><label>Où en est la reco</label><select id="rc-st" onchange="document.getElementById('rc-mt-f').hidden=this.value!=='signee'">${Object.entries(RECO_LIB).map(([k,l])=>`<option value="${k}" ${(r?r.statut:"envoyee")===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
       <div class="field" id="rc-mt-f" ${(r&&r.statut==="signee")?"":"hidden"}><label>Montant signé (MAD HT)</label><input id="rc-mt" type="number" min="0" step="100" value="${r&&r.montant!=null?r.montant:""}"></div></div>
+    <div class="field"><label>Note de suivi (facultatif)</label><input id="rc-note" maxlength="1000" value="${esc(r?r.note_suivi||"":"")}" placeholder="Annulée, pas de budget, signée en deux fois…"></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="grpRecoSauver(${r?`'${r.id}'`:""})">Enregistrer</button></div>`;
   openSheet();
 }
@@ -3407,15 +3422,18 @@ async function grpRecoSauver(id){
   const c=grpClub(),g=x=>{const e=document.getElementById(x);return e?e.value.trim():""};
   const st=g("rc-st"),mt=st==="signee"&&g("rc-mt")!==""?Number(g("rc-mt")):null;
   if(id){const r=DB.recos.find(x=>x.id===id),o=r.statut;
-    const {error}=await sb.from("recommandations").update({statut:st,montant:mt,maj_le:new Date().toISOString()}).eq("id",id);
-    if(error){toast(rlsMsg(error));return}Object.assign(r,{statut:st,montant:mt,maj_le:new Date().toISOString()});closeSheet();render();
+    const note=g("rc-note")||null;
+    const {error}=await sb.from("recommandations").update({statut:st,montant:mt,note_suivi:note,maj_le:new Date().toISOString()}).eq("id",id);
+    if(error){toast(rlsMsg(error));return}Object.assign(r,{statut:st,montant:mt,note_suivi:note,maj_le:new Date().toISOString()});closeSheet();render();
     if(st==="signee"&&o!=="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),mt!=null?"+ "+madFmt(mt):"","Voir",()=>grpOnglet("affaires"));else toast("Affaire mise à jour");return}
-  const de=g("rc-de"),a=g("rc-a"),nom=g("rc-nom");
-  if(!nom){toast("Indique le contact recommandé");return}if(de===a){toast("Choisis deux membres différents");return}
-  const row={club_id:c.id,de,a,contact_nom:nom,contact_entreprise:g("rc-ent")||null,besoin:g("rc-bes")||null,statut:st,montant:mt};
-  const {data,error}=await sb.from("recommandations").insert(row).select().single();
+  const de=g("rc-de"),a=g("rc-a");
+  if(de===a){toast("Choisis deux membres différents");return}
+  const row={club_id:c.id,de,a,contact_nom:RECO_NON_COMM,statut:st,montant:mt,note_suivi:g("rc-note")||null};
+  const {data,error}=await sb.from("recommandations").insert(row).select(RECO_COLS).single();
   if(error){toast(rlsMsg(error));return}
-  DB.recos=[data,...(DB.recos||[])];closeSheet();render();
+  DB.recos=[data,...(DB.recos||[])];
+  if(window._bilRetour&&_bil&&_bil.id===window._bilRetour){window._bilRetour=null;_bil.recos=(_bil.recos||0)+1;if(mt)_bil.montant=(_bil.montant||0)+mt;render();renderBilan();openSheet();toast("Reco notée, le bilan continue");return}
+  closeSheet();render();
   if(st==="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(de),mt!=null?"+ "+madFmt(mt):"","Voir",()=>grpOnglet("affaires"));else toast("Affaire notée");
 }
 async function reuConfirmer(id){
@@ -4116,6 +4134,8 @@ function dashCroissance(s,sc){
    ============================================================ */
 const madFmt=n=>new Intl.NumberFormat("fr-FR").format(Math.round(Number(n)||0)).replace(/ | /g," ")+" MAD";
 const RECO_LIB={envoyee:"Envoyée",contact:"Contact pris",devis:"Devis envoyé",signee:"Affaire signée",sans_suite:"Sans suite"};
+/* v1.5.0 (mécanique BNI) : le contact recommandé (le client final) ne regarde que les deux membres. Le CRM ne le charge pas. */
+const RECO_NON_COMM="Non communiqué";
 function membreNom(id){const m=DB.membres.find(x=>x.id===id);return m?m.nom:"—"}
 /* Recos d'un périmètre (club de celui qui donne). Montant compté à la date de signature (maj_le). */
 function recosStats(ids,depuis){const l=(DB.recos||[]).filter(r=>ids.has(r.club_id));
@@ -4136,9 +4156,19 @@ function openRecos(sc,filtre){
   document.getElementById("sheet-content").innerHTML=`<h3>Recommandations d'affaires</h3>
     <div class="sheet-sub">Données entre membres depuis leur espace. Celui qui la reçoit la fait avancer.</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${chip("","Toutes")}${chip("envoyee","Envoyées")}${chip("contact","Contact")}${chip("devis","Devis")}${chip("signee","Signées")}${chip("sans_suite","Sans suite")}</div>
-    ${l.length?`<div class="rank">${l.map(r=>`<div class="rank-row"><div class="rn">${esc(r.contact_nom)}${r.contact_entreprise?` · ${esc(r.contact_entreprise)}`:""}<small>${esc(membreNom(r.de))} → ${esc(membreNom(r.a))} · ${esc(adhDate(r.cree_le))}${r.besoin?" · « "+esc(r.besoin)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Aucune recommandation${filtre?" à cette étape":""}.</p>`}
+    ${l.length?recosParGroupe(l):`<p class="fh-empty">Aucune recommandation${filtre?" à cette étape":""}.</p>`}
     <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
+}
+/* v1.5.0 : recommandations rangées par groupe. Une étiquette par groupe (nom, nombre, CA signé) qui se déplie. */
+function recoLigne(r){const ed=r.club_id&&canEditClubId(r.club_id);return `<div class="rank-row ${ed?"link":""}" ${ed?`onclick="window._reuTous=true;window._grpId='${r.club_id}';grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>Reco du ${esc(adhDate(r.cree_le))}${r.statut==="signee"?" · CA transmis par "+esc(membreNom(r.de))+", reçu par "+esc(membreNom(r.a)):""}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`}
+function recosParGroupe(l){
+  const par={};l.forEach(r=>(par[r.club_id]=par[r.club_id]||[]).push(r));
+  const gs=Object.entries(par).map(([id,x])=>({id,c:club(id)||{nom:"Groupe inconnu",ville:""},x,ca:x.filter(r=>r.statut==="signee").reduce((a,r)=>a+Number(r.montant||0),0)})).sort((a,b)=>b.ca-a.ca||b.x.length-a.x.length);
+  const tot=gs.reduce((a,g)=>a+g.ca,0);
+  return `<div class="rg-tot"><span>${gs.length} groupe${gs.length>1?"s":""} · ${l.length} reco${l.length>1?"s":""}</span><b>${esc(madFmt(tot))}</b><small>d'affaires signées</small></div>
+    ${gs.map(g=>`<details class="rg"${gs.length===1?" open":""}><summary style="--vc:${villeColor(g.c.ville)}"><i></i><span class="rg-n">${esc((g.c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(g.c.ville||"")} · ${g.x.length} reco${g.x.length>1?"s":""} · ${g.x.filter(r=>r.statut==="signee").length} signée${g.x.filter(r=>r.statut==="signee").length>1?"s":""}</small></span><b>${esc(madFmt(g.ca))}</b><em>›</em></summary>
+      <div class="rank">${g.x.map(recoLigne).join("")}</div></details>`).join("")}`;
 }
 function mbRecosHTML(m){
   const l=(DB.recos||[]).filter(r=>r.de===m.id||r.a===m.id);if(!l.length)return "";
@@ -4147,7 +4177,7 @@ function mbRecosHTML(m){
   return `${secHead("Recommandations",l.length)}
     <div class="drow"><div class="tx"><div class="k">Données</div><div class="v">${don.length} · ${esc(madFmt(sig(don)))} d'affaires signées</div></div></div>
     <div class="drow"><div class="tx"><div class="k">Reçues</div><div class="v">${rec.length} · ${esc(madFmt(sig(rec)))} d'affaires signées</div></div></div>
-    ${l.slice(0,6).map(r=>`<div class="drow"><div class="tx"><div class="k">${r.de===m.id?"Pour "+esc(membreNom(r.a)):"De "+esc(membreNom(r.de))}</div><div class="v" style="font-weight:500">${esc(r.contact_nom)} · <span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut])}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div></div></div>`).join("")}`;
+    ${l.slice(0,6).map(r=>`<div class="drow"><div class="tx"><div class="k">${r.de===m.id?"Pour "+esc(membreNom(r.a)):"De "+esc(membreNom(r.de))}</div><div class="v" style="font-weight:500">Reco du ${esc(adhDate(r.cree_le))} · <span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut])}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div></div></div>`).join("")}`;
 }
 
 /* ---- Renouvellements : échéance = début d'abonnement (à défaut, date d'intégration) + 1 an ---- */
@@ -5113,13 +5143,18 @@ async function mbFicheSauver(){
   const m=DB.membres.find(x=>x.id===_mbf.id);if(m)Object.assign(m,{photo:row.photo_url||"",logo:row.logo_url||"",presentation:row.presentation||"",site:row.site||"",linkedin:row.linkedin||"",reseaux:row.reseaux||""});
   toast("Fiche enregistrée");memberSheet(_mbf.clubId,_mbf.id);
 }
+/* v1.5.0 : la fiche membre de la personne connectée (animateur / directeur qui est aussi membre). */
+function maFiche(clubId){if(!SESSION)return null;const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+  const moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
+  return DB.membres.find(m=>(!clubId||m.clubId===clubId)&&((SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi)))||null}
 /* Espace membre (v0.23) : le membre se connecte sur membre.html avec son mobile (infos.m_tel) et un code WhatsApp. */
 const ESPACE_MEMBRE_URL=location.origin+"/membre.html";
 function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
 function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
   const etat=m.inscrit?(m.vuLe?`<span class="mb-esp on">✓ Connecté, dernière fois le ${esc(adhDate(m.vuLe))}</span>`:`<span class="mb-esp">Code créé, jamais connecté</span>`):tel?`<span class="mb-esp">Pas encore d'accès</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
-  return `${secHead("Espace membre")}
+  const mien=maFiche()&&maFiche(m.clubId)&&maFiche(m.clubId).id===m.id;
+  return `${secHead("Espace membre",undefined,mien?`<a class="btn mini" href="membre.html#moi=${m.id}" target="_blank" rel="noopener">🪪 Ouvrir mon espace</a>`:"")}
     <div class="drow"><div class="tx"><div class="k">Accès à l'annuaire et aux messages</div><div class="v">${etat}</div></div>${tel&&canEd?`<a href="#" onclick="mbCodeAcces('${m.id}');return false">${m.inscrit?"Nouveau code":"Créer son code"}</a>`:""}</div>
     <div id="mb-code-${m.id}"></div>
     ${!tel?`<p class="fh-note">Il se connecte avec son mobile et un code d'accès : ${canEd?"ajoute d'abord son mobile dans « Informations ».":"son mobile doit être renseigné dans ses informations."}</p>`:""}`;
@@ -6248,7 +6283,8 @@ function openBilan(id){
   if(!id||!document.getElementById("sheet").classList.contains("open"))_bilSerie={total:reunionsSansBilan().length,faits:0,passes:new Set()};
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
-  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:""};
+  const _bb=(m.cr&&m.cr.bilan)||{};
+  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||""};
   renderBilan();openSheet();
 }
 function renderBilan(){
@@ -6259,10 +6295,16 @@ function renderBilan(){
   const tot=Math.max(_bilSerie.total,_bilSerie.faits+reste+1),pos=_bilSerie.faits+1;
   document.getElementById("sheet-content").innerHTML=`
     ${tot>1?`<div class="bil-prog"><span>Bilan ${pos} sur ${tot}</span><i><b style="width:${Math.round((pos-1)/tot*100)}%"></b></i></div>`:""}
+    <div class="bil-grp" style="--vc:${villeColor(c.ville)}"><span class="bil-grp-l">Groupe</span><b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${esc(c.ville||"")}${c.animId?" · animé par "+esc(animNom(c.animId)):""}</small></div>
     <h3>Comment s'est passée la réunion ?</h3>
-    <div class="sheet-sub">${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${TYPES[m.type]||m.type} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
+    <div class="sheet-sub">${TYPES[m.type]||m.type} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
     <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}</div></div>
-    ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>`:""}
+    ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>
+      <div class="bil-sec"><div class="bil-sec-t">🤝 Recommandations passées pendant la réunion</div>
+        <div class="bsteps">${step("recos","Recos passées")}<div class="bstep"><small>Montant annoncé (MAD)</small><div><input class="bil-in" style="width:100%" id="bil-montant" type="number" inputmode="numeric" min="0" step="1000" value="${_bil.montant||""}" placeholder="0" oninput="_bil.montant=Math.max(0,parseInt(this.value,10)||0)" aria-label="Montant annoncé"></div></div></div>
+        ${canEditClubId(c.id)?`<button type="button" class="btn ghost mini" onclick="window._reuTous=true;window._grpId='${c.id}';window._bilRetour='${m.id}';grpRecoForm()">+ Noter une reco en détail (qui → qui)</button>`:""}</div>
+      <div class="bil-sec"><div class="bil-sec-t">📝 Notes particulières</div>
+        <textarea id="bil-notes" rows="3" maxlength="2000" placeholder="Ambiance, intervenant, points à suivre, absents excusés…" oninput="_bil.notes=this.value">${esc(_bil.notes||"")}</textarea></div>`:""}
     ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer le bilan"}</button></div>
     ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}`;
@@ -6277,11 +6319,13 @@ async function saveBilan(){
   if(_bil.statut==="reportee"){
     if(!_bil.date||_bil.date<isoJour(TODAY)){toast("Choisis une nouvelle date à venir","w");return}
     row={date:_bil.date,statut:"planifiee"};
-  }else row={statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+  }else{row={statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+    if(_bil.statut==="realisee")row.compte_rendu={...(m.cr||{}),bilan:{recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}}}
   const {error}=await sb.from("reunions").update(row).eq("id",m.id);
   if(error){toast(rlsMsg(error));return}
   Object.assign(m,{statut:row.statut,date:row.date||m.date});
   if(_bil.statut!=="reportee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
+  if(row.compte_rendu)m.cr=row.compte_rendu;
   await okPuis();
   toast(_bil.statut==="reportee"?"Réunion reportée":"Bilan enregistré");
   _bilSerie.faits++;
@@ -6292,7 +6336,7 @@ async function saveBilan(){
 function bilanBloc(m,editable){
   if(!isPast(m.date))return"";
   if(m.bilanLe&&m.statut==="realisee"){const cv=pct(m.adhObt||0,m.invitesVenus||0);
-    return `<div class="bil-sum"><span class="rl-fact g">${m.presents??0} présents</span><span class="rl-fact y">${m.invitesVenus??0} invités venus</span><span class="rl-fact g">${m.adhObt??0} adhésion${(m.adhObt||0)>1?"s":""}</span>${cv!=null?`<span class="rl-fact">${cv} % convertis</span>`:""}</div>${editable?`<button class="btn ghost mini" onclick="openBilan('${m.id}')">Modifier le bilan</button>`:""}`}
+    return `<div class="bil-sum"><span class="rl-fact g">${m.presents??0} présents</span><span class="rl-fact y">${m.invitesVenus??0} invités venus</span><span class="rl-fact g">${m.adhObt??0} adhésion${(m.adhObt||0)>1?"s":""}</span>${cv!=null?`<span class="rl-fact">${cv} % convertis</span>`:""}${m.cr&&m.cr.bilan&&m.cr.bilan.recos?`<span class="rl-fact y">${m.cr.bilan.recos} reco${m.cr.bilan.recos>1?"s":""}${m.cr.bilan.montant?" · "+esc(madFmt(m.cr.bilan.montant)):""}</span>`:""}</div>${m.cr&&m.cr.bilan&&m.cr.bilan.notes?`<p class="bil-note">${esc(m.cr.bilan.notes)}</p>`:""}${editable?`<button class="btn ghost mini" onclick="openBilan('${m.id}')">Modifier le bilan</button>`:""}`}
   if(editable&&m.statut!=="annulee")return `<button class="btn" style="margin-top:12px" onclick="openBilan('${m.id}')">Saisir le bilan de la réunion</button>`;
   return"";
 }
@@ -7007,11 +7051,11 @@ let _adhRafr=false;
 async function adhRafraichir(){
   if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
   try{
-    const [rr,pp]=await Promise.all([sb.from("recommandations").select("*").order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
+    const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
     if(!rr.error){const av=new Map((DB.recos||[]).map(r=>[r.id,r.statut]));const prem=!DB._recosVus;DB._recosVus=true;
       DB.recos=rr.data||[];
       if(!prem)DB.recos.forEach(r=>{const o=av.get(r.id);
-        if(o===undefined)annonce("🤝","Recommandation : "+membreNom(r.de)+" → "+membreNom(r.a),[r.contact_nom,r.contact_entreprise].filter(Boolean).join(" · "),()=>openRecos("nat"));
+        if(o===undefined)annonce("🤝","Recommandation : "+membreNom(r.de)+" → "+membreNom(r.a),club(r.club_id).nom?String(club(r.club_id).nom).replace(/^CAP\s+/,""):"",()=>openRecos("nat"));
         else if(o!=="signee"&&r.statut==="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),r.montant!=null?"+ "+madFmt(r.montant):"","Voir les recos",()=>openRecos("nat","signee"));})}
     if(!pp.error)DB.presences=pp.data||[];
     const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});

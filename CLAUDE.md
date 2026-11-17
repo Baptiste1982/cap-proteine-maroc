@@ -340,6 +340,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `membre.html` : `#g` ouvre le fil (`lienHash`, message du service worker) ; texte de la carte Notifications. CRM : `ouvrirLienGroupe()` (`?groupe=` → `grpAller(id,'fil')`), sous-titre de la fenêtre Notifications.
 - Banc `v140.mjs` 6/6 (⚠ ne pas rappeler `bootIntoApp()` après `goto` : l'appli démarre déjà seule quand une session existe, le second démarrage remet la Synthèse) ; `membre` 65/65, `v110` 36/36, `v130eq` 14/14, `grp` 40/40, `v110crm` 20/20.
 
+**🤝 Recos façon BNI, mon espace membre, recos par groupe, bilan enrichi (v1.5.0, 17/11/2026)** — JB : « celui qui fait la recommandation l'a à son actif ; c'est celui qui la reçoit qui précise si c'est signé et saisit le montant ; le nom du client final n'a pas à apparaître, c'est entre les membres ».
+- Migration `20261117170000_recos_mecanique_bni.sql` (appliquée) : `recommandations.contact_email/contact_fonction/contact_ville/chaleur (1-5)/contact_prevenu/note_suivi` ; surcharges `cap_membre_reco_donner(…, p_email, p_fonction, p_ville, p_chaleur, p_prevenu)` (téléphone ou e-mail obligatoire) et `cap_membre_reco_avancer(p_id, p_statut, p_montant, p_note)` (le receveur peut corriger le montant, note de suivi). Les anciennes signatures restent.
+- CRM : `RECO_COLS` = colonnes chargées SANS les champs contact (le client final ne s'affiche jamais) ; ⚠ ne jamais repasser `recommandations` en `select("*")`. Une reco notée par l'équipe porte `contact_nom = "Non communiqué"` (colonne NOT NULL ; l'espace membre l'affiche « Affaire notée en réunion »). `recosParGroupe` / `recoLigne` (étiquette par groupe, clic = `grpRecoForm` pour le super admin). La RLS laisse encore l'équipe LIRE les champs contact par l'API : c'est un masquage d'affichage.
+- `membre.html` : formulaire complet (chaleur `CHALEUR`, prévenu), carte reçue avec coordonnées, Appeler / WhatsApp (`telWa`) / E-mail, « Sans suite / annulée » avec raison, « Corriger le montant ».
+- Mon espace membre : `membre.html#moi=<fiche>` réutilise la session du CRM (`VIA_CRM`), `cap_lier_mon_espace` (migration `20261117160000`) lie la fiche au compte d'équipe (même animateur ou même nom). `maFiche()` dans le CRM.
+- Bilan : bandeau du groupe, `compte_rendu.bilan` = {recos, montant, notes} ; « Noter une reco en détail » revient au bilan (`window._bilRetour`).
+- Bancs `bni.mjs` 20/20, `v150.mjs` 16/16, `grp.mjs` 40/40 (recalé) + anciens verts.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

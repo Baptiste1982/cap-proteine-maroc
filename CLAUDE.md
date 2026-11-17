@@ -431,6 +431,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Ouverture : `lancement.js` un quart plus lent (3,9 s, fondu 0,75 s) ; `html{scrollbar-gutter:stable}` dans index.html et membre.html (la barre de défilement ne décale plus l'écran).
 - Points du bandeau : 🐛 un bandeau redessiné (chaque `render`) restait vide (largeur mémorisée → pas de nouveaux points) : `_hp.W=0` à chaque branchement ; en mode figé, redessin après redimensionnement. Réglages `cap-hp` (`hpPrefs`, `choisirHp`, `hpReglagesHTML` dans Paramètres → Apparence) : mouvement auto|toujours|arret (`hpFige`), force 0,7/1,2/1,8, densité 11 000/6 500/3 800 px² par point (plafond proportionnel). Banc `hp.mjs` 12/12 + 3.
 
+**📇 Leads nationaux (v1.18.0, 17/11/2026)** — JB : contacts de l'onglet Rabat du Sheet « Leads CAP Maroc » non contactés, invitation WhatsApp à la réunion de jeudi, avec la question « souhaitez-vous être appelé avant ? », le lien d'inscription et son numéro ; outil « contacté » ; écrire l'état dans le Sheet.
+- Migration `20261117370000_leads_nationaux.sql` (appliquée) : table `leads` (statut a_contacter|message_envoye|contacte|inscrit|pas_interesse, a_rappeler, message_le/par, contacte_le/par, reunion_id, feuille, sheet_le/err), table `reglages` (cle/valeur ; lecture équipe, écriture superadmin). 8 leads Rabat importés.
+- Demandes → onglet « 📇 Leads » (`leadsHTML`, `leadCarte`, `leadWa`, `leadContacte`, `leadSuivi`, `leadForm`) ; message `LEAD_MODELE` (vouvoiement, {tel} = `leadMonTel()` = mobile de l'animateur connecté), modèle gardé dans localStorage `cap-leadtpl2` ; lien = `natInvSuivi(m,"l"+id8)` (clics comptés par lead).
+- Écriture au Sheet : `leadSheet(l)` POST no-cors vers `reglages.leads_sheet_url` (+ `leads_sheet_jeton`) ; script à coller dans le classeur : `docs/leads-apps-script.gs` (colonne « Suivi CRM », ligne trouvée par le nom). Tant que l'URL n'est pas posée, rien ne part.
+- Banc `leads.mjs` 26/26 (bureau + téléphone).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -17,9 +17,9 @@ const Lancement=(()=>{
     el.innerHTML=`<style>
       #lancement{position:fixed;inset:0;z-index:100000;background:#17181A;display:flex;align-items:center;justify-content:center;transition:opacity .45s ease}
       #lancement.part{opacity:0;pointer-events:none}#lancement canvas{position:absolute;inset:0;width:100%;height:100%}
-      #lancement .lg{position:relative;width:104px;height:104px;border-radius:50%;background:#fff;overflow:hidden;opacity:0;transform:scale(.4)}
+      #lancement .lg{position:relative;z-index:2;width:136px;height:136px;border-radius:50%;background:#fff;overflow:hidden;opacity:0;transform:scale(.4)}
       #lancement .lg img{width:100%;height:100%;display:block}#lancement .lg.on{animation:lcPop .55s cubic-bezier(.2,1.5,.4,1) forwards,lcHalo 1.1s .3s ease-out}
-      #lancement .nm{position:absolute;left:0;right:0;top:calc(50% + 72px);text-align:center;display:flex;flex-direction:column;gap:3px;opacity:0;transform:translateY(10px);font-family:"Bricolage Grotesque",Inter,system-ui,sans-serif;color:#F2EEED}
+      #lancement .nm{position:absolute;z-index:2;left:0;right:0;top:calc(50% + 88px);text-align:center;display:flex;flex-direction:column;gap:3px;opacity:0;transform:translateY(10px);font-family:"Bricolage Grotesque",Inter,system-ui,sans-serif;color:#F2EEED}
       #lancement .nm small{font:700 11px Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9B2B3}#lancement .nm b{font-size:21px;font-weight:700}
       #lancement .nm.on{animation:lcMonte .5s ease-out forwards}
       @keyframes lcPop{to{opacity:1;transform:scale(1)}}@keyframes lcHalo{0%{box-shadow:0 0 0 0 rgba(224,50,78,.55)}100%{box-shadow:0 0 0 50px rgba(224,50,78,0)}}
@@ -36,12 +36,15 @@ const Lancement=(()=>{
     (function boucle(t){
       if(!el)return;const e=(t-t0)/1000;g.clearRect(0,0,W,H);
       const p1=Math.min(1,e/ARRIVEE),p2=Math.max(0,Math.min(1,(e-ARRIVEE)/CONVERGE));
-      const pos=pts.map(p=>{const x1=p.sx+(p.ox-p.sx)*ease(p1),y1=p.sy+(p.oy-p.sy)*ease(p1);return{x:x1+(cx-x1)*ease(p2)*.6,y:y1+(cy-y1)*ease(p2)*.6,c:p.c}});
+      // Après l'apparition du logo, le réseau se resserre jusqu'au centre et s'efface : il ne reste que le logo.
+      const p3=Math.max(0,Math.min(1,(e-LOGO)/.7)),k=.6+.4*ease(p3);g.globalAlpha=1-ease(p3);
+      const pos=pts.map(p=>{const x1=p.sx+(p.ox-p.sx)*ease(p1),y1=p.sy+(p.oy-p.sy)*ease(p1);const q=ease(p2)*k;return{x:x1+(cx-x1)*q,y:y1+(cy-y1)*q,c:p.c}});
       g.lineWidth=1;
       for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const dd=Math.hypot(pos[i].x-pos[j].x,pos[i].y-pos[j].y);
         if(dd<80){g.strokeStyle="rgba(143,176,209,"+(.35*(1-dd/80))+")";g.beginPath();g.moveTo(pos[i].x,pos[i].y);g.lineTo(pos[j].x,pos[j].y);g.stroke()}}
       if(p1>=1)for(const q of pos){g.strokeStyle="rgba(224,50,78,"+(.28*p2)+")";g.beginPath();g.moveTo(q.x,q.y);g.lineTo(cx,cy);g.stroke()}
       for(const q of pos){g.fillStyle=q.c;g.beginPath();g.arc(q.x,q.y,3.2,0,7);g.fill()}
+      g.globalAlpha=1;
       if(e>LOGO&&!pose){pose=true;lg.classList.add("on");setTimeout(()=>nm.classList.add("on"),380)}
       raf=requestAnimationFrame(boucle);
     })(t0);

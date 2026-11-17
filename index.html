@@ -838,6 +838,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson-txt,var(--crimson))}
 .nat-v{font-size:13px;color:var(--muted)}.ni-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ni-qr{width:96px;height:96px;flex:none;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px}.ni-qr svg{width:100%;height:100%;display:block}.ni-l{display:grid;gap:6px;min-width:0;flex:1 1 220px}@media(max-width:600px){.ni-qr{width:76px;height:76px}.ni-act{grid-column:1/-1}}.ni-lien{font-size:13px;font-weight:600;color:var(--crimson-txt,var(--crimson));word-break:break-all;user-select:all}.ni-act{display:flex;flex-wrap:wrap;gap:6px}.nat-v b{color:var(--ink)}
 .nat-ok{font-weight:600;color:#1f7a4d}.gv-seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-left:auto;margin-right:8px}.gv-seg button{border:0;background:none;padding:5px 11px;font:600 12px Inter,sans-serif;color:var(--muted);cursor:pointer}.gv-seg button.on{background:var(--crimson);color:#fff}
+.rep-noms{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.rep-noms span{font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px}.rep-o{background:#EAF2EA;color:#24502A}.rep-n{background:var(--line2,#EFE5E7);color:var(--muted)}
 .gl{display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}.gl-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:13px;line-height:1.3}.gl-r:first-child{border-top:0}.gl-n{min-width:0;display:flex;flex-direction:column}.gl-n b,.gl-n small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-n small{color:var(--muted);font-size:11.5px}.gl-t{color:var(--crimson-txt,var(--crimson));text-decoration:none;font-variant-numeric:tabular-nums}.gl-s{padding:3px 6px;font-size:12px;min-height:0}
 .ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson-txt,var(--crimson))}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
 .nat-err{font-size:13px;color:var(--crimson-txt,var(--crimson));background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
@@ -2047,8 +2048,14 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.8.0";
+const APP_VERSION="1.9.0";
 const CHANGELOG=[
+  {v:"1.9.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Espace membre : une page d'accueil pour le membre. En haut, la prochaine réunion avec « Je viens » ou « Je ne viens pas ». Puis ce qu'il a à faire (une recommandation reçue à rappeler, des messages non lus, sa fiche à compléter), trois actions (recommander quelqu'un, inviter à la réunion, écrire au groupe), son bilan de l'année et « Bien démarrer » pour un nouveau membre.",
+      "Espace membre : cinq onglets au lieu de six : Accueil, Mon groupe, Réseau, Messages, Moi. « Inviter » devient un bouton, les recommandations et les chiffres passent dans « Moi ».",
+      "Espace membre : les listes qui se répètent sont rangées dans des volets qui se replient, avec leur nombre dans le titre. On ouvre le détail d'un clic : la page glisse, un fil d'Ariane en haut dit où l'on est, et la croix ramène en arrière.",
+      "Fiche d'une réunion : les réponses des membres (qui vient, qui est excusé), données depuis l'espace membre."],
+    "Modifié":["Espace membre : le mot « Recos » est remplacé par « Recommandations », et « CA transmis / CA reçu » par « affaires apportées / affaires reçues »."]}},
   {v:"1.8.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Le compte rendu de réunion suit son format. Business : tour de table, présentation métier, remerciements et affaires annoncées, tête-à-tête prévus. Conférence : intervenant et sujet, points clés, questions, suites. Visite d'entreprise : entreprise visitée, déroulé, ce qu'on retient, opportunités d'affaires. Session d'information : déroulé, retour des invités, invités à relancer. Toujours en fin : décisions du groupe et points à suivre.","La visite guidée présente le cycle des réunions, le bilan et le compte rendu, et une nouvelle partie « Recommandations » (la mécanique BNI, ce que voit le CRM, ton espace membre)."],
     "Corrigé":["Enregistrer un compte rendu effaçait le bilan de la réunion (recos passées en réunion, montant, notes). Le bilan est maintenant gardé."]}},
@@ -4695,6 +4702,7 @@ function meetingDetail(m,editable){
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div>
       <div class="tx"><div class="k">Animateur</div><div class="v">${esc(animNom(m.animId))}</div></div></div>
     ${natInvBloc(m)}
+    <div id="rep-bloc" class="rep-bloc" data-reunion="${m.id}" hidden></div>
     ${editable?`<div class="field" style="margin-top:14px"><label>Statut de la réunion</label>
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
     ${bilanBloc(m,editable)}
@@ -4706,7 +4714,19 @@ function meetingDetail(m,editable){
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
     <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
-  ficheOpen();natInvQr();
+  ficheOpen();natInvQr();repCharger(m);
+}
+/* v1.9.0 : réponses des membres à la réunion (« Je viens » / « Je ne viens pas » dans l'espace membre). */
+async function repCharger(m){
+  const z=document.getElementById("rep-bloc");if(!z)return;
+  const {data,error}=await sb.from("reunion_reponses").select("reponse,maj_le,membre_id").eq("reunion_id",m.id);
+  const z2=document.getElementById("rep-bloc");if(!z2||z2.dataset.reunion!==m.id)return;
+  if(error||!data||!data.length){if(m.date>=isoJour(TODAY)&&!error){z2.hidden=false;z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres</div><div class="v" style="color:var(--muted)">Personne n'a encore répondu depuis l'espace membre.</div></div></div>`}return}
+  const nom=id=>(DB.membres.find(x=>x.id===id)||{}).nom||"Membre";
+  const oui=data.filter(x=>x.reponse==="oui").map(x=>nom(x.membre_id)),non=data.filter(x=>x.reponse==="non").map(x=>nom(x.membre_id));
+  z2.hidden=false;
+  z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres · ${oui.length} vien${oui.length>1?"nent":"t"}${non.length?` · ${non.length} excusé${non.length>1?"s":""}`:""}</div>
+    <div class="v rep-noms">${oui.map(n=>`<span class="rep-o">${esc(n)}</span>`).join("")}${non.map(n=>`<span class="rep-n">${esc(n)}</span>`).join("")}</div></div></div>`;
 }
 /* v0.44.0 : invitation du CRM national rattachée à une réunion.
    La fonction national-suivi (action invitation_reunion) recopie la dernière invitation du national du même type

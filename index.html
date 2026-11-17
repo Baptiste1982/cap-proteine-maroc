@@ -2108,8 +2108,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.13.0";
+const APP_VERSION="1.13.1";
 const CHANGELOG=[
+  {v:"1.13.1",date:"17 novembre 2026",notes:{
+    "Modifié":["Fenêtre d'accueil de la personne qui gère les documents : elle indique la rubrique « Ressources » → « Documents du réseau » du menu."]}},
   {v:"1.13.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Documents du réseau : « 👤 Qui y a accès » sur chaque document. On donne l'accès à une personne précise (animateur, bureau ou membre qui a son espace) en tapant les premières lettres de son nom, et on le retire d'un clic. Le retrait garde une trace (qui, quand) et change l'adresse du fichier : un lien copié avant ne marche plus.","« Tout couper » retire tout le monde, ferme le lien de partage et change l'adresse du fichier, sans supprimer le document.","La personne qui a reçu un document le retrouve dans sa page Documents (marqué « Partagé avec toi ») ou dans son espace membre."]}},
   {v:"1.12.2",date:"17 novembre 2026",notes:{
@@ -2763,7 +2765,7 @@ async function docsAccueilCRM(){
     <div class="dacc-h"><span class="dacc-i" aria-hidden="true">📚</span><div><small>Bienvenue${prenom?" "+esc(prenom):""}</small><h2>Ton espace : les documents du réseau</h2></div></div>
     <p>C'est toi qui déposes les documents dont les groupes ont besoin : kits, formulaires, présentations, règlements. Tu choisis qui les voit et tu les partages par un lien.</p>
     <div class="dacc-l"><span><b>1</b>Ouvre ton espace documents</span><span><b>2</b>Glisse tes fichiers dans le cadre en pointillés</span><span><b>3</b>Choisis qui les voit, partage le lien</span></div>
-    <p class="dacc-n">Ton espace s'ouvre dans un nouvel onglet. Tu le retrouves à tout moment avec le bouton « 📚 Documents » de la Synthèse, ou dans Paramètres.</p>
+    <p class="dacc-n">Ton espace s'ouvre dans un nouvel onglet. Tu le retrouves à tout moment dans le menu, rubrique « Ressources » → « Documents du réseau ».</p>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="window.open('documents.html','_blank');closeSheet()">Ouvrir mon espace documents</button></div></div>`;
   openSheet();return true;
 }

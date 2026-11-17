@@ -2165,6 +2165,14 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.34 suivi des invités*/.sv-l{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px}
+.sv-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.sv-r.fait{border-color:var(--ok)}
+.sv-n{flex:1 1 180px;min-width:0}.sv-n b{display:block;font-size:14.5px}.sv-n small,.sv-d{font-size:12px;color:var(--muted)}.sv-d{flex:1 1 100%}
+.sv-a{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.sv-ok{font-size:12px;font-weight:700;color:var(--ok)}
+.sv-pr{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;gap:2px}.sv-pr button{border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:36px}
+.sv-pr button.on{background:var(--ok);color:#fff}.sv-pr button.on.non{background:var(--muted)}
+.sv-tpl textarea{width:100%;font:inherit;line-height:1.45}.sv-tpl code{font:600 11.5px ui-monospace,Menlo,monospace;background:var(--line);padding:1px 5px;border-radius:5px}
+.sv-ap{white-space:pre-wrap;font:13px/1.5 Inter,sans-serif;margin:12px 0 0;padding:12px;border-radius:10px;border:1px dashed var(--line);background:var(--paper);overflow-wrap:anywhere}
 /*v1.33 bilan + compte rendu*/.bil-cr>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.bil-cr>summary::-webkit-details-marker{display:none}.bil-cr>summary::after{content:"›";margin-left:auto;transition:transform .15s}.bil-cr[open]>summary::after{transform:rotate(90deg)}.bil-cr>summary small{font-weight:500;color:var(--muted);font-size:11.5px}.bil-cr .field{margin-top:10px}
 /*v1.32 monitoring*/.mon .mon-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .mon-fil{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 14px;font-size:13.5px;font-weight:600}.mon-fil button{color:var(--crimson-txt,var(--crimson));padding:8px 2px;font:inherit}.mon-fil button:hover{text-decoration:underline}.mon-fil span{color:var(--muted)}
@@ -2330,8 +2338,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.33.0";
+const APP_VERSION="1.34.0";
 const CHANGELOG=[
+  {v:"1.34.0",date:"17 novembre 2026",notes:{"Ajouté":["Suivi des invités après la réunion : dans la fiche d'une réunion passée, « 💌 Remercier les invités ». On note qui est venu, puis le message de remerciement s'ouvre dans WhatsApp, déjà rempli pour chaque invité : le groupe, le réseau Protéine, la prochaine réunion, le lien d'adhésion et le numéro de l'animateur.","Le message est un modèle modifiable, avec des repères qui se remplissent tout seuls. « Garder comme modèle » le conserve ; gardé par le super admin, il sert à toute l'équipe."],"Modifié":["Le bilan reprend le nombre d'invités notés venus."]}},
   {v:"1.33.0",date:"17 novembre 2026",notes:{"Modifié":["Après une réunion, un seul écran : le bilan (présents, invités venus, adhésions, recommandations, notes) et le compte rendu, facultatif, au même endroit. « Écrire le compte rendu » ouvre cet écran.","Un seul compteur : une réunion passée reste « à faire » tant que son bilan n'est pas saisi. Le compte rendu ne compte plus à part."]}},
   {v:"1.32.0",date:"17 novembre 2026",notes:{"Ajouté":["Monitoring national (menu Synthèse → Monitoring, direction nationale et comptes autorisés) : tous les groupes de toutes les régions sur un seul écran. Sept chiffres par période avec écart, courbe sur 12 mois, et le détail en cliquant : réseau, région, ville, groupe, membres. Flèches pour remonter aux périodes passées.","Prévisionnel à 3 mois, 6 mois et 1 an, avec sa base de calcul affichée : tendance réelle dès 6 mois d'activité, sinon hypothèses réglables.","Mode présentation plein écran, export Excel et impression PDF."]}},
   {v:"1.31.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads confiés aux animateurs : la direction traite un lead puis le confie à un animateur avec un mot (bouton « 📬 Confier » sur chaque lead). L'animateur le retrouve dans sa boîte « Contacts confiés » (menu Adhésions, « À faire » de Mon groupe, message à la connexion), l'invite à sa réunion par WhatsApp et note le suivi. La direction voit si le contact a été vu.","Vue régionale : la comparaison porte sur les villes de la région (Rabat, Salé, Kénitra)."]}},
@@ -2887,7 +2896,7 @@ function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
-function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
+function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
 function mapMembre(r){return{id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
@@ -4022,6 +4031,10 @@ function planifierSuivante(clubId){
 }
 function crBloc(m,editable){
   if(!isPast(m.date)||m.statut==="annulee")return"";
+  {const L=suiviInvites(m),reste=L.filter(x=>!x.g.suiviLe&&x.g.venu!==false).length;
+   if(L.length)return `<button class="btn${reste&&editable?"":" ghost"}" style="margin-top:10px;width:100%" onclick="openRemercier('${m.id}')">💌 Remercier les invités${reste?` · ${reste} à faire`:" · fait"}</button>`+crBlocSuite(m,editable)}
+  return crBlocSuite(m,editable)}
+function crBlocSuite(m,editable){
   if(m.crLe)return `<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Voir le compte rendu</button>`;
   return editable?`<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Bilan et compte rendu</button>`:"";
 }
@@ -4776,7 +4789,7 @@ async function invRelancer(rid,i){
   const c=club(m.clubId),d=dObj(m.date),pr=String(g.nom).split(/\s+/)[0],quand=joursAvant(m.date)===0?"ce soir":"demain";
   const msg=r.k==="rappel"
     ?`Bonjour ${pr}, petit rappel : la réunion du club d'affaires Protéine ${(c.nom||"").replace(/^CAP\s+/,"")} a lieu ${quand}${m.heure?" à "+m.heure:""}, ${lieuNom(m.lieuId)}${lieu(m.lieuId)&&lieu(m.lieuId).ville?" ("+lieu(m.lieuId).ville+")":""}. Au plaisir de vous y accueillir !`
-    :`Bonjour ${pr}, merci d'être venu à la réunion du club Protéine ${(c.nom||"").replace(/^CAP\s+/,"")} le ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Si vous souhaitez nous rejoindre, le formulaire d'adhésion se remplit en 3 minutes ici : ${adhLink(m.clubId)}`;
+    :suiviRemplir(suiviModele(),m,g); // v1.34 : même modèle de remerciement que « Remercier les invités »
   waOuvrir(g.tel,msg);
   const col=r.k==="rappel"?"rappel_le":"suivi_le",now=new Date().toISOString();
   const {error}=await sb.from("invites").update({[col]:now}).eq("id",g._id);
@@ -7024,7 +7037,7 @@ function openBilan(id){
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
   const _bb=(m.cr&&m.cr.bilan)||{};
-  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||"",cr:Object.fromEntries(Object.entries(m.cr||{}).filter(([k,v])=>k!=="bilan"&&typeof v==="string"))};
+  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??((m.guests||[]).some(g=>g.venu!=null)?(m.guests||[]).filter(g=>g.venu).length:(m.guests||[]).length),adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||"",cr:Object.fromEntries(Object.entries(m.cr||{}).filter(([k,v])=>k!=="bilan"&&typeof v==="string"))};
   renderBilan();openSheet();
 }
 function renderBilan(){
@@ -8053,7 +8066,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -8116,6 +8129,62 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.34.0 — SUIVI DES INVITÉS APRÈS LA RÉUNION. Un message de remerciement, écrit une fois (modèle avec repères) et envoyé
+   par WhatsApp à chaque invité venu : groupe, réseau Protéine, prochaine réunion, lien d'adhésion, numéro de l'animateur.
+   Présence notée invité par invité (invites.venu), date d'envoi dans invites.suivi_le. Modèle : le sien (localStorage
+   cap-suivitpl), sinon celui partagé par le super admin (reglages.suivitpl), sinon SUIVI_MODELE.
+   ============================================================ */
+const SUIVI_MODELE=`Bonjour {prenom},
+
+Merci d'avoir participé à la réunion du Club d'Affaires Protéine Rabat et Région, groupe {groupe}, {jour}. Nous avons été ravis de vous accueillir.
+
+Protéine en quelques mots : des chefs d'entreprise et des indépendants qui se recommandent des affaires entre eux, avec un seul professionnel par métier dans chaque groupe. Votre place est réservée à votre métier tant qu'elle est libre.
+
+Le groupe {groupe} : {membres}, animé par {animateur}.{prochaine}
+
+Si vous souhaitez nous rejoindre, la demande d'adhésion se remplit en trois minutes :
+{lien}
+
+Une question, ou envie d'en parler de vive voix ? Je suis joignable au {tel}.
+
+{moi}`;
+const SUIVI_REPERES=[["prenom","prénom de l'invité"],["groupe","nom du groupe"],["jour","date de la réunion"],["membres","nombre de membres"],["animateur","animateur du groupe"],["prochaine","prochaine réunion"],["lien","lien d'adhésion"],["tel","ton numéro"],["moi","ton nom"]];
+function suiviModele(){try{const v=localStorage.getItem("cap-suivitpl");if(v)return v}catch(e){}return (DB.reglages||{}).suivitpl||SUIVI_MODELE}
+function suiviRemplir(tpl,m,g){const c=club(m.clubId)||{},d=dObj(m.date),nb=DB.membres.filter(x=>x.clubId===c.id).length;
+  const pro=DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date))[0],pd=pro&&dObj(pro.date);
+  const v={prenom:String(g.nom||"").trim().split(/\s+/)[0]||"",groupe:(c.nom||"").replace(/^CAP\s+/,""),jour:`${JOURS_LONG[d.getDay()||7]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}`,
+    membres:nb>1?nb+" membres":nb===1?"un premier membre":"un groupe en cours de constitution",animateur:c.animId?animNom(c.animId):"notre équipe",
+    prochaine:pro?`\nProchaine réunion : ${JOURS_LONG[pd.getDay()||7]} ${pd.getDate()} ${MOIS_LONG[pd.getMonth()].toLowerCase()}${pro.heure?" à "+pro.heure.replace(":","h").replace(/h00$/,"h"):""}${pro.lieuId?", "+lieuNom(pro.lieuId):""}.`:"",
+    lien:adhLink(m.clubId),tel:leadMonTel(),moi:(SESSION.animId?animNom(SESSION.animId):SESSION.name)||""};
+  return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x)}
+function suiviInvites(m){return (m.guests||[]).map((g,i)=>({g,i})).filter(x=>x.g.statut!=="Non intéressé")}
+function openRemercier(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const c=club(m.clubId)||{},d=dObj(m.date),L=suiviInvites(m),ed=canEditReunion(m)&&!readOnly();
+  const tpl=window._svTpl!=null?window._svTpl:suiviModele(),venus=L.filter(x=>x.g.venu===true).length,envoyes=L.filter(x=>x.g.suiviLe).length;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Remercier les invités",sub:`${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)}`})}
+    <p class="fh-note">${L.length?`${L.length} invité${L.length>1?"s":""} · ${venus} noté${venus>1?"s":""} venu${venus>1?"s":""} · ${envoyes} message${envoyes>1?"s":""} envoyé${envoyes>1?"s":""}. Note qui est venu, puis envoie le message : il s'ouvre dans WhatsApp, déjà rempli.`:"Aucun invité sur cette réunion."}</p>
+    <div class="sv-l">${L.map(({g,i})=>{const peut=ed&&g.venu!==false&&g.tel;
+      return `<div class="sv-r${g.suiviLe?" fait":""}"><div class="sv-n"><b>${esc(g.nom)}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||g.statut)}${g.tel?" · "+esc(fmtTelAff("+"+mbWa(g.tel))):" · pas de numéro"}</small></div>
+        <div class="sv-a">${ed?`<div class="sv-pr" role="group" aria-label="Présence de ${esc(g.nom)}"><button type="button" class="${g.venu===true?"on":""}" aria-pressed="${g.venu===true}" onclick="suiviVenu('${mid}',${i},true)">Venu</button><button type="button" class="${g.venu===false?"on non":""}" aria-pressed="${g.venu===false}" onclick="suiviVenu('${mid}',${i},false)">Absent</button></div>`:""}
+          ${peut?`<button type="button" class="btn mini${g.suiviLe?" ghost":""}" onclick="suiviEnvoyer('${mid}',${i})">${g.suiviLe?"✓ Renvoyer":"💌 Envoyer"}</button>`:g.suiviLe?`<span class="sv-ok">✓ envoyé</span>`:""}</div>
+        ${g.suiviLe?`<small class="sv-d">Message envoyé le ${esc(adhDate(g.suiviLe))}</small>`:""}</div>`}).join("")}</div>
+    ${ed?`<details class="bil-sec bil-cr sv-tpl" ${window._svOuvert?"open":""} ontoggle="window._svOuvert=this.open"><summary class="bil-sec-t">✏️ Le message <small>modifiable, les repères entre accolades se remplissent tout seuls</small></summary>
+      <div class="field"><textarea id="sv-txt" rows="14" oninput="window._svTpl=this.value" aria-label="Modèle du message de remerciement">${esc(tpl)}</textarea></div>
+      <p class="fh-note">Repères : ${SUIVI_REPERES.map(([k,l])=>`<code>{${k}}</code> ${l}`).join(" · ")}</p>
+      <div class="emb-2"><button class="btn ghost mini" onclick="suiviGarder()">Garder comme modèle</button><button class="btn ghost mini" onclick="suiviOrigine('${mid}')">Revenir au texte d'origine</button>${L[0]?`<button class="btn ghost mini" onclick="suiviApercu('${mid}',${L[0].i})">Aperçu pour ${esc(String(L[0].g.nom).split(/\s+/)[0])}</button>`:""}</div></details>`:""}
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
+function suiviTexte(){const t=document.getElementById("sv-txt");return (t&&t.value.trim())||window._svTpl||suiviModele()}
+async function suiviVenu(mid,i,oui){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const v=g.venu===oui?null:oui;
+  const {error}=await sb.from("invites").update({venu:v}).eq("id",g._id);if(error){toast(rlsMsg(error),"e");return}g.venu=v;openRemercier(mid)}
+async function suiviEnvoyer(mid,i){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g||!g.tel)return;
+  waOuvrir(g.tel,suiviRemplir(suiviTexte(),m,g));const now=new Date().toISOString(),row={suivi_le:now};if(g.venu==null)row.venu=true;
+  const {error}=await sb.from("invites").update(row).eq("id",g._id);if(error){toast(rlsMsg(error),"e");return}
+  g.suiviLe=now;if(row.venu)g.venu=true;toast("Message prêt dans WhatsApp · "+String(g.nom).split(/\s+/)[0]);if(document.getElementById("sv-txt")||tab)openRemercier(mid)}
+function suiviApercu(mid,i){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const z=document.getElementById("sv-ap")||(()=>{const p=document.createElement("pre");p.id="sv-ap";p.className="sv-ap";document.querySelector("#sheet-content .sv-tpl").appendChild(p);return p})();z.textContent=suiviRemplir(suiviTexte(),m,g)}
+function suiviGarder(){const t=suiviTexte();try{localStorage.setItem("cap-suivitpl",t)}catch(e){}window._svTpl=t;
+  if(SESSION.role==="superadmin"){(DB.reglages=DB.reglages||{}).suivitpl=t;sb.from("reglages").upsert({cle:"suivitpl",valeur:t}).then(({error})=>error&&toast(rlsMsg(error),"e"));toast("Modèle gardé, et partagé à toute l'équipe")}else toast("Modèle gardé pour tes prochains messages")}
+function suiviOrigine(mid){try{localStorage.removeItem("cap-suivitpl")}catch(e){}window._svTpl=(DB.reglages||{}).suivitpl||SUIVI_MODELE;window._svOuvert=true;openRemercier(mid);toast("Texte d'origine remis")}
 
 /* ============================================================
    v1.32.0 — MONITORING NATIONAL (lot I). Écran « monitoring » (menu Synthèse) pour le super admin, le directeur national

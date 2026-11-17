@@ -5,7 +5,7 @@
    moins DUREE ms, puis s'efface en fondu. Mouvement réduit : le logo seul, sans animation.
    Désactivé sous un navigateur piloté (bancs de test), sauf si localStorage « cap-lancement » vaut « force ». */
 const Lancement=(()=>{
-  const DUREE=3000,ARRIVEE=1.15,CONVERGE=.7,LOGO=1.6;
+  const DUREE=3900,ARRIVEE=1.45,CONVERGE=.9,LOGO=2.05; /* v1.17.0 : un quart plus lent (JB) */
   const COUL=["#E0324E","#B0122E","#8FB0D1","#E9D9B0","#FFFFFF"];
   let el=null,t0=0,raf=0,finDemandee=false;
   const actif=()=>{let f=null;try{f=localStorage.getItem("cap-lancement")}catch(e){}
@@ -15,7 +15,7 @@ const Lancement=(()=>{
     const reduit=matchMedia("(prefers-reduced-motion: reduce)").matches;finDemandee=false;
     el=document.createElement("div");el.id="lancement";el.setAttribute("role","status");el.setAttribute("aria-label","Chargement de Protéine");
     el.innerHTML=`<style>
-      #lancement{position:fixed;inset:0;z-index:100000;background:#17181A;display:flex;align-items:center;justify-content:center;transition:opacity .45s ease}
+      #lancement{position:fixed;inset:0;width:100vw;z-index:100000;background:#17181A;display:flex;align-items:center;justify-content:center;transition:opacity .75s ease}
       #lancement.part{opacity:0;pointer-events:none}#lancement canvas{position:absolute;inset:0;width:100%;height:100%}
       #lancement .lg{position:relative;z-index:2;width:136px;height:136px;border-radius:50%;background:#fff;overflow:hidden;opacity:0;transform:scale(.4)}
       #lancement .lg img{width:100%;height:100%;display:block}#lancement .lg.on{animation:lcPop .55s cubic-bezier(.2,1.5,.4,1) forwards,lcHalo 1.1s .3s ease-out}
@@ -37,7 +37,7 @@ const Lancement=(()=>{
       if(!el)return;const e=(t-t0)/1000;g.clearRect(0,0,W,H);
       const p1=Math.min(1,e/ARRIVEE),p2=Math.max(0,Math.min(1,(e-ARRIVEE)/CONVERGE));
       // Après l'apparition du logo, le réseau se resserre jusqu'au centre et s'efface : il ne reste que le logo.
-      const p3=Math.max(0,Math.min(1,(e-LOGO)/.7)),k=.6+.4*ease(p3);g.globalAlpha=1-ease(p3);
+      const p3=Math.max(0,Math.min(1,(e-LOGO)/.9)),k=.6+.4*ease(p3);g.globalAlpha=1-ease(p3);
       const pos=pts.map(p=>{const x1=p.sx+(p.ox-p.sx)*ease(p1),y1=p.sy+(p.oy-p.sy)*ease(p1);const q=ease(p2)*k;return{x:x1+(cx-x1)*q,y:y1+(cy-y1)*q,c:p.c}});
       g.lineWidth=1;
       for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const dd=Math.hypot(pos[i].x-pos[j].x,pos[i].y-pos[j].y);
@@ -45,14 +45,14 @@ const Lancement=(()=>{
       if(p1>=1)for(const q of pos){g.strokeStyle="rgba(224,50,78,"+(.28*p2)+")";g.beginPath();g.moveTo(q.x,q.y);g.lineTo(cx,cy);g.stroke()}
       for(const q of pos){g.fillStyle=q.c;g.beginPath();g.arc(q.x,q.y,3.2,0,7);g.fill()}
       g.globalAlpha=1;
-      if(e>LOGO&&!pose){pose=true;lg.classList.add("on");setTimeout(()=>nm.classList.add("on"),380)}
+      if(e>LOGO&&!pose){pose=true;lg.classList.add("on");setTimeout(()=>nm.classList.add("on"),480)}
       raf=requestAnimationFrame(boucle);
     })(t0);
   }
   function fin(){
     if(!el||finDemandee)return;finDemandee=true;
     const reste=Math.max(0,DUREE-(performance.now()-t0));
-    setTimeout(()=>{if(!el)return;el.classList.add("part");const x=el;el=null;setTimeout(()=>{cancelAnimationFrame(raf);x.remove()},480)},reste);
+    setTimeout(()=>{if(!el)return;el.classList.add("part");const x=el;el=null;setTimeout(()=>{cancelAnimationFrame(raf);x.remove()},800)},reste);
   }
   return {jouer,fin,actif};
 })();

@@ -258,11 +258,12 @@ function lancer(){$("nav").hidden=false;
   setInterval(()=>{if(document.hidden||S.onglet!=="recos"||S.recoForm||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="recos"&&!S.recoForm)rendu(true)})},60000);
   if(!lienHash())rendu();
   notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil"].includes(S.onglet))rendu(true)});
-  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#[cpr]=.+$/i);if(h){location.hash=h[0]}});}
+  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#([cpr]=.+|g)$/i);if(h){location.hash=h[0]}});}
 // Liens entrants : #c=<membre> (conversation), #r=recues|donnees (recommandations), #p=<réunion>.<code> (QR de présence)
 function lienHash(){
   const h=location.hash;let m;
   if((m=h.match(/^#c=([0-9a-z-]+)$/i))&&membre(m[1])){history.replaceState(null,"",location.pathname);ouvrirConv(m[1]);return true}
+  if(h==="#g"&&clubId()){history.replaceState(null,"",location.pathname);aller("groupe");return true}
   if((m=h.match(/^#r=(recues|donnees)$/))){history.replaceState(null,"",location.pathname);aller("recos",{recoTab:m[1],recoForm:false});return true}
   if((m=h.match(/^#p=([0-9a-f-]{36})\.([0-9a-z]{4,32})$/i))){history.replaceState(null,"",location.pathname);pointer(m[1],m[2]);return true}
   return false;
@@ -595,7 +596,7 @@ function bandeauNotif(){
 function carteNotif(){
   const e=S.notif;
   const corps={actif:`<span style="font-size:14px">✓ Activées sur ce téléphone.</span><button class="btn ghost" type="button" data-notif="off">Couper</button>`,
-    inactif:`<span style="font-size:14px">Une notification à chaque nouveau message.</span><button class="btn" type="button" data-notif="on">Activer sur ce téléphone</button>`,
+    inactif:`<span style="font-size:14px">Une notification à chaque message : les tiens et ceux du fil de ton groupe.</span><button class="btn" type="button" data-notif="on">Activer sur ce téléphone</button>`,
     refuse:`<span style="font-size:14px">Bloquées pour ce site : réautorise-les dans les réglages du navigateur.</span>`,
     ios:`<span style="font-size:14px">Sur iPhone, il faut d'abord installer l'espace membre :</span>${IOS_ETAPES}`,
     non:`<span style="font-size:14px">Ce navigateur ne gère pas les notifications.</span>`}[e||"non"];

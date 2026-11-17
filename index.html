@@ -2026,8 +2026,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.3.0";
+const APP_VERSION="1.4.0";
 const CHANGELOG=[
+  {v:"1.4.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Notifications du fil de groupe : chaque message prévient les membres du groupe (ceux qui ont un compte) et l'animateur du groupe, jamais l'auteur. Sur un même groupe, la dernière notification remplace la précédente. Le clic ouvre le fil : dans l'espace membre pour un membre, dans Groupe › Discussion du CRM pour l'animateur."]}},
   {v:"1.3.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Espace membre : nouvel onglet « Groupe », la page d'accueil du membre. Il rassemble en un écran la prochaine réunion, le CA du groupe du mois et de l'année, la courbe sur 12 mois, la ligne de la région, les membres et leurs métiers, les métiers recherchés, les invités de la prochaine réunion, les dernières recommandations et le fil du groupe.","CRM, espace Groupe : bouton « 👁 Vue membre ». L'animateur, le directeur de zone et la direction nationale voient le groupe exactement comme ses membres, pour tout groupe de leur périmètre, et peuvent écrire dans son fil."],
     "Modifié":["Le métier affiché d'un membre est sa spécialité quand il avait choisi « - Autre - » dans le formulaire d'adhésion."]}},
@@ -2616,7 +2618,7 @@ async function bootIntoApp(){
   adhAnnonce();
   tutoAuDemarrage();
   notifEtat().then(majBoutonNotif);
-  ouvrirLienAdhesion();ouvrirLienReunion();
+  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();
   presenceDemarrer();
   horlogeDemarrer();
   return true;
@@ -2769,7 +2771,7 @@ async function openNotifs(){
     refuse:`<div class="ck-act urgent" style="cursor:default"><span class="ic">⛔</span><span class="tx">Notifications bloquées pour ce site</span></div><p class="fh-note">Réautorise-les dans les réglages du navigateur (cadenas à côté de l'adresse), puis reviens ici.</p>`,
     ios:`<div class="ck-act todo" style="cursor:default"><span class="ic">📱</span><span class="tx">Une étape avant, sur iPhone</span></div><ol class="notif-ios"><li>Touche <b>Partager</b> (le carré avec la flèche) en bas de Safari.</li><li>Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li><li>Ouvre le CRM depuis l'icône, puis la cloche 🔔 en haut.</li></ol>`,
     non:`<p class="fh-note">Ce navigateur ne gère pas les notifications.</p>`};
-  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:"Adhésions et invités proposés, sur ce téléphone ou cet ordinateur"})}${corps[e]||corps.non}<div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:"Adhésions, invités proposés et fil de tes groupes, sur ce téléphone ou cet ordinateur"})}${corps[e]||corps.non}<div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
   openSheet();
 }
 /* Lien d'une notification (?adh=<id>) : ouvre directement la fiche de l'adhésion. */
@@ -2779,6 +2781,12 @@ async function ouvrirLienAdhesion(){
   await openAdhesions("all");if((DB.adhesions||[]).some(a=>a.id===id))adhDetail(id);
 }
 /* Lien d'une notification « invité proposé » (?reunion=<id>) : ouvre la fiche de la réunion. */
+/* v1.4.0 : notification du fil d'un groupe → ?groupe=<club> ouvre l'onglet Discussion de ce groupe. */
+function ouvrirLienGroupe(){
+  const id=new URLSearchParams(location.search).get("groupe");if(!id||!SESSION||SESSION.role==="visiteur")return;
+  history.replaceState(null,"",location.pathname);
+  if(DB.clubs.some(c=>c.id===id)&&canEditClubId(id)){window._reuTous=true;grpAller(id,"fil")}
+}
 function ouvrirLienReunion(){
   const id=new URLSearchParams(location.search).get("reunion");if(!id||!SESSION||SESSION.role==="visiteur")return;
   history.replaceState(null,"",location.pathname);

@@ -841,6 +841,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .dacc{display:flex;flex-direction:column;gap:14px}.dacc-h{display:flex;align-items:center;gap:14px}.dacc-i{width:56px;height:56px;border-radius:16px;background:var(--crimson-tint);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}.dacc-h small{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-txt,var(--crimson))}.dacc-h h2{font-size:22px;margin:2px 0 0}.dacc p{margin:0;font-size:14.5px}.dacc-l{display:flex;flex-direction:column;gap:8px}.dacc-l span{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;background:var(--crimson-tint);border-radius:12px;padding:10px 12px}.dacc-l b{width:26px;height:26px;border-radius:13px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}.dacc-n{color:var(--muted);font-size:13px!important}
 .rep-noms{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.rep-noms span{font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px}.rep-o{background:#EAF2EA;color:#24502A}.rep-n{background:var(--line2,#EFE5E7);color:var(--muted)}
 .gl{display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}.gl-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:13px;line-height:1.3}.gl-r:first-child{border-top:0}.gl-n{min-width:0;display:flex;flex-direction:column}.gl-n b,.gl-n small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-n small{color:var(--muted);font-size:11.5px}.gl-t{color:var(--crimson-txt,var(--crimson));text-decoration:none;font-variant-numeric:tabular-nums}.gl-s{padding:3px 6px;font-size:12px;min-height:0}
+.ni-clics{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--crimson-tint);font-size:13px}.nic-vide{color:var(--muted)}.nic-chif{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}.nic-chif b{font-size:18px;color:var(--crimson-txt,var(--crimson))}.nic-chif small{color:var(--muted);margin-left:auto}.nic-par{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.nic-src{background:var(--card,#fff);border:1px solid var(--line);border-radius:999px;padding:2px 10px}.nic-src small{color:var(--muted)}
 .ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson-txt,var(--crimson))}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
 .nat-err{font-size:13px;color:var(--crimson-txt,var(--crimson));background:var(--crimson-tint);padding:8px 10px;border-radius:8px}
 .nat-j summary{cursor:pointer;font-size:13px;color:var(--muted)}.nat-j div{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
@@ -2108,8 +2109,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.13.1";
+const APP_VERSION="1.14.0";
 const CHANGELOG=[
+  {v:"1.14.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Lien d'inscription suivi : le lien d'une invitation du national passe par le CRM (i.html), qui compte chaque ouverture puis renvoie au formulaire du national. La fiche de la réunion affiche les ouvertures, le nombre de personnes, le taux d'inscription et qui a partagé le lien (chaque animateur, le QR code à part). Les aperçus WhatsApp ne comptent pas comme des ouvertures."],
+    "Modifié":["Tous les liens partagés (invitation, adhésion, espace membre, accès au CRM) partent du même domaine, quel que soit l'écran : même lien et même aperçu dans WhatsApp. Les pages publiques ont un titre, un texte et le logo pour l'aperçu.","La fiche membre d'un animateur est reliée automatiquement à son compte du CRM, par la base de données (à la création de la fiche, à sa modification, ou quand le compte arrive après). La colonne « Espace membre » dit « Compte CRM à relier » ou « Son espace : fiche … » au lieu de « Pas encore d'accès »."],
+    "Corrigé":["Chrystel apparaissait « Pas encore d'accès » alors qu'elle se connecte au CRM : sa fiche n'était pas reliée à son compte."]}},
   {v:"1.13.1",date:"17 novembre 2026",notes:{
     "Modifié":["Fenêtre d'accueil de la personne qui gère les documents : elle indique la rubrique « Ressources » → « Documents du réseau » du menu."]}},
   {v:"1.13.0",date:"17 novembre 2026",notes:{
@@ -2629,7 +2634,7 @@ function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,h
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
-function mapMembre(r){return{id:r.id,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
+function mapMembre(r){return{id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -4877,7 +4882,7 @@ function meetingDetail(m,editable){
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
     <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
-  ficheOpen();natInvQr();repCharger(m);
+  ficheOpen();natInvQr();repCharger(m);natClicsCharger(m);
 }
 /* v1.9.0 : réponses des membres à la réunion (« Je viens » / « Je ne viens pas » dans l'espace membre). */
 async function repCharger(m){
@@ -4948,7 +4953,7 @@ function invModeleCle(t){return "cap-invtpl-"+(INV_MODELES[t]?t:"autre")}
 function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}return INV_MODELES[t]||INV_MODELES.autre}
 function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
   const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
-    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?m.nat.lien:"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0]};
+    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0]};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
 function natInvMessage(m){return invRemplir(invModele(m.format?"autre":m.type),m)}
 function natInvBloc(m){
@@ -4959,13 +4964,30 @@ function natInvBloc(m){
       <button class="btn" onclick="natInvCreer('${m.id}',this)">🌐 Créer l'invitation au national</button></div>`}
   const per=natInvPerime(m);
   return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national · n° ${esc(n.invitation_id)}</div>
-    <div class="ni-row"><div class="ni-qr" data-niqr="${esc(n.lien)}" role="img" aria-label="QR code d'inscription"></div><div class="ni-l">
+    <div class="ni-row"><div class="ni-qr" data-niqr="${esc(natInvSuivi(m,"qr"))}" role="img" aria-label="QR code d'inscription"></div><div class="ni-l">
       <div class="nat-v">Lien d'inscription à envoyer :</div>
-      <a class="ni-lien" href="${esc(n.lien)}" target="_blank" rel="noopener">${esc(n.lien.replace(/^https:\/\//,""))}</a>
-      <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener">Ouvrir</a></div></div></div>
+      <a class="ni-lien" href="${esc(natInvSuivi(m))}" target="_blank" rel="noopener">${esc(natInvSuivi(m).replace(/^https?:\/\//,""))}</a>
+      <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener" title="Ouvre le formulaire du national sans compter de clic">Ouvrir</a></div></div></div>
     ${per?`<div class="nat-err">Depuis l'envoi au national, ${per} ${per.includes(" et ")?"ont":"a"} changé ici.${su&&avenir?"":" Le directeur doit mettre l'invitation à jour."}</div>${su&&avenir?`<button class="btn" onclick="natInvCreer('${m.id}',this)">🔄 Mettre à jour au national</button>`:""}`:""}
+    <div class="ni-clics" id="nic-${m.id}"></div>
     <div class="ni-insc"><b>${n.inscrits!=null?n.inscrits:"—"}</b> inscrit${n.inscrits>1?"s":""} par le lien${n.inscrits_le?` <small>· vérifié ${esc(adhDate(n.inscrits_le))}</small>`:""}${su?`<button class="btn ghost mini" onclick="natInscrits('${m.id}',this)">🔄 Récupérer les inscrits</button>`:""}</div>
-    <div class="nat-v">Les inscrits arrivent dans la liste des invités ci-dessous (vérification automatique chaque heure, de 8 h à 21 h). Au national : Communication → Invitations → n° ${esc(n.invitation_id)} → statistiques.</div></div>`}
+    <div class="nat-v">Le lien envoyé passe par le CRM : chaque ouverture est comptée avec qui l'a partagé (le QR code compte à part), puis la personne arrive sur le formulaire du national. Les inscrits arrivent dans la liste des invités ci-dessous (vérification automatique chaque heure, de 8 h à 21 h). Au national : Communication → Invitations → n° ${esc(n.invitation_id)} → statistiques.</div></div>`}
+/* v1.14.0 : lien d'inscription suivi. i.html compte le clic (qui l'a partagé, visiteur anonyme) puis renvoie au national.
+   Source : a<8 premiers caractères de l'animateur>, u<compte> sans fiche animateur, qr pour le QR code. */
+function natInvSource(){if(!SESSION)return"";return SESSION.animId?"a"+String(SESSION.animId).replace(/-/g,"").slice(0,8):"u"+String(SESSION.id||"").replace(/-/g,"").slice(0,8)}
+function natInvSuivi(m,src){const n=m&&m.nat;if(!n||!n.invitation_id)return n&&n.lien||"";return `${SITE_PUBLIC}/i.html?n=${encodeURIComponent(n.invitation_id)}&s=${encodeURIComponent(src||natInvSource())}`}
+function natClicNom(src){if(!src)return"Lien sans origine";if(src==="qr")return"QR code";
+  const k=src.slice(1).toLowerCase();if(src[0]==="a"){const a=DB.animateurs.find(x=>String(x.id).replace(/-/g,"").slice(0,8)===k);return a?a.nom:"Un animateur"}
+  if(src[0]==="u")return SESSION&&String(SESSION.id).replace(/-/g,"").slice(0,8)===k?"Toi":"Un compte de l'équipe";
+  if(src[0]==="m"){const x=DB.membres.find(y=>String(y.id).replace(/-/g,"").slice(0,8)===k);return x?x.nom:"Un membre"}return"Autre"}
+async function natClicsCharger(m){const z=document.getElementById("nic-"+m.id);if(!z||!m.nat||!m.nat.invitation_id)return;
+  const {data,error}=await sb.from("liens_clics").select("source,visiteur,created_at").eq("reunion_id",m.id).order("created_at",{ascending:false}).limit(2000);
+  if(error){z.remove();return}const L=data||[];
+  if(!L.length){z.innerHTML=`<span class="nic-vide">Aucune ouverture du lien suivi pour l'instant.</span>`;return}
+  const vis=new Set(L.map(x=>x.visiteur||x.created_at)).size,par={};L.forEach(x=>{const k=natClicNom(x.source);(par[k]=par[k]||{c:0,v:new Set()}).c++;par[k].v.add(x.visiteur||x.created_at)});
+  const ins=m.nat.inscrits!=null?m.nat.inscrits:null,tx=ins!=null&&vis?Math.round(ins*100/vis):null;
+  z.innerHTML=`<div class="nic-chif"><span><b>${L.length}</b> ouverture${L.length>1?"s":""}</span><span><b>${vis}</b> personne${vis>1?"s":""}</span>${tx!=null?`<span><b>${tx} %</b> inscrites</span>`:""}<small>dernière ${esc(adhDate(L[0].created_at))}</small></div>
+    <div class="nic-par">${Object.entries(par).sort((a,b)=>b[1].c-a[1].c).map(([k,o])=>`<span class="nic-src">${esc(k)} <b>${o.c}</b>${o.v.size!==o.c?` <small>(${o.v.size} pers.)</small>`:""}</span>`).join("")}</div>`}
 async function natInscrits(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;const t=btn.textContent;btn.disabled=true;btn.textContent="Lecture du national…";
   const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"inscrits",reunion_id:id}});
   btn.disabled=false;btn.textContent=t;
@@ -5000,7 +5022,7 @@ function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t
   k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
   try{localStorage.setItem(invModeleCle(m.format?"autre":m.type),t)}catch(e){}toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
 function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.format?"autre":m.type))}catch(e){}natInvWa(id)}
-async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;try{await navigator.clipboard.writeText(m.nat.lien);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",m.nat.lien)}}
+async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const u=natInvSuivi(m);try{await navigator.clipboard.writeText(u);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",u)}}
 /* v0.43.0 : choix de l'heure sans molettes. Créneaux d'un clic (les réunions sont le matin) + heure et minutes
    dans deux listes. Le champ caché garde l'id d'origine : le code qui lit la valeur ne change pas. */
 const HEURE_DEF="11:00",HC_CRENEAUX=["08:00","08:30","09:00","10:00","11:00","12:00","13:00"];
@@ -5387,7 +5409,10 @@ function maFiche(clubId){if(!SESSION)return null;const nom=n=>String(n||"").norm
   const moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
   return DB.membres.find(m=>(!clubId||m.clubId===clubId)&&((SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi)))||null}
 /* Espace membre (v0.23) : le membre se connecte sur membre.html avec son mobile (infos.m_tel) et un code WhatsApp. */
-const ESPACE_MEMBRE_URL=location.origin+"/membre.html";
+/* v1.14.0 : un seul domaine pour TOUS les liens partagés (invitation, adhésion, espace membre, accès CRM) :
+   même lien et même aperçu WhatsApp quel que soit l'écran d'où on l'envoie, même si le CRM est ouvert ailleurs. */
+const SITE_PUBLIC=(location.protocol==="file:"||/^(localhost|127\.|192\.168\.)/.test(location.hostname))?location.origin:"https://cap-proteine-maroc.vercel.app";
+const ESPACE_MEMBRE_URL=SITE_PUBLIC+"/membre.html";
 function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
 function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
@@ -5620,7 +5645,7 @@ function exportCSV(){
    ============================================================ */
 const ADH_STATUTS={recue:"Reçue",traitee:"Traitée",integree:"Intégrée",rejetee:"Archivée"};
 const ADH_DOT={recue:"bad",traitee:"warn",integree:"ok",rejetee:""};
-function adhLink(clubId){const u=new URL("adhesion.html",location.href);if(clubId)u.searchParams.set("ref",clubId);return u.toString()}
+function adhLink(clubId){const u=new URL("/adhesion.html",SITE_PUBLIC);if(clubId)u.searchParams.set("ref",clubId);return u.toString()}
 function adhNom(a){return((a.data.m_prenom||"")+" "+(a.data.m_nom||"")).trim()||"—"}
 function adhDate(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
 function adhNouvelles(){return(DB.adhesions||[]).filter(a=>a.statut==="recue").length}
@@ -6190,7 +6215,7 @@ function embRendu(){
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
 }
 function embMessage(u,pwd){const pr=(u.nom||"").split(/\s+/)[0];
-  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function embWa(u,pwd){const a=u.animateur_id&&anim(u.animateur_id);const t=a&&a.tel?String(a.tel).replace(/[^\d]/g,"").replace(/^0/,"212"):"";return "https://wa.me/"+t+"?text="+encodeURIComponent(embMessage(u,pwd))}
 async function embCopier(id){const u=_emb.l.find(x=>x.id===id),r=_emb.res[id];try{await navigator.clipboard.writeText(embMessage(u,r.pwd));toast("Message copié")}catch(e){prompt("Message :",embMessage(u,r.pwd))}}
 async function embTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();toast("Mobile enregistré")}
@@ -6212,9 +6237,10 @@ async function embInviter(id){
 function mbNomCle(n){return mbNorm(n||"").replace(/[^a-z]/g,"")}
 function mbAnim(m){if(m.animId)return m.animId;const c=club(m.clubId);if(!c||!c.animId)return null;const a=anim(c.animId);return a&&mbNomCle(a.nom)===mbNomCle(m.nom)?a.id:null}
 function animFiche(animId){return DB.membres.find(m=>m.animId===animId)||DB.membres.find(m=>!m.animId&&mbAnim(m)===animId)||null}
-function mbEspEtat(m){const tel=(m.infos||{}).m_tel;return m.inscrit?(m.vuLe?["ok","Connecté le "+adhDate(m.vuLe)]:["w","Code créé, jamais connecté"]):tel?["n","Pas encore d'accès"]:["r","Mobile manquant"]}
+function mbEspEtat(m){const tel=(m.infos||{}).m_tel,an=!m.inscrit&&mbAnim(m),cpt=an&&animCompte(an);
+  if(cpt){const ail=DB.membres.find(x=>x.id!==m.id&&x.userId===cpt.id);if(ail)return["ok","Son espace : fiche "+((club(ail.clubId)||{}).nom||"").replace(/^CAP\s+/,"")];return["w","Compte CRM à relier"]}return m.inscrit?(m.vuLe?["ok","Connecté le "+adhDate(m.vuLe)]:["w","Code créé, jamais connecté"]):tel?["n","Pas encore d'accès"]:["r","Mobile manquant"]}
 function mbEspCell(m){const [t,txt]=mbEspEtat(m),ed=canEditClubId(m.clubId);
-  return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span>${ed?`<button class="btn ${m.inscrit?"ghost":""} acc-go" onclick="event.stopPropagation();mbAccesFiche('${m.id}')">🔑 ${m.inscrit?"Nouveau code":"Donner l'accès"}</button>`:""}</div>`}
+  return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span>${ed?(t==="w"&&!m.inscrit?`<button class="btn acc-go" onclick="event.stopPropagation();accMembreOuvrir('${mbAnim(m)}','${m.id}')">🔗 Relier son compte</button>`:`<button class="btn ${m.inscrit?"ghost":""} acc-go" onclick="event.stopPropagation();mbAccesFiche('${m.id}')">🔑 ${m.inscrit?"Nouveau code":"Donner l'accès"}</button>`):""}</div>`}
 function mbAccesFiche(id){const m=DB.membres.find(x=>x.id===id);if(!m)return;const c=club(m.clubId),ed=canEditClubId(m.clubId),d=m.infos||{};
   document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),ini:initiales(m.nom),round:true,title:m.nom,sub:`Espace membre · ${esc((c.nom||"").replace(/^CAP\s+/,""))}${mbAnim(m)?" · Animateur":""}`})}
     <p class="fh-note">L'espace membre sert à l'annuaire, aux messages entre membres, aux recommandations données et reçues et aux invités proposés.</p>
@@ -6233,10 +6259,14 @@ function accMembreBloc(a){
   return `<div class="acc-role"><b>Espace membre (recommandations)</b><p class="mut acc-n" style="margin:6px 0 8px">Il n'a pas encore de fiche membre. Il comptera comme membre de son groupe, étiqueté « Animateur ».</p>
     <div class="acc-mb">${clubs.length>1?`<select id="acc-club">${clubs.map(c=>`<option value="${c.id}">${esc(c.nom.replace(/^CAP\s+/,""))}</option>`).join("")}</select>`:`<span>${esc(clubs[0].nom.replace(/^CAP\s+/,""))}</span>`}<button class="btn acc-go" onclick="accMembreCreer('${a.id}')">L'ajouter comme membre</button></div></div>`;
 }
-async function accMembreLier(a,m){if(m.animId===a.id)return true;
-  const infos=(m.infos&&m.infos.m_tel)||!a.tel?m.infos:{...(m.infos||{}),m_tel:a.tel};
-  const {error}=await sb.from("membres").update({animateur_id:a.id,infos}).eq("id",m.id);if(error){toast(rlsMsg(error));return false}
-  m.animId=a.id;m.infos=infos;return true}
+/* v1.14.0 : la fiche d'un animateur porte aussi son compte du CRM (user_id), sinon la colonne « Espace membre »
+   disait « Pas encore d'accès » à quelqu'un qui se connecte tous les jours (cas de Chrystel). */
+function animCompte(animId){return (DB.acces||[]).find(x=>x.animateur_id===animId)||null}
+async function accMembreLier(a,m){const cpt=animCompte(a.id),lierCpt=cpt&&!m.inscrit&&!DB.membres.some(x=>x.id!==m.id&&x.userId===cpt.id);
+  if(m.animId===a.id&&!lierCpt)return true;
+  const infos=(m.infos&&m.infos.m_tel)||!a.tel?m.infos:{...(m.infos||{}),m_tel:a.tel},maj={animateur_id:a.id,infos};if(lierCpt)maj.user_id=cpt.id;
+  const {error}=await sb.from("membres").update(maj).eq("id",m.id);if(error){toast(rlsMsg(error));return false}
+  m.animId=a.id;m.infos=infos;if(lierCpt){m.inscrit=true;m.userId=cpt.id;m.vuLe=cpt.derniere_connexion||cpt.vu_le||m.vuLe||null}return true}
 async function accMembreOuvrir(animId,mid){const a=anim(animId),m=DB.membres.find(x=>x.id===mid);if(!a||!m)return;if(!await accMembreLier(a,m))return;mbAccesFiche(mid)}
 async function accMembreCreer(animId){const a=anim(animId);if(!a)return;
   const sel=document.getElementById("acc-club"),cid=sel?sel.value:(DB.clubs.find(c=>c.animId===animId)||{}).id;if(!cid)return;
@@ -6273,7 +6303,7 @@ function accCellule(a){
 }
 function accLogin(a){return (a.nom||"").split(/\s+/)[0].normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
-  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${location.origin}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
 function accDonner(animId){
   const a=anim(animId);if(!a||!accVisible())return;

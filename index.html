@@ -2165,6 +2165,22 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.30 chiffres par période*/.per{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.per-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;margin-bottom:12px}
+.per-h small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}.per-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;font-weight:800}
+.per-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;max-width:100%}
+.per-seg button{border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:700;color:var(--muted);min-height:34px}.per-seg button.on{background:var(--crimson);color:#fff}
+.per-g{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.per-t{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);min-width:0;transition:transform .12s,border-color .15s}
+.per-t:hover{transform:translateY(-2px);border-color:var(--crimson-tint)}
+.per-t b{font:800 22px/1.05 "Bricolage Grotesque",sans-serif;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.per-t b small{font-size:11px;font-weight:700;color:var(--muted)}
+.per-t span{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.25}
+.per-t em{font-style:normal;font-size:11px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+.per-t em.up{background:var(--ok-tint);color:var(--ok)}.per-t em.down{background:var(--crimson-tint);color:var(--crimson-txt,var(--crimson))}
+.per-n{margin:10px 0 0;font-size:12px;color:var(--muted)}
+@media(max-width:1099px){.per-g{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.per-g{grid-template-columns:repeat(2,minmax(0,1fr))}.per-seg{width:100%}.per-seg button{flex:1;padding:7px 4px}.per-t b{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.per-t{transition:none}.per-t:hover{transform:none}}
 /*v1.29 lecture seule : aucune coordonnée*/body.lecture a[href^="tel:"],body.lecture a[href*="wa.me"],body.lecture a[href^="mailto:"]{display:none!important}
 /*v1.28 liens de données*/.lien-d{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px;border-radius:4px}
 .lien-d:hover{color:var(--crimson-txt,var(--crimson));text-decoration-style:solid}
@@ -2290,8 +2306,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.29.0";
+const APP_VERSION="1.30.0";
 const CHANGELOG=[
+  {v:"1.30.0",date:"17 novembre 2026",notes:{"Ajouté":["Chiffres par période : un seul choix (mois, trimestre, semestre, année) sur la Synthèse, l'accueil de la région et Mon groupe. Six chiffres d'activité (nouveaux membres, réunions tenues, invités, adhésions reçues, recommandations, affaires signées), chacun avec l'écart par rapport à la période précédente, et chacun ouvre sa liste.","Espace membre : Mes chiffres, ceux du groupe et de la région suivent la même période."],"Modifié":["Les affaires générées par les recos et les nouveaux membres de la Synthèse suivent la période choisie.","Espace membre : le compteur d'invités de la prochaine réunion ne compte plus l'équipe inscrite."]}},
   {v:"1.29.0",date:"17 novembre 2026",notes:{"Modifié":["Chacun ne lit que son périmètre, y compris dans la base : le super admin et le directeur national tout le réseau, un directeur sa région, un animateur ses groupes (membres, invités, documents, recommandations). Les leads sont réservés à la direction.","L'animateur arrive directement sur son groupe ; son accueil et ses listes ne montrent que ses groupes. L'agenda reste celui de tout le réseau, pour s'inscrire à n'importe quelle réunion.","Le compte en lecture seule ne voit plus aucune coordonnée."]}},
   {v:"1.28.0",date:"17 novembre 2026",notes:{"Ajouté":["Tout ce qui nomme une donnée y mène : un nom de groupe, d'animateur, de lieu ou de membre ouvre sa fiche, où qu'il soit écrit (planning de la région, fiches, rapport du mois, demandes, panneau de droite).","Les tuiles chiffrées de Mon groupe et des fiches ouvrent la liste qu'elles comptent ; le texte d'une carte de réunion ouvre la réunion."]}},
   {v:"1.27.0",date:"17 novembre 2026",notes:{"Modifié":["« À traiter » se compte partout de la même façon : la pastille du menu Réseau, le filtre des Clubs et le panneau de droite donnent le même nombre de groupes ; le bandeau d'accueil additionne groupes, bilans, adhésions et comptes à embarquer.","Une personne membre de plusieurs groupes compte une fois dans les totaux du réseau et de la région.","« Je viens » : l'équipe inscrite apparaît dans « Équipe présente », elle n'est plus comptée parmi les invités.","Équipe : la direction a sa propre rubrique, elle ne gonfle plus le nombre d'animateurs.","Mon groupe et Mon espace membre s'ouvrent sur le groupe dont la réunion est la plus proche.","Synthèse : trois raccourcis (Présenter, Carte, Rapport du mois) ; Constellation rejoint Carte, Zones et Lancements dans Réseau ; Rendement passe dans Paramètres → Personnel."]}},
@@ -3684,7 +3701,7 @@ function grpBord(c,D){
     D.renouv.length&&[`🔄 ${D.renouv.length} renouvellement${D.renouv.length>1?"s":""} dans les 30 jours`,`openRenouvellements()`],
     !(c.metRech||[]).length&&ed&&[`🎯 Indique les métiers que le groupe recherche`,`grpOnglet('membres')`]
   ].filter(Boolean);
-  return `<div class="grp-stats">
+  return `${perBloc([c.id],"grp",true)}<div class="grp-stats">
       ${grpStat(nb+(obj?`<small>/${obj}</small>`:""),"membres",obj?`${Math.round(nb/obj*100)} % de l'objectif`:"objectif non fixé","",`grpOnglet('membres')`)}
       ${grpStat(D.faitesAn.length,(D.faitesAn.length>1?"réunions faites":"réunion faite")+" en "+TODAY.getFullYear(),`${D.faites.length} au total · ${D.avenir.length} à venir`,"",`grpOnglet('cal')`)}
       ${grpStat(D.presMoy==null?"—":D.presMoy,"présents en moyenne",D.presMoy==null?"aucun bilan saisi":"par réunion réalisée")}
@@ -4434,7 +4451,7 @@ function dashStats(clubs){
     sansAnim:clubs.filter(c=>!c.animId).length,
     membres:nbPersonnes(membres),
     payes:membres.filter(m=>m.paiement).length,
-    membresMois:membres.filter(m=>m.createdAt&&m.createdAt.slice(0,7)===isoJour(new Date()).slice(0,7)).length,
+    membresMois:(b=>membres.filter(m=>m.createdAt&&String(m.createdAt)>=b.debut&&String(m.createdAt)<b.fin).length)(perBornes(perChoix(),0)), // v1.30 : sur la période choisie
     reunionsAvenir:reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee").length,
     reunionsRealisees:reunions.filter(r=>r.statut==="realisee").length,
     invites:invites.length,
@@ -4469,7 +4486,7 @@ function dashBento(s,sc){
   const pct=s.membres?s.payes/s.membres:0,t=(cls,kind,i,inner)=>{const fn=kind==="plan"?"openPlanSerie()":`dashDrill('${kind}','${sc}')`;return `<article class="vb-t ${cls}" style="--i:${i}" role="button" tabindex="0" onclick="${fn}" onkeydown="if(event.key==='Enter')${fn.replace(/"/g,"&quot;")}"><span class="vb-encre"></span>${inner}</article>`};
   const go=`<span class="vb-go" aria-hidden="true">↗</span>`;
   return `<div class="vb">
-    ${t("vb-big","membres",0,`${go}<span class="vb-l">Membres</span><span class="vb-n">${vbOdo(s.membres)}</span>${s.membresMois?`<span class="vb-badge">▲ +${s.membresMois} ce mois</span>`:""}<span class="vb-s">dans ${s.clubs} groupe${s.clubs>1?"s":""}</span>
+    ${t("vb-big","membres",0,`${go}<span class="vb-l">Membres</span><span class="vb-n">${vbOdo(s.membres)}</span>${s.membresMois?`<span class="vb-badge">▲ +${s.membresMois} ${PER_COURT[perChoix()]}</span>`:""}<span class="vb-s">dans ${s.clubs} groupe${s.clubs>1?"s":""}</span>
       <svg viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true"><path d="${dl} L300,100 L0,100Z" fill="rgba(255,255,255,.1)"/><path class="vb-courbe" d="${dl}" fill="none" stroke="#A9C2DA" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle class="vb-bille" r="4" style="offset-path:path('${dl}')"/></svg>`)}
     ${t("vb-gris","clubs",1,`${go}<span class="vb-l">Clubs</span><span class="vb-n">${vbOdo(s.clubs)}</span><span class="vb-s">${s.actifs} actif${s.actifs>1?"s":""} · ${s.creation} en création</span><span class="vb-dots">${clubsT.map((c,i)=>`<i class="${c.statut==="actif"?"":"off"}" style="--d:${i}" title="${esc(c.nom.replace(/^CAP\s+/,""))}"></i>`).join("")}</span>`)}
     ${t(s.reunionsAvenir?"vb-blanc":"vb-alerte",s.reunionsAvenir||readOnly()?"reunions":"plan",2,`${s.reunionsAvenir?go:'<span class="vb-point"></span>'}<span class="vb-l">Réunions à venir</span><span class="vb-n">${vbOdo(s.reunionsAvenir)}</span>${s.reunionsAvenir?`<span class="vb-s">planifiées</span>`:`<span class="vb-cta">Aucune date · planifier ›</span>`}`)}
@@ -4482,7 +4499,7 @@ function dashBento(s,sc){
 /* Message du jour du bandeau (mode vivant), tiré des vrais chiffres. */
 function vbMessages(){
   const ids=new Set(_dashScope.nat||[]),st=dashStats(DB.clubs.filter(c=>ids.has(c.id))),l=[];
-  if(st.membresMois)l.push(`${st.membresMois} nouveau${st.membresMois>1?"x":""} membre${st.membresMois>1?"s":""} ce mois 🎉`);
+  if(st.membresMois)l.push(`${st.membresMois} nouveau${st.membresMois>1?"x":""} membre${st.membresMois>1?"s":""} ${PER_COURT[perChoix()]} 🎉`);
   const nb=reunionsSansBilan().length;if(nb)l.push(`${nb} bilan${nb>1?"s":""} de réunion attend${nb>1?"ent":""} ta plume`);
   const ni=SESSION.role==="visiteur"?0:adhAIntegrer().length;if(ni)l.push(`${ni} demande${ni>1?"s":""} d'adhésion à intégrer`);
   const reg=regionsDe(DB.clubs).map(r=>({nom:r.nom,n:DB.membres.filter(m=>r.clubs.some(c=>c.id===m.clubId)).length})).sort((a,b)=>b.n-a.n)[0];
@@ -4564,7 +4581,7 @@ function dashBlock(s,sc,sansTodo){
   return `
     ${synthMode()==="vivante"?dashBento(s,sc):`<div class="stats">
       ${dashTile(s.clubs,`Clubs · ${s.actifs} actifs`,"clubs",sc,0)}
-      ${dashTile(s.membres,"Membres","membres",sc,1,s.membresMois?`+${s.membresMois} ce mois`:"")}
+      ${dashTile(s.membres,"Membres","membres",sc,1,s.membresMois?`+${s.membresMois} ${PER_COURT[perChoix()]}`:"")}
       ${dashTile(s.reunionsAvenir,"Réunions à venir","reunions",sc,2)}
     </div>
     <div class="stats">
@@ -4598,11 +4615,11 @@ function recosStats(ids,depuis){const l=(DB.recos||[]).filter(r=>ids.has(r.club_
   return {l,recos:l.filter(r=>!depuis||r.cree_le>=depuis).length,signees:s.length,montant:s.reduce((a,r)=>a+Number(r.montant||0),0)}}
 function dashRecos(sc){
   const ids=new Set(_dashScope[sc]||[]);if(!(DB.recos||[]).some(r=>ids.has(r.club_id)))return"";
-  const d=new Date(TODAY.getFullYear(),TODAY.getMonth(),1).toISOString(),y=new Date(TODAY.getFullYear(),0,1).toISOString();
+  const pk=perChoix(),pb=perBornes(pk,0),d=pb.debut,y=new Date(TODAY.getFullYear(),0,1).toISOString(); // v1.30 : période choisie
   const m=recosStats(ids,d),a=recosStats(ids,y);
   return `<div class="dash-recos link" role="button" tabindex="0" onclick="openRecos('${sc}')" onkeydown="if(event.key==='Enter')openRecos('${sc}')">
-    <div><small>Affaires générées par les recos · ${MOIS_LONG[TODAY.getMonth()].toLowerCase()}</small><b data-count="${Math.round(m.montant)}" data-fmt="mad">${esc(madFmt(m.montant))}</b>
-    <span>${m.signees} signée${m.signees>1?"s":""} · ${m.recos} reco${m.recos>1?"s":""} ce mois · depuis janvier ${esc(madFmt(a.montant))}</span></div><i aria-hidden="true">🤝</i></div>`;
+    <div><small>Affaires générées par les recos · ${esc(pb.lib.toLowerCase())}</small><b data-count="${Math.round(m.montant)}" data-fmt="mad">${esc(madFmt(m.montant))}</b>
+    <span>${m.signees} signée${m.signees>1?"s":""} · ${m.recos} reco${m.recos>1?"s":""} ${PER_COURT[pk]}${pk==="an"?"":` · depuis janvier ${esc(madFmt(a.montant))}`}</span></div><i aria-hidden="true">🤝</i></div>`;
 }
 function openRecos(sc,filtre){
   const ids=new Set(_dashScope[sc]||DB.clubs.map(c=>c.id));
@@ -5057,8 +5074,9 @@ function viewDashboard(reg){
   const crois=dashSec("crois","📈","Croissance","Membres et invités : où ils en sont",dashCroissance(st,sc)+dashFunnel(per,sc));
   const equipe=dashSec("equipe","👥","L'équipe","Animateurs et dossiers des membres",dashByAnim(per)+dashRelancer(per));
   const band=reg?reg.band:seg,apres=reg?reg.apres:"";
-  if(large){html+=band+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`+apres;return html+`<div style="height:8px"></div></div>`}
-  html+=band+chiffres+todo+(reg?apres:"")+crois+equipe;
+  const periode=perBloc(per.map(c=>c.id),"syn"); // v1.30 : activité sur la période choisie
+  if(large){html+=band+periode+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`+apres;return html+`<div style="height:8px"></div></div>`}
+  html+=band+periode+chiffres+todo+(reg?apres:"")+crois+equipe;
   return html+`<div style="height:8px"></div></div>`;
 }
 
@@ -8062,6 +8080,49 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.30.0 — CHIFFRES PAR PÉRIODE. Un seul choix (mois, trimestre, semestre, année), mémorisé (localStorage cap-periode,
+   partagé avec l'espace membre) : tous les chiffres datés de l'écran le suivent. Périodes civiles en cours, comparées à
+   la précédente. Flux : nouveaux membres (date de création de la fiche), réunions tenues et invités (date de la réunion),
+   adhésions reçues (date de réception), recommandations (date de création), affaires signées (date de signature, maj_le).
+   Total : membres en fin de période.
+   ============================================================ */
+const PER_LIB={mois:"Mois",trim:"Trimestre",sem:"Semestre",an:"Année"},PER_COURT={mois:"ce mois",trim:"ce trimestre",sem:"ce semestre",an:"cette année"};
+function perChoix(){let v=null;try{v=localStorage.getItem("cap-periode")}catch(e){}return PER_LIB[v]?v:"mois"}
+function perChoisir(k){try{localStorage.setItem("cap-periode",k)}catch(e){}render()}
+function perBornes(k,decal){const n=k==="trim"?3:k==="sem"?6:k==="an"?12:1,i0=Math.floor(TODAY.getMonth()/n)*n+(decal||0)*n;
+  const d=new Date(TODAY.getFullYear(),i0,1),f=new Date(TODAY.getFullYear(),i0+n,1),iso=x=>x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-01";
+  const lib=k==="trim"?"T"+(Math.floor(d.getMonth()/3)+1)+" "+d.getFullYear():k==="sem"?"S"+(d.getMonth()<6?1:2)+" "+d.getFullYear():k==="an"?String(d.getFullYear()):MOIS_LONG[d.getMonth()]+" "+d.getFullYear();
+  return{debut:iso(d),fin:iso(f),lib}}
+function perDonnees(ids,b,strict){const S=ids instanceof Set?ids:new Set(ids),dans=d=>!!d&&String(d)>=b.debut&&String(d)<b.fin;
+  const reu=DB.reunions.filter(r=>S.has(r.clubId)&&dans(r.date)&&r.statut!=="annulee");
+  const signees=(DB.recos||[]).filter(r=>S.has(r.club_id)&&r.statut==="signee"&&dans(r.maj_le));
+  return{membres:DB.membres.filter(m=>S.has(m.clubId)&&dans(m.createdAt)),tenues:reu.filter(r=>r.statut==="realisee"),
+    invites:reu.flatMap(r=>(r.guests||[]).map(g=>({g,r}))),
+    adh:(DB.adhesions||[]).filter(a=>{if(a.statut==="rejetee"||!dans(a.created_at))return false;const c=adhClubId(a);return c?S.has(c):!strict}),
+    recos:(DB.recos||[]).filter(r=>S.has(r.club_id)&&dans(r.cree_le)),signees,ca:signees.reduce((a,r)=>a+Number(r.montant||0),0),
+    total:nbPersonnes(DB.membres.filter(m=>S.has(m.clubId)&&(!m.createdAt||String(m.createdAt)<b.fin)))}}
+function perSeg(){const k=perChoix();return `<div class="per-seg" role="tablist" aria-label="Période">${Object.keys(PER_LIB).map(x=>`<button type="button" role="tab" aria-selected="${x===k}" class="${x===k?"on":""}" onclick="perChoisir('${x}')">${PER_LIB[x]}</button>`).join("")}</div>`}
+var _perScopes={};
+function perBloc(ids,cle,strict){const k=perChoix(),b=perBornes(k,0),p=perBornes(k,-1),D=perDonnees(ids,b,strict),P=perDonnees(ids,p,strict);
+  _perScopes[cle]={ids:[...ids],strict:!!strict};
+  const t=(v,av,lib,kind,mad)=>{const e=v-av,cls=e>0?"up":e<0?"down":"eq",tx=e===0?"=":(e>0?"+":"−")+(mad?madFmt(Math.abs(e)):Math.abs(e));
+    return `<button type="button" class="per-t" onclick="perDetail('${kind}','${cle}')"><b>${mad?esc(madFmt(v)).replace(" MAD","<small> MAD</small>"):v}</b><span>${lib}</span><em class="${cls}" title="Écart avec ${esc(p.lib)}">${tx}</em></button>`};
+  return `<section class="per" aria-label="Activité sur la période"><div class="per-h"><div><small>Activité</small><b>${esc(b.lib)}</b></div>${perSeg()}</div>
+    <div class="per-g">${t(nbPersonnes(D.membres),nbPersonnes(P.membres),nbPersonnes(D.membres)>1?"nouveaux membres":"nouveau membre","membres")}${t(D.tenues.length,P.tenues.length,D.tenues.length>1?"réunions tenues":"réunion tenue","tenues")}${t(D.invites.length,P.invites.length,D.invites.length>1?"invités":"invité","invites")}${t(D.adh.length,P.adh.length,D.adh.length>1?"adhésions reçues":"adhésion reçue","adh")}${t(D.recos.length,P.recos.length,D.recos.length>1?"recommandations":"recommandation","recos")}${t(D.ca,P.ca,"d'affaires signées","signees",true)}</div>
+    <p class="per-n">${D.total} membre${D.total>1?"s":""} en fin de période · écarts calculés par rapport à ${esc(p.lib)}</p></section>`}
+function perDetail(kind,cle){const sc=_perScopes[cle];if(!sc)return;const k=perChoix(),b=perBornes(k,0),D=avecVue(()=>perDonnees(sc.ids,b,sc.strict));
+  const jour=d=>{const x=new Date(d);return isNaN(x)?"":x.getDate()+" "+MOIS[x.getMonth()]},cn=id=>esc((club(id).nom||"").replace(/^CAP\s+/,""));
+  const T={membres:["Nouveaux membres",D.membres.map(m=>`<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${cn(m.clubId)} · entré le ${jour(m.createdAt)}</small></div></div>`)],
+    tenues:["Réunions tenues",D.tenues.map(r=>`<div class="rank-row link" onclick="openMeeting('${r.id}')"><div class="rn">${cn(r.clubId)}<small>${jour(r.date)} · ${esc(TYPES[r.type]||r.type)}${r.presents!=null?" · "+r.presents+" présents":""}</small></div></div>`)],
+    invites:["Invités",D.invites.map(x=>`<div class="rank-row link" onclick="openMeeting('${x.r.id}')"><div class="rn">${esc(x.g.nom)}<small>${cn(x.r.clubId)} · réunion du ${jour(x.r.date)} · ${esc(x.g.statut)}</small></div></div>`)],
+    adh:["Adhésions reçues",D.adh.map(a=>{const d=a.data||{},c=adhClubId(a);return `<div class="rank-row"><div class="rn">${esc(((d.m_prenom||"")+" "+(d.m_nom||"")).trim()||a.membre_nom||"Demande")}<small>${c?cn(c):"sans groupe"} · reçue le ${jour(a.created_at)}</small></div></div>`})],
+    recos:["Recommandations",D.recos.map(r=>`<div class="rank-row"><div class="rn">${esc(membreNom(r.de))} → ${esc(membreNom(r.a))}<small>${cn(r.club_id)} · ${jour(r.cree_le)} · ${esc(r.statut)}</small></div></div>`)],
+    signees:["Affaires signées",D.signees.map(r=>`<div class="rank-row"><div class="rn">${esc(membreNom(r.de))} → ${esc(membreNom(r.a))}<small>${cn(r.club_id)} · signée le ${jour(r.maj_le)}</small></div><span class="rv">${esc(madFmt(Number(r.montant||0)))}</span></div>`)]}[kind];
+  if(!T)return;
+  document.getElementById("sheet-content").innerHTML=`<h3>${T[0]}</h3><p class="sheet-sub">${esc(b.lib)} · ${T[1].length} ligne${T[1].length>1?"s":""}</p><div class="rank">${T[1].join("")||`<div class="rail-vide">Rien sur cette période.</div>`}</div>
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
 
 /* ============================================================
    v1.28.0 — TOUT CE QUI NOMME UNE DONNÉE Y MÈNE.

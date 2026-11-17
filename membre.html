@@ -1069,7 +1069,7 @@ async function chargerDocs(){
   if(DEMO){S.docs=[{id:"dd1",titre:"Kit du nouveau membre",description:"Tout pour bien démarrer : le fonctionnement du club, les règles des recommandations.",categorie:"Kit membre",chemin:"demo/kit.pdf",nom_fichier:"kit-nouveau-membre.pdf",taille:1840000,lien_public:true},
     {id:"dd2",titre:"Fiche de recommandation",categorie:"Formulaires",chemin:"demo/fiche.xlsx",nom_fichier:"fiche-recommandation.xlsx",taille:48000,lien_public:true},
     {id:"dd3",titre:"Présentation du réseau Protéine",categorie:"Présentations",chemin:"demo/pres.pptx",nom_fichier:"presentation-proteine.pptx",taille:6200000,lien_public:true}];return}
-  const {data,error}=await sb.from("documents_reseau").select("id,titre,description,categorie,chemin,nom_fichier,type_mime,taille,lien_public,epingle").eq("archive",false).eq("visible_membres",true).order("epingle",{ascending:false}).order("cree_le",{ascending:false});
+  const {data,error}=await sb.from("documents_reseau").select("id,titre,description,categorie,chemin,nom_fichier,type_mime,taille,lien_public,epingle").eq("archive",false).order("epingle",{ascending:false}).order("cree_le",{ascending:false});
   S.docs=error?[]:(data||[]);
 }
 function vueDocs(){

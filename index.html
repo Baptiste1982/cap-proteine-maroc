@@ -2108,8 +2108,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.12.0";
+const APP_VERSION="1.12.1";
 const CHANGELOG=[
+  {v:"1.12.1",date:"17 novembre 2026",notes:{
+    "Corrigé":["Constellation : elle reste en place. Les groupes ne tournent plus et le survol ne fait plus pivoter les orbites : le groupe visé s'agrandit sur place, avec sa fiche."]}},
   {v:"1.12.0",date:"17 novembre 2026",notes:{
     "Nouveau":["Le menu de gauche est rangé en 7 rubriques (Synthèse, Mon groupe, Agenda, Adhésions, Réseau, Équipe, Ressources), en trois parties : Piloter, Développer, Organiser. La rubrique ouverte déplie ses sous-menus, qui mènent directement au bon écran : Envoi au national, Bilans à faire, Planifier en série, Classeur, Archives, Comptes rendus, Accès au CRM, Vidéos de prise en main…","Au téléphone, la barre du bas montre Synthèse, Groupe, Agenda et Adhésions ; « Plus » ouvre tout le menu, rubrique par rubrique.","Mode sombre : le logo Protéine passe en version claire, sans cartouche blanc."]}},
   {v:"1.11.2",date:"17 novembre 2026",notes:{
@@ -6842,18 +6844,18 @@ function cstRender(){
   const ells=orbites.map((_,oi)=>o.querySelector(`ellipse[data-o="${oi}"]`));
   let t0=performance.now(),acc=0,last=t0,ordrePrec="";
   const place=now=>{
-    const dt=Math.min(64,now-last);last=now;if(!_cst.pause&&!calme)acc+=dt;
+    const dt=Math.min(64,now-last);last=now; // v1.12.1 (JB) : plus de rotation, la constellation reste en place
     const ts=acc/1000,rot=ts*(2*Math.PI/70),ordre=[];
     orbites.forEach((ob,oi)=>{
-      const tilt=calme?TILT:TILT+.16*Math.sin(ts*.11+oi*1.7),psi=calme?0:.22*Math.sin(ts*.07+oi*2.3),cs=Math.cos(psi),sn=Math.sin(psi);
+      const tilt=TILT,psi=0,cs=Math.cos(psi),sn=Math.sin(psi);
       const el=ells[oi];if(el){el.setAttribute("ry",(ob.R*tilt).toFixed(1));el.setAttribute("transform",`rotate(${(psi*180/Math.PI).toFixed(2)} ${ob.hx.toFixed(1)} ${ob.hy.toFixed(1)})`)}
       // Le groupe visé : l'orbite accélère pour l'amener devant (bas de l'orbite), puis il s'éclaire.
-      const vise=ob.items.find(it=>it.i===_cst.hov||it.i===_cst.sel);
+      const vise=null; // le survol ne fait plus tourner l'orbite : le groupe grandit sur place
       if(vise){if(vise.i!==ob.vise){ob.vise=vise.i;const th0=vise.b0+rot*(oi%2?-1:1)+ob.off;let d=(Math.PI/2-th0)%(2*Math.PI);if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;ob.offT=ob.off+d}}
       else if(ob.vise!=null){ob.vise=null;ob.offT=0}
       ob.off+=(ob.offT-ob.off)*Math.min(1,dt/110);const arrive=Math.abs(ob.offT-ob.off)<.12;
       ob.items.forEach(it=>{
-        const cible=(_cst.hov===it.i||_cst.sel===it.i)&&arrive?1:0;it.f+=(cible-it.f)*Math.min(1,dt/70);
+        const cible=(_cst.hov===it.i||_cst.sel===it.i)?1:0;it.f+=(cible-it.f)*Math.min(1,dt/70);
         els[it.i].g.classList.toggle("hov",cible===1);
         const th=it.b0+rot*(oi%2?-1:1)+ob.off,z0=(Math.sin(th)+1)/2,z=Math.max(z0,it.f),lx=ob.R*Math.cos(th),ly=ob.R*tilt*Math.sin(th);
         const px=ob.hx+lx*cs-ly*sn,py=ob.hy+lx*sn+ly*cs,k=.8+.32*z0+.42*it.f,e=els[it.i];

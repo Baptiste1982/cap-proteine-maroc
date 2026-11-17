@@ -16,6 +16,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Protéine">
 <meta name="theme-color" content="#B0122E">
+<meta name="color-scheme" content="light dark">
+<script>/* v1.26 : mêmes couleurs que le CRM (thème choisi dans le CRM, Graphite par défaut) */
+(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";
+var h=document.documentElement;h.className=h.className.replace(/\b(th-\S+|dark)\b/g,"").trim();h.classList.add("th-"+t);if({sombre:1,verre:1,bordeaux:1,graphite:1}[t])h.classList.add("dark")}catch(e){}})();
+addEventListener("storage",function(e){if(e.key==="cap-theme")location.reload()});</script>
 <meta name="description" content="Espace membre du Club d'affaires Protéine Maroc : annuaire et messages entre membres">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -254,6 +259,22 @@ a.la{text-decoration:none}
 
 /*v1.17 : place de la barre de défilement réservée en permanence : rien ne bouge quand elle apparaît (fin de l'animation d'ouverture)*/
 html{scrollbar-gutter:stable}
+/*v1.26 annuaire*/.sg .av{width:36px;height:36px;font-size:13px;flex-shrink:0}.ann-seg{display:flex;gap:4px;background:var(--surf);border-radius:14px;padding:4px;margin-bottom:10px}.ann-seg button{flex:1;border:0;background:transparent;border-radius:10px;padding:9px 8px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer}.ann-seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ann-q{position:relative}.sugg{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;display:grid;gap:2px;max-height:min(60vh,420px);overflow:auto}
+.sg{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;border-radius:10px;padding:8px;cursor:pointer;color:var(--ink)}.sg:hover,.sg.act{background:var(--surf)}.sg i{font-style:normal;width:36px;text-align:center}.sg span{min-width:0}.sg b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg small{color:var(--muted);font-size:12px}
+.ann-reg{margin-top:8px}.lien{border:0;background:none;color:var(--crimson-txt,var(--crimson));font-weight:600;text-decoration:underline;cursor:pointer;padding:0}
+/*v1.26 couleurs du CRM*/
+.logo-sombre{display:none}html.dark .logo-sombre{display:inline}html.dark .logo-clair{display:none}
+:root{--surf:#F1E8EA;--surf2:#F4EEEF}
+html.dark{color-scheme:dark;--crimson:#C21835;--crimson-txt:#EE5A64;--tint:#3A141B;--ink:#F1F1F2;--muted:#9EA0A8;--soft:#B3B5BC;--paper:#1A1B1E;--card:#222327;--line:#2E3035;--line2:#2A2C30;--surf:#2C2E33;--surf2:#26282C;--or:#8FB0D1}
+html.th-sombre{--paper:#26282C;--card:#303237;--line:#41444A;--line2:#383B40;--surf:#383B40;--surf2:#33363B}
+html.th-verre{--paper:#101217;--card:#191C23;--line:#2A2E37;--line2:#232730}
+html.th-bordeaux{--paper:#170A10;--card:#22121A;--line:#3A2029;--line2:#2E1A22;--surf:#341C25;--surf2:#2A161E}
+html.th-verreclair{--paper:#EEEAEA;--card:#FFFFFF}
+.jour,.chip-st,.r-aff span,.ariane .ferme,.v-n{background:var(--surf)}.saisie textarea{background:var(--surf2)}.ico:disabled{background:var(--surf);color:var(--muted)}
+html.dark .ac-rep button.on.non{background:var(--surf);border-color:var(--line);color:var(--ink)}
+html.dark input,html.dark textarea,html.dark select{background:var(--card);color:var(--ink);border-color:var(--line)}
+html.dark .logo-ent{background:#fff}
 </style>
 </head>
 <body>
@@ -267,6 +288,7 @@ html{scrollbar-gutter:stable}
 </div></nav>
 <script src="documents-commun.js"></script>
 <script src="lancement.js"></script>
+<script src="tel-commun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
@@ -292,7 +314,8 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const COUL=[["#F8E9EC","#8A0E24"],["#F4ECD8","#6B5420"],["#E8EEF6","#2C4A73"],["#EAF2EA","#2F5B33"],["#F1E8F4","#5B2F6B"]];
-function coul(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return COUL[h%COUL.length]}
+const COUL_D=[["#3A141B","#F29AAA"],["#3A3220","#E3C27A"],["#1E2A3A","#9DB7D1"],["#1F3022","#8FCB98"],["#2E2036","#C9A0DA"]];
+function coul(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;const P=document.documentElement.classList.contains("dark")?COUL_D:COUL;return P[h%P.length]}
 function ini(n){const p=String(n||"").replace(/[^\p{L}\s-]/gu," ").trim().split(/\s+/).filter(Boolean);return ((p[0]||"")[0]||"").toUpperCase()+((p[1]||"")[0]||"").toUpperCase()}
 function av(m,cls=""){if(m.photo)return `<span class="av img ${cls}"><img src="${esc(m.photo)}" alt="" loading="lazy"></span>`;const [f,e]=coul(m.id);return `<span class="av ${cls}" style="background:${f};color:${e}">${esc(ini(m.nom))}</span>`}
 function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
@@ -309,7 +332,7 @@ function vueLogin(msg){
   if(typeof Lancement!=="undefined")Lancement.fin();
   $("nav").hidden=true;
   $("app").innerHTML=`<div class="login">
-    <img src="logo-proteine.png" alt="Club d'affaires Protéine Maroc">
+    <img src="logo-proteine.png" class="logo-clair" alt="Club d'affaires Protéine Maroc"><img src="logo-proteine-sombre.png" class="logo-sombre" alt="Club d'affaires Protéine Maroc">
     <div><div class="eyebrow">Espace membre</div><h1>Bienvenue dans le réseau</h1>
       <p class="sub">Entre ton mobile et le code d'accès que ton animateur t'a donné.</p></div>
     ${msg?`<div class="msg ${msg.ok?"ok":""}">${esc(msg.t)}</div>`:""}
@@ -371,7 +394,13 @@ function lienHash(){
   return false;
 }
 window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
-async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[]}
+async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[];
+  try{const r=await sb.rpc("cap_annuaire_regions");if(!r.error)S.regions=Object.fromEntries((r.data||[]).map(x=>[x.club_id,x.region]))}catch(e){}annRegions()}
+/* v1.26 : annuaire par région. Chaque membre porte sa région (zone de son groupe, sinon sa ville). */
+function annRegions(){const R=S.regions||{};S.annuaire.forEach(m=>{m.region=R[m.club_id]||m.ville||"Autres"});const moi=S.annuaire.find(m=>m.moi);S.maRegion=moi?moi.region:null;if(!S.portee)S.portee=S.maRegion?"region":"national"}
+const annMots=m=>norm([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.region,m.cherche].join(" ")).split(/[^a-z0-9]+/).filter(Boolean);
+/* Recherche « premières lettres » : chaque mot tapé doit commencer un mot de la fiche. */
+function annMatch(m,mots){if(!mots.length)return true;const W=annMots(m);return mots.every(w=>W.some(x=>x.startsWith(w)))}
 const moiFiche=()=>S.annuaire.find(m=>m.moi)||{};
 const clubId=()=>(S.gv&&S.gv.club&&S.gv.club.id)||moiFiche().club_id;
 async function chargerMessages(){
@@ -630,26 +659,49 @@ function demoGv(){const a=S.annuaire||[];return{club:{id:"c1",nom:S.moi.club,vil
   messages:S.grp||[],chiffres:null}}
 
 /* ---------- Annuaire ---------- */
+function annPortee(){if(!S.annuaire.some(m=>m.region))annRegions();return S.annuaire.filter(m=>!m.moi).filter(m=>S.portee!=="region"||!S.maRegion||m.region===S.maRegion)}
 function filtrer(){
-  const mots=norm(S.q).split(/\s+/).filter(Boolean);
-  return S.annuaire.filter(m=>!m.moi).filter(m=>S.filtre==="tous"||(S.filtre==="club"?m.club===S.moi.club:m.ville===S.filtre))
-    .filter(m=>{const t=norm([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.cherche].join(" "));return mots.every(w=>t.includes(w))});
+  const mots=norm(S.q).split(/[^a-z0-9]+/i).map(norm).filter(Boolean);
+  return annPortee().filter(m=>S.filtre==="tous"||(S.filtre==="club"?m.club===S.moi.club:S.filtre.startsWith("r:")?m.region===S.filtre.slice(2):m.ville===S.filtre))
+    .filter(m=>annMatch(m,mots));
 }
+/* Propositions dès les premières lettres : métiers et activités (avec leur nombre), puis les membres. */
+function annSuggestions(){const q=norm(S.q).trim();if(!q)return[];const mots=q.split(/[^a-z0-9]+/).filter(Boolean),last=mots[mots.length-1]||"";
+  const pool=S.annuaire.filter(m=>!m.moi),met=new Map();
+  pool.forEach(m=>[m.metier,m.activite].filter(Boolean).forEach(x=>{const k=String(x).trim();if(k.length>60)return;const W=norm(k).split(/[^a-z0-9]+/);if(W.some(w=>w.startsWith(last))&&mots.every(w=>W.some(x2=>x2.startsWith(w))))met.set(k,(met.get(k)||0)+1)}));
+  const S1=[...met].sort((a,b)=>b[1]-a[1]).slice(0,4).map(([k,n])=>({t:"metier",k,n}));
+  const S2=pool.filter(m=>{const W=norm(m.nom).split(/[^a-z0-9]+/);return mots.every(w=>W.some(x=>x.startsWith(w)))}).slice(0,5).map(m=>({t:"membre",m}));
+  return [...S1,...S2]}
+function suggHTML(){const L=annSuggestions();if(!L.length)return"";
+  return L.map((x,i)=>x.t==="metier"?`<button type="button" class="sg" data-sgq="${esc(x.k)}" role="option"><i>💼</i><span><b>${esc(x.k)}</b><small>${x.n} membre${x.n>1?"s":""} · tout le réseau</small></span></button>`
+    :`<button type="button" class="sg" data-fiche="${x.m.id}" role="option">${av(x.m,"sm")}<span><b>${esc(x.m.nom)}</b><small>${esc([x.m.metier,x.m.region].filter(Boolean).join(" · "))}</small></span></button>`).join("")}
 function carteMembre(m,i){
   return `<div class="row" style="--i:${Math.min(i,14)}">
     <button class="who" data-fiche="${m.id}">${av(m)}<span class="t"><b>${esc(m.nom)}</b><span>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</span><small>${esc([m.club&&m.club.replace(/^CAP\s+/,""),m.ville].filter(Boolean).join(" · "))}</small></span></button>
     <button class="ico" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"} aria-label="${m.inscrit?"Écrire à "+esc(m.nom):esc(m.nom)+" n'a pas encore activé son espace"}" title="${m.inscrit?"Écrire":"Pas encore inscrit à l'espace membre"}">${ICO.envoi}</button></div>`;
 }
-function listeAnnuaire(){const l=filtrer();return l.length?l.map(carteMembre).join(""):`<p class="vide">Aucun membre ne correspond.${S.q?" Essaie un autre mot.":""}</p>`}
+function annAilleurs(){const mots=norm(S.q).split(/[^a-z0-9]+/i).map(norm).filter(Boolean);if(!mots.length||S.portee!=="region"||!S.maRegion||S.filtre!=="tous")return[];
+  return S.annuaire.filter(m=>!m.moi&&m.region!==S.maRegion&&annMatch(m,mots))}
+function listeAnnuaire(){const l=filtrer(),ail=annAilleurs(),i0=l.length;
+  const plus=ail.length?`<div class="label ann-reg">Dans les autres régions · ${ail.length}</div>${ail.map((m,i)=>carteMembre(m,i0+i)).join("")}`:"";
+  if(!l.length)return (ail.length?`<p class="vide">Personne dans ta région.</p>`:`<p class="vide">Aucun membre ne correspond.${S.q?" Essaie un autre mot.":""}</p>`)+plus;
+  if(plus)return l.map(carteMembre).join("")+plus;
+  if(S.portee==="national"&&S.filtre==="tous"){const g=new Map();l.forEach(m=>{(g.get(m.region)||g.set(m.region,[]).get(m.region)).push(m)});
+    const ord=[...g.keys()].sort((a,b)=>(b===S.maRegion)-(a===S.maRegion)||a.localeCompare(b));let i=0;
+    return ord.map(r=>`<div class="label ann-reg">${esc(r)} · ${g.get(r).length}</div>${g.get(r).map(m=>carteMembre(m,i++)).join("")}`).join("")}
+  return l.map(carteMembre).join("")}
 function vueAnnuaire(){
-  const autres=S.annuaire.filter(m=>!m.moi),villes=[...new Set(autres.map(m=>m.ville).filter(Boolean))].sort();
-  const nClub=autres.filter(m=>m.club===S.moi.club).length;
+  annPortee();const tous=S.annuaire.filter(m=>!m.moi),autres=annPortee(),nClub=tous.filter(m=>m.club===S.moi.club).length;
   const chip=(k,l)=>`<button class="chip ${S.filtre===k?"on":""}" data-filtre="${esc(k)}">${esc(l)}</button>`;
+  const regs=[...new Set(tous.map(m=>m.region).filter(Boolean))].sort((a,b)=>(b===S.maRegion)-(a===S.maRegion)||a.localeCompare(b));
+  const villes=[...new Set(autres.map(m=>m.ville).filter(Boolean))].sort();
+  const nReg=S.maRegion?tous.filter(m=>m.region===S.maRegion).length:0;
   return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Le réseau</h1><p class="sub">Tous les membres Protéine : cherche un métier, un nom, une ville.</p></div></div>
-    <label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Un métier, un nom, une ville…" aria-label="Chercher un membre" value="${esc(S.q)}"></label>
-    <div class="chips">${chip("tous","Tous · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${villes.map(v=>chip(v,v)).join("")}</div>
-    <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):"Le réseau"}</div>
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Le réseau</h1><p class="sub">Cherche un membre par son nom, son métier ou son activité : les propositions arrivent dès les premières lettres.</p></div></div>
+    ${S.maRegion?`<div class="seg ann-seg" role="tablist"><button role="tab" data-portee="region" class="${S.portee==="region"?"on":""}" aria-selected="${S.portee==="region"}">📍 Ma région · ${nReg}</button><button role="tab" data-portee="national" class="${S.portee==="national"?"on":""}" aria-selected="${S.portee==="national"}">🌍 Tout le réseau · ${tous.length}</button></div>`:""}
+    <div class="ann-q"><label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Nom, prénom, métier, activité…" aria-label="Chercher un membre" autocomplete="off" value="${esc(S.q)}"></label><div id="sugg" class="sugg" role="listbox" hidden></div></div>
+    <div class="chips">${chip("tous",(S.portee==="region"&&S.maRegion?"Toute la région":"Toutes les régions")+" · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${S.portee==="national"?regs.map(r=>chip("r:"+r,r)).join(""):villes.length>1?villes.map(v=>chip(v,v)).join(""):""}</div>
+    <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):S.filtre.startsWith("r:")?esc(S.filtre.slice(2)):S.portee==="region"&&S.maRegion?esc(S.maRegion):"Tout le réseau"}</div>
     <div id="res" style="display:flex;flex-direction:column;gap:10px">${listeAnnuaire()}</div></div>`;
 }
 
@@ -669,7 +721,7 @@ function vueFiche(){
     ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
     <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Coordonnées</span>
       <div class="kv"><span>Ville</span><b>${esc(m.ville||"—")}</b></div>
-      <div class="kv"><span>Téléphone</span><b>${tel?esc(m.telephone):"non partagé"}</b></div></div></div>`;
+      <div class="kv"><span>Téléphone</span><b>${tel?esc(telAff(m.telephone)):"non partagé"}</b></div></div></div>`;
 }
 
 function lienUrl(u){u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u}
@@ -986,7 +1038,7 @@ function carteReco(r,recue){
     ${affaire.length?`<div class="r-aff">${affaire.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
     ${r.besoin?`<p class="besoin">« ${esc(r.besoin)} »</p>`:""}
     ${r.appel_offre&&r.entreprises_consultees?`<p class="note-suivi"><b>Entreprises consultées</b> ${esc(r.entreprises_consultees)}</p>`:""}
-    ${(r.contact_tel||r.contact_email)&&!noteEquipe?`<div class="r-coord">${r.contact_tel?`<span>📞 ${esc(r.contact_tel)}</span>`:""}${r.contact_email?`<span>✉️ ${esc(r.contact_email)}</span>`:""}${r.contact_tel2?`<span>📞 ${esc(r.contact_tel2)}</span>`:""}${r.contact_adresse?`<span>📍 ${esc(r.contact_adresse)}</span>`:""}</div>`:""}
+    ${(r.contact_tel||r.contact_email)&&!noteEquipe?`<div class="r-coord">${r.contact_tel?`<span>📞 ${esc(telAff(r.contact_tel))}</span>`:""}${r.contact_email?`<span>✉️ ${esc(r.contact_email)}</span>`:""}${r.contact_tel2?`<span>📞 ${esc(r.contact_tel2)}</span>`:""}${r.contact_adresse?`<span>📍 ${esc(r.contact_adresse)}</span>`:""}</div>`:""}
     <small class="de">${recue?"De":"Pour"} <b>${esc(autre?.nom||"un membre")}</b> · ${esc(new Date(r.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}${r.montant_devis!=null?` · devis ${esc(mad(r.montant_devis))}`:""}${r.statut==="signee"&&r.montant!=null?` · <b class="montant">${esc(mad(r.montant))}</b>`:""}</small>
     ${frise(r.statut)}
     ${recue&&enCours?`<label class="r-rel${relRetard?" retard":""}"><span>${relRetard?"⏰ Relance prévue":"Relancer le"}</span><input type="date" class="champ1" data-rrelance="${r.id}" value="${esc(r.relance_le||"")}"></label>`:!recue&&r.relance_le&&enCours?`<small class="de">Relance prévue le ${esc(dateFr(r.relance_le))}</small>`:""}
@@ -1137,7 +1189,14 @@ function brancher(){
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
   app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));
   app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
-  const q=$("q");if(q)q.oninput=()=>{S.q=q.value;$("res").innerHTML=listeAnnuaire();brancherRes()};
+  app.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});
+  const q=$("q");if(q){const sg=$("sugg");
+    const majS=()=>{const h=suggHTML();sg.innerHTML=h;sg.hidden=!h||document.activeElement!==q;sg.querySelectorAll("[data-sgq]").forEach(b=>b.onmousedown=e=>{e.preventDefault();S.q=b.dataset.sgq;q.value=S.q;sg.hidden=true;$("res").innerHTML=listeAnnuaire();brancherRes()});
+      sg.querySelectorAll("[data-fiche]").forEach(b=>b.onmousedown=e=>{e.preventDefault();aller("fiche",{fiche:b.dataset.fiche})})};
+    q.oninput=()=>{S.q=q.value;$("res").innerHTML=listeAnnuaire();brancherRes();majS()};q.onfocus=majS;q.onblur=()=>setTimeout(()=>{sg.hidden=true},120);
+    q.onkeydown=e=>{const it=[...sg.querySelectorAll(".sg")];if(sg.hidden||!it.length)return;let i=it.indexOf(document.querySelector(".sg.act"));
+      if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();i=(i+(e.key==="ArrowDown"?1:-1)+it.length)%it.length;it.forEach((x,j)=>x.classList.toggle("act",j===i))}
+      else if(e.key==="Enter"&&i>=0){e.preventDefault();it[i].dispatchEvent(new MouseEvent("mousedown"))}else if(e.key==="Escape")sg.hidden=true}}
   const f=$("f-msg");if(f){f.onsubmit=e=>{e.preventDefault();envoyer()};const t=$("m-txt");
     t.oninput=()=>{t.style.height="";t.style.height=Math.min(t.scrollHeight,140)+"px"};
     t.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&matchMedia("(pointer:fine)").matches){e.preventDefault();envoyer()}}}
@@ -1163,7 +1222,7 @@ function brancher(){
     $("c-new").value="";toast("Code changé. Garde-le pour ta prochaine connexion.")};
   const o=$("p-out");if(o)o.onclick=async()=>{if(!DEMO)await sb.auth.signOut({scope:"local"});location.reload()};
 }
-function brancherRes(){const r=$("res");r.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));r.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire))}
+function brancherRes(){const r=$("res");r.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});r.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));r.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire))}
 function ouvrirConv(id){aller("conv",{conv:id});marquerLus(id).then(()=>{const bn=$("nav-nl");const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length;bn.hidden=!nl;bn.textContent=nl})}
 
 /* ---------- Démonstration (#demo) : rien n'est envoyé ---------- */

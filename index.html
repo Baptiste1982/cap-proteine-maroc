@@ -2165,6 +2165,7 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.33 bilan + compte rendu*/.bil-cr>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.bil-cr>summary::-webkit-details-marker{display:none}.bil-cr>summary::after{content:"›";margin-left:auto;transition:transform .15s}.bil-cr[open]>summary::after{transform:rotate(90deg)}.bil-cr>summary small{font-weight:500;color:var(--muted);font-size:11.5px}.bil-cr .field{margin-top:10px}
 /*v1.32 monitoring*/.mon .mon-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .mon-fil{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 14px;font-size:13.5px;font-weight:600}.mon-fil button{color:var(--crimson-txt,var(--crimson));padding:8px 2px;font:inherit}.mon-fil button:hover{text-decoration:underline}.mon-fil span{color:var(--muted)}
 .mon-per{display:flex;align-items:center;gap:10px}.mon-nav{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;line-height:1}.mon-nav:disabled{opacity:.35;cursor:default}
@@ -2329,8 +2330,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.32.0";
+const APP_VERSION="1.33.0";
 const CHANGELOG=[
+  {v:"1.33.0",date:"17 novembre 2026",notes:{"Modifié":["Après une réunion, un seul écran : le bilan (présents, invités venus, adhésions, recommandations, notes) et le compte rendu, facultatif, au même endroit. « Écrire le compte rendu » ouvre cet écran.","Un seul compteur : une réunion passée reste « à faire » tant que son bilan n'est pas saisi. Le compte rendu ne compte plus à part."]}},
   {v:"1.32.0",date:"17 novembre 2026",notes:{"Ajouté":["Monitoring national (menu Synthèse → Monitoring, direction nationale et comptes autorisés) : tous les groupes de toutes les régions sur un seul écran. Sept chiffres par période avec écart, courbe sur 12 mois, et le détail en cliquant : réseau, région, ville, groupe, membres. Flèches pour remonter aux périodes passées.","Prévisionnel à 3 mois, 6 mois et 1 an, avec sa base de calcul affichée : tendance réelle dès 6 mois d'activité, sinon hypothèses réglables.","Mode présentation plein écran, export Excel et impression PDF."]}},
   {v:"1.31.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads confiés aux animateurs : la direction traite un lead puis le confie à un animateur avec un mot (bouton « 📬 Confier » sur chaque lead). L'animateur le retrouve dans sa boîte « Contacts confiés » (menu Adhésions, « À faire » de Mon groupe, message à la connexion), l'invite à sa réunion par WhatsApp et note le suivi. La direction voit si le contact a été vu.","Vue régionale : la comparaison porte sur les villes de la région (Rabat, Salé, Kénitra)."]}},
   {v:"1.30.0",date:"17 novembre 2026",notes:{"Ajouté":["Chiffres par période : un seul choix (mois, trimestre, semestre, année) sur la Synthèse, l'accueil de la région et Mon groupe. Six chiffres d'activité (nouveaux membres, réunions tenues, invités, adhésions reçues, recommandations, affaires signées), chacun avec l'écart par rapport à la période précédente, et chacun ouvre sa liste.","Espace membre : Mes chiffres, ceux du groupe et de la région suivent la même période."],"Modifié":["Les affaires générées par les recos et les nouveaux membres de la Synthèse suivent la période choisie.","Espace membre : le compteur d'invités de la prochaine réunion ne compte plus l'équipe inscrite."]}},
@@ -3421,7 +3423,7 @@ function railHTML(){
   if(tab==="reunions"){
     const g=grpClub(),gid=new Set(g?[g.id]:[]),cr=reuACompteRendu().filter(r=>gid.has(r.clubId)),iso=isoJour(new Date(TODAY.getTime()+7*864e5));
     return head(g?g.nom.replace(/^CAP\s+/,""):"Mon groupe","Les prochaines réunions et les comptes rendus du groupe affiché.")+railRang("Prochaines réunions",railReunions(gid,6),"Aucune réunion à venir.")
-      +railRang("Comptes rendus à écrire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(typeLib(r))} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
+      +railRang("Bilans à faire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(typeLib(r))} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
   }
   if(tab==="membres"){
     const l=DB.membres.filter(m=>ids.has(m.clubId)).slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
@@ -3597,7 +3599,7 @@ function crChamps(m){return [...(CR_CANEVAS[m.format]||CR_CANEVAS.info),...CR_FI
 function reuMesClubs(){return SESSION.animId?DB.clubs.filter(c=>c.animId===SESSION.animId):[]}
 function reuPeutTout(){return ["superadmin","directeur_national","directeur"].includes(SESSION.role)}
 function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)return DB.clubs.filter(c=>canEditClubId(c.id));return mine}
-function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&r.statut!=="annulee"&&!r.crLe&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
+function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
 /* v0.43.0 : quinzaine = un jour fixe, toutes les deux semaines, à partir d'une réunion de référence (rythme_depart). */
 function rythmeQuinz(c){return(c.rRang??0)===0&&c.rPas===2}
 function rythmeAncre(c){if(c.rDepart)return dObj(c.rDepart);const der=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").map(r=>r.date).sort().pop();return der?dObj(der):null}
@@ -3721,7 +3723,6 @@ function grpBord(c,D){
   const nbC=reuMesClubs().some(x=>x.id===c.id)?mesContactsAFaire().length:0;
   const todo=[
     nbC&&[`📬 ${nbC} contact${nbC>1?"s":""} confié${nbC>1?"s":""} par la direction, à inviter`,`openBoite()`],
-    D.acr.length&&[`📝 ${D.acr.length} compte${D.acr.length>1?"s":""} rendu${D.acr.length>1?"s":""} à écrire`,`grpOnglet('cr')`],
     D.sansBilan.length&&[`📊 ${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir`,`openBilan('${D.sansBilan[0].id}')`],
     !D.avenir.length&&[`📅 Aucune réunion à venir : planifie les prochaines`,`openPlanSerie()`],
     D.incomplets.length&&[`📂 ${D.incomplets.length} dossier${D.incomplets.length>1?"s":""} membre incomplet${D.incomplets.length>1?"s":""}`,`grpOnglet('membres')`],
@@ -4022,9 +4023,10 @@ function planifierSuivante(clubId){
 function crBloc(m,editable){
   if(!isPast(m.date)||m.statut==="annulee")return"";
   if(m.crLe)return `<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Voir le compte rendu</button>`;
-  return editable?`<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Écrire le compte rendu</button>`:"";
+  return editable?`<button class="btn ghost" style="margin-top:10px;width:100%" onclick="openCR('${m.id}')">📝 Bilan et compte rendu</button>`:"";
 }
 function openCR(id){
+  {const m0=DB.reunions.find(x=>x.id===id);if(m0&&!readOnly()&&canEditReunion(m0)&&m0.statut!=="annulee"){openBilan(id);return}} // v1.33 : un seul écran après la réunion
   const m=DB.reunions.find(x=>x.id===id),c=club(m.clubId),d=dObj(m.date),ed=canEditReunion(m),cr=m.cr||{};
   const liste=crChamps(m),cles=new Set(liste.map(x=>x[0]));
   // Anciennes rubriques déjà remplies (ancien canevas) : gardées et affichées.
@@ -7022,7 +7024,7 @@ function openBilan(id){
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
   const _bb=(m.cr&&m.cr.bilan)||{};
-  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||""};
+  _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??(m.guests||[]).length,adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||"",cr:Object.fromEntries(Object.entries(m.cr||{}).filter(([k,v])=>k!=="bilan"&&typeof v==="string"))};
   renderBilan();openSheet();
 }
 function renderBilan(){
@@ -7042,9 +7044,11 @@ function renderBilan(){
         <div class="bsteps">${step("recos","Recos passées")}<div class="bstep"><small>Montant annoncé (MAD)</small><div><input class="bil-in" style="width:100%" id="bil-montant" type="number" inputmode="numeric" min="0" step="1000" value="${_bil.montant||""}" placeholder="0" oninput="_bil.montant=Math.max(0,parseInt(this.value,10)||0)" aria-label="Montant annoncé"></div></div></div>
         ${canEditClubId(c.id)?`<button type="button" class="btn ghost mini" onclick="window._reuTous=true;window._grpId='${c.id}';window._bilRetour='${m.id}';grpRecoForm()">+ Noter une reco en détail (qui → qui)</button>`:""}</div>
       <div class="bil-sec"><div class="bil-sec-t">📝 Notes particulières</div>
-        <textarea id="bil-notes" rows="3" maxlength="2000" placeholder="Ambiance, intervenant, points à suivre, absents excusés…" oninput="_bil.notes=this.value">${esc(_bil.notes||"")}</textarea></div>`:""}
+        <textarea id="bil-notes" rows="3" maxlength="2000" placeholder="Ambiance, intervenant, points à suivre, absents excusés…" oninput="_bil.notes=this.value">${esc(_bil.notes||"")}</textarea></div>
+      <details class="bil-sec bil-cr" ${Object.values(_bil.cr||{}).some(Boolean)?"open":""}><summary class="bil-sec-t">📋 Compte rendu <small>facultatif, à remplir maintenant ou plus tard</small></summary>
+        ${crChamps(m).map(([k,l,ph])=>`<div class="field"><label for="bcr-${k}">${l}</label><textarea id="bcr-${k}" rows="${k==="intervenant"||k==="entreprise"?2:3}" placeholder="${esc(ph)}" oninput="_bil.cr['${k}']=this.value">${esc((_bil.cr||{})[k]||((k==="intervenant"||k==="entreprise")&&m.theme?m.theme:""))}</textarea></div>`).join("")}</details>`:""}
     ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
-    <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer le bilan"}</button></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer"}</button></div>
     ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}`;
 }
 function bilConv(){const c=pct(_bil.adh,_bil.inv);return c==null?"Ajoute les invités venus pour voir le taux de conversion":`Invités devenus membres : <b>${c} %</b>`}
@@ -7058,12 +7062,14 @@ async function saveBilan(){
     if(!_bil.date||_bil.date<isoJour(TODAY)){toast("Choisis une nouvelle date à venir","w");return}
     row={date:_bil.date,statut:"planifiee"};
   }else{row={statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
-    if(_bil.statut==="realisee")row.compte_rendu={...(m.cr||{}),bilan:{recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}}}
+    if(_bil.statut==="realisee"){const txt=Object.fromEntries(Object.entries(_bil.cr||{}).map(([k,v])=>[k,String(v||"").trim()]).filter(([,v])=>v));
+      row.compte_rendu={...Object.fromEntries(Object.entries(m.cr||{}).filter(([k])=>k==="bilan"||!(k in (_bil.cr||{})))),...txt,bilan:{recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}};
+      if(Object.keys(txt).length){row.cr_le=new Date().toISOString();row.cr_par=SESSION.id}}} // v1.33 : bilan et compte rendu sur le même écran
   const {error}=await sb.from("reunions").update(row).eq("id",m.id);
   if(error){toast(rlsMsg(error));return}
   Object.assign(m,{statut:row.statut,date:row.date||m.date});
   if(_bil.statut!=="reportee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
-  if(row.compte_rendu)m.cr=row.compte_rendu;
+  if(row.compte_rendu)m.cr=row.compte_rendu;if(row.cr_le)m.crLe=row.cr_le;
   await okPuis();
   toast(_bil.statut==="reportee"?"Réunion reportée":"Bilan enregistré");
   _bilSerie.faits++;

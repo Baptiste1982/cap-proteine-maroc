@@ -475,6 +475,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Espace membre = onglet `espace` du CRM : `espaceOuvrir(url)` charge `membre.html#…` dans `#esp-host` (cadre à côté de `#view`, jamais recréé par `render`). Tout lien `a[href^="membre.html#"]` du CRM est intercepté. Dans `membre.html`, `DANS_CRM` : « ↩ CRM » appelle `top.go('dash')` (avant : il chargeait un second CRM dans l'onglet). `#moi=<fiche>&r=recues` ouvre les recommandations reçues. `lancement.js` ne joue pas dans un cadre. Menu : Mon groupe → Mon espace membre (`mesFiches`).
 - Synthèse : `dashMesRecos()` = recommandations reçues par la personne connectée (statut envoyée, contacté, devis), clic → son espace sur les recos reçues. Banc `esp.mjs` 17/17.
 
+**🎨 Espace membre aux couleurs du CRM, annuaire par région, téléphones (v1.26.0, 17/11/2026)** :
+- `membre.html` lit `cap-theme` (même stockage que le CRM, Graphite par défaut) : `html.dark` + `th-<thème>`, jetons `--surf`/`--surf2` pour les fonds pâles, avatars `COUL_D` en sombre, `logo-proteine-sombre.png`. Changement de thème dans le CRM → l'espace membre se recharge (événement `storage`).
+- Annuaire : RPC `cap_annuaire_regions()` (club → zone dont les villes contiennent la ville du club, sinon la ville). `S.portee` region|national, `S.maRegion`, `annMatch` (chaque mot tapé commence un mot de la fiche), `annSuggestions`/`suggHTML` (métiers et activités avec nombre, puis membres ; ↑ ↓ Entrée Échap), tout le réseau groupé par région (la sienne d'abord), chips de régions. Banc `annu.mjs` 12/12.
+- Téléphones : `tel-commun.js` (`telAff`, `telE164`, copie de la règle ADM `fmtPhone`) chargé par le CRM et l'espace membre ; `fmtTelAff` = `telAff`. Affichage seulement, la base garde la saisie. ⚠ Tout nouvel affichage de numéro passe par `telAff`.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

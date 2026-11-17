@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="light">
 <script>/* thème posé avant l'affichage : clair par défaut, sombre ou automatique si choisi dans Paramètres */
-(function(){try{var t=localStorage.getItem("cap-theme")||"sombre";var d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
+(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";var d={sombre:1,verre:1,bordeaux:1,graphite:1}[t],h=document.documentElement;if(t!=="sombre"&&t!=="clair")h.classList.add("th-"+t);if(d){h.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CAP · Protéine Maroc — CRM Animation</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -776,7 +776,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .set-r .t{flex:1;min-width:0}.set-r b{display:block;font-weight:600}.set-r small{color:var(--muted);font-size:12px}
 .set-r .go{color:var(--muted);font-size:18px}
 @media (hover:hover){button.set-r:hover{background:var(--hover)}}
-.theme3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}
+.theme3{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;padding:12px}
 .theme3 button{border:1.5px solid var(--line);border-radius:14px;padding:10px 6px 9px;font-size:12.5px;font-weight:700;color:var(--muted);display:grid;gap:7px;justify-items:center;background:var(--card)}
 .theme3 button.on{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson));box-shadow:0 0 0 3px var(--crimson-tint)}
 .theme3 i{width:46px;height:30px;border-radius:7px;border:1px solid var(--line);display:block}
@@ -849,7 +849,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 /*v020*/
 /* ===== v0.20 — GRAND ÉCRAN (≥ 1500 px) : panneau d'aperçu permanent à droite, les fiches s'y ouvrent ===== */
 .rail{display:none}
-@media(min-width:1500px){
+@media(min-width:1800px){
   html.rail-on{--rail:clamp(380px,26vw,520px)}
   html.rail-on .app{margin:0 var(--rail) 0 216px;max-width:none}
   html.rail-on .fab{right:calc(var(--rail) + 34px)}
@@ -2008,6 +2008,60 @@ html.dark .nav::before{background:url(logo-proteine-sombre.png) left center/cont
 .np-it.sel{color:var(--crimson-txt,var(--crimson))}
 .np-it em{font:700 11px/18px Inter,sans-serif;font-style:normal;min-width:18px;padding:0 6px;border-radius:99px;background:var(--crimson);color:#fff;text-align:center;margin-left:auto}
 .np-it span{margin-left:auto;color:var(--muted);font-size:18px}.np-it em+span{margin-left:8px}
+/*v1.15 thèmes : menu encadré (tous thèmes) + Verre nuit, Verre clair, Verre bordeaux, Graphite (maquette validée par JB le 17/11).
+  Les cartes passent en verre dépoli : fond translucide + flou de ce qui est derrière (les halos du fond). */
+@media(min-width:900px){
+  .nav{top:12px;bottom:12px;left:12px;width:240px;height:auto;padding:22px 14px;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+  .app{margin-left:268px}
+  html.rail-on .app{margin:0 calc(var(--rail) + 24px) 0 268px}
+  .update-bar{left:268px}
+  .sheet-wrap.plein,html.rail-on .sheet-wrap.plein:not(.force){inset:12px 12px 12px 264px}
+  .sheet-wrap.plein .sheet,html.rail-on .sheet-wrap.plein:not(.force) .sheet{border:1px solid var(--line);border-radius:18px}
+  html.rail-on{--rail:clamp(360px,22vw,460px)}
+  html.rail-on #tb-role{display:none}
+  .topbar{flex-wrap:wrap;row-gap:8px}.tb-row2{flex-wrap:wrap;justify-content:flex-end;row-gap:8px}
+  html.rail-on .rail{top:12px;right:12px;bottom:12px;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+  html.rail-on .sheet-wrap:not(.force):not(.plein){inset:12px 12px 12px auto}
+  html.rail-on .sheet-wrap:not(.force):not(.plein) .sheet{border:1px solid var(--line);border-radius:18px;overflow:auto}
+  html.rail-on .fab{right:calc(var(--rail) + 58px)}
+  html.rail-on .update-bar{right:calc(var(--rail) + 24px)}
+}
+html.th-verre,html.th-verreclair,html.th-bordeaux{--verre:blur(22px) saturate(1.6)}
+html.th-verre{--paper:#101217;--card:rgba(255,255,255,.065);--side:rgba(255,255,255,.05);--line:rgba(255,255,255,.12);--soft:rgba(255,255,255,.08);--hover:rgba(255,255,255,.09);
+  --ink:#F3F1F4;--muted:#A19DA8;--topbar:rgba(16,18,23,.55);--land:rgba(255,255,255,.06);--sea:rgba(255,255,255,.03);
+  --crimson:#C8203F;--crimson-txt:#FF7A86;--crimson-tint:rgba(232,64,92,.16);--ok-tint:rgba(108,203,152,.15);--info-tint:rgba(125,165,210,.16);--warn-tint:rgba(125,165,210,.16);--gold-tint:rgba(125,165,210,.18);
+  --h1:rgba(176,18,46,.55);--h2:rgba(62,106,156,.5);--h3:rgba(194,67,107,.42);--trame:rgba(255,255,255,.06)}
+html.th-bordeaux{--paper:#170A10;--card:rgba(255,220,228,.065);--side:rgba(255,220,228,.05);--line:rgba(255,210,220,.14);--soft:rgba(255,220,228,.08);--hover:rgba(255,220,228,.09);
+  --ink:#FBEFF2;--muted:#B9A0A7;--topbar:rgba(23,10,16,.55);--land:rgba(255,220,228,.06);--sea:rgba(255,220,228,.03);
+  --crimson:#D42A4C;--crimson-txt:#FF8C9C;--crimson-tint:rgba(255,120,140,.15);--ok-tint:rgba(108,203,152,.14);--info:#E7B98C;--info-tint:rgba(231,185,140,.14);--warn:#E7B98C;--warn-tint:rgba(231,185,140,.14);--gold:#E7B98C;--gold-tint:rgba(231,185,140,.16);
+  --h1:rgba(176,18,46,.6);--h2:rgba(122,31,72,.6);--h3:rgba(201,102,62,.4);--trame:rgba(255,220,228,.05)}
+html.th-verreclair{--paper:#EEEAEA;--card:rgba(255,255,255,.62);--side:rgba(255,255,255,.55);--line:rgba(27,20,22,.09);--soft:rgba(255,255,255,.55);--hover:rgba(255,255,255,.75);
+  --topbar:rgba(238,234,234,.6);--land:rgba(255,255,255,.5);--sea:rgba(255,255,255,.3);--crimson-tint:rgba(176,18,46,.09);
+  --h1:rgba(240,138,156,.55);--h2:rgba(157,187,221,.6);--h3:rgba(246,194,168,.6);--trame:rgba(90,40,50,.06)}
+html.th-graphite{--paper:#1A1B1E;--card:#222327;--side:#16171A;--line:#2E3035;--soft:#26282C;--hover:#2A2C31;--ink:#F1F1F2;--muted:#9294A0;--topbar:rgba(26,27,30,.92);--land:#25272B;--sea:#1E2023;
+  --crimson:#C21835;--crimson-txt:#F0566A;--crimson-tint:rgba(240,86,106,.12)}
+html.th-graphite .nav button.on{box-shadow:inset 3px 0 0 var(--crimson)}
+/* fond : halos qui dérivent lentement + trame de points */
+html.th-verre body,html.th-verreclair body,html.th-bordeaux body{background:var(--paper)}
+html.th-verre body::before,html.th-verreclair body::before,html.th-bordeaux body::before{content:"";position:fixed;inset:-10%;z-index:-2;pointer-events:none;
+  background:radial-gradient(40% 45% at 8% 6%,var(--h1),transparent 70%),radial-gradient(38% 42% at 92% 30%,var(--h2),transparent 70%),radial-gradient(42% 40% at 50% 100%,var(--h3),transparent 70%)}
+html.th-verre body::after,html.th-verreclair body::after,html.th-bordeaux body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(var(--trame) 1px,transparent 1.2px);background-size:14px 14px}
+@media(prefers-reduced-motion:no-preference){html.th-verre body::before,html.th-verreclair body::before,html.th-bordeaux body::before{animation:halos 40s ease-in-out infinite alternate}}
+@keyframes halos{to{transform:translate(3%,2%) scale(1.05)}}
+/* verre dépoli sur les surfaces */
+html[class*="th-verre"] :is(.nav,.topbar,.sheet,.rail,.stat,.ck,.tile,.rank,.mtg,.dm-card,.dm-box,.mb-card,.lieu-card,.tbl,.km-reg,.tj-reg,.vr-tab,.vr-todo,.vr-plan,.funnel,.grp-tete,.grp-st,.grp-pipe,.grp-cr,.set-l,.day,.rl,.pred,.tuto-bulle,.celeb-c,.np-l,.tool,.cal,.emb-c,.rd-k,.ps-c),
+html.th-bordeaux :is(.nav,.topbar,.sheet,.rail,.stat,.ck,.tile,.rank,.mtg,.dm-card,.dm-box,.mb-card,.lieu-card,.tbl,.km-reg,.tj-reg,.vr-tab,.vr-todo,.vr-plan,.funnel,.grp-tete,.grp-st,.grp-pipe,.grp-cr,.set-l,.day,.rl,.pred,.tuto-bulle,.celeb-c,.np-l,.tool,.cal,.emb-c,.rd-k,.ps-c){
+  -webkit-backdrop-filter:var(--verre);backdrop-filter:var(--verre);border-color:var(--line)}
+html.th-verre .topbar,html.th-verreclair .topbar,html.th-bordeaux .topbar,html.th-graphite .topbar{background:var(--topbar)}
+html.th-verre :is(.stat,.ck,.mtg,.dm-card,.mb-card,.lieu-card,.nav),html.th-bordeaux :is(.stat,.ck,.mtg,.dm-card,.mb-card,.lieu-card,.nav){box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 30px -14px rgba(0,0,0,.6)}
+html.th-verreclair :is(.stat,.ck,.mtg,.dm-card,.mb-card,.lieu-card,.nav){box-shadow:inset 0 1px 0 #fff,0 10px 30px -16px rgba(80,30,40,.28)}
+html.th-verre .sheet,html.th-bordeaux .sheet{background:rgba(30,32,38,.82)}
+html.th-bordeaux .sheet{background:rgba(40,16,24,.84)}
+html.th-verreclair .sheet{background:rgba(250,248,248,.86)}
+html.th-verre .hello,html.th-bordeaux .hello{background:linear-gradient(120deg,rgba(200,32,63,.85),rgba(120,20,45,.72) 55%,rgba(60,80,120,.55))}
+html.th-bordeaux .hello{background:linear-gradient(120deg,rgba(212,42,76,.9),rgba(110,16,40,.75) 60%,rgba(200,120,70,.45))}
+html.th-verreclair .hello{background:linear-gradient(120deg,#B0122E,#8E0F27 55%,#5B7FA3)}
+
 </style>
 </head>
 <body>
@@ -2109,8 +2163,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.14.0";
+const APP_VERSION="1.15.0";
 const CHANGELOG=[
+  {v:"1.15.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Sept thèmes au choix dans Paramètres → Apparence : Graphite (par défaut), Verre nuit, Verre clair, Verre bordeaux, Anthracite, Clair, et Comme le téléphone. Les thèmes en verre ont un fond animé de halos de couleur et des cartes en verre dépoli."],
+    "Modifié":["Sur ordinateur, le menu de gauche est plus large (240 px) et encadré, détaché des bords. Le panneau d'aperçu de droite et les fiches qui s'y ouvrent sont encadrés de la même façon.","Le panneau d'aperçu de droite s'ouvre à partir de 1800 px de large (avant : 1500), pour laisser de la place au contenu. Avec ce panneau ouvert, la pastille du rôle disparaît de la barre du haut, qui reste sur une ligne."]}},
   {v:"1.14.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Lien d'inscription suivi : le lien d'une invitation du national passe par le CRM (i.html), qui compte chaque ouverture puis renvoie au formulaire du national. La fiche de la réunion affiche les ouvertures, le nombre de personnes, le taux d'inscription et qui a partagé le lien (chaque animateur, le QR code à part). Les aperçus WhatsApp ne comptent pas comme des ouvertures."],
     "Modifié":["Tous les liens partagés (invitation, adhésion, espace membre, accès au CRM) partent du même domaine, quel que soit l'écran : même lien et même aperçu dans WhatsApp. Les pages publiques ont un titre, un texte et le logo pour l'aperçu.","La fiche membre d'un animateur est reliée automatiquement à son compte du CRM, par la base de données (à la création de la fiche, à sa modification, ou quand le compte arrive après). La colonne « Espace membre » dit « Compte CRM à relier » ou « Son espace : fiche … » au lieu de « Pas encore d'accès »."],
@@ -3094,8 +3151,8 @@ function render(){const v=document.getElementById("view");
    (même #sheet, docké par la CSS, sans voile). Fermer la fiche rend l'aperçu.
    ============================================================ */
 function railMasque(){try{return localStorage.getItem("cap-rail")==="off"}catch(e){return false}}
-function railGrand(){return window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
-function isRail(){return !railMasque()&&window.matchMedia("(min-width:1500px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
+function railGrand(){return window.matchMedia("(min-width:1800px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
+function isRail(){return !railMasque()&&window.matchMedia("(min-width:1800px)").matches&&!!DB&&!document.getElementById("app").classList.contains("hidden")}
 function railSync(){document.documentElement.classList.toggle("rail-on",isRail());
   let t=document.getElementById("rail-tab");if(!t){t=document.createElement("button");t.id="rail-tab";t.type="button";t.className="rail-tab";t.title="Afficher le panneau d'aperçu";t.setAttribute("aria-label","Afficher le panneau d'aperçu");t.innerHTML="<span>‹</span>Aperçu";t.onclick=()=>railBasculer(true);document.body.appendChild(t)}
   t.hidden=!(railMasque()&&railGrand())}
@@ -7043,11 +7100,16 @@ function animsTable(list){
 }
 function fmtTelAff(t){return String(t).replace(/^\+212/,"0").replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
 /* ---------- Thème ---------- */
-function themeChoisi(){try{return localStorage.getItem("cap-theme")||"sombre"}catch(e){return"sombre"}}
-function appliquerTheme(){const t=themeChoisi(),d=t==="sombre"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark",d);const m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=d?"dark":"light"}
+/* v1.15.0 : sept réglages. Graphite par défaut (choix JB) ; « Comme le téléphone » = Graphite le soir, Verre clair le jour.
+   Les versions sombres posent aussi html.dark (toutes les règles du thème sombre s'appliquent), puis th-<nom> change les couleurs. */
+const THEMES=[["graphite","Graphite","#1A1B1E","#C21835",1],["verre","Verre nuit","#101217","#B0122E",1],["verreclair","Verre clair","#EEEAEA","#F08A9C",0],["bordeaux","Verre bordeaux","#170A10","#C9663E",1],["sombre","Anthracite","#26282C","#303237",1],["clair","Clair","#FAF6F4","#FFFFFF",0],["auto","Comme le téléphone","#EEEAEA","#101217",0]];
+function themeChoisi(){try{const t=localStorage.getItem("cap-theme");return THEMES.some(x=>x[0]===t)?t:"graphite"}catch(e){return"graphite"}}
+function themeResolu(){const t=themeChoisi();return t==="auto"?(matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair"):t}
+function appliquerTheme(){const t=themeResolu(),d=!!(THEMES.find(x=>x[0]===t)||[])[4],h=document.documentElement;
+  THEMES.forEach(x=>h.classList.remove("th-"+x[0]));if(t!=="sombre"&&t!=="clair")h.classList.add("th-"+t);
+  h.classList.toggle("dark",d);const m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=d?"dark":"light"}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(themeChoisi()==="auto")appliquerTheme()})}catch(e){}
-function choisirTheme(t){try{localStorage.setItem("cap-theme",t)}catch(e){}appliquerTheme();openParametres();toast(t==="clair"?"Mode clair":t==="sombre"?"Mode sombre":"Le thème suit le téléphone")}
+function choisirTheme(t){try{localStorage.setItem("cap-theme",t)}catch(e){}appliquerTheme();openParametres();const x=THEMES.find(y=>y[0]===t);toast(t==="auto"?"Le thème suit le téléphone":"Thème : "+(x?x[1]:t))}
 /* ---------- Paramètres : tous les réglages au même endroit ---------- */
 async function openParametres(){
   const role=SESSION.role,t=themeChoisi(),sa=role==="superadmin";
@@ -7059,7 +7121,7 @@ async function openParametres(){
     <h3>Paramètres</h3>
     <div class="set-who"><span class="av" style="background:${roleCouleur(role)}">${esc(initiales(SESSION.name))}</span><span><b>${esc(SESSION.name)}</b><small>${esc(ROLES[role]||role)} · ${esc(document.getElementById("tb-region").textContent)}</small></span></div>
     <div class="set-sec">Apparence</div>
-    <div class="set-l"><div class="theme3" role="group" aria-label="Thème">${th("clair","Clair","#FAF6F4","#FFFFFF")}${th("sombre","Sombre","#1A1214","#241A1D")}${th("auto","Comme le téléphone","#FAF6F4","#1A1214")}</div></div>
+    <div class="set-l"><div class="theme3" role="group" aria-label="Thème">${THEMES.map(x=>th(x[0],x[1],x[2],x[3])).join("")}</div></div>
     <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique des listes</b><small>Une région ou un groupe déplié se referme tout seul après ce délai sans y toucher.</small></div>
       <div class="repli-g" role="radiogroup" aria-label="Repli automatique">${REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${repliDelai()===n}" class="${repliDelai()===n?"on":""}" onclick="choisirRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
     <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique du menu</b><small>Les sous-menus se referment tout seuls après ce délai, tant que la souris n'est pas sur le menu. Un clic sur une rubrique ouverte la replie aussi.</small></div>

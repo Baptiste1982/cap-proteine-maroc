@@ -416,6 +416,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - 17/11 : Chrystel (connectée au CRM le 16/11) affichait « Pas encore d'accès » : sa fiche n'avait jamais été reliée. Corrigée à la main puis par la règle.
 - Bancs `clic.mjs` 20/20, `chrystel.mjs` 4/4, `natinv.mjs` 47/47 (recalé sur le lien suivi), `mbacc` 36/36, `nav` 35/35, `membres` 37/37, `acces` 21/21.
 
+**🎨 Thèmes et menu encadré (v1.15.0, 17/11/2026)** — maquette https://claude.ai/artifact/1Vm8D513dvfMHXYzNQkK42 ; JB : « Graphite mat par défaut, les autres au choix », « la sidebar encapsulée, plus large ». La proposition Majorelle a été refusée (« les couleurs, ça va pas du tout »).
+- `THEMES` (index.html, `[clé, libellé, couleur1, couleur2, sombre]`) : graphite (défaut), verre, verreclair, bordeaux, sombre (= anthracite d'avant), clair, auto (Graphite le soir, Verre clair le jour). `themeResolu()`, `appliquerTheme()` posent `th-<clé>` sur `<html>` (sauf sombre et clair) et `dark` pour les thèmes sombres : toutes les règles `html.dark` restent valables, `th-<clé>` ne change que les variables. Le script en tête du `<head>` refait le même calcul (pas de flash). Clé localStorage `cap-theme` inchangée.
+- Bloc CSS `/*v1.15 thèmes*/` (fin des styles) : variables par thème ; halos = `body::before` (3 dégradés radiaux, dérive lente), trame = `body::after` ; verre dépoli (`backdrop-filter`) sur une liste de surfaces (`.nav,.topbar,.sheet,.rail,.stat,.ck,…`). ⚠ Une nouvelle surface de carte dans un thème en verre : l'ajouter à cette liste, sinon elle reste transparente sans flou.
+- Ordinateur (≥ 900 px) : `.nav` encadrée (12 px des bords, 240 px de large, rayon 18 px), `.app` à 268 px. Grand écran : panneau `.rail` encadré, seuil passé de 1500 à **1800 px** (`railGrand`, `isRail`, media query), `--rail: clamp(360px,22vw,460px)`, `#tb-role` masqué quand le panneau est ouvert (la barre du haut tient sur une ligne). Fiches dans le panneau et plein écran encadrées aussi.
+- Bancs `themes.mjs` (7 thèmes, téléphone, Paramètres), `prop.mjs` (largeurs 1440 → 1920 : barre du haut sur une ligne, pas de défilement horizontal) ; `rail.mjs` 23/23 et `rail2.mjs` 17/17 recalés (panneau à 12 px du bord, 1900 px).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

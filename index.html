@@ -2119,6 +2119,11 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 .ldf-pt.on i{border-color:#3DAA74;background:#3DAA74;color:#fff}.ldf-pt.on b{color:var(--ink)}
 .ldf-pt.att i{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson))}.ldf-pt.att b{color:var(--crimson-txt,var(--crimson))}.ldf-pt.ko i{border-color:var(--muted);background:var(--line)}
 @media(max-width:899px){.ldf-r{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}.ldf-fr{grid-column:1/-1;order:3}}
+/*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
+@media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s}
+@media(hover:hover){html :hover>:is(.rail-date,.reu-d,.rl-date,.mtg-date){transform:rotate(-8deg) scale(1.06);box-shadow:3px 5px 10px -4px rgba(0,0,0,.45)}}
+@media(prefers-reduced-motion:reduce){html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:none}html :hover>:is(.rail-date,.reu-d,.rl-date,.mtg-date){transform:none}}
 /*v1.18 leads*/.ld{display:grid;gap:12px}.ld-tete{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.ld-tete h3{margin:0 0 4px}
 .ld-reu{display:grid;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.ld-reu label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.ld-warn{color:var(--gold)}
 .ld-chips{display:flex;gap:6px;flex-wrap:wrap}.ld-liste{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
@@ -2228,8 +2233,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.21.1";
+const APP_VERSION="1.22.0";
 const CHANGELOG=[
+  {v:"1.22.0",date:"17 novembre 2026",notes:{"Ajouté":["Vue régionale : la direction nationale choisit la région dans un menu (Rabat · Salé · Kénitra, Casablanca, Marrakech… chaque nouvelle région s'y ajoute d'elle-même).","L'animateur d'un groupe crée lui-même l'invitation du CRM national pour sa réunion, et envoie le lien d'inscription par WhatsApp.","Message d'invitation : une ligne avec le numéro de celui qui envoie ; le modèle gardé par le super admin sert à toute l'équipe, chacun avec son prénom et son numéro.","Pastilles de date : elles s'inclinent au survol."],"Corrigé":["Le formulaire de réunion ne propose que les groupes que l'on peut modifier."]}},
   {v:"1.21.1",date:"17 novembre 2026",notes:{"Ajouté":["Leads : tous les onglets du Google Sheet remontent (Rabat, Casablanca, Tanger, Dar B, Bouskoura…), avec un filtre par ville en tête de l'onglet Leads."]}},
   {v:"1.21.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads remontés automatiquement du Google Sheet toutes les 15 minutes : les nouveaux arrivent dans l'onglet Leads (« à contacter »), avec une notification sur le téléphone. Les leads déjà connus sont complétés (téléphone, LinkedIn, commentaire), jamais doublés."]}},
   {v:"1.20.0",date:"17 novembre 2026",notes:{"Amélioré":["Leads : « Tableau » serré par défaut (une ligne par lead, qui · quand dans chaque colonne, actions en petites icônes) et « Frise » d'étapes en option (contacté → invité → inscrit → venu). Présence notée d'un clic : Venu / Absent."]}},
@@ -2874,7 +2880,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region};
   if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
     if(prof.role!=="superadmin"){voirOublier()}
     else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
@@ -3129,7 +3135,14 @@ function enterApp(){
    Accueil régional = viewRegion() : cockpit puis planning mois par mois. Accueil national = Synthèse.
    ============================================================ */
 function vuePeutBasculer(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
-function vueRegion(){const z=SESSION&&SESSION.zoneId&&DB&&DB.zones.find(x=>x.id===SESSION.zoneId);
+/* v1.22 : la direction nationale (et les comptes « choix_region ») choisit la région affichée ; toute nouvelle zone apparaît d'office */
+function vueChoixRegion(){return !!SESSION&&(vuePeutBasculer()||SESSION.choixRegion)}
+function vueZonesChoix(){return (DB&&DB.zones||[]).filter(z=>z.villes&&z.villes.length).slice().sort((a,b)=>a.nom.localeCompare(b.nom))}
+function vueRegionChoisir(id){try{localStorage.setItem("cap-region",id)}catch(e){}window._grpId=null;
+  if(vuePeutBasculer()&&vueMode()!=="reg"){vueChoisir("reg");return}updateRegionLabel&&updateRegionLabel();render();toast("Vue régionale · "+vueRegion().nom)}
+function vueRegion(){let zc=null;if(vueChoixRegion()){let k=null;try{k=localStorage.getItem("cap-region")}catch(e){}zc=k&&DB&&DB.zones.find(x=>x.id===k&&x.villes&&x.villes.length)}
+  if(zc)return{nom:zc.nom,villes:zc.villes};
+  const z=SESSION&&SESSION.zoneId&&DB&&DB.zones.find(x=>x.id===SESSION.zoneId);
   return{nom:z&&z.villes&&z.villes.length?z.nom:"Rabat · Salé · Kénitra",villes:z&&z.villes&&z.villes.length?z.villes:REGION_RSK}}
 function vueMode(){if(!SESSION||SESSION.role==="visiteur")return"nat";if(!vuePeutBasculer())return"reg";
   let v=null;try{v=localStorage.getItem("cap-vue")}catch(e){}return v==="reg"?"reg":"nat"}
@@ -3143,6 +3156,9 @@ function vueAppliquer(){if(!SESSION)return;const m=vueMode();
   if(b){b.classList.toggle("hidden",!vuePeutBasculer());if(vuePeutBasculer()){const r=vueRegion().nom;
     const h=`<button role="tab" aria-selected="${m==="nat"}" aria-label="Vue nationale" title="Vue nationale" class="${m==="nat"?"on":""}" onclick="vueChoisir('nat')">🌍<span> National</span></button><button role="tab" aria-selected="${m==="reg"}" aria-label="Vue régionale · ${esc(r)}" title="Vue régionale · ${esc(r)}" class="${m==="reg"?"on":""}" onclick="vueChoisir('reg')">📍<span class="vb-long"> ${esc(r)}</span><span class="vb-court"> Ma région</span></button>`;
     if(b.dataset.h!==h){b.innerHTML=h;b.dataset.h=h}}}
+  let sr=document.getElementById("vue-region");const zs=vueZonesChoix(),voir=vueChoixRegion()&&(m==="reg"||!vuePeutBasculer())&&zs.length>1;
+  if(!sr&&b){sr=document.createElement("select");sr.id="vue-region";sr.className="vue-reg-sel";sr.setAttribute("aria-label","Région affichée");sr.onchange=()=>vueRegionChoisir(sr.value);b.after(sr)}
+  if(sr){sr.classList.toggle("hidden",!voir);if(voir){const nom=vueRegion().nom,o=zs.map(z=>`<option value="${z.id}" ${z.nom===nom?"selected":""}>📍 ${esc(z.nom)}</option>`).join("");if(sr.dataset.h!==o){sr.innerHTML=o;sr.dataset.h=o}}}
   const d=document.querySelector('.nav button[data-tab="dash"]');
   if(d){const t=[...d.childNodes].reverse().find(n=>n.nodeType===3);const lib=m==="reg"&&SESSION.role!=="visiteur"?"Ma région":"Synthèse";if(t&&t.textContent!==lib)t.textContent=lib}}
 function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueRegion();
@@ -5115,6 +5131,8 @@ Protéine réunit des chefs d'entreprise et des indépendants qui se recommanden
 La participation correspond au prix du repas, 250 dirhams, réglés sur place. L'inscription prend une minute :
 {lien}
 
+Une question, ou envie que je vous appelle avant ? Écrivez-moi ou appelez-moi au {tel}.
+
 Au plaisir de vous accueillir,
 {prenom}`,
   RL:`Bonjour,
@@ -5129,6 +5147,8 @@ C'est le moment de réserver votre métier dans le groupe (un seul professionnel
 La participation correspond au prix du repas, 250 dirhams, réglés sur place. L'inscription prend une minute :
 {lien}
 
+Une question, ou envie que je vous appelle avant ? Écrivez-moi ou appelez-moi au {tel}.
+
 Au plaisir de vous y retrouver,
 {prenom}`,
   autre:`Bonjour,
@@ -5141,17 +5161,19 @@ Je vous invite à la prochaine réunion du groupe {groupe} du Club d'Affaires Pr
 Inscription en une minute :
 {lien}
 
+Une question, ou envie que je vous appelle avant ? Écrivez-moi ou appelez-moi au {tel}.
+
 À très vite,
 {prenom}`};
 function invModeleCle(t){return "cap-invtpl-"+(INV_MODELES[t]?t:"autre")}
-function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}return INV_MODELES[t]||INV_MODELES.autre}
+function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}const g=(DB.reglages||{})[invModeleCle(t).replace("cap-","")];return g||INV_MODELES[t]||INV_MODELES.autre}
 function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
   const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
-    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0]};
+    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
 function natInvMessage(m){return invRemplir(invModele(m.format?"autre":m.type),m)}
 function natInvBloc(m){
-  const su=SESSION&&SESSION.role==="superadmin",n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
+  const su=SESSION&&(SESSION.role==="superadmin"||(!readOnly()&&canEditReunion(m))),n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
   if(!n){if(!su||!avenir)return"";
     return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national</div>
       <div class="nat-v">Crée l'invitation au national pour cette réunion : même texte et même programme que ta dernière ${esc((m.format?"réunion des membres":NAT_TYPE_REU[m.type])||"invitation")}, avec la date, l'heure et le lieu d'ici. Tu récupères le lien d'inscription à envoyer, et les inscrits arrivent au national.</div>
@@ -5194,6 +5216,12 @@ async function natInscrits(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)
 async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;
   if(!m.lieuId){toast("Choisis d'abord le lieu de la réunion","w");return}
   const t=btn.textContent;btn.disabled=true;btn.textContent="Envoi au national…";
+  if(SESSION.role!=="superadmin"){ // v1.22 : l'animateur passe par la base (réunion de son groupe seulement), réponse lue dans reunions.national
+    const avant=JSON.stringify(m.nat||null);const {error:e0}=await sb.rpc("cap_invitation_nationale",{p_reunion:id});
+    if(e0){btn.disabled=false;btn.textContent=t;toast(rlsMsg(e0),"e");return}
+    for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,2000));const {data:q}=await sb.from("reunions").select("national").eq("id",id).single();
+      if(q&&q.national&&JSON.stringify(q.national)!==avant){m.nat=q.national;btn.disabled=false;toast("Invitation créée au national (n° "+q.national.invitation_id+")","s");meetingDetail(m,canEditReunion(m));return}}
+    btn.disabled=false;btn.textContent=t;toast("Le national tarde à répondre : rouvre la réunion dans une minute","w");return}
   const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"invitation_reunion",reunion_id:id}});
   btn.disabled=false;btn.textContent=t;
   let msg=r&&r.error;if(error&&!msg){try{msg=(await error.context.json()).error}catch(e){msg=error.message}}
@@ -5213,9 +5241,13 @@ function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)retur
 function invTexte(){const t=document.getElementById("inv-txt");return t?t.value:""}
 function invEnvoyer(){window.open("https://wa.me/?text="+encodeURIComponent(invTexte()),"_blank","noopener")}
 async function invCopier(){const t=invTexte();try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
-function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{prenom}",m).split("|"),k=["jour","heure","lieu","adresse","groupe","lien","prenom"];
+function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{tel}|{prenom}",m).split("|"),k=["jour","heure","lieu","adresse","groupe","lien","tel","prenom"];
   k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
-  try{localStorage.setItem(invModeleCle(m.format?"autre":m.type),t)}catch(e){}toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
+  /* v1.22 : un numéro écrit à la main redevient {tel}, pour que chaque animateur signe avec le sien */
+  const tc=String(leadMonTel()).replace(/\D/g,"").slice(-9);if(tc.length===9)t=t.replace(/(\+?212|0)[\s.\-]?\d(?:[\s.\-]?\d){8}/g,x=>x.replace(/\D/g,"").slice(-9)===tc?"{tel}":x);
+  const cle=invModeleCle(m.format?"autre":m.type);try{localStorage.setItem(cle,t)}catch(e){}
+  if(SESSION&&SESSION.role==="superadmin"){DB.reglages=DB.reglages||{};DB.reglages[cle.replace("cap-","")]=t;sb.from("reglages").upsert({cle:cle.replace("cap-",""),valeur:t}).then(({error})=>error&&toast(rlsMsg(error),"e"));
+    toast("Modèle gardé pour toute l'équipe : chacun l'envoie avec son prénom et son numéro")}else toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
 function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.format?"autre":m.type))}catch(e){}natInvWa(id)}
 async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const u=natInvSuivi(m);try{await navigator.clipboard.writeText(u);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",u)}}
 /* v0.43.0 : choix de l'heure sans molettes. Créneaux d'un clic (les réunions sont le matin) + heure et minutes
@@ -5231,7 +5263,7 @@ function hcSet(id,v){const el=document.getElementById(id);if(!el)return;el.value
   el.dispatchEvent(new Event("change",{bubbles:true}));el.dispatchEvent(new Event("input",{bubbles:true}))}
 function meetingForm(id,presetClub){
   const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:presetClub||"",date:"",heure:(presetClub&&club(presetClub).heureHab)||HEURE_DEF,lieuId:"",animId:(presetClub?club(presetClub).animId:"")||"",statut:"planifiee",guests:[],format:presetClub&&club(presetClub).cycle?CYCLE[cyclePos(presetClub,"9999-12-31")]:null};
-  const scopedC=DB.clubs.filter(c=>SESSION.role==="superadmin"?true:scopedClubIds().includes(c.id));
+  const scopedC=DB.clubs.filter(c=>canEditClubId(c.id)||c.id===m.clubId); // v1.22 : seulement les groupes que l'on peut modifier
   const clubsOpt=scopedC.map(c=>`<option value="${c.id}" ${c.id===m.clubId?"selected":""}>${esc(c.nom)}</option>`).join("");
   const animOpt=DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===m.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
   const lieuOpt=`<option value="">À définir</option>`+DB.lieux.map(l=>`<option value="${l.id}" ${l.id===m.lieuId?"selected":""}>${esc(l.nom)} — ${esc(l.ville)}</option>`).join("");

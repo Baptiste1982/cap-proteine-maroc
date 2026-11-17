@@ -475,7 +475,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Espace membre = onglet `espace` du CRM : `espaceOuvrir(url)` charge `membre.html#…` dans `#esp-host` (cadre à côté de `#view`, jamais recréé par `render`). Tout lien `a[href^="membre.html#"]` du CRM est intercepté. Dans `membre.html`, `DANS_CRM` : « ↩ CRM » appelle `top.go('dash')` (avant : il chargeait un second CRM dans l'onglet). `#moi=<fiche>&r=recues` ouvre les recommandations reçues. `lancement.js` ne joue pas dans un cadre. Menu : Mon groupe → Mon espace membre (`mesFiches`).
 - Synthèse : `dashMesRecos()` = recommandations reçues par la personne connectée (statut envoyée, contacté, devis), clic → son espace sur les recos reçues. Banc `esp.mjs` 17/17.
 
-**🧹 Correctifs d'affichage après audit (v1.25.1, 17/11/2026 — sur la branche `claude/sharp-bardeen-oghj1x`, PAS en prod : attend le GO de JB)** :
+**🎨 Espace membre aux couleurs du CRM, annuaire par région, téléphones (v1.26.0, 17/11/2026)** :
+- `membre.html` lit `cap-theme` (même stockage que le CRM, Graphite par défaut) : `html.dark` + `th-<thème>`, jetons `--surf`/`--surf2` pour les fonds pâles, avatars `COUL_D` en sombre, `logo-proteine-sombre.png`. Changement de thème dans le CRM → l'espace membre se recharge (événement `storage`).
+- Annuaire : RPC `cap_annuaire_regions()` (club → zone dont les villes contiennent la ville du club, sinon la ville). `S.portee` region|national, `S.maRegion`, `annMatch` (chaque mot tapé commence un mot de la fiche), `annSuggestions`/`suggHTML` (métiers et activités avec nombre, puis membres ; ↑ ↓ Entrée Échap), tout le réseau groupé par région (la sienne d'abord), chips de régions. Banc `annu.mjs` 12/12.
+- Téléphones : `tel-commun.js` (`telAff`, `telE164`, copie de la règle ADM `fmtPhone`) chargé par le CRM et l'espace membre ; `fmtTelAff` = `telAff`. Affichage seulement, la base garde la saisie. ⚠ Tout nouvel affichage de numéro passe par `telAff`.
+
+**🧹 Correctifs d'affichage après audit (v1.26.1, 17/11/2026, GO de JB)** :
 - Téléphone : `.vue-reg-sel:not(.hidden)~.tb-clock{display:none}` sous 600 px (avec bascule + choix de région, `#set-btn` sortait de l'écran). Liens `.fil-c` et `.rl-links` plus hauts sous 900 px.
 - Libellés en vue régionale : eyebrow de `viewAgenda` et sous-titre de `viewMembres` = `vueRegion().nom`.
 - Boutons alignés sur le menu : `dashOutils` (Zones, Lancements = `vuePeutBasculer()`), Classeur et Export saisie = `navDir()`, « + » des Clubs masqué sans `canManageStructure()`.

@@ -2261,6 +2261,7 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
 <div id="confetti" class="confetti"></div>
 
 <script src="lancement.js"></script>
+<script src="tel-commun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
@@ -2282,9 +2283,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.25.1";
+const APP_VERSION="1.26.1";
 const CHANGELOG=[
-  {v:"1.25.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
+  {v:"1.26.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
+  {v:"1.26.0",date:"17 novembre 2026",notes:{"Ajouté":["Espace membre aux couleurs du CRM : il suit le thème choisi dans le CRM (Graphite par défaut), logo clair en thème sombre.","Annuaire du réseau dans l'espace membre : « Ma région » ou « Tout le réseau » (classé par région), recherche dès les premières lettres sur le nom, le prénom, le métier ou l'activité, avec des propositions (métiers et membres) à choisir au clavier ou au doigt."],"Amélioré":["Téléphones affichés partout de la même façon : +212 6 61 23 45 67, quelle que soit la saisie ; numéros étrangers sur le même modèle (+33 6 57 76 26 40). Les numéros enregistrés ne changent pas."]}},
   {v:"1.25.0",date:"17 novembre 2026",notes:{"Ajouté":["Points sur activité (Équipe → Points sur activité) : le directeur de région ouvre une plage (ex. mardi 9h-12h) découpée en créneaux de 30 ou 45 min ; les animateurs de sa région réservent le leur (en ligne par Zoom par défaut, sur place ou au téléphone) ; le lien Zoom se pose quand on veut (🔗), sur un créneau ou sur tous ; le directeur est notifié à chaque réservation ou annulation et voit le nom de chacun.","Menu burger du téléphone en rubriques colorées qui se déplient, comme sur l'ordinateur.","L'espace membre devient une page du CRM (Mon groupe → Mon espace membre) : il s'ouvre dans la zone principale, menu du CRM à gauche, plus d'onglet ni de second CRM. « ↩ CRM » ramène à la Synthèse.","Synthèse : bandeau « recommandations reçues à traiter » pour la personne connectée qui est aussi membre ; un clic ouvre directement ses recommandations reçues.","Cloisonnement : l'envoi au national, les leads, le classeur des PDF et les archives sont réservés à la direction ; les animateurs gardent leur groupe, l'agenda, les demandes et l'équipe."]}},
   {v:"1.24.0",date:"17 novembre 2026",notes:{"Ajouté":["Téléphone : menu burger en haut à gauche ; il ouvre un tiroir par-dessus l'écran avec toutes les rubriques et leurs sous-menus (fermeture par la croix, en touchant à côté ou en le glissant vers la gauche)."],"Corrigé":["Téléphone : la page ne glisse plus de droite à gauche."]}},
   {v:"1.23.0",date:"17 novembre 2026",notes:{"Ajouté":["« ✋ Je viens » dans chaque réunion à venir du réseau, quelle que soit la ville : on s'inscrit soi-même, on apparaît parmi les invités, et « Je ne viens plus » retire l'inscription."],"Corrigé":["Documents du réseau : « ↩ CRM » revient à l'onglet du CRM déjà ouvert, sans relancer l'appli ni l'animation d'ouverture."]}},
@@ -3407,7 +3409,7 @@ function vModes(modes,cur,fn){return `<div class="vmode" role="tablist" aria-lab
 function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
   return `<tr style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}</span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
-    <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(tel)}</a>`:"—"}</td><td class="mbl-e" onclick="event.stopPropagation()">${mbEspCell(m)}</td></tr>`}
+    <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(telAff(tel))}</a>`:"—"}</td><td class="mbl-e" onclick="event.stopPropagation()">${mbEspCell(m)}</td></tr>`}
 function mbGroupes(l,cle,titre){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});let i=0;
   return Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr")).map(k=>`<section class="mbg"><div class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></div><div class="mb-grid">${g[k].map(m=>mbCarte(m,i++)).join("")}</div></section>`).join("")}
 function mbResultats(){
@@ -4353,7 +4355,7 @@ function animTile(a){
     <div class="cc-stats">
       <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>${clubs.length} club${clubs.length>1?"s":""}</span>
       <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${nbM} membre${nbM>1?"s":""}</span>
-      ${a.tel?`<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(a.tel)}</span>`:""}
+      ${a.tel?`<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(telAff(a.tel))}</span>`:""}
     </div>
     <div class="cc-badges">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun club</span>`}</div></div>`;
 }
@@ -5141,11 +5143,11 @@ function meetingDetail(m,editable){
   const guests=m.guests||[];
   const gvl=guestVue()==="liste";
   const guestsHtml=guests.length&&gvl?`<div class="gl">${guests.map((g,i)=>{const t=String(g.tel||"").replace(/[^\d+]/g,"");return `<div class="gl-r" title="${esc([g.entreprise,g.metier,g.par?"invité par "+g.par:"",g.note].filter(Boolean).join(" · "))}">
-      <span class="gl-n"><b>${esc(g.nom)}</b><small>${t?`<a class="gl-t" href="tel:${esc(t)}">${esc(g.tel)}</a>${g.entreprise||g.metier?" · ":""}`:""}${esc(g.entreprise||g.metier||"")}</small></span>
+      <span class="gl-n"><b>${esc(g.nom)}</b><small>${t?`<a class="gl-t" href="tel:${esc(t)}">${esc(telAff(g.tel))}</a>${g.entreprise||g.metier?" · ":""}`:""}${esc(g.entreprise||g.metier||"")}</small></span>
       <select class="gstat gl-s" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select></div>`}).join("")}</div>`
   :guests.length?guests.map((g,i)=>`
     <div class="guest"><div class="gav">${initiales(g.nom)}</div>
-      <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel||"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
+      <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel?telAff(g.tel):"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
       ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson-txt,var(--crimson));font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
       ${editable?invRelanceBtn(m,g,i):""}
@@ -5570,7 +5572,7 @@ function lieuDetail(l){
     ${ficheKpis([[l.capacite||"—","places"],[nbUp,"réunion"+(nbUp>1?"s":"")+" à venir"],[l.lat?"📍":"—",l.lat?"géolocalisé":"sans GPS",l.lat?"":"warn"]])}
     ${l.adresse?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="tx"><div class="k">Adresse</div><div class="v">${esc(l.adresse)}</div></div></div>`:""}
     ${lieuItineraire(l)}
-    ${l.contactNom||l.contactTel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Contact sur place</div><div class="v">${esc(l.contactNom||"—")}${l.contactTel?" · "+esc(l.contactTel):""}</div></div>${l.contactTel?`<a href="tel:${esc(l.contactTel)}">Appeler</a>`:""}</div>`:""}
+    ${l.contactNom||l.contactTel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Contact sur place</div><div class="v">${esc(l.contactNom||"—")}${l.contactTel?" · "+esc(telAff(l.contactTel)):""}</div></div>${l.contactTel?`<a href="tel:${esc(l.contactTel)}">Appeler</a>`:""}</div>`:""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="tx"><div class="k">Réunions à venir</div><div class="v">${nbUp}</div></div></div>
     ${l.notes?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="tx"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(l.notes)}</div></div></div>`:""}
     ${mapUrl?`<iframe class="map-embed" src="${mapUrl}" loading="lazy"></iframe>`:`<p style="color:var(--muted);font-size:12.5px;text-align:center;padding:10px 0">Ajoute des coordonnées GPS pour afficher la carte.</p>`}
@@ -5721,7 +5723,7 @@ function mbAdhesion(m){return (DB.adhesions||[]).find(a=>a.membre_id===m.id)}
 function mbInfos(m){if(m.infos&&Object.keys(m.infos).length)return m.infos;const a=mbAdhesion(m);return a?a.data||{}:{}}
 function mbInfosHTML(d){
   d={...d};if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
-  return ADH_CHAMPS.filter(([t])=>t==="Entreprise"||t==="Membre").map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(d[k])}</div></div>${k==="m_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k==="m_email"?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
+  return ADH_CHAMPS.filter(([t])=>t==="Entreprise"||t==="Membre").map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(/tel$/.test(k)?telAff(d[k]):d[k])}</div></div>${k==="m_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k==="m_email"?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
     return r?`<div class="mb-sub">${esc(t)}</div>${r}`:""}).join("");
 }
 function mbDossierHTML(m,canEd){
@@ -5833,7 +5835,7 @@ async function mbCodeAcces(id){
   if(error||!r||r.error){let msg=r&&r.error;if(!msg&&error&&error.context)try{msg=(await error.context.json()).error}catch(e){}box.innerHTML=`<p class="fh-note" style="color:var(--crimson-txt,var(--crimson))">${esc(msg||(error&&error.message)||"Erreur")}</p>`;return}
   m.inscrit=true;
   const prenom=String(m.nom).split(/\s+/)[0];
-  const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${r.telephone.replace(/^212/,"0")}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».`;
+  const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${telAff(r.telephone)}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».`;
   box.innerHTML=`<div class="mb-code"><span>Code d'accès de ${esc(prenom)}</span><b>${esc(r.code)}</b><small>À transmettre au membre. Il ne s'affichera plus : en cas d'oubli, crée un nouveau code.</small>
     <div class="mb-code-act"><a class="btn mini" href="https://wa.me/${r.telephone}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="navigator.clipboard&&navigator.clipboard.writeText(${esc(JSON.stringify(msg))}).then(()=>toast('Message copié'))">Copier le message</button></div></div>`;
   const etat=box.parentElement&&box.parentElement.querySelector(".mb-esp");if(etat&&!m.vuLe){etat.className="mb-esp";etat.textContent="Code créé, jamais connecté"}
@@ -5983,7 +5985,7 @@ function openAnim(id){
   if(readOnly()&&editing){
     document.getElementById("sheet-content").innerHTML=`
       ${animHead(a,clubs)}
-      ${a.tel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="tx"><div class="k">Téléphone</div><div class="v">${esc(a.tel)}</div></div><a href="tel:${esc(a.tel)}">Appeler</a></div>`:""}
+      ${a.tel?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="tx"><div class="k">Téléphone</div><div class="v">${esc(telAff(a.tel))}</div></div><a href="tel:${esc(a.tel)}">Appeler</a></div>`:""}
       ${a.email?`<div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div><div class="tx"><div class="k">Email</div><div class="v">${esc(a.email)}</div></div></div>`:""}
       ${animClubs(clubs)}
       <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
@@ -6130,7 +6132,7 @@ function adhDetail(id){
   d.reg_mode={cheque:"Chèque",virement:"Virement bancaire"}[d.reg_mode]||d.reg_mode;
   if(d.reg_fois)d.reg_fois="En "+d.reg_fois+" fois";
   if(/^\d{4}-\d{2}-\d{2}$/.test(d.m_naissance||""))d.m_naissance=d.m_naissance.split("-").reverse().join("/");
-  const blocs=ADH_CHAMPS.map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(d[k])}</div></div>${k==="m_tel"||k==="s_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k.endsWith("email")?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
+  const blocs=ADH_CHAMPS.map(([t,ch])=>{const r=ch.filter(([k])=>d[k]).map(([k,l])=>`<div class="drow"><div class="tx"><div class="k">${esc(l)}</div><div class="v" style="font-weight:500">${esc(/tel$/.test(k)?telAff(d[k]):d[k])}</div></div>${k==="m_tel"||k==="s_tel"||k==="ent_tel"?`<a href="tel:${esc(String(d[k]).replace(/\s/g,""))}">Appeler</a>`:k.endsWith("email")?`<a href="mailto:${esc(d[k])}">Écrire</a>`:""}</div>`).join("");
     return r?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson-txt,var(--crimson));margin:14px 0 4px">${esc(t)}</div>${r}`:""}).join("");
   const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);
   const clubOpts=DB.clubs.slice().sort((x,y)=>x.nom.localeCompare(y.nom)).map(c=>`<option value="${c.id}" ${c.id===a.ref?"selected":""}>${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
@@ -6143,7 +6145,7 @@ function adhDetail(id){
     ${a.pdf_path?`<button class="btn" onclick="adhPdf('${a.id}')">📄 Ouvrir le formulaire PDF</button>`:`<p style="color:var(--muted);font-size:13px">Pas de PDF joint.</p>`}
     <div class="drow" style="margin-top:10px"><div class="tx"><div class="k">CRM national Protéine</div><div class="v">${a.saisie_proteine_le?"Saisie faite le "+adhDate(a.saisie_proteine_le):"Pas encore saisie"}</div></div>${peut?`<a href="#" onclick="adhSaisie('${a.id}',${!a.saisie_proteine_le});return false">${a.saisie_proteine_le?"Annuler":"Marquer saisie"}</a>`:""}</div>
     ${SESSION.role==="superadmin"&&a.statut!=="rejetee"?adhNationalBloc(a):""}
-    ${mb?mbEspaceHTML(mb,mbInfos(mb),peut):a.statut!=="rejetee"?`${secHead("Espace membre")}<p class="fh-note">L'accès à l'espace membre (annuaire et messages) s'ouvre dès l'intégration dans un club, avec le mobile de cette demande${a.data.m_tel?" ("+esc(a.data.m_tel)+")":""}.</p>`:""}
+    ${mb?mbEspaceHTML(mb,mbInfos(mb),peut):a.statut!=="rejetee"?`${secHead("Espace membre")}<p class="fh-note">L'accès à l'espace membre (annuaire et messages) s'ouvre dès l'intégration dans un club, avec le mobile de cette demande${a.data.m_tel?" ("+esc(telAff(a.data.m_tel))+")":""}.</p>`:""}
     ${blocs}
     ${a.statut==="rejetee"?`<div class="adh-arch"><b>🗄 Candidature archivée${a.archivee_le?" le "+esc(adhDate(a.archivee_le)):""}</b><span>${a.archive_motif?"Motif : "+esc(a.archive_motif):"Aucun motif indiqué"}</span></div>`:""}
     ${peut&&a.statut!=="integree"&&a.statut!=="rejetee"?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson-txt,var(--crimson));margin:18px 0 8px">Intégrer comme membre</div>
@@ -7441,7 +7443,7 @@ function animsTable(list){
       <td>${cs.length?`<div class="chipz">${cs.map(c=>`<span>${esc(c.nom.replace(/^CAP\s+/,""))}</span>`).join("")}</div>`:`<span class="mut">aucun club</span>`}</td>
       <td class="n">${nbM}</td><td class="n ${nbUp?"":"red"}">${nbUp}</td><td class="mut">${a.tel?esc(fmtTelAff(a.tel)):"—"}</td>${accVisible()?`<td onclick="event.stopPropagation()">${accCellule(a)}</td>`:""}</tr>`}).join("")}</tbody></table></div>`;
 }
-function fmtTelAff(t){return String(t).replace(/^\+212/,"0").replace(/(\d{2})(?=\d)/g,"$1 ").trim()}
+function fmtTelAff(t){return telAff(t)}
 /* ---------- Thème ---------- */
 /* v1.15.0 : sept réglages. Graphite par défaut (choix JB) ; « Comme le téléphone » = Graphite le soir, Verre clair le jour.
    Les versions sombres posent aussi html.dark (toutes les règles du thème sombre s'appliquent), puis th-<nom> change les couleurs. */

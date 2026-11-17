@@ -387,6 +387,7 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - CRM : bouton « 📚 Documents » dans les outils de la Synthèse et dans Paramètres.
 - Didacticiel vidéo de l'espace membre (4 min 43, 1080p, sans son) : enregistré par Playwright, en mode démonstration, avec un cadre et des légendes ; script et cadre dans le scratchpad (`tools/didac.mjs`, `tools/_didac.html`, à copier à la racine du dépôt pour le rejouer). Non versionnée (16 Mo).
 - Bancs `docs.mjs` 62/62, `mbdocs.mjs` OK.
+- v1.10.1 : accueil de Rita. Migration `20261117270000_documents_accueil.sql` (appliquée) : `profiles.docs_accueil_vu_le`, RPC `cap_docs_profil()` (role, nom, gere, `gere_seul` = gère les documents sans être direction, vu) et `cap_docs_accueil_vu()`. documents.html : `accueil()` à la première connexion si `gere_seul` et pas vu (ou `?accueil`), « Me montrer » = `#depot.phare` + bulle. CRM : `docsAccueilCRM()` appelée au démarrage à la place de `tutoAuDemarrage` (la visite guidée ne se lance que si la fenêtre ne s'est pas ouverte ; attend le changement de mot de passe forcé via `_docsEnAttente`). Section « Vidéos de prise en main » (`VID_CAT`, `carteVideo`), catégorie posée d'office au dépôt d'une vidéo. Bancs `docs.mjs` 76/76, `ritacrm.mjs` 6/6, `tuto.mjs` 28/28.
 
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.

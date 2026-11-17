@@ -348,6 +348,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Bilan : bandeau du groupe, `compte_rendu.bilan` = {recos, montant, notes} ; « Noter une reco en détail » revient au bilan (`window._bilRetour`).
 - Bancs `bni.mjs` 20/20, `v150.mjs` 16/16, `grp.mjs` 40/40 (recalé) + anciens verts.
 
+**🔁 Cycle des réunions (v1.6.0, 17/11/2026)** — JB : « business, puis intervenant extérieur (conférence), puis visite d'entreprise, et on revient sur une réunion business ; à partir de la première réunion business, tout se cale sur au moins 6 mois ».
+- Migrations `20261117200000_reunions_cycle_formats.sql` (`reunions.format` business|conference|visite, `reunions.theme`, `clubs.cycle`) et `20261117201000_groupe_vue_format.sql` (`cap_groupe_vue` → `prochaine.format/theme`), appliquées. Pas de DROP : `type` reste SI/RL (CHECK en base, lu par le national) ; une réunion du cycle est enregistrée `type='SI'` + `format`.
+- `FORMATS`, `FORMAT_ICO`, `CYCLE` (business, conference, visite, business), `cyclePos(club, date)` = nb de réunions du cycle non annulées avant la date, modulo 4 ; `typeLib(m)` / `typeCourt(m)` remplacent `TYPES[m.type]` à l'affichage. Planifier en série : type « CY », `psFormats` (une date retirée ne consomme pas de place dans le cycle), 12 mois possibles, 6 par défaut si un groupe est en cycle. Formulaire réunion : format + thème. Filtre agenda « CY ».
+- ⏳ `national-suivi` choisit encore le modèle d'invitation par `type` : une réunion du cycle part en « Réunion d'information » (7). Correctif prêt en une ligne (`r.format ? 3 : …` + `format` dans le select) mais pas redéployé (30 Ko, à faire en journée). Le message d'invitation utilise déjà le modèle « autre ».
+- Banc `cycle.mjs` 24/24 ; `ps`, `cal`, `v09`, `grp` verts.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

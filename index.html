@@ -1498,7 +1498,7 @@ html.dark .vb-or{background:#223042;--enc:#2B3A4B}html.dark .vb-or .vb-n{color:#
 .ps-f select,.ps-f input{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:7px 8px;font:inherit;font-size:12.5px;background:var(--card);color:var(--ink)}
 .ps-d{display:flex;flex-wrap:wrap;gap:5px}
 .ps-j{border:1px solid color-mix(in srgb,var(--vc) 40%,var(--line));background:color-mix(in srgb,var(--vc) 8%,var(--card));color:var(--ink);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;transition:transform .2s,opacity .2s}
-.ps-j:hover{transform:translateY(-2px)}.ps-j.x{opacity:.45;text-decoration:line-through;background:none}
+.ps-j:hover{transform:translateY(-2px)}.ps-j.f-conference{border-style:dashed}.ps-j.f-visite{border-style:dotted;border-width:2px}.ps-cy{margin:0 0 10px}.rl-type.fmt{background:color-mix(in srgb,var(--gold) 16%,transparent);color:var(--ink)}.fmt-row .ic{font-size:16px}.ps-j.x{opacity:.45;text-decoration:line-through;background:none}
 .ps-vide{font-size:12px;color:var(--muted)}
 .ps-go{position:sticky;bottom:0;background:var(--card);padding-top:10px;margin-top:12px}
 .ps-appel{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:16px;border:1.5px dashed var(--crimson);border-radius:16px;background:color-mix(in srgb,var(--crimson) 4%,var(--card))}
@@ -2033,12 +2033,24 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
    ============================================================ */
 const ROLES={superadmin:"Super admin",directeur_national:"Directeur national",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
+/* v1.6.0 : cycle des réunions d'un groupe en activité. La 1re réunion de la série est une réunion business, puis
+   conférence (intervenant extérieur), visite d'entreprise, business, et on recommence. Le type (SI/RL) reste, lu par le national. */
+const FORMATS={business:"Réunion business",conference:"Conférence",visite:"Visite d'entreprise"};
+const FORMAT_ICO={business:"🤝",conference:"🎤",visite:"🏭"};
+const FORMAT_THEME={conference:"Intervenant et sujet",visite:"Entreprise visitée"};
+const CYCLE=["business","conference","visite","business"];
+function typeCourt(m){return m&&m.format?FORMAT_ICO[m.format]+" "+({business:"Business",conference:"Conférence",visite:"Visite"})[m.format]:(m&&m.type)||""}
+function typeLib(m){return m&&m.format?FORMATS[m.format]:(TYPES[m&&m.type]||(m&&m.type)||"")}
+/* Position dans le cycle : nombre de réunions du cycle (non annulées) avant la date donnée, modulo 4. */
+function cyclePos(clubId,avant){return DB.reunions.filter(r=>r.clubId===clubId&&r.format&&r.statut!=="annulee"&&r.date<avant).length%CYCLE.length}
 const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.5.0";
+const APP_VERSION="1.6.0";
 const CHANGELOG=[
+  {v:"1.6.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Cycle des réunions d'un groupe en activité : 🤝 réunion business → 🎤 conférence (intervenant extérieur) → 🏭 visite d'entreprise → 🤝 business, puis on recommence. Dans « Planifier en série », choisis « Cycle » : la première réunion est une réunion business et toutes les suivantes se calent seules, sur 6 mois par défaut (jusqu'à 12). Retirer une date décale le cycle sur la suivante, et une nouvelle série reprend là où le groupe en était.","Chaque réunion porte son format (business, conférence, visite) avec l'intervenant et le sujet, ou l'entreprise visitée. Il s'affiche dans la fiche, l'agenda, l'espace du groupe et l'espace membre. Nouveau filtre « Cycle des groupes » dans l'agenda."]}},
   {v:"1.5.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Recommandations à la façon du BNI. Celui qui donne la reco l'a à son actif (CA transmis). Celui qui la reçoit est prévenu, la fait avancer (contact pris, devis, signée, sans suite ou annulée avec la raison) et saisit lui-même le montant signé, qu'il peut corriger (son CA reçu).","La fiche de la reco s'enrichit pour aider celui qui la reçoit : prénom et nom, mobile et/ou e-mail (au moins un des deux), entreprise, fonction, ville, besoin, chaleur de 1 (simple piste) à 5 (prêt à signer), et s'il sait qu'on va l'appeler. Boutons Appeler, WhatsApp et E-mail.","« 🪪 Mon espace membre » : un animateur ou un directeur qui est aussi membre ouvre son espace membre en pleine page depuis le CRM (en-tête du groupe et sa fiche membre), sans code d'accès, pour donner ses recos et suivre ses chiffres.","Bilan de réunion : le groupe est rappelé en tête, et deux nouveaux blocs : les recommandations passées pendant la réunion (nombre et montant, ou noter une reco en détail sans quitter le bilan) et des notes particulières."],
     "Modifié":["Recommandations du CRM rangées par groupe : une étiquette par groupe (nom, nombre de recos, CA signé) qui se déplie sur le détail. Le client final n'apparaît plus dans le CRM : on voit qui a recommandé qui, l'étape, le montant et la note de suivi. Le super admin peut mettre à jour une reco dans les deux sens en cliquant dessus."]}},
@@ -2513,10 +2525,10 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[]}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
 const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi";
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
@@ -2966,7 +2978,7 @@ function railBasculer(on){try{on?localStorage.removeItem("cap-rail"):localStorag
 function railRang(t,rows,vide){return `<div class="sec-h"><span>${t}${rows.length?` <em>${rows.length}</em>`:""}</span></div><div class="rank">${rows.length?rows.join(""):`<div class="rail-vide">${vide}</div>`}</div>`}
 function railReunions(ids,n,filtre){
   const l=DB.reunions.filter(r=>ids.has(r.clubId)&&!isPast(r.date)&&r.statut!=="annulee"&&(!filtre||filtre(r))).sort((a,b)=>a.date.localeCompare(b.date)||(a.heure||"").localeCompare(b.heure||"")).slice(0,n);
-  return l.map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openMeeting('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||r.type||"")}${r.heure?" · "+esc(r.heure):""} · ${esc(lieuNom(r.lieuId))}</small></div><span class="st ${r.statut}">${STATUTS[r.statut]||""}</span></div>`});
+  return l.map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openMeeting('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(typeLib(r))}${r.heure?" · "+esc(r.heure):""} · ${esc(lieuNom(r.lieuId))}</small></div><span class="st ${r.statut}">${STATUTS[r.statut]||""}</span></div>`});
 }
 function railCarte(){
   const svg=carteSvg({calme:true,hmax:300});if(!svg)return"";
@@ -2994,13 +3006,13 @@ function railHTML(){
     return head("Cette semaine","Touche une réunion pour ouvrir sa fiche ici.")
       +railRang("Dans les 7 jours",railReunions(ids,12,r=>r.date<=iso),"Aucune réunion dans les 7 jours.")
       +(railReunions(ids,1,r=>r.date<=iso).length?"":railRang("Ensuite",railReunions(ids,5),"Aucune réunion à venir."))
-      +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · bilan à saisir</small></div></div>`}),""):"")
+      +(reunionsSansBilan().length?railRang("Bilans à faire",reunionsSansBilan().filter(r=>ids.has(r.clubId)).slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openBilan('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(typeLib(r))} · bilan à saisir</small></div></div>`}),""):"")
       +railRang("Lieu à trouver",railReunions(ids,8,r=>!r.lieuId),"Toutes les réunions à venir ont un lieu.");
   }
   if(tab==="reunions"){
     const g=grpClub(),gid=new Set(g?[g.id]:[]),cr=reuACompteRendu().filter(r=>gid.has(r.clubId)),iso=isoJour(new Date(TODAY.getTime()+7*864e5));
     return head(g?g.nom.replace(/^CAP\s+/,""):"Mon groupe","Les prochaines réunions et les comptes rendus du groupe affiché.")+railRang("Prochaines réunions",railReunions(gid,6),"Aucune réunion à venir.")
-      +railRang("Comptes rendus à écrire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(TYPES[r.type]||"")} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
+      +railRang("Comptes rendus à écrire",cr.slice(0,8).map(r=>{const d=dObj(r.date);return `<div class="rank-row link" onclick="openCR('${r.id}')"><div class="rail-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></div><div class="rn">${esc((club(r.clubId).nom||"").replace(/^CAP\s+/,""))}<small>${esc(typeLib(r))} · à écrire</small></div></div>`}),"✓ Tous les comptes rendus sont écrits.");
   }
   if(tab==="membres"){
     const l=DB.membres.filter(m=>ids.has(m.clubId)).slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,8);
@@ -3194,7 +3206,7 @@ function reuCarte(r,i){
   const c=club(r.clubId),d=dObj(r.date),ed=canEditReunion(r),passe=isPast(r.date);
   return `<div class="reu-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,12)}">
     <button class="reu-d" onclick="openMeeting('${r.id}')" aria-label="Ouvrir la réunion"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small><em>${JOURS[d.getDay()]}</em></button>
-    <div class="reu-t"><b>${esc((c.nom||"").replace(/^CAP\s+/,""))} <span class="rl-type ${r.type==="RL"?"rl":""}">${r.type}</span></b>
+    <div class="reu-t"><b>${esc((c.nom||"").replace(/^CAP\s+/,""))} <span class="rl-type ${r.type==="RL"?"rl":""}${r.format?" fmt":""}">${typeCourt(r)}</span></b>
       <small>${r.heure?esc(r.heure)+" · ":""}${r.lieuId?esc(lieuNom(r.lieuId)):`<span class="reu-warn">lieu à définir</span>`}</small>
       <span class="st ${r.statut}">${STATUTS[r.statut]}</span></div>
     <div class="reu-act">${ed&&!passe?`<button class="btn ghost mini" onclick="changerJour('${r.id}')">Changer le jour</button>${r.statut==="planifiee"?`<button class="btn ghost mini" onclick="reuConfirmer('${r.id}')">Confirmer</button>`:""}`:""}
@@ -3378,7 +3390,7 @@ function grpCR(c,D){
     ${l.length?`<div class="grp-crl">${l.map((r,i)=>{const d=dObj(r.date),cr=r.cr||{},ext=Object.values(cr).find(x=>x&&String(x).trim());
       return `<button class="grp-cr ${r.crLe?"ok":"todo"}" style="--i:${Math.min(i,14)}" onclick="${r.crLe||canEditReunion(r)?`openCR('${r.id}')`:`openMeeting('${r.id}')`}">
         <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]} ${d.getFullYear()!==TODAY.getFullYear()?d.getFullYear():""}</small></span>
-        <span class="gc-t"><b>${esc(TYPES[r.type]||r.type)} · ${esc(STATUTS[r.statut]||"")}</b><small>${r.presents!=null?r.presents+" présent"+(r.presents>1?"s":"")+" · ":""}${r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":"")+" · ":""}${r.crLe?esc(ext?String(ext).slice(0,90):"Compte rendu écrit"):"Compte rendu à écrire"}</small></span>
+        <span class="gc-t"><b>${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${r.presents!=null?r.presents+" présent"+(r.presents>1?"s":"")+" · ":""}${r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":"")+" · ":""}${r.crLe?esc(ext?String(ext).slice(0,90):"Compte rendu écrit"):"Compte rendu à écrire"}</small></span>
         <span class="gc-s">${r.crLe?"✓":"À écrire"}</span></button>`}).join("")}</div>`:`<p class="fh-empty">Aucune réunion passée pour l'instant.</p>`}`;
 }
 function grpAffaires(c,D){
@@ -3474,7 +3486,7 @@ async function cjEnregistrer(id){
    ============================================================ */
 function psDeviner(c){
   const h=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").sort((a,b)=>b.date.localeCompare(a.date));
-  const der=h[0],o={jour:c.rJour||null,rang:c.rJour?(rythmeQuinz(c)?"q":c.rRang??0):null,depart:c.rDepart||(der?der.date:""),heure:c.heureHab||"",lieu:c.lieuHab||"",type:der?der.type:"SI",devine:false};
+  const der=h[0],o={jour:c.rJour||null,rang:c.rJour?(rythmeQuinz(c)?"q":c.rRang??0):null,depart:c.rDepart||(der?der.date:""),heure:c.heureHab||"",lieu:c.lieuHab||"",type:c.cycle||(der&&der.format)?"CY":der?der.type:"SI",devine:false};
   if(!o.jour&&der){const d=dObj(der.date);o.jour=d.getDay()||7;o.devine=true;
     const fin=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
     const ecart=h[1]?Math.round((dObj(h[0].date)-dObj(h[1].date))/864e5):30;
@@ -3500,6 +3512,7 @@ function openPlanSerie(){
   if(!clubs.length){toast("Aucun club modifiable avec ton compte");return}
   const ps=window._ps={mois:(window._ps&&window._ps.mois)||3,c:{}};
   clubs.forEach(c=>{const o=psDeviner(c);ps.c[c.id]={...o,inc:!!o.jour,exclus:new Set()}});
+  if(!(window._psMoisChoisi)&&Object.values(ps.c).some(o=>o.type==="CY"))ps.mois=6;
   psRendu();openSheet();
 }
 function psRendu(){
@@ -3510,16 +3523,20 @@ function psRendu(){
     return `<div class="ps-c${o.inc?"":" off"}" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,12)}">
       <label class="ps-h"><input type="checkbox" ${o.inc?"checked":""} onchange="psSet('${c.id}','inc',this.checked)"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.animId?" · "+esc(animNom(c.animId)):" · <span class=\"reu-warn\">sans animateur</span>"}${o.devine?" · <i>rythme deviné</i>":""}</small></label>
       <div class="ps-f">${sel("rang",rangs,o.rang)}${sel("jour",[["","Jour…"],...[1,2,3,4,5,6,7].map(j=>[j,JOURS_LONG[j].replace(/^./,x=>x.toUpperCase())])],o.jour||"")}
-        ${o.rang==="q"?`<label class="ps-dep" title="Une réunion de la série : les suivantes tombent 14 jours après">1re réunion <input type="date" value="${esc(o.depart||"")}" onchange="psSet('${c.id}','depart',this.value)"></label>`:""}${heureChamp("ps-h-"+c.id,o.heure,`psSet('${c.id}','heure',this.value)`,true)}${sel("type",[["SI","SI · information"],["RL","RL · lancement"]],o.type)}
+        ${o.rang==="q"?`<label class="ps-dep" title="Une réunion de la série : les suivantes tombent 14 jours après">1re réunion <input type="date" value="${esc(o.depart||"")}" onchange="psSet('${c.id}','depart',this.value)"></label>`:""}${heureChamp("ps-h-"+c.id,o.heure,`psSet('${c.id}','heure',this.value)`,true)}${sel("type",[["CY","Cycle business → conférence → visite"],["SI","SI · information"],["RL","RL · lancement"]],o.type)}
         <select onchange="psSet('${c.id}','lieu',this.value)">${lieuOptions(o.lieu,c.ville)}</select></div>
-      <div class="ps-d">${!o.jour?`<span class="ps-vide">Choisis un jour pour voir les dates</span>`:dates.length?dates.map(d=>`<button type="button" class="ps-j${o.exclus.has(d)?" x":""}" onclick="psBasc('${c.id}','${d}')" title="${o.exclus.has(d)?"Remettre":"Retirer"} cette date">${dateCourte(d)}</button>`).join(""):`<span class="ps-vide">Aucune date dans la période</span>`}</div></div>`}).join("");
+      <div class="ps-d">${!o.jour?`<span class="ps-vide">Choisis un jour pour voir les dates</span>`:dates.length?psFormats(c,o,dates).map(([d,f])=>`<button type="button" class="ps-j${o.exclus.has(d)?" x":""}${f?" f-"+f:""}" onclick="psBasc('${c.id}','${d}')" title="${f?esc(FORMATS[f])+" · ":""}${o.exclus.has(d)?"Remettre":"Retirer"} cette date">${f?FORMAT_ICO[f]+" ":""}${dateCourte(d)}</button>`).join(""):`<span class="ps-vide">Aucune date dans la période</span>`}</div></div>`}).join("");
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({ini:"📆",title:"Planifier en série",sub:"Toutes les réunions des prochains mois, groupe par groupe. Touche une date pour la retirer."})}
-    <div class="ps-hz">Sur ${[1,2,3,6].map(m=>`<button class="chip ${ps.mois===m?"on":""}" onclick="window._ps.mois=${m};psRendu()">${m} mois</button>`).join("")}</div>
+    ${Object.values(ps.c).some(o=>o.type==="CY")?`<p class="fh-note ps-cy">Cycle : 🤝 business → 🎤 conférence (intervenant extérieur) → 🏭 visite d'entreprise → 🤝 business, puis on recommence. La première réunion de la série est une réunion business, sauf si le groupe a déjà commencé son cycle.</p>`:""}
+    <div class="ps-hz">Sur ${[1,2,3,6,12].map(m=>`<button class="chip ${ps.mois===m?"on":""}" onclick="window._ps.mois=${m};window._psMoisChoisi=1;psRendu()">${m} mois</button>`).join("")}</div>
     <div class="ps-l">${cartes}</div>
     <div class="sheet-actions ps-go"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" id="ps-ok" ${total?"":"disabled"} onclick="psCreer()">Créer ${total} réunion${total>1?"s":""}</button></div>`;
   pillify(document.getElementById("sheet-content"));
 }
+/* Format de chaque date de la série (cycle) : on part de la position du groupe dans son cycle, les dates retirées ne comptent pas. */
+function psFormats(c,o,dates){if(o.type!=="CY")return dates.map(d=>[d,null]);let k=dates.length?cyclePos(c.id,dates[0]):0;
+  return dates.map(d=>{if(o.exclus.has(d))return[d,null];const f=CYCLE[k%CYCLE.length];k++;return[d,f]})}
 function dateCourte(iso){const d=dObj(iso);return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]}
 function psSet(id,k,v){const o=window._ps.c[id];if(k==="inc")o.inc=v;else if(k==="rang")o.rang=v==="q"?"q":+v;else if(k==="depart"){o.depart=v;if(v){o.jour=dObj(v).getDay()||7;o.inc=true}}else if(k==="jour"){o.jour=v?+v:null;if(o.jour)o.inc=true}else o[k]=v;o.exclus=k==="inc"||k==="type"||k==="lieu"||k==="heure"?o.exclus:new Set();o.devine=false;psRendu()}
 function psBasc(id,d){const o=window._ps.c[id];o.exclus.has(d)?o.exclus.delete(d):o.exclus.add(d);psRendu()}
@@ -3528,9 +3545,9 @@ async function psCreer(){
   let n=0,err=0;
   for(const id of Object.keys(ps.c)){const o=ps.c[id],c=club(id);if(!o.inc||!o.jour)continue;
     const dates=psDates(c,o,ps.mois).filter(d=>!o.exclus.has(d));if(!dates.length)continue;
-    const q=o.rang==="q",up={rythme_jour:o.jour,rythme_rang:q?0:o.rang,rythme_pas:q?2:1,rythme_depart:q?dates[0]:null,heure_habituelle:o.heure||null,lieu_habituel_id:o.lieu||null};
-    const e1=await sb.from("clubs").update(up).eq("id",id);if(!e1.error)Object.assign(c,{rJour:o.jour,rRang:up.rythme_rang,rPas:up.rythme_pas,rDepart:up.rythme_depart,heureHab:o.heure||"",lieuHab:o.lieu||null});
-    const rows=dates.map(date=>({type:o.type,club_id:id,date,heure:o.heure||null,lieu_id:o.lieu||null,animateur_id:c.animId||null,statut:"planifiee"}));
+    const q=o.rang==="q",cy=o.type==="CY",fm=new Map(psFormats(c,o,psDates(c,o,ps.mois)));const up={cycle:cy,rythme_jour:o.jour,rythme_rang:q?0:o.rang,rythme_pas:q?2:1,rythme_depart:q?dates[0]:null,heure_habituelle:o.heure||null,lieu_habituel_id:o.lieu||null};
+    const e1=await sb.from("clubs").update(up).eq("id",id);if(!e1.error)Object.assign(c,{rJour:o.jour,rRang:up.rythme_rang,rPas:up.rythme_pas,rDepart:up.rythme_depart,heureHab:o.heure||"",lieuHab:o.lieu||null,cycle:cy});
+    const rows=dates.map(date=>({type:cy?"SI":o.type,format:cy?fm.get(date)||"business":null,club_id:id,date,heure:o.heure||null,lieu_id:o.lieu||null,animateur_id:c.animId||null,statut:"planifiee"}));
     const {data,error}=await sb.from("reunions").insert(rows).select();
     if(error){err++;console.error(error);continue}
     (data||[]).forEach(r=>DB.reunions.push(mapReunion(r)));n+=(data||rows).length;
@@ -3583,7 +3600,7 @@ function openCR(id){
   const champs=CR_CHAMPS.map(([k,l,ph])=>ed?`<div class="field"><label>${l}</label><textarea id="cr-${k}" rows="4" placeholder="${esc(ph)}">${esc(cr[k]||"")}</textarea></div>`
     :(cr[k]?`<div class="drow"><div class="tx"><div class="k">${l}</div><div class="v" style="font-weight:400;white-space:pre-line">${esc(cr[k])}</div></div></div>`:"")).join("");
   document.getElementById("sheet-content").innerHTML=`
-    ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Compte rendu",sub:`${esc(c.nom.replace(/^CAP\s+/,""))} · ${TYPES[m.type]||m.type} du ${dateLongue(d)} · ${esc(lieuNom(m.lieuId))}`})}
+    ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Compte rendu",sub:`${esc(c.nom.replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)} · ${esc(lieuNom(m.lieuId))}`})}
     ${bilanBloc(m,ed)}
     ${champs||`<p class="fh-empty">Pas encore de compte rendu.</p>`}
     ${m.crLe?`<p class="fh-note">Écrit le ${adhDate(m.crLe)}.</p>`:""}
@@ -3631,7 +3648,8 @@ function viewAgenda(){
   let list=all;
   if(filter==="up")list=all.filter(m=>!isPast(m.date));
   else if(filter==="tbd")list=all.filter(m=>!m.lieuId&&!isPast(m.date));
-  else if(["SI","RL"].includes(filter))list=all.filter(m=>m.type===filter);
+  else if(["SI","RL"].includes(filter))list=all.filter(m=>m.type===filter&&!m.format);
+  else if(filter==="CY")list=all.filter(m=>m.format);
   else if(filter.startsWith("v:"))list=all.filter(m=>club(m.clubId).ville===filter.slice(2));
   else if(filter.startsWith("d:"))list=all.filter(m=>m.date===filter.slice(2));
   const wide=isWide();
@@ -3662,7 +3680,7 @@ function viewAgenda(){
       <input placeholder="Rechercher club, lieu, animateur…" value="${esc(window._q||"")}" oninput="window._q=this.value;render()"></div>
     ${calModes()}
     ${calVue()==="liste"?agendaSemaine(all):""}
-    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Lancements","RL")}${villeChips}</div>
+    <div class="filters">${chip("Toutes","all")}${chip("À venir","up")}${chip("Sessions d'info","SI")}${chip("Lancements","RL")}${DB.reunions.some(m=>m.format)?chip("Cycle des groupes","CY"):""}${villeChips}</div>
     ${calVue()==="liste"?cards:calendrier(list.filter(m=>!filter.startsWith("d:")))}<div style="height:8px"></div></div>`;
 }
 /* ============================================================
@@ -3690,8 +3708,8 @@ function calMaj(){const z=document.getElementById("cal");if(!z){render();return}
   window._calSens=null;}
 function calBougeable(m){return !readOnly()&&canEditReunion(m)&&!isPast(m.date)&&m.statut!=="realisee"&&m.statut!=="annulee"}
 function calPuce(m){const c=club(m.clubId),dg=calBougeable(m),st={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"}[m.statut]||"";
-  return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}${dg?" dg":""}" style="--vc:${villeColor(c.ville)}" ${dg?`draggable="true" data-reu="${m.id}"`:""} onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(TYPES[m.type]||m.type)}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))} · ${st}${dg?" · glisser pour changer de jour":""}">
-  <span class="ce-top">${m.heure?`<span class="ce-h">${esc(m.heure.slice(0,5).replace(":","h"))}</span>`:""}<span class="ce-ty">${m.type}</span><span class="ce-st" aria-label="${st}"></span></span>
+  return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}${dg?" dg":""}" style="--vc:${villeColor(c.ville)}" ${dg?`draggable="true" data-reu="${m.id}"`:""} onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(typeLib(m))}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))} · ${st}${dg?" · glisser pour changer de jour":""}">
+  <span class="ce-top">${m.heure?`<span class="ce-h">${esc(m.heure.slice(0,5).replace(":","h"))}</span>`:""}<span class="ce-ty">${m.format?FORMAT_ICO[m.format]:m.type}</span><span class="ce-st" aria-label="${st}"></span></span>
   <b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.lieuId?"📍 "+esc(lieuNom(m.lieuId)):`<i>lieu à définir</i>`}</small></button>`}
 function calendrier(list){
   window._calList=list;
@@ -3755,7 +3773,7 @@ function meetingRow(m){
   const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),tbd=!m.lieuId,ng=(m.guests||[]).length;
   return `<div class="rl-row ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" style="--vc:${villeColor(c.ville)}">
     <button class="rl-h" onclick="openMeeting('${m.id}')"><span class="rl-date"><b>${dt.getDate()}</b><small>${JOURS[dt.getDay()]}</small></span>
-      <span class="rl-t"><b>${esc((c.nom||"—").replace(/^CAP\s+/,""))}</b><small><span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span>${m.heure?esc(m.heure)+" · ":""}${tbd&&!past?`<span class="rl-no">lieu à définir</span>`:esc(lieuNom(m.lieuId))}</small></span>
+      <span class="rl-t"><b>${esc((c.nom||"—").replace(/^CAP\s+/,""))}</b><small><span class="rl-type ${m.type==="RL"?"rl":""}${m.format?" fmt":""}">${typeCourt(m)}</span>${m.heure?esc(m.heure)+" · ":""}${tbd&&!past?`<span class="rl-no">lieu à définir</span>`:esc(lieuNom(m.lieuId))}</small></span>
       <span class="rl-ind">${ng?guestStack(m.guests,ng):""}<span class="st ${m.statut}">${STATUTS[m.statut]}</span></span>
       <span class="rl-chev">›</span></button></div>`;
 }
@@ -3764,7 +3782,7 @@ function meetingCard(m){
   return `<div class="mtg ${m.type==="RL"?"rl":""} ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" onclick="openMeeting('${m.id}')">
     <div class="mtg-date"><div class="d">${dt.getDate()}</div><div class="m">${MOIS[dt.getMonth()]}</div><div class="wd">${JOURS[dt.getDay()]}${m.heure?" · "+m.heure:""}</div></div>
     <div class="mtg-body">
-      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.type==="SI"?"si":"rl"}">${m.type==="SI"?"Session d'info":"Lancement"}</span></div></div>
+      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.format?"si":m.type==="SI"?"si":"rl"}">${m.format?esc(typeCourt(m)):m.type==="SI"?"Session d'info":"Lancement"}</span></div></div>
       <div class="mtg-meta">
         <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville||"")}</span>
         <span class="${tbd?"tbd":""}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${esc(lieuNom(m.lieuId))}</span>
@@ -4477,7 +4495,7 @@ function dashDrill(kind,sc){
   }else if(kind==="reunions"){
     const l=DB.reunions.filter(r=>ids.has(r.clubId)&&!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date));
     titre="Réunions à venir";
-    items=l.map(r=>{const d=dObj(r.date);return row(`openMeeting('${r.id}')`,`${d.getDate()} ${MOIS[d.getMonth()]} · ${nomClub(r.clubId)}`,`${TYPES[r.type]} · ${esc(lieuNom(r.lieuId))}${r.heure?" · "+esc(r.heure):""}`,`<span class="st ${r.statut}">${STATUTS[r.statut]}</span>`)});
+    items=l.map(r=>{const d=dObj(r.date);return row(`openMeeting('${r.id}')`,`${d.getDate()} ${MOIS[d.getMonth()]} · ${nomClub(r.clubId)}`,`${typeLib(r)} · ${esc(lieuNom(r.lieuId))}${r.heure?" · "+esc(r.heure):""}`,`<span class="st ${r.statut}">${STATUTS[r.statut]}</span>`)});
   }else if(kind==="invites"||kind.startsWith("inv:")){
     const st=kind.startsWith("inv:")?kind.slice(4):null;
     const l=DB.reunions.filter(r=>ids.has(r.clubId)).flatMap(r=>(r.guests||[]).map(g=>({g,r}))).filter(x=>!st||x.g.statut===st);
@@ -4635,8 +4653,9 @@ function meetingDetail(m,editable){
       ${editable?invRelanceBtn(m,g,i):""}
     </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
-    ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${dt.getDate()}</b><small>${MOIS[dt.getMonth()]}</small></span>`,title:(c.nom||"—").replace(/^CAP\s+/,""),sub:`<span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span>${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" · "+m.heure:""}`,right:`<span class="st ${m.statut}">${STATUTS[m.statut]}</span>`})}
+    ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${dt.getDate()}</b><small>${MOIS[dt.getMonth()]}</small></span>`,title:(c.nom||"—").replace(/^CAP\s+/,""),sub:`<span class="rl-type ${m.type==="RL"?"rl":""}${m.format?" fmt":""}">${typeCourt(m)}</span>${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" · "+m.heure:""}`,right:`<span class="st ${m.statut}">${STATUTS[m.statut]}</span>`})}
     ${guests.length?`<div class="fh-funnel">${GUEST_STATUTS.map(s=>{const n=guests.filter(g=>g.statut===s).length;return n?`<span class="rl-fact ${s==="Membre"?"g":s==="Non intéressé"?"":"y"}">${esc(s)} · ${n}</span>`:""}).join("")}</div>`:""}
+    ${m.format?`<div class="drow fmt-row"><div class="ic">${FORMAT_ICO[m.format]}</div><div class="tx"><div class="k">${esc(FORMATS[m.format])}${m.format!=="business"?" · "+esc(FORMAT_THEME[m.format]):""}</div><div class="v">${m.format==="business"?"Recommandations, tours de table, affaires du groupe":m.theme?esc(m.theme):`<span class="mut">À préciser</span>`}</div></div>${editable&&m.format!=="business"?`<a href="#" onclick="event.stopPropagation();meetingForm('${m.id}');return false">${m.theme?"Modifier":"Préciser"}</a>`:""}</div>`:""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div class="tx"><div class="k">Lieu</div><div class="v">${esc(lieuNom(m.lieuId))}</div></div>${l?`<a href="#" onclick="event.stopPropagation();openLieu('${l.id}');return false">Fiche</a>`:""}</div>${l?lieuItineraire(l):""}
     <div class="drow"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div>
@@ -4714,12 +4733,12 @@ function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId
   const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
     adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?m.nat.lien:"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0]};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
-function natInvMessage(m){return invRemplir(invModele(m.type),m)}
+function natInvMessage(m){return invRemplir(invModele(m.format?"autre":m.type),m)}
 function natInvBloc(m){
   const su=SESSION&&SESSION.role==="superadmin",n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
   if(!n){if(!su||!avenir)return"";
     return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national</div>
-      <div class="nat-v">Crée l'invitation au national pour cette réunion : même texte et même programme que ta dernière ${esc(NAT_TYPE_REU[m.type]||"invitation")}, avec la date, l'heure et le lieu d'ici. Tu récupères le lien d'inscription à envoyer, et les inscrits arrivent au national.</div>
+      <div class="nat-v">Crée l'invitation au national pour cette réunion : même texte et même programme que ta dernière ${esc((m.format?"réunion des membres":NAT_TYPE_REU[m.type])||"invitation")}, avec la date, l'heure et le lieu d'ici. Tu récupères le lien d'inscription à envoyer, et les inscrits arrivent au national.</div>
       <button class="btn" onclick="natInvCreer('${m.id}',this)">🌐 Créer l'invitation au national</button></div>`}
   const per=natInvPerime(m);
   return `<div class="nat-box ni" id="ni-${m.id}"><div class="nat-t">Invitation du CRM national · n° ${esc(n.invitation_id)}</div>
@@ -4750,8 +4769,8 @@ async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)
 /* Le QR du national exige une session chez eux : on le dessine ici à partir du lien d'inscription. */
 async function natInvQr(){const z=[...document.querySelectorAll("[data-niqr]:empty")];if(!z.length)return;
   try{const qrcode=await qrLib();z.forEach(el=>{const q=qrcode(0,"M");q.addData(el.dataset.niqr);q.make();el.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true})})}catch(e){z.forEach(el=>el.remove())}}
-function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const perso=(()=>{try{return !!localStorage.getItem(invModeleCle(m.type))}catch(e){return false}})();
-  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✉",title:"Message d'invitation",sub:`${esc(NAT_TYPE_REU[m.type]||"Réunion")} · ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}`})}
+function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const perso=(()=>{try{return !!localStorage.getItem(invModeleCle(m.format?"autre":m.type))}catch(e){return false}})();
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✉",title:"Message d'invitation",sub:`${esc((m.format?"réunion des membres":NAT_TYPE_REU[m.type])||"Réunion")} · ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}`})}
     <p class="fh-note">Relis et ajuste le texte avant de l'envoyer. Le lien d'inscription du national est déjà dedans.</p>
     <div class="field"><textarea id="inv-txt" rows="16" style="width:100%;font:inherit;line-height:1.45">${esc(natInvMessage(m))}</textarea></div>
     <div class="emb-2"><button class="btn" onclick="invEnvoyer()">Envoyer par WhatsApp</button><button class="btn ghost" onclick="invCopier()">Copier le message</button></div>
@@ -4762,8 +4781,8 @@ function invEnvoyer(){window.open("https://wa.me/?text="+encodeURIComponent(invT
 async function invCopier(){const t=invTexte();try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
 function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{prenom}",m).split("|"),k=["jour","heure","lieu","adresse","groupe","lien","prenom"];
   k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
-  try{localStorage.setItem(invModeleCle(m.type),t)}catch(e){}toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
-function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.type))}catch(e){}natInvWa(id)}
+  try{localStorage.setItem(invModeleCle(m.format?"autre":m.type),t)}catch(e){}toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
+function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.format?"autre":m.type))}catch(e){}natInvWa(id)}
 async function natInvCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;try{await navigator.clipboard.writeText(m.nat.lien);toast("Lien d'inscription copié")}catch(e){prompt("Lien d'inscription :",m.nat.lien)}}
 /* v0.43.0 : choix de l'heure sans molettes. Créneaux d'un clic (les réunions sont le matin) + heure et minutes
    dans deux listes. Le champ caché garde l'id d'origine : le code qui lit la valeur ne change pas. */
@@ -4777,7 +4796,7 @@ function hcSet(id,v){const el=document.getElementById(id);if(!el)return;el.value
   if(z){z.querySelectorAll(".hc-cr button").forEach(b=>b.classList.toggle("on",b.textContent===v.replace(":","h")));const[h,m]=v.split(":"),ss=z.querySelectorAll(".hc-sel select");if(ss[0])ss[0].value=h;if(ss[1]){if(![...ss[1].options].some(o=>o.value===m))ss[1].add(new Option(m,m));ss[1].value=m}}
   el.dispatchEvent(new Event("change",{bubbles:true}));el.dispatchEvent(new Event("input",{bubbles:true}))}
 function meetingForm(id,presetClub){
-  const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:presetClub||"",date:"",heure:(presetClub&&club(presetClub).heureHab)||HEURE_DEF,lieuId:"",animId:(presetClub?club(presetClub).animId:"")||"",statut:"planifiee",guests:[]};
+  const editing=!!id;const m=editing?DB.reunions.find(x=>x.id===id):{type:"SI",clubId:presetClub||"",date:"",heure:(presetClub&&club(presetClub).heureHab)||HEURE_DEF,lieuId:"",animId:(presetClub?club(presetClub).animId:"")||"",statut:"planifiee",guests:[],format:presetClub&&club(presetClub).cycle?CYCLE[cyclePos(presetClub,"9999-12-31")]:null};
   const scopedC=DB.clubs.filter(c=>SESSION.role==="superadmin"?true:scopedClubIds().includes(c.id));
   const clubsOpt=scopedC.map(c=>`<option value="${c.id}" ${c.id===m.clubId?"selected":""}>${esc(c.nom)}</option>`).join("");
   const animOpt=DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===m.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
@@ -4787,6 +4806,8 @@ function meetingForm(id,presetClub){
     <div class="mprev"><div class="lab">Aperçu dans l'agenda</div><div class="rl" id="f-prev"></div></div>
     <div oninput="majApercuReunion()" onchange="majApercuReunion()">
     <div class="field"><label>Type</label><select data-pills id="f-type">${Object.keys(TYPES).map(t=>`<option value="${t}" ${m.type===t?"selected":""}>${t} — ${TYPES[t]}</option>`).join("")}</select></div>
+    <div class="field"><label>Format (groupe en activité)</label><select data-pills id="f-format" onchange="document.getElementById('f-theme-f').hidden=!['conference','visite'].includes(this.value);document.getElementById('f-theme-l').textContent=FORMAT_THEME[this.value]||''"><option value="" ${m.format?"":"selected"}>Aucun</option>${Object.keys(FORMATS).map(f=>`<option value="${f}" ${m.format===f?"selected":""}>${FORMAT_ICO[f]} ${FORMATS[f]}</option>`).join("")}</select></div>
+    <div class="field" id="f-theme-f" ${["conference","visite"].includes(m.format)?"":"hidden"}><label id="f-theme-l">${esc(FORMAT_THEME[m.format]||"")}</label><input id="f-theme" maxlength="200" value="${esc(m.theme||"")}" placeholder="Ex. Me Alaoui, la fiscalité des TPE · ou : usine Lesieur, Aïn Harrouda"></div>
     <div class="field"><label>Club d'affaires</label><select id="f-club"><option value="">— choisir —</option>${clubsOpt}</select></div>
     <div class="field"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field"><label>Heure</label>${heureChamp("f-heure",m.heure||(club(m.clubId)||{}).heureHab||HEURE_DEF)}</div>
     <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
@@ -4800,12 +4821,13 @@ function meetingForm(id,presetClub){
 async function saveMeeting(id){
   const g=x=>document.getElementById(x).value;
   const clubId=g("f-club"),date=g("f-date");if(!clubId||!date){toast("Club et date obligatoires");return}
-  const row={type:g("f-type"),club_id:clubId,date,heure:g("f-heure")||null,lieu_id:g("f-lieu")||null,animateur_id:g("f-anim")||null,statut:g("f-statut")};
+  const fmt=g("f-format")||null;
+  const row={type:g("f-type"),club_id:clubId,date,heure:g("f-heure")||null,lieu_id:g("f-lieu")||null,animateur_id:g("f-anim")||null,statut:g("f-statut"),format:fmt,theme:fmt&&fmt!=="business"?(g("f-theme").trim()||null):null};
   if(id){
     const {error}=await sb.from("reunions").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}
     const m=DB.reunions.find(x=>x.id===id);
-    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:row.statut});
+    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:row.statut,format:row.format,theme:row.theme||""});
     toast("Réunion mise à jour");
   }else{
     const {data,error}=await sb.from("reunions").insert(row).select().single();
@@ -5369,7 +5391,7 @@ async function delAnim(id){
 function exportCSV(){
   const rows=[["Type","Club","Ville","Date","Heure","Lieu","Animateur","Statut","Invités"]];
   visibleReunions().forEach(m=>{const c=club(m.clubId);
-    rows.push([TYPES[m.type],c.nom,c.ville,m.date,m.heure||"",lieuNom(m.lieuId),animNom(m.animId),STATUTS[m.statut],(m.guests||[]).length]);});
+    rows.push([typeLib(m),c.nom,c.ville,m.date,m.heure||"",lieuNom(m.lieuId),animNom(m.animId),STATUTS[m.statut],(m.guests||[]).length]);});
   const csv="﻿"+rows.map(r=>r.map(x=>`"${(x+"").replace(/"/g,'""')}"`).join(";")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download="agenda-cap-"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("Agenda exporté");
@@ -6297,7 +6319,7 @@ function renderBilan(){
     ${tot>1?`<div class="bil-prog"><span>Bilan ${pos} sur ${tot}</span><i><b style="width:${Math.round((pos-1)/tot*100)}%"></b></i></div>`:""}
     <div class="bil-grp" style="--vc:${villeColor(c.ville)}"><span class="bil-grp-l">Groupe</span><b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${esc(c.ville||"")}${c.animId?" · animé par "+esc(animNom(c.animId)):""}</small></div>
     <h3>Comment s'est passée la réunion ?</h3>
-    <div class="sheet-sub">${TYPES[m.type]||m.type} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
+    <div class="sheet-sub">${typeLib(m)} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
     <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}</div></div>
     ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>
       <div class="bil-sec"><div class="bil-sec-t">🤝 Recommandations passées pendant la réunion</div>
@@ -6447,7 +6469,7 @@ function rpData(){
   if(sansB)surv.push(sansB+" réunion"+(sansB>1?"s passées attendent leur":" passée attend son")+" bilan dans le CRM.");
   const aS=(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee"&&ids.has(adhClubId(a))).length;
   if(aS)surv.push(aS+" adhésion"+(aS>1?"s attendent leur":" attend sa")+" saisie dans le CRM national.");
-  const proch=rs.filter(r=>(r.date||"").slice(0,7)===suiv&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)).map(r=>{const d=dObj(r.date);return `${d.getDate()} ${MOIS[d.getMonth()]} · ${TYPES[r.type]||r.type} · ${club(r.clubId).nom.replace(/^CAP\s+/,"")}`});
+  const proch=rs.filter(r=>(r.date||"").slice(0,7)===suiv&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date)).map(r=>{const d=dObj(r.date);return `${d.getDate()} ${MOIS[d.getMonth()]} · ${typeLib(r)} · ${club(r.clubId).nom.replace(/^CAP\s+/,"")}`});
   const dz=z?DB.zones.find(x=>x.nom===z.nom):null,dir=dz?null:null;
   return{titre:"Rapport mensuel · "+rpMoisLib(m),perim:z?"Zone "+z.nom:"Tout le réseau",clubs:cs.length,actifs:cs.filter(c=>c.statut==="actif").length,
     membres:lignes.reduce((s,l)=>s+l.m,0),nouv:lignes.reduce((s,l)=>s+l.nouv,0),tenues:tenues.length,adh:adh.length,conv:pct(adhO,inv),lignes,surv,proch,suivLib:rpMoisLib(suiv),auteur:SESSION.name};
@@ -6529,7 +6551,7 @@ function showSlides(){
     `<h3>Implanté dans <em>${villes} villes</em></h3><div class="smap">${carteSvg({dark:1,calme:1,hmax:420})}</div>`,
     `<h3>Les zones, <em>côte à côte</em></h3><div class="szl">${zs.map((z,i)=>{const v=parM?z.s.membres:z.s.clubs;return `<div><span>${esc(z.nom)}</span><i style="width:${Math.max(1,v/mx*100)}%;animation-delay:${i*.12}s"></i><b>${v}</b></div>`}).join("")}</div><p style="opacity:.65;margin-top:18px">${parM?"membres":"clubs"} par zone</p>`,
     crea.length?`<h3><em>${crea.length} club${crea.length>1?"s":""}</em> en route vers leur lancement</h3><div class="slist">${crea.slice(0,7).map(c=>`<div><em>${["Création","SI tenue","Actif"][clubEtape(c)]}</em><span>${esc(c.nom.replace(/^CAP\s+/,""))} · ${esc(c.ville)}${c.animId?"":" · animateur à nommer"}</span></div>`).join("")}</div>${sansA?`<p style="opacity:.7;margin-top:16px">Dont ${sansA} en attente d'un animateur.</p>`:""}`:"",
-    prochaines.length?`<h3>Les <em>prochaines réunions</em></h3><div class="slist">${prochaines.map(r=>{const d=dObj(r.date);return `<div><em>${d.getDate()} ${MOIS[d.getMonth()]}</em><span>${TYPES[r.type]||r.type} · ${esc(club(r.clubId).nom.replace(/^CAP\s+/,""))}</span></div>`}).join("")}</div>`:"",
+    prochaines.length?`<h3>Les <em>prochaines réunions</em></h3><div class="slist">${prochaines.map(r=>{const d=dObj(r.date);return `<div><em>${d.getDate()} ${MOIS[d.getMonth()]}</em><span>${typeLib(r)} · ${esc(club(r.clubId).nom.replace(/^CAP\s+/,""))}</span></div>`}).join("")}</div>`:"",
     `<h3>La conversion</h3><div class="sbig"><div><b>${inv.length}</b><span>invités suivis</span></div><div><b>${cv==null?"—":cv+" %"}</b><span>devenus membres</span></div><div><b>${adh30}</b><span>adhésions reçues par le lien</span></div><div><b>${DB.membres.filter(m=>m.paiement).length}</b><span>membres à jour du paiement</span></div></div>`
   ].filter(Boolean);
   return S;
@@ -6758,7 +6780,7 @@ function meetingTr(m){
   return `<tr ${trOpen(`openMeeting('${m.id}')`,past?"past":"")}><td class="date"><b>${dt.getDate()}</b><small>${JOURS[dt.getDay()]}</small></td>
     <td class="mut">${esc(m.heure||"—")}</td>
     <td><div class="who" style="--vc:${villeColor(c.ville)}"><span class="emb">${esc(initiales(nom))}</span><span><b>${esc(nom)}</b><small>${esc(c.ville||"")}</small></span></div></td>
-    <td><span class="rl-type ${m.type==="RL"?"rl":""}">${m.type}</span></td>
+    <td><span class="rl-type ${m.type==="RL"?"rl":""}${m.format?" fmt":""}">${typeCourt(m)}</span></td>
     <td class="${!m.lieuId&&!past?"red":""}">${m.lieuId?esc(lieuNom(m.lieuId)):(past?"—":"À définir")}</td>
     <td>${m.animId?esc(animNom(m.animId)):`<span class="mut">Non attribué</span>`}</td>
     <td>${ng?guestStack(m.guests,ng):`<span class="mut">—</span>`}</td>

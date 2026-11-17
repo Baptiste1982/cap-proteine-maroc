@@ -354,7 +354,7 @@ function vueAccueil(){
     ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" onclick="window.close()">Fermer</button></div>`:""}
     <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
       <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
-    ${p?`<div class="card gv-reu"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(p.type==="RL"?"Lancement":p.type==="SI"?"Session d'information":p.type||"")}</span>
+    ${p?`<div class="card gv-reu"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(p.format?({business:"🤝 Réunion business",conference:"🎤 Conférence",visite:"🏭 Visite d'entreprise"})[p.format]:p.type==="RL"?"Lancement":p.type==="SI"?"Session d'information":p.type||"")}</span>${p.theme?`<span class="gv-theme">${esc(p.theme)}</span>`:""}
       <b class="bri" style="font-size:20px">${esc(quandR)}</b><span>${esc([p.lieu||"Lieu à confirmer",p.ville].filter(Boolean).join(" · "))}</span>
       <div class="gv-reu-b"><span>${p.invites} invité${p.invites>1?"s":""} inscrit${p.invites>1?"s":""}</span>${S.eq?"":`<button class="btn mini" data-aller="inviter">Inviter quelqu'un</button>`}</div></div>`
       :`<div class="card"><b>Pas de réunion planifiée.</b><p class="sub">Elle apparaîtra ici dès que l'animateur l'aura programmée.</p></div>`}

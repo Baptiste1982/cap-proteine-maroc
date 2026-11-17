@@ -395,6 +395,8 @@ function lienHash(){
 }
 window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
 async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[];
+  /* v1.31 : coordonnées partagées entre membres (téléphone, e-mail), jamais les données légales */
+  try{const c=await sb.rpc("cap_annuaire_contacts");if(!c.error){const C=Object.fromEntries((c.data||[]).map(x=>[x.id,x]));S.annuaire.forEach(m=>{const x=C[m.id];if(x){m.email=x.email||"";if(x.telephone)m.telephone=x.telephone}})}}catch(e){}
   try{const r=await sb.rpc("cap_annuaire_regions");if(!r.error)S.regions=Object.fromEntries((r.data||[]).map(x=>[x.club_id,x.region]))}catch(e){}annRegions()}
 /* v1.26 : annuaire par région. Chaque membre porte sa région (zone de son groupe, sinon sa ville). */
 function annRegions(){const R=S.regions||{};S.annuaire.forEach(m=>{m.region=R[m.club_id]||m.ville||"Autres"});const moi=S.annuaire.find(m=>m.moi);S.maRegion=moi?moi.region:null;if(!S.portee)S.portee=S.maRegion?"region":"national"}
@@ -714,14 +716,15 @@ function vueFiche(){
       <div style="display:flex;align-items:center;gap:16px">${av(m)}<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><h2>${esc(m.nom)}</h2><span style="color:var(--tint);font-size:14px">${esc(m.metier||"Membre du réseau")}</span>${m.club?`<span class="pill-or">Membre · ${esc(m.club.replace(/^CAP\s+/,""))}</span>`:""}</div></div></div>
     <div style="display:flex;gap:10px">
       <button class="btn" style="flex:1" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"}>${ICO.envoi}${m.inscrit?"Écrire un message":"Pas encore inscrit"}</button>
-      ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}</div>
+      ${tel?`<a class="btn ghost" style="width:50px;padding:0" href="tel:${esc(tel)}" aria-label="Appeler ${esc(m.nom)}">${ICO.tel}</a>`:""}${m.email?`<a class="btn ghost" style="width:50px;padding:0;font-size:18px" href="mailto:${esc(m.email)}" aria-label="Écrire un e-mail à ${esc(m.nom)}">✉</a>`:""}</div>
     ${S.eq?"":`<button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>`}
     ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
     ${m.entreprise||m.presentation||m.logo?`<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Son entreprise</span><div style="display:flex;gap:12px;align-items:center">${m.logo?`<img class="logo-ent" src="${esc(m.logo)}" alt="Logo ${esc(m.entreprise||"")}">`:""}<div style="min-width:0">${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.fonction?`<p class="sub" style="margin:2px 0 0">${esc(m.fonction)}</p>`:""}</div></div>${m.presentation?`<span style="font-size:14px;white-space:pre-line">${esc(m.presentation)}</span>`:""}${liensHTML(m)}</div>`:liensHTML(m)?`<div class="card">${liensHTML(m)}</div>`:""}
     ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
     <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Coordonnées</span>
       <div class="kv"><span>Ville</span><b>${esc(m.ville||"—")}</b></div>
-      <div class="kv"><span>Téléphone</span><b>${tel?esc(telAff(m.telephone)):"non partagé"}</b></div></div></div>`;
+      <div class="kv"><span>Téléphone</span><b>${tel?esc(telAff(m.telephone)):"non partagé"}</b></div>
+      <div class="kv"><span>E-mail</span><b style="overflow-wrap:anywhere">${m.email?esc(m.email):"non partagé"}</b></div></div></div>`;
 }
 
 function lienUrl(u){u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u}
@@ -820,7 +823,7 @@ function vueProfil(){
     <form id="f-profil" class="card" style="display:flex;flex-direction:column;gap:14px">
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ce que je cherche</span>
         <textarea class="champ" id="p-cherche" maxlength="600" placeholder="Ex. : des promoteurs qui lancent un programme à Rabat, des gérants de franchises…">${esc(m.cherche||"")}</textarea></label>
-      <label class="switch"><span>Montrer mon téléphone aux autres membres</span><input type="checkbox" id="p-tel" ${m.tel_visible?"checked":""}></label>
+      <label class="switch"><span>Montrer mon téléphone et mon e-mail aux autres membres</span><input type="checkbox" id="p-tel" ${m.tel_visible?"checked":""}></label>
       <label class="switch"><span>Apparaître dans l'annuaire</span><input type="checkbox" id="p-annu" ${m.annuaire_visible!==false?"checked":""}></label>
       <button class="btn" type="submit">Enregistrer</button>
     </form>

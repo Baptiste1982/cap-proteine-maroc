@@ -14,7 +14,9 @@ const Lancement=(()=>{
     if(el||!actif())return;
     const reduit=matchMedia("(prefers-reduced-motion: reduce)").matches;finDemandee=false;
     el=document.createElement("div");el.id="lancement";el.setAttribute("role","status");el.setAttribute("aria-label","Chargement de Protéine");
+    document.documentElement.classList.add("lanc-on"); // v1.31 : plein écran, la barre de défilement ne se voit plus pendant l'ouverture
     el.innerHTML=`<style>
+      html.lanc-on{scrollbar-color:transparent transparent;background:#17181A}html.lanc-on::-webkit-scrollbar-thumb{background:transparent}
       #lancement{position:fixed;inset:0;width:100vw;z-index:100000;background:#17181A;display:flex;align-items:center;justify-content:center;transition:opacity .75s ease}
       #lancement.part{opacity:0;pointer-events:none}#lancement canvas{position:absolute;inset:0;width:100%;height:100%}
       #lancement .lg{position:relative;z-index:2;width:136px;height:136px;border-radius:50%;background:#fff;overflow:hidden;opacity:0;transform:scale(.4)}
@@ -52,7 +54,7 @@ const Lancement=(()=>{
   function fin(){
     if(!el||finDemandee)return;finDemandee=true;
     const reste=Math.max(0,DUREE-(performance.now()-t0));
-    setTimeout(()=>{if(!el)return;el.classList.add("part");const x=el;el=null;setTimeout(()=>{cancelAnimationFrame(raf);x.remove()},800)},reste);
+    setTimeout(()=>{if(!el)return;el.classList.add("part");const x=el;el=null;setTimeout(()=>{cancelAnimationFrame(raf);x.remove();document.documentElement.classList.remove("lanc-on")},800)},reste);
   }
   return {jouer,fin,actif};
 })();

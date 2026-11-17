@@ -200,6 +200,7 @@ function rendu(){
   brancher();
 }
 function brancher(){
+  if(!S.ancreFaite&&location.hash==="#videos"&&S.docs&&S.docs.length){S.ancreFaite=1;const d=document.querySelector(`details[data-v="${VID_CAT}"]`);if(d){d.open=true;setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),60)}}
   document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{S.type=b.dataset.type;rendu()});
   document.querySelectorAll("[data-vue]").forEach(b=>b.onclick=()=>{S.vue=b.dataset.vue;try{localStorage.setItem("cap-docs-vue",S.vue)}catch(e){}rendu()});
   document.querySelectorAll("details[data-v]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-docs-v-"+d.dataset.v,d.open?"1":"0")}catch(e){}});

@@ -463,6 +463,11 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Migration `20261117410000_equipe_inscription_reunion.sql` : `invites.profil_id` (unique par réunion), RPC `cap_equipe_inscrire(p_reunion, p_viens)`. Fiche réunion : `equipeViensBloc(m)` (réunion à venir, pas visiteur, pas en aperçu) → `equipeViens(id, oui)`. `mapGuest` porte `profilId`. Banc `viens.mjs` 12/12.
 - `documents.html` : `retourCRM()` revient à l'onglet du CRM qui l'a ouvert (`window.opener`), sinon `history.back()`, sinon `/` avec `sessionStorage cap-lanc-skip` (lancement.js saute alors l'animation d'ouverture une fois).
 
+**🍔 Téléphone : burger et page fixe (v1.24.0, 17/11/2026)** — JB : « je ne veux pas qu'on puisse slider de droite à gauche », « un menu burger qui s'ouvre en superposition pour accéder aux sous-menus, plus esthétique et plus pratique que le Plus ».
+- Sous 900 px : `html, body { overflow-x: clip }` (repli `hidden`) et `overscroll-behavior-x: none`. La mesure ne trouvait aucun débordement : ce sont les décors positionnés hors écran (`.h-blob`, `.h-shine` du bandeau) qui laissaient iOS glisser.
+- `#burger` (en haut à gauche de la barre du haut, téléphone seulement) → `tiroirOuvrir()` : `#tiroir` en surimpression (fond voilé, panneau `min(86vw,360px)` depuis la gauche), contenu `navPlusHTML("tiroirFermer()")` (mêmes rubriques et sous-menus que l'ancien « Plus », via `avecVue`). Fermeture : croix, toucher le fond, glisser vers la gauche, Échap, ou un choix. `.nav-plus` est masqué : la barre du bas garde 4 onglets ; `openNavPlus()` ouvre le tiroir.
+- Bancs `burger.mjs` 11/11, `nav.mjs` 35/35 et `fil.mjs` 28/28 recalés sur le burger, `v09` 42/42.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -18,7 +18,7 @@ create or replace function public.clubs_statut_suivre() returns trigger language
 declare v_ids uuid[] := '{}';
 begin
   if tg_op <> 'INSERT' then v_ids := v_ids || old.club_id; end if;
-  if tg_op <> 'DELETE' then v_ids := v_ids || new.club_id; end if;
+  if tg_op in ('INSERT', 'UPDATE') then v_ids := v_ids || new.club_id; end if;
   update clubs c set statut = cap_club_statut_calc(c.id, c.statut_fixe)
     where c.id = any (v_ids) and c.statut is distinct from cap_club_statut_calc(c.id, c.statut_fixe);
   return null;
@@ -37,4 +37,6 @@ update public.clubs c set statut_fixe = true
   where c.statut = 'actif' and cap_club_statut_calc(c.id, false) = 'creation'
     and not exists (select 1 from zones z, unnest(z.villes) v
       where z.nom ilike 'Rabat%' and lower(unaccent_simple(v)) = lower(unaccent_simple(c.ville)));
-update public.clubs set statut = statut;
+update public.clubs c set statut = cap_club_statut_calc(c.id, c.statut_fixe)
+  where c.statut is distinct from cap_club_statut_calc(c.id, c.statut_fixe);
+-- Appliquée le 17/11/2026 en trois morceaux (fonctions, mise à niveau, déclencheurs) : d'un bloc, l'outil demandait une confirmation.

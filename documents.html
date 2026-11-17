@@ -66,6 +66,24 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 .liste .doc{flex-direction:row;align-items:center;padding:10px 14px}.liste .doc .desc{display:none}.liste .doc .haut{flex:1;align-items:center}.liste .doc .vis{flex-wrap:nowrap}
 .epingle{position:absolute;top:10px;right:10px;color:var(--or);font-size:15px;z-index:1}
 .vide{text-align:center;color:var(--muted);padding:30px 14px}
+.vid-v{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#1B1416}.vid-v video{width:100%;height:100%;object-fit:cover;display:block}
+.vid-p{position:absolute;inset:0;margin:auto;width:48px;height:48px;border-radius:50%;background:rgba(176,18,46,.9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;padding-left:3px;transition:opacity .2s}
+.doc.vid:hover .vid-p{opacity:0}
+.acc{width:min(760px,100%);align-self:center;max-height:100%;overflow:auto;background:var(--card);border-radius:22px;animation:monte .3s cubic-bezier(.2,.8,.2,1)}
+.acc-h{background:var(--deep);color:#fff;padding:24px 24px 22px;display:flex;align-items:center;gap:16px}
+.acc-h img{width:56px;height:56px;border-radius:50%;background:#fff;flex-shrink:0}.acc-h small{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#E9D9B0;font-weight:700}
+.acc-h h2{font-size:28px;margin:2px 0 0}.acc-h p{margin:4px 0 0;color:#EAD5D9;font-size:14.5px}
+.acc-c{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.acc-e{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.acc-e div{display:flex;gap:12px;align-items:flex-start;background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:12px}
+.acc-e b.n{width:30px;height:30px;border-radius:15px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.acc-e span{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--muted)}.acc-e span strong{color:var(--ink);font-size:15px}
+.acc-a{background:#E8EEF4;border-radius:14px;padding:12px 14px;font-size:14px;color:#24405A}.acc-a ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.acc-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:0 24px 22px}
+.phare{animation:phare 1.2s ease-in-out 4;border-color:var(--crimson)!important;background:var(--tint)!important}
+@keyframes phare{50%{box-shadow:0 0 0 10px rgba(176,18,46,.18)}}
+.bulle-p{position:absolute;z-index:45;background:var(--crimson);color:#fff;font-weight:700;font-size:14px;padding:10px 14px;border-radius:12px;box-shadow:0 10px 26px rgba(92,10,24,.3);animation:monte .3s}
+.bulle-p::after{content:"";position:absolute;left:28px;bottom:-7px;border:8px solid transparent;border-bottom:0;border-top-color:var(--crimson)}
 #survol{position:fixed;z-index:40;width:360px;height:280px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 18px 50px rgba(27,20,22,.28);border:1px solid var(--line);pointer-events:none;opacity:0;transform:translateY(6px) scale(.98);transition:opacity .18s,transform .18s;display:flex;flex-direction:column}
 #survol.on{opacity:1;transform:none}
 #survol .sv-c{flex:1;min-height:0}#survol .sv-p{padding:8px 12px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line2);background:#fff}
@@ -107,7 +125,8 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 <script>
 const sb=window.supabase.createClient(DOC_SB_URL,"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7");
 const EMAIL_DOMAIN="cap-proteine.ma";
-const CATS=["Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Communication","Formation","Autres"];
+const VID_CAT="Vidéos de prise en main";
+const CATS=[VID_CAT,"Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Communication","Formation","Autres"];
 const S={docs:[],gere:false,q:"",type:"tous",vue:"grille",envois:[]};
 try{S.vue=localStorage.getItem("cap-docs-vue")||"grille"}catch(e){}
 const $=id=>document.getElementById(id),esc=docEsc;
@@ -133,7 +152,8 @@ async function demarrer(){
   S.gere=g.data===true;S.docs=d.data||[];
   $("sous").textContent=S.gere?"Dépose ici les documents dont les groupes ont besoin. Chaque document se partage par un lien, et peut être montré aux animateurs et aux membres.":"Les documents mis à disposition par le bureau national. Survole un document pour l'aperçu, clique pour l'ouvrir.";
   $("outils").hidden=false;rendu();
-  const id=new URLSearchParams(location.search).get("d");if(id&&S.docs.find(x=>x.id===id))ouvrir(id);
+  const qs=new URLSearchParams(location.search),id=qs.get("d");if(id&&S.docs.find(x=>x.id===id))ouvrir(id);
+  try{const {data:pf}=await sb.rpc("cap_docs_profil");S.profil=pf;if(pf&&pf.gere&&((pf.gere_seul&&!pf.vu)||qs.has("accueil")))accueil()}catch(e){}
 }
 
 /* ---------- Liste ---------- */
@@ -151,6 +171,15 @@ function carte(d){
     ${d.description?`<p class="desc">${esc(d.description)}</p>`:""}${vis}
     <button class="ouvrir" data-ouvrir="${d.id}" aria-label="Ouvrir ${esc(d.titre)}"></button></div>`;
 }
+/* Une vidéo de prise en main : la vignette se lit au survol, sans le son. */
+function carteVideo(d){
+  const date=new Date(d.maj_le||d.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
+  return `<div class="doc vid" data-id="${d.id}">${d.epingle?`<span class="epingle" title="À la une">★</span>`:""}
+    <div class="vid-v"><video src="${esc(docUrl(d.chemin))}#t=1" muted playsinline preload="metadata"></video><span class="vid-p" aria-hidden="true">▶</span></div>
+    <span class="t"><b>${esc(d.titre)}</b><small>Vidéo · ${esc(docTaille(d.taille))} · ${esc(date)}${d.vues?` · ${d.vues} ouverture${d.vues>1?"s":""}`:""}</small></span>
+    ${d.description?`<p class="desc">${esc(d.description)}</p>`:""}
+    <button class="ouvrir" data-ouvrir="${d.id}" aria-label="Regarder ${esc(d.titre)}"></button></div>`;
+}
 function voletOuvert(id){try{const v=localStorage.getItem("cap-docs-v-"+id);return v===null?true:v==="1"}catch(e){return true}}
 function rendu(){
   $("types").innerHTML=TYPES_FILTRE.map(([k,l])=>`<button class="chip ${S.type===k?"on":""}" data-type="${k}">${l}</button>`).join("");
@@ -166,7 +195,7 @@ function rendu(){
     <div class="resume"><span>${l.length} document${l.length>1?"s":""}${S.q||S.type!=="tous"?" trouvé"+(l.length>1?"s":""):""}</span>
       <div class="vue" role="group" aria-label="Affichage"><button class="${S.vue==="grille"?"on":""}" data-vue="grille">Cartes</button><button class="${S.vue==="liste"?"on":""}" data-vue="liste">Liste</button></div></div>
     ${une.length&&!S.q?`<details class="volet" data-v="une" ${voletOuvert("une")?"open":""}><summary><span class="v-t">★ À la une</span><span class="v-n">${une.length}</span>${CHEV}</summary><div class="grille">${une.map(carte).join("")}</div></details>`:""}
-    ${cats.length?cats.map(c=>`<details class="volet" data-v="${esc(c)}" ${voletOuvert(c)?"open":""}><summary><span class="v-t">${esc(c)}</span><span class="v-n">${parCat[c].length}</span>${CHEV}</summary><div class="grille">${parCat[c].map(carte).join("")}</div></details>`).join("")
+    ${cats.length?cats.map(c=>`<details class="volet" data-v="${esc(c)}" ${voletOuvert(c)?"open":""}><summary><span class="v-t">${esc(c)}</span><span class="v-n">${parCat[c].length}</span>${CHEV}</summary><div class="grille">${parCat[c].map(c===VID_CAT?carteVideo:carte).join("")}</div></details>`).join("")
       :`<p class="vide">${S.docs.length?"Aucun document ne correspond.":S.gere?"Aucun document pour l'instant. Dépose le premier ci-dessus.":"Aucun document partagé pour l'instant."}</p>`}`;
   brancher();
 }
@@ -175,7 +204,8 @@ function brancher(){
   document.querySelectorAll("[data-vue]").forEach(b=>b.onclick=()=>{S.vue=b.dataset.vue;try{localStorage.setItem("cap-docs-vue",S.vue)}catch(e){}rendu()});
   document.querySelectorAll("details[data-v]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-docs-v-"+d.dataset.v,d.open?"1":"0")}catch(e){}});
   document.querySelectorAll("[data-ouvrir]").forEach(b=>b.onclick=()=>ouvrir(b.dataset.ouvrir));
-  document.querySelectorAll(".doc").forEach(c=>{c.onmouseenter=()=>survolDebut(c);c.onmouseleave=survolFin});
+  document.querySelectorAll(".doc:not(.vid)").forEach(c=>{c.onmouseenter=()=>survolDebut(c);c.onmouseleave=survolFin});
+  document.querySelectorAll(".doc.vid").forEach(c=>{const v=c.querySelector("video");c.onmouseenter=()=>{v.play().catch(()=>{})};c.onmouseleave=()=>{v.pause()}});
   const f=$("fichiers");if(f)f.onchange=()=>{deposer([...f.files]);f.value=""};
   const z=$("depot");if(z){["dragenter","dragover"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add("survol")}));
     ["dragleave","drop"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove("survol")}));
@@ -214,6 +244,38 @@ function ouvrir(id){
   const md=v.querySelector("[data-modifier]");if(md)md.onclick=()=>{fermer();modifier(d.id)};
 }
 
+/* ---------- Accueil de la personne qui gère les documents (v1.10.1) ----------
+   À la première connexion de Rita (profiles.docs_accueil_vu_le vide), ou avec ?accueil pour la revoir. */
+const ACCES_ROLE={visiteur:"Le CRM en consultation : l'agenda des réunions, les groupes, les membres et les chiffres du réseau.",
+  animateur:"Le CRM pour tes groupes : réunions, invités, membres, comptes rendus.",directeur:"Le CRM de ta zone : réunions, groupes, membres, demandes d'adhésion, chiffres.",
+  directeur_national:"Tout le CRM, sur l'ensemble du réseau.",superadmin:"Tout le CRM, sur l'ensemble du réseau, et la gestion des comptes."};
+function accueil(){
+  const pf=S.profil||{},prenom=String(pf.nom||"").split(/\s+/)[0];
+  const v=document.createElement("div");v.className="voile";v.innerHTML=`<div class="acc" role="dialog" aria-modal="true" aria-labelledby="acc-t">
+    <div class="acc-h"><img src="logo-globe-192.png" alt=""><div><small>Bienvenue${prenom?" "+esc(prenom):""}</small><h2 id="acc-t">Tu gères les documents du réseau</h2><p>Les groupes y trouvent tout ce dont ils ont besoin, et c'est toi qui le mets à disposition, sans passer par personne.</p></div></div>
+    <div class="acc-c">
+      <div class="acc-e">
+        <div><b class="n">1</b><span><strong>Déposer</strong>Glisse tes fichiers dans le cadre en pointillés en haut de la page, ou « Choisir des fichiers ». PDF, Excel, Word, présentations, images, vidéos : jusqu'à 50 Mo chacun.</span></div>
+        <div><b class="n">2</b><span><strong>Décrire et ranger</strong>Après chaque dépôt : un titre, une phrase d'explication, une catégorie (Kit animateur, Kit membre, Formulaires…). « À la une » le met en tête de page.</span></div>
+        <div><b class="n">3</b><span><strong>Choisir qui le voit</strong>Les animateurs, dans leur CRM. Les membres, dans leur espace membre. Le lien : toute personne qui l'a peut l'ouvrir, même sans compte.</span></div>
+        <div><b class="n">4</b><span><strong>Partager</strong>Ouvre un document : « Copier le lien » ou « Envoyer par WhatsApp ». Sur chaque carte, tu vois combien de fois le lien a été ouvert.</span></div>
+      </div>
+      <div class="acc-a"><b>Ce à quoi tu as accès</b><ul>
+        <li>Les documents du réseau : déposer, modifier, archiver, supprimer.</li>
+        <li>Les vidéos de prise en main du CRM, dans leur section « Vidéos de prise en main » : à déposer et à partager comme les autres documents.</li>
+        ${ACCES_ROLE[pf.role]?`<li>${esc(ACCES_ROLE[pf.role])}</li>`:""}
+        <li>Le même identifiant et le même mot de passe que le CRM, sur ordinateur et sur téléphone.</li></ul></div>
+    </div>
+    <div class="acc-b"><button class="btn ghost" data-ok>C'est compris</button><button class="btn" data-montrer>Me montrer où déposer</button></div></div>`;
+  document.body.appendChild(v);document.body.style.overflow="hidden";
+  const fini=async montrer=>{v.remove();document.body.style.overflow="";try{await sb.rpc("cap_docs_accueil_vu")}catch(e){}
+    if(montrer){const z=$("depot");if(!z)return;z.scrollIntoView({behavior:"smooth",block:"center"});z.classList.add("phare");
+      const r=z.getBoundingClientRect(),b=document.createElement("div");b.className="bulle-p";b.textContent="Glisse tes fichiers ici";
+      b.style.left=(r.left+window.scrollX+20)+"px";b.style.top=(r.top+window.scrollY-50)+"px";document.body.appendChild(b);
+      setTimeout(()=>{b.remove();z.classList.remove("phare")},5200)}};
+  v.querySelector("[data-ok]").onclick=()=>fini(false);v.querySelector("[data-montrer]").onclick=()=>fini(true);v.querySelector("[data-montrer]").focus();
+}
+
 /* ---------- Gérer (bureau national) ---------- */
 function slug(n){return String(n).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w.\-]+/g,"-").replace(/-+/g,"-").slice(-120)}
 async function deposer(fichiers){
@@ -227,7 +289,7 @@ async function deposer(fichiers){
     const up=await sb.storage.from(DOC_BUCKET).upload(chemin,f,{contentType:f.type||undefined,upsert:false});clearInterval(t);
     if(up.error){e.etat="Échec : "+up.error.message;e.pct=0;rendu();continue}
     const titre=f.name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim()||f.name;
-    const ins=await sb.from("documents_reseau").insert({titre,chemin,nom_fichier:f.name,type_mime:f.type||null,taille:f.size,categorie:"Autres",cree_par:user&&user.id}).select().single();
+    const ins=await sb.from("documents_reseau").insert({titre,chemin,nom_fichier:f.name,type_mime:f.type||null,taille:f.size,categorie:docType(f.name,f.type)==="video"?VID_CAT:"Autres",cree_par:user&&user.id}).select().single();
     if(ins.error){e.etat="Échec : "+ins.error.message;e.pct=0;rendu();continue}
     S.docs.unshift(ins.data);e.pct=100;e.etat="✓ Déposé";rendu();
   }

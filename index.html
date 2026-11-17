@@ -838,6 +838,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 .nat-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--crimson-txt,var(--crimson))}
 .nat-v{font-size:13px;color:var(--muted)}.ni-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.ni-qr{width:96px;height:96px;flex:none;border-radius:8px;border:1px solid var(--line);background:#fff;padding:4px}.ni-qr svg{width:100%;height:100%;display:block}.ni-l{display:grid;gap:6px;min-width:0;flex:1 1 220px}@media(max-width:600px){.ni-qr{width:76px;height:76px}.ni-act{grid-column:1/-1}}.ni-lien{font-size:13px;font-weight:600;color:var(--crimson-txt,var(--crimson));word-break:break-all;user-select:all}.ni-act{display:flex;flex-wrap:wrap;gap:6px}.nat-v b{color:var(--ink)}
 .nat-ok{font-weight:600;color:#1f7a4d}.gv-seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-left:auto;margin-right:8px}.gv-seg button{border:0;background:none;padding:5px 11px;font:600 12px Inter,sans-serif;color:var(--muted);cursor:pointer}.gv-seg button.on{background:var(--crimson);color:#fff}
+.dacc{display:flex;flex-direction:column;gap:14px}.dacc-h{display:flex;align-items:center;gap:14px}.dacc-i{width:56px;height:56px;border-radius:16px;background:var(--crimson-tint);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}.dacc-h small{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-txt,var(--crimson))}.dacc-h h2{font-size:22px;margin:2px 0 0}.dacc p{margin:0;font-size:14.5px}.dacc-l{display:flex;flex-direction:column;gap:8px}.dacc-l span{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;background:var(--crimson-tint);border-radius:12px;padding:10px 12px}.dacc-l b{width:26px;height:26px;border-radius:13px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}.dacc-n{color:var(--muted);font-size:13px!important}
 .rep-noms{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.rep-noms span{font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px}.rep-o{background:#EAF2EA;color:#24502A}.rep-n{background:var(--line2,#EFE5E7);color:var(--muted)}
 .gl{display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}.gl-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:13px;line-height:1.3}.gl-r:first-child{border-top:0}.gl-n{min-width:0;display:flex;flex-direction:column}.gl-n b,.gl-n small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-n small{color:var(--muted);font-size:11.5px}.gl-t{color:var(--crimson-txt,var(--crimson));text-decoration:none;font-variant-numeric:tabular-nums}.gl-s{padding:3px 6px;font-size:12px;min-height:0}
 .ni-insc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px}.ni-insc b{font-size:20px;color:var(--crimson-txt,var(--crimson))}.ni-insc small{color:var(--muted)}.ni-insc .btn{margin-left:auto}
@@ -2048,8 +2049,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.10.0";
+const APP_VERSION="1.10.1";
 const CHANGELOG=[
+  {v:"1.10.1",date:"17 novembre 2026",notes:{
+    "Ajouté":["La personne qui gère les documents du réseau est accueillie à sa première connexion. Dans le CRM, une fenêtre lui montre où est son espace. Dans l'espace documents, une fenêtre explique les quatre gestes (déposer, décrire, choisir qui voit, partager) et ce à quoi elle a accès ; « Me montrer où déposer » met la zone de dépôt en lumière. Elle ne revient plus ensuite, sur aucun appareil (documents.html?accueil pour la revoir).",
+      "Documents du réseau : une section « Vidéos de prise en main ». Les vidéos y sont rangées d'office au dépôt, la vignette se lit au survol, et elles se partagent par lien comme les autres documents."]}},
   {v:"1.10.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Documents du réseau : un espace où le bureau national dépose les documents dont les groupes ont besoin (PDF, Excel, Word, présentations, images, vidéos). Chaque document a son étiquette de type, un aperçu au survol, et s'ouvre d'un clic. On choisit qui le voit (animateurs, membres) et s'il se partage par un lien, à envoyer par WhatsApp. Accès : bouton « 📚 Documents » de la Synthèse, ou Paramètres.",
       "Espace membre : « Documents du réseau » dans l'onglet « Moi », avec les documents ouverts aux membres.",
@@ -2661,7 +2665,7 @@ async function bootIntoApp(){
   enterApp();
   verifierMdpInitial();
   adhAnnonce();
-  tutoAuDemarrage();
+  docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();
   presenceDemarrer();
@@ -2671,7 +2675,23 @@ async function bootIntoApp(){
 /* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe
    initial), retenue par compte (profiles.tuto_vu_le, RPC cap_tuto_vu) ; à revoir dans Paramètres, en
    entier ou par partie. Chaque étape : un onglet à ouvrir, un élément à mettre en lumière, un texte. ── */
-let _tutoEnAttente=false,_tuto=null;
+let _tutoEnAttente=false,_tuto=null,_docsEnAttente=false;
+/* v1.10.1 : la personne qui gère les documents du réseau (Rita) est accueillie par une fenêtre qui lui
+   dit où est son espace, tant qu'elle n'a pas ouvert l'accueil complet de documents.html (profiles.docs_accueil_vu_le).
+   Les comptes de direction (superadmin, directeur national) ne la voient pas. */
+async function docsAccueilCRM(){
+  let pf=null;try{const r=await sb.rpc("cap_docs_profil");pf=r.data}catch(e){}
+  if(!pf||!pf.gere_seul||pf.vu)return false;
+  if(_mdpForce){_docsEnAttente=true;return true}
+  const prenom=String(pf.nom||SESSION.name||"").split(/\s+/)[0];
+  document.getElementById("sheet-content").innerHTML=`<div class="dacc">
+    <div class="dacc-h"><span class="dacc-i" aria-hidden="true">📚</span><div><small>Bienvenue${prenom?" "+esc(prenom):""}</small><h2>Ton espace : les documents du réseau</h2></div></div>
+    <p>C'est toi qui déposes les documents dont les groupes ont besoin : kits, formulaires, présentations, règlements. Tu choisis qui les voit et tu les partages par un lien.</p>
+    <div class="dacc-l"><span><b>1</b>Ouvre ton espace documents</span><span><b>2</b>Glisse tes fichiers dans le cadre en pointillés</span><span><b>3</b>Choisis qui les voit, partage le lien</span></div>
+    <p class="dacc-n">Ton espace s'ouvre dans un nouvel onglet. Tu le retrouves à tout moment avec le bouton « 📚 Documents » de la Synthèse, ou dans Paramètres.</p>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="window.open('documents.html','_blank');closeSheet()">Ouvrir mon espace documents</button></div></div>`;
+  openSheet();return true;
+}
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
 const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Synthèse"],["agenda","📅","Agenda et réunions"],["clubs","🏛","Clubs et membres"],["recos","🤝","Recommandations"],["adhesions","📝","Adhésions en ligne"],["lieux","📍","Lieux et équipe"],["reglages","⚙️","Paramètres"]];
 function tutoEtapes(partie){
@@ -5892,7 +5912,8 @@ async function changePassword(){
   if(b){b.disabled=false;b.textContent="Enregistrer"}
   if(error){toast("Erreur : "+error.message);return}
   _mdpForce=false;sb.rpc("cap_mdp_change_fait").then(()=>{},()=>{});toast("Mot de passe modifié");closeSheet();
-  if(_tutoEnAttente){_tutoEnAttente=false;setTimeout(()=>tutoLancer("complet",true),900)}
+  if(_docsEnAttente){_docsEnAttente=false;setTimeout(()=>docsAccueilCRM(),700)}
+  else if(_tutoEnAttente){_tutoEnAttente=false;setTimeout(()=>tutoLancer("complet",true),900)}
 }
 function openMyPassword(force){
   document.getElementById("sheet-content").innerHTML=`

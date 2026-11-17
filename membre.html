@@ -997,24 +997,35 @@ async function chargerRecosClub(){
 const moisCourt=k=>new Date(k+"-15").toLocaleDateString("fr-FR",{month:"short"}).replace(".","");
 function barres(serie,cle){const mx=Math.max(1,...serie.map(x=>Number(x[cle])||0));
   return `<div class="tb-bars" role="img" aria-label="${cle==="ca"?"Chiffre d'affaires":"Recommandations"} sur 12 mois">${serie.map((x,i)=>`<span title="${esc(moisCourt(x.mois))} : ${cle==="ca"?esc(mad(x.ca)):x.recos+" reco"+(x.recos>1?"s":"")}" class="${i===serie.length-1?"cur":""}"><i style="height:${Math.max(3,Math.round((Number(x[cle])||0)/mx*100))}%"></i><em>${esc(moisCourt(x.mois)).slice(0,1)}</em></span>`).join("")}</div>`}
+/* v1.30 : même choix de période que le CRM (localStorage cap-periode). Les chiffres viennent des séries mensuelles (12 mois). */
+const PER_LIB={mois:"Mois",trim:"Trimestre",sem:"Semestre",an:"Année"};
+function perChoix(){let v=null;try{v=localStorage.getItem("cap-periode")}catch(e){}return PER_LIB[v]?v:"mois"}
+function perMois(k){const n=k==="trim"?3:k==="sem"?6:k==="an"?12:1,t=new Date(),i0=Math.floor(t.getMonth()/n)*n,l=[];
+  for(let i=0;i<n;i++)l.push(t.getFullYear()+"-"+String(i0+i+1).padStart(2,"0"));
+  const lib=k==="trim"?"T"+(Math.floor(i0/3)+1)+" "+t.getFullYear():k==="sem"?"S"+(i0<6?1:2)+" "+t.getFullYear():k==="an"?String(t.getFullYear()):t.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  return{mois:l,lib}}
+function perSomme(serie,k,cle){const P=new Set(perMois(k).mois);return (serie||[]).filter(x=>P.has(x.mois)).reduce((a,x)=>a+Number(x[cle]||0),0)}
 function tableauHTML(){
   const t=S.recosClub;if(t===undefined)return `<div class="card tb"><span class="sub">Chargement des chiffres…</span></div>`;
   if(!t)return `<div class="card tb"><span class="sub">Chiffres indisponibles pour l'instant.</span></div>`;
   const v=S.tbVue||"moi",mois=new Date().toLocaleDateString("fr-FR",{month:"long"}),an=new Date().getFullYear();
   const seg=`<div class="seg tb-seg" role="tablist">${[["moi","Moi"],["groupe","Mon groupe"],["region","Ma région"]].map(([k,l])=>`<button role="tab" aria-selected="${v===k}" class="${v===k?"on":""}" data-tbvue="${k}">${l}</button>`).join("")}</div>`;
+  const pk=perChoix(),pl=perMois(pk).lib;
+  const perSeg=`<div class="seg tb-seg tb-per" role="tablist" aria-label="Période">${Object.keys(PER_LIB).map(k=>`<button role="tab" aria-selected="${pk===k}" class="${pk===k?"on":""}" data-tbper="${k}">${PER_LIB[k]}</button>`).join("")}</div>`;
   let corps;
-  if(v==="moi"){const m=t.moi||{};
+  if(v==="moi"){const m=t.moi||{},ms=t.moi_serie;
     corps=`<div class="tb-duo"><div class="tb-k out"><span>CA transmis</span><b class="bri">${esc(mad(m.ca_transmis))}</b><small>${m.donnees_signees||0} affaire${m.donnees_signees>1?"s":""} signée${m.donnees_signees>1?"s":""} grâce à moi · ${m.donnees||0} reco${m.donnees>1?"s":""} donnée${m.donnees>1?"s":""}</small></div>
       <div class="tb-k in"><span>CA reçu</span><b class="bri">${esc(mad(m.ca_recu))}</b><small>${m.recues_signees||0} affaire${m.recues_signees>1?"s":""} signée${m.recues_signees>1?"s":""} · ${m.recues||0} reco${m.recues>1?"s":""} reçue${m.recues>1?"s":""}</small></div></div>
-      <div class="tb-ligne"><span>Ce mois-ci</span><b>${esc(mad(m.ca_transmis_mois))}</b> transmis · <b>${esc(mad(m.ca_recu_mois))}</b> reçu</div>
+      ${ms?`<div class="tb-ligne"><span>${esc(pl)}</span><b>${esc(mad(perSomme(ms,pk,"ca_transmis")))}</b> transmis · <b>${esc(mad(perSomme(ms,pk,"ca_recu")))}</b> reçu · <b>${perSomme(ms,pk,"donnees")}</b> reco${perSomme(ms,pk,"donnees")>1?"s":""} donnée${perSomme(ms,pk,"donnees")>1?"s":""} · <b>${perSomme(ms,pk,"recues")}</b> reçue${perSomme(ms,pk,"recues")>1?"s":""}</div>`
+        :`<div class="tb-ligne"><span>Ce mois-ci</span><b>${esc(mad(m.ca_transmis_mois))}</b> transmis · <b>${esc(mad(m.ca_recu_mois))}</b> reçu</div>`}
       ${m.recues_en_cours?`<div class="tb-ligne alerte">${m.recues_en_cours} reco${m.recues_en_cours>1?"s":""} reçue${m.recues_en_cours>1?"s":""} à faire avancer</div>`:""}`}
   else{const g=t[v]||{},nom=String(g.nom||"").replace(/^CAP\s+/,"");
     corps=`<div class="tb-tete"><b class="bri">${esc(nom)}</b><span>${v==="region"?`${g.groupes} groupes · `:""}${g.membres} membres</span></div>
-      <div class="tb-gros"><span>CA généré en ${esc(mois)}</span><b class="bri">${esc(mad(g.ca_mois))}</b><small>Depuis janvier ${an} : ${esc(mad(g.ca_annee))}</small></div>
+      <div class="tb-gros"><span>CA généré · ${esc(pl)}</span><b class="bri">${esc(mad(g.serie?perSomme(g.serie,pk,"ca"):g.ca_mois))}</b>${pk==="an"?"":`<small>Depuis janvier ${an} : ${esc(mad(g.ca_annee))}</small>`}</div>
       ${barres(g.serie||[],"ca")}
-      <div class="tb-kpis"><div><b>${g.recos_mois}</b><span>recos ce mois</span></div><div><b>${g.affaires_mois}</b><span>affaires signées ce mois</span></div><div><b>${g.recos_annee}</b><span>recos depuis janvier</span></div><div><b>${g.en_cours}</b><span>en cours</span></div></div>
+      <div class="tb-kpis"><div><b>${g.serie?perSomme(g.serie,pk,"recos"):g.recos_mois}</b><span>recos · ${esc(pl)}</span></div><div><b>${g.serie&&g.serie.some(x=>"affaires" in x)?perSomme(g.serie,pk,"affaires"):g.affaires_mois}</b><span>affaires signées · ${esc(pl)}</span></div><div><b>${g.recos_annee}</b><span>recos depuis janvier</span></div><div><b>${g.en_cours}</b><span>en cours</span></div></div>
       ${v==="region"?`<p class="note" style="margin:0">Totaux de la région. Le détail des autres groupes n'est pas partagé.</p>`:""}`}
-  return `<div class="card tb">${seg}${corps}<small class="tb-maj">Mis à jour à chaque saisie · ${esc(new Date(t.calcule_le||Date.now()).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}))}</small></div>`;
+  return `<div class="card tb">${seg}${perSeg}${corps}<small class="tb-maj">Mis à jour à chaque saisie · ${esc(new Date(t.calcule_le||Date.now()).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}))}</small></div>`;
 }
 function frise(st){
   if(st==="sans_suite")return `<div class="frise"><span class="fin ko">Sans suite</span></div>`;
@@ -1208,6 +1219,7 @@ function brancher(){
   app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
   const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
   app.querySelectorAll("[data-tbvue]").forEach(b=>b.onclick=()=>{S.tbVue=b.dataset.tbvue;rendu(true)});
+  app.querySelectorAll("[data-tbper]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cap-periode",b.dataset.tbper)}catch(e){}rendu(true)});
   app.querySelectorAll("[data-rtab]").forEach(b=>b.onclick=()=>{S.recoTab=b.dataset.rtab;rendu(true)});
   app.querySelectorAll("[data-rdonner]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:true,recoPour:b.dataset.rdonner||""}));
   app.querySelectorAll("[data-ravance]").forEach(b=>b.onclick=()=>avancerReco(b.dataset.ravance,b.dataset.st));

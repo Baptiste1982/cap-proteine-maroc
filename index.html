@@ -2228,8 +2228,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.21.0";
+const APP_VERSION="1.21.1";
 const CHANGELOG=[
+  {v:"1.21.1",date:"17 novembre 2026",notes:{"Ajouté":["Leads : tous les onglets du Google Sheet remontent (Rabat, Casablanca, Tanger, Dar B, Bouskoura…), avec un filtre par ville en tête de l'onglet Leads."]}},
   {v:"1.21.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads remontés automatiquement du Google Sheet toutes les 15 minutes : les nouveaux arrivent dans l'onglet Leads (« à contacter »), avec une notification sur le téléphone. Les leads déjà connus sont complétés (téléphone, LinkedIn, commentaire), jamais doublés."]}},
   {v:"1.20.0",date:"17 novembre 2026",notes:{"Amélioré":["Leads : « Tableau » serré par défaut (une ligne par lead, qui · quand dans chaque colonne, actions en petites icônes) et « Frise » d'étapes en option (contacté → invité → inscrit → venu). Présence notée d'un clic : Venu / Absent."]}},
   {v:"1.19.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads : trois affichages (cartes, liste, suivi en colonnes).","Chaque lead montre son fil : qui l'a contacté et quand, qui a envoyé l'invitation, quand et pour quelle réunion, s'il est inscrit, s'il est venu.","Les inscriptions par le lien national sont rapprochées des leads (même mobile ou même nom) : le lead passe en « Inscrit » tout seul. Après la réunion, « Venu ? Oui / Non »."]}},
@@ -7524,7 +7525,8 @@ function leadVals(l,m){const dt=dObj(m.date),lu=m.lieuId?lieu(m.lieuId):null;ret
 function leadMonTel(){const an=SESSION.animId&&DB.animateurs.find(a=>a.id===SESSION.animId),t=(an&&an.tel)||SESSION.tel||"";return t?fmtTelAff("+"+mbWa(t)):"(votre numéro)"}
 function leadMessage(l,m){if(!m)return"";const v=leadVals(l,m);
   return leadModele().replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x)}
-function leadsHTML(){leadsAuto();const L=(DB.leads||[]).slice(),f=window._leadF||"tous",m=leadReunion(),RE=leadReunions();
+function ldFeuilles(){return [...new Set((DB.leads||[]).map(l=>l.feuille).filter(Boolean))].sort((a,b)=>a==="Rabat"?-1:b==="Rabat"?1:a.localeCompare(b))}
+function leadsHTML(){leadsAuto();const L=(DB.leads||[]).filter(l=>!window._leadVille||l.feuille===window._leadVille),f=window._leadF||"tous",m=leadReunion(),RE=leadReunions();
   const cnt=k=>L.filter(l=>l.statut===k).length,list=L.filter(l=>f==="tous"||(f==="rappel"?l.a_rappeler:f==="venu"?l.venu===true:l.statut===f));
   const ordre={a_contacter:0,message_envoye:1,contacte:2,inscrit:3,pas_interesse:4};list.sort((a,b)=>(ordre[a.statut]-ordre[b.statut])||a.nom.localeCompare(b.nom));
   const chip=(k,l,n)=>`<button class="chip ${f===k?"on":""}" onclick="window._leadF='${k}';render()">${l}${n!=null?`<em>${n}</em>`:""}</button>`;
@@ -7532,6 +7534,7 @@ function leadsHTML(){leadsAuto();const L=(DB.leads||[]).slice(),f=window._leadF|
     <button class="btn ghost mini" onclick="leadForm()">＋ Ajouter un lead</button></div>
     <div class="ld-reu"><label>Réunion de l'invitation</label><select onchange="window._leadReu=this.value;render()">${RE.slice(0,12).map(x=>{const d=dObj(x.date),c=club(x.clubId)||{};return `<option value="${x.id}" ${m&&m.id===x.id?"selected":""}>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} · ${x.heure?x.heure.slice(0,5):""} · ${esc((c.nom||"").replace(/^CAP\s+/,""))}${x.nat&&x.nat.invitation_id?" · lien national":""}</option>`}).join("")||`<option>Aucune réunion à venir</option>`}</select>
       ${m&&!(m.nat&&m.nat.invitation_id)?`<small class="ld-warn">Cette réunion n'a pas encore d'invitation au national : le message enverra le lien d'adhésion du groupe.</small>`:""}</div>
+    ${ldFeuilles().length>1?`<div class="ld-chips ld-villes">${["",...ldFeuilles()].map(v=>`<button class="chip ${(window._leadVille||"")===v?"on":""}" onclick="window._leadVille='${esc(v)}';render()">${v?esc(v):"Toutes les villes"}<em>${(DB.leads||[]).filter(l=>!v||l.feuille===v).length}</em></button>`).join("")}</div>`:""}
     <div class="ld-bar"><div class="ld-chips">${chip("tous","Tous",L.length)}${chip("a_contacter","À contacter",cnt("a_contacter"))}${chip("message_envoye","Message envoyé",cnt("message_envoye"))}${chip("contacte","Contactés",cnt("contacte"))}${chip("inscrit","✓ Inscrits",cnt("inscrit"))}${chip("venu","★ Venus",L.filter(l=>l.venu===true).length)}${chip("rappel","📞 À rappeler",L.filter(l=>l.a_rappeler).length)}</div>
       <div class="seg ld-modes">${LD_MODES.map(([k,lb])=>`<button class="${ldVue()===k?"on":""}" onclick="ldChoisirVue('${k}')">${lb}</button>`).join("")}</div></div>
     ${ldVue()==="liste"?leadListe(list):ldVue()==="frise"?leadFrise(list):ldVue()==="suivi"?leadSuiviVue(L):`<div class="ld-liste">${list.map(leadCarte).join("")||`<p class="fh-empty">Aucun lead dans ce filtre.</p>`}</div>`}</section>`}

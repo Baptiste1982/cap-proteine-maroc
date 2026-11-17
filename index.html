@@ -2082,6 +2082,10 @@ html .mtg-date{min-width:50px}html .mtg-date .d{font-size:22px}
 
 /*v1.17 : place de la barre de défilement réservée en permanence : rien ne bouge quand elle apparaît (fin de l'animation d'ouverture)*/
 html{scrollbar-gutter:stable}
+/*v1.18.1 pastille de date (JB : « trop rectangulaire, encadrement fil anthracite ») : presque carrée, coins ronds, fil anthracite fin*/
+html :is(.rail-date,.reu-d,.rl-date,.mtg-date){min-width:52px;min-height:52px;border-radius:14px;border:1px solid #3A3C40!important;box-shadow:0 1px 3px -1px rgba(0,0,0,.3)}
+html.dark :is(.rail-date,.reu-d,.rl-date,.mtg-date){border-color:#4A4C51!important}
+html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0}
 /*v1.18 leads*/.ld{display:grid;gap:12px}.ld-tete{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.ld-tete h3{margin:0 0 4px}
 .ld-reu{display:grid;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.ld-reu label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.ld-warn{color:var(--gold)}
 .ld-chips{display:flex;gap:6px;flex-wrap:wrap}.ld-liste{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
@@ -2191,8 +2195,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.18.0";
+const APP_VERSION="1.18.1";
 const CHANGELOG=[
+  {v:"1.18.1",date:"17 novembre 2026",notes:{"Amélioré":["Pastille de date presque carrée, coins arrondis, fin cadre anthracite."]}},
   {v:"1.18.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Leads nationaux (Adhésions → Leads nationaux, ou l'onglet 📇 Leads) : les contacts transmis par le national, avec leur état (à contacter, message envoyé, contacté, inscrit, pas intéressé) et « à rappeler ».","Invitation WhatsApp prête pour chaque lead : la prochaine réunion, son lien d'inscription suivi, la question « souhaitez-vous que je vous appelle avant ? » et le numéro de celui qui envoie. Texte modifiable et gardé comme modèle.","« ✓ Contacté » et « Suivi… » notent qui a contacté et quand ; l'état part aussi dans le Google Sheet des leads une fois le lien installé."]}},
   {v:"1.17.0",date:"17 novembre 2026",notes:{

@@ -459,6 +459,10 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Chrystel (animatrice de CAP Rabat Premium, déjà membre) : sa demande d'adhésion d'essai est archivée, son inscription d'essai à la réunion du 19/11 supprimée (⚠ le passage horaire de `national-suivi` peut la recréer depuis le national : la passer alors en « Membre »).
 - Pastilles de date : rotation −8° et légère ombre au survol du parent (`:hover>`), coupé sous `prefers-reduced-motion`.
 
+**✋ Je viens + retour CRM des documents (v1.23.0, 17/11/2026)** — JB : « pouvoir m'inviter moi-même », « tout le monde doit pouvoir s'inscrire à n'importe laquelle des réunions, Rabat, Casa, Fès », « le bouton retour CRM des documents ne marche pas au téléphone ».
+- Migration `20261117410000_equipe_inscription_reunion.sql` : `invites.profil_id` (unique par réunion), RPC `cap_equipe_inscrire(p_reunion, p_viens)`. Fiche réunion : `equipeViensBloc(m)` (réunion à venir, pas visiteur, pas en aperçu) → `equipeViens(id, oui)`. `mapGuest` porte `profilId`. Banc `viens.mjs` 12/12.
+- `documents.html` : `retourCRM()` revient à l'onglet du CRM qui l'a ouvert (`window.opener`), sinon `history.back()`, sinon `/` avec `sessionStorage cap-lanc-skip` (lancement.js saute alors l'animation d'ouverture une fois).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

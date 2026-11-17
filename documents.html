@@ -132,7 +132,7 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 </head>
 <body>
 <header class="tete"><div class="tete-in">
-  <div class="marque"><img src="logo-globe-192.png" alt=""><span>Club d'Affaires Protéine Maroc</span><a href="/" id="retour-crm">↩ CRM</a></div>
+  <div class="marque"><img src="logo-globe-192.png" alt=""><span>Club d'Affaires Protéine Maroc</span><a href="/" id="retour-crm" onclick="return retourCRM(event)">↩ CRM</a></div>
   <div><h1>Documents du réseau</h1><p id="sous">Les documents dont les groupes ont besoin : kits, formulaires, présentations, règlements.</p></div>
   <div class="outils" id="outils" hidden>
     <label class="cherche"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A6E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Chercher un document…" aria-label="Chercher un document"></label>
@@ -422,6 +422,13 @@ async function acces(id){
   dessiner();
 }
 demarrer();
+</script>
+<script>
+/* v1.23 : « ↩ CRM » revient à l'onglet du CRM déjà ouvert (sans relancer l'appli ni l'animation d'ouverture) */
+function retourCRM(e){
+  try{if(window.opener&&!window.opener.closed&&window.opener.location.origin===location.origin){window.opener.focus();window.close();setTimeout(()=>{if(!window.closed){try{sessionStorage.setItem("cap-lanc-skip","1")}catch(x){}location.href="/"}},400);return false}}catch(x){}
+  try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1){history.back();return false}}catch(x){}
+  try{sessionStorage.setItem("cap-lanc-skip","1")}catch(x){}return true}
 </script>
 </body>
 </html>

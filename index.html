@@ -2165,6 +2165,12 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.28 liens de données*/.lien-d{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px;border-radius:4px}
+.lien-d:hover{color:var(--crimson-txt,var(--crimson));text-decoration-style:solid}
+.lien-z{cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s}.lien-z:hover{transform:translateY(-2px);border-color:var(--crimson-tint);box-shadow:0 8px 20px rgba(92,10,24,.09)}
+.lien-d:focus-visible,.lien-z:focus-visible{outline:2px solid var(--crimson-txt,var(--crimson));outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.lien-z{transition:none}.lien-z:hover{transform:none}}
+/*v1.27*/.viens-eq{font-size:12.5px;color:var(--muted);margin:10px 0 -2px}.viens-eq b{color:var(--ink);font-weight:700;margin-right:6px}
 /*v1.25.1 : au téléphone, quand le choix de région est affiché, l'heure de la barre du haut s'efface (le bouton Paramètres sortait de l'écran) ; liens du fil d'Ariane et des lignes plus hauts sous le doigt */
 @media(max-width:600px){.vue-reg-sel:not(.hidden)~.tb-clock{display:none}}
 @media(max-width:899px){.fil-c{padding:9px 0}.rl-links button,.rl-links a{padding:9px 0}.rl-links{row-gap:0}}
@@ -2283,8 +2289,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.26.1";
+const APP_VERSION="1.28.0";
 const CHANGELOG=[
+  {v:"1.28.0",date:"17 novembre 2026",notes:{"Ajouté":["Tout ce qui nomme une donnée y mène : un nom de groupe, d'animateur, de lieu ou de membre ouvre sa fiche, où qu'il soit écrit (planning de la région, fiches, rapport du mois, demandes, panneau de droite).","Les tuiles chiffrées de Mon groupe et des fiches ouvrent la liste qu'elles comptent ; le texte d'une carte de réunion ouvre la réunion."]}},
+  {v:"1.27.0",date:"17 novembre 2026",notes:{"Modifié":["« À traiter » se compte partout de la même façon : la pastille du menu Réseau, le filtre des Clubs et le panneau de droite donnent le même nombre de groupes ; le bandeau d'accueil additionne groupes, bilans, adhésions et comptes à embarquer.","Une personne membre de plusieurs groupes compte une fois dans les totaux du réseau et de la région.","« Je viens » : l'équipe inscrite apparaît dans « Équipe présente », elle n'est plus comptée parmi les invités.","Équipe : la direction a sa propre rubrique, elle ne gonfle plus le nombre d'animateurs.","Mon groupe et Mon espace membre s'ouvrent sur le groupe dont la réunion est la plus proche.","Synthèse : trois raccourcis (Présenter, Carte, Rapport du mois) ; Constellation rejoint Carte, Zones et Lancements dans Réseau ; Rendement passe dans Paramètres → Personnel."]}},
   {v:"1.26.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
   {v:"1.26.0",date:"17 novembre 2026",notes:{"Ajouté":["Espace membre aux couleurs du CRM : il suit le thème choisi dans le CRM (Graphite par défaut), logo clair en thème sombre.","Annuaire du réseau dans l'espace membre : « Ma région » ou « Tout le réseau » (classé par région), recherche dès les premières lettres sur le nom, le prénom, le métier ou l'activité, avec des propositions (métiers et membres) à choisir au clavier ou au doigt."],"Amélioré":["Téléphones affichés partout de la même façon : +212 6 61 23 45 67, quelle que soit la saisie ; numéros étrangers sur le même modèle (+33 6 57 76 26 40). Les numéros enregistrés ne changent pas."]}},
   {v:"1.25.0",date:"17 novembre 2026",notes:{"Ajouté":["Points sur activité (Équipe → Points sur activité) : le directeur de région ouvre une plage (ex. mardi 9h-12h) découpée en créneaux de 30 ou 45 min ; les animateurs de sa région réservent le leur (en ligne par Zoom par défaut, sur place ou au téléphone) ; le lien Zoom se pose quand on veut (🔗), sur un créneau ou sur tous ; le directeur est notifié à chaque réservation ou annulation et voit le nom de chacun.","Menu burger du téléphone en rubriques colorées qui se déplient, comme sur l'ordinateur.","L'espace membre devient une page du CRM (Mon groupe → Mon espace membre) : il s'ouvre dans la zone principale, menu du CRM à gauche, plus d'onglet ni de second CRM. « ↩ CRM » ramène à la Synthèse.","Synthèse : bandeau « recommandations reçues à traiter » pour la personne connectée qui est aussi membre ; un clic ouvre directement ses recommandations reçues.","Cloisonnement : l'envoi au national, les leads, le classeur des PDF et les archives sont réservés à la direction ; les animateurs gardent leur groupe, l'agenda, les demandes et l'équipe."]}},
@@ -2830,7 +2838,7 @@ const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
@@ -2875,7 +2883,7 @@ async function loadDB(){
   try{const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
     if(!rr.error){DB.recos=rr.data||[];DB._recosVus=true}if(!pp.error)DB.presences=pp.data||[];}catch(e){console.warn(e)}
   const byR={};DB.reunions.forEach(m=>byR[m.id]=m);
-  (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)m.guests.push(mapGuest(g))});
+  (ic.data||[]).forEach(g=>{const m=byR[g.reunion_id];if(m)(g.profil_id?m.equipe:m.guests).push(mapGuest(g))}); // v1.27 : l'équipe inscrite (« Je viens ») est à part, hors décompte des invités
 }
 
 /* ============================================================
@@ -3275,7 +3283,7 @@ function viewRegion(){
   /* v0.42.0 : même interface que la vue nationale (chiffres, à traiter, croissance, équipe), filtrée sur la région,
      plus ce qui n'a de sens qu'à l'échelle régionale : le tableau des groupes et le planning. */
   const nbV=new Set(cl.map(c=>c.ville)).size,nbA=new Set(cl.map(c=>c.animId).filter(Boolean)).size;
-  const band=`<div class="vn-band reg"><small>Vue régionale</small><b>${esc(R.nom)}</b><span>${nbV} ville${nbV>1?"s":""} · ${cl.length} groupe${cl.length>1?"s":""} (${actifs} actif${actifs>1?"s":""}) · ${nbA} animateur${nbA>1?"s":""} · ${DB.membres.length} membre${DB.membres.length>1?"s":""}</span>${vuePeutBasculer()?`<button class="btn ghost mini" onclick="vueChoisir('nat')">🌍 Passer à la vue nationale</button>`:""}</div>`;
+  const band=`<div class="vn-band reg"><small>Vue régionale</small><b>${esc(R.nom)}</b><span>${nbV} ville${nbV>1?"s":""} · ${cl.length} groupe${cl.length>1?"s":""} (${actifs} actif${actifs>1?"s":""}) · ${nbA} animateur${nbA>1?"s":""} · ${nbPersonnes(DB.membres)} membre${nbPersonnes(DB.membres)>1?"s":""}</span>${vuePeutBasculer()?`<button class="btn ghost mini" onclick="vueChoisir('nat')">🌍 Passer à la vue nationale</button>`:""}</div>`;
   const groupes=dashSec("groupes","🏛","Les groupes de la région","Du plus urgent au plus calme · touche une ligne pour ouvrir le groupe",
     `${todo.length?`<div class="vr-todo in">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:""}<div class="vr-tab in"><div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${tri.map(ligne).join("")}</tbody></table></div></div>`);
   const plan=dashSec("plan","📆","Planning de la région","Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir ou planifier",
@@ -3605,7 +3613,10 @@ function viewReunions(){
    ============================================================ */
 const METIERS_OFF=["- Autre -", "Accompagnement VAE", "Administrateur de biens", "Agence de communication", "Agence de communication par la bande dessinée", "Agence de communication par l’objet", "Agence de communication web", "Agence de marketing sportif", "Agence de naming", "Agence de presse", "Agence de production audiovisuelle", "Agence de publicité print", "Agence de sécurité, surveillance et gardiennage", "Agence de traduction", "Agence de voyages", "Agence de webmarketing", "Agence e-commerce", "Agence intérim", "Agence SEO", "Agence social media", "Agence événementielle", "Agent commercial", "Agent General d'Assurance", "Agent ou mandataire immobilier d'entreprise", "Agent ou mandataire immobilier particulier", "Agent prévoyance et patrimoine", "Animateur", "Architecte", "Architecte d'intérieur", "Artisan conserveur", "Ascensoriste", "Assistance Pare-Brise", "Assistant administratif", "Assistant à maîtrise d'ouvrage AMO", "Assistante sociale", "Assureur des personnes", "Assureur IARD", "Assureur prévoyance", "Audioprothésiste", "Auditeur énergétique", "Avocat en droit bancaire et boursier", "Avocat en droit collaboratif", "Avocat en droit commercial", "Avocat en droit de l'arbitrage", "Avocat en droit de l'environnement", "Avocat en droit de l'urbanisme", "Avocat en droit de la famille, des personnes et de leur patrimoine", "Avocat en droit de la fiducie", "Avocat en droit de la propriété intellectuelle", "Avocat en droit de la santé", "Avocat en droit de la sécurité et de la protection sociale", "Avocat en droit des affaires", "Avocat en droit des associations et des fondations", "Avocat en droit des assurances", "Avocat en droit des garanties, des sûretés et des mesures d'exécution", "Avocat en droit des nouvelles technologies, de l'informatique et de la communication", "Avocat en droit des sociétés", "Avocat en droit des transports", "Avocat en droit des étrangers et de la nationalité", "Avocat en droit du crédit et de la consommation", "Avocat en droit du dommage corporel", "Avocat en droit du sport", "Avocat en droit du travail", "Avocat en droit fiscal et droit douanier", "Avocat en droit immobilier", "Avocat en droit international et de l'Union européenne", "Avocat en droit privé", "Avocat en droit public", "Avocat en droit pénal", "Avocat en droit routier", "Avocat en droit rural", "Avocat en droit social", "Avocat en droit équin", "Avocat en responsabilité civile", "Avocat en risques industriels", "Avocat généraliste", "Banquier", "Barista", "Bijoutier-joaillier", "Bureau d'études Génie civil", "Bureau d'études thermiques", "Bureau d'études VRD", "Bétuliculteur", "Cabinet de portage salarial", "Cabinet de recrutement", "Carreleur", "Carrossier", "Cartomencienne", "Caviste", "CE externalisé", "Centre de beauté", "Centre de réalité virtuelle", "Chargé de recouvrement de créances", "Charpentier", "Chasseur de trésors", "Chasseur immobilier", "Chauffagiste", "Chef de projet agencement", "Chiropracteur", "Chirurgien-dentiste", "Chocolatier", "Climaticien", "Coach", "Coach d'entepreneurs et sportifs haut niveau", "Coach de dirigeants", "Coach de transition professionnelle et carrière", "Coach de vie", "Coach de vie amoureuse", "Coach en organisation", "Coach en rangement", "Coach exécutif", "Coach professionnel", "Coach sportif", "Coach sportif en entreprise", "Coach vocal", "Commercial externalisé", "Commissaire aux comptes", "Commissaires-priseurs", "Community Manager", "Conception et vente de chalets en bois haut de gamme", "Concessionnaire automobile", "Concierge privé", "Conseil en gestion et développement d'entreprise", "Conseil en propriété industrielle", "Conseil en Stratégie et Développement Commercial", "Conseiller d'orientation", "Conseiller en automobile", "Conseiller en entreprise", "Conseiller en financement institutionnel", "Conseiller en formation", "Conseiller en gestion de patrimoine", "Conseiller en image et habillement", "Conseiller en investissements", "Conseiller en nutrition", "Conseiller en économie collaborative et de partage", "Conseiller expert retraite", "Conseiller immobilier", "Conseiller juridique", "Conseillère santé et bien-être", "Constructeur Maisons individuelles", "Consultant commercial", "Consultant en alcools", "Consultant en bilan de compétences", "Consultant en gestion d'entreprise", "Consultant en immobilier d’entreprise", "Consultant en Lean Management", "Consultant en management", "Consultant en marketing", "Consultant en organisation", "Consultant en prévention des risques professionnels", "Consultant en recrutement", "Consultant en relations humaines", "Consultant en relations professionnelles", "Consultant en stratégie de développement", "Consultant en stratégie et en innovation", "Consultant en système d'information et de développement informatique", "Consultant en sécurité et santé au travail", "Consultant en transformation d'entreprise", "Consultant en transformation digitale", "Consultant en transition professionnelle", "Consultant en évolution professionnelle", "Consultant export", "Consultant qualité", "Consultant ressources humaines", "Consultant RSE", "Consultant santé", "Consultante en transition alimentaire durable", "Contractant général", "Contrôle des équipements ludiques et sportifs", "Contrôle technique automobile", "Coordonnateur SPS", "Courtier en assurances", "Courtier en financement", "Courtier en financement immobilier", "Courtier en financement pro", "Courtier en prêt immobilier", "Courtier en travaux", "Courtier en valeurs mobilières", "Courtier en énergie", "Courtier Télécom Professionnel", "Courtier valeurs mobilières", "Couvreur", "Créateur de coffrets cadeaux pour particuliers et entreprises", "Créateur de marque", "Créateur de site internet", "Créateur de visites virtuelles et capture 3D", "Créateur verrier", "Création de Podcast", "Créatrice de couettes en Laine", "Cuisiniste concepteur et installateur", "Dentiste", "Designer d'intérieur", "Designer global", "Designer graphique", "Diagnostiqueur immobilier", "Directeur Commercial Externalisé", "Distributeur / loueur de matériel BTP", "Distributeur / loueur de matériel d'impression", "Distributeur / loueur de matériel de manutention", "Distributeur d'objets publicitaires", "Distributeur de cigarette électronique", "Distributeur de fourniture de bureau", "Distributeur de matériel informatique", "Distributeur de poêles à bois et à granulés", "Distributeur de produits et consommables d'hygiène", "Distributeur de produits et consommables médicaux", "Distributeur de produits pour l'équilibre alimentaire", "Distributeur de solution de café", "Distributeur en peintures", "Distributeur et installateur d'aménagements intérieurs", "Distributeur et installateur de cheminées", "Distributeur et installateur de poêles à granules", "Distributeur et installateur de salle de bains", "Distributeur et installateur de véranda / pergola", "Distributeur textile", "Domoticien", "DRH externalisé", "DSI externalisé", "Débouchage de canalisation et inspection Vidéo", "Décorateur(rice) intérieure", "Délégué à la protection des données RGPD", "Déménageur", "Détective privé", "Développeur d'applications", "Développeur d'applications mobiles", "Développeur de progiciels", "Développeur d’applications web", "Ecole de commerce", "Ecole de musique", "Equicoach", "Espace coworking", "Expert comptable", "Expert en assurance", "Expert en bâtiment", "Expert en cession et reprise d’entreprise", "Expert en gestion de données dématérialisées", "Expert en stratégie d'entreprise et RH", "Expert en stratégie de marque", "Expert en sécurité informatique", "Expert en évaluation d'entreprise", "Expert en évaluation immobilière", "Expert financier d'entreprise", "Fabricant de menuiseries", "Fabricant de supports de communication", "Fabricant et distributeur de produits cosmétiques bio", "Fabricant textile", "Fabrication et livraison de produits frigorigènes", "Facilitateur de travaux de rénovation", "Façadier", "Ferronnier", "Fleuriste", "Formateur", "Formateur art oratoire", "Formateur en anglais", "Formateur en bureautique", "Formateur en communication", "Formateur en cuisine", "Formateur en informatique", "Formateur en management", "Formateur en marketing", "Formateur manutention", "Formation Droit Social", "Fournisseur d'éclairage à led", "Fournisseur d'équipements industriels", "Fournisseur de débit de boisson", "Fournisseur de vêtements professionnels de protection et de sécurité", "Frigoriste - Chauffagiste", "Gestion d’organisme de formation", "Gestionnaire de biens locatifs", "Gestionnaire de copropriété", "Gestionnaire de paie", "Grossiste en vins et spiritueux", "Grossiste Peintures", "Géomètre expert", "Huissier de justice", "Hypnotiseur", "Hébergeur web", "Hôtelier", "Imprimeur", "Incubateur de formateurs", "Kinésithérapeute", "Labellisation d'entreprise", "Loueur d'espace de coliving", "Loueur d'espaces de stockage", "Loueur de bateaux", "Loueur de matériel de réceptions", "Loueur de trottinette", "Loueur de voitures", "Magasin d'ameublement", "Manager de Transition", "Mandataire automobile", "Marchand de biens", "Marketing olfactif", "Masseur", "Maçon", "Maître d'œuvre", "Menuisier (menuiseries extérieures)", "Menuisier (menuiseries intérieures)", "Monteur de mobilier", "Multiservices", "Mutuelle", "Médecin généraliste", "Médiateur", "Médium", "Métallier", "Naturopathe", "Neuropédiatre", "Notaire", "Objets déco et art de la table", "Office manager", "Opticien", "Opérateur de démolition", "Organisation d'événements", "Organisme de formation", "Ostéopathe", "Parc de loisirs", "Parfumeur", "Paysagiste", "Peintre", "Photographe", "Pisciniste", "Plaquiste", "Plombier", "Plâtrier", "Poseur installateur de fermetures pour professionnels et particuliers", "Prestataire de solutions de signature électronique", "Promoteur", "Prospection téléphonique externalisée", "Préventeur QHSE", "Psychologue", "Pâtissier", "Pédiatre", "Ravaleur", "Responsable d'établissement touristique", "Restaurateur", "Restaurateur du patrimoine", "Régie publicitaire", "Rénovation promotion immobilière spéciale riad", "Rénovation tous corps d'état", "Salle de sport", "Secrétariat externalisé", "Serrurier métallier", "Service de Carte Grise", "Services d'aide à domicile", "Social media manager", "Société de nettoyage", "Sophrologue", "Spécialiste coiffure", "Spécialiste de l'agencement intérieur", "Spécialiste de l'assainissement", "Spécialiste de l'entretien de véhicules", "Spécialiste de l'infogérance informatique", "Spécialiste de l'étanchéité", "Spécialiste de la chaîne du froid", "Spécialiste de la garde d'enfants", "Spécialiste de la publicité Google", "Spécialiste de l’entretien de jardin et d’espaces verts", "Spécialiste des fondations", "Spécialiste des systèmes d'encaissement et de monétique", "Spécialiste des travaux acrobatiques", "Spécialiste des travaux d'isolation", "Spécialiste des travaux de revêtement des sols et des murs", "Spécialiste du marquage publicitaire", "Spécialiste du nettoyage de vitres", "Spécialiste du pneumatique", "Spécialiste du sommeil", "Spécialiste du traitement des nuisibles", "Spécialiste d’impressions d’étiquettes", "Spécialiste en automatismes", "Spécialiste en nettoyage de véhicules", "Spécialiste en photovoltaïque", "Spécialiste en produits signalétiques et photoluminescents", "Spécialiste en signalétique", "Spécialiste en systèmes anti-intrusion", "Spécialiste en sécurité et sûreté", "Spécialiste en zinguerie", "Staffeur ornemaniste", "Styliste", "Tapissier d'ameublement", "Tarologue", "Technicien de maintenance informatique", "Technicien réseaux et télécoms", "Terrassier", "Thérapeute bien-être", "Torréfacteur", "Traducteur en anglais", "Traiteur", "Transport de personnes", "Transporteur", "Urbaniste", "Vendeur d'emballages sécurisés et recyclés", "Vendeur de cycles", "Vendeur à domicile indépendant", "Viagériste", "Vidéaste", "Voix off", "Webdesigner", "Ébéniste", "Éditeur", "Électricien", "Éleveur de chevaux", "Épicier"];
 const GRP_ONGLETS=[["bord","📊","Tableau de bord"],["cal","🗓","Calendrier"],["membres","👥","Membres & métiers"],["cr","📝","Comptes rendus"],["affaires","🤝","Affaires"],["fil","💬","Discussion"]];
-function grpClub(){const l=reuClubs();if(!l.length)return null;return l.find(c=>c.id===window._grpId)||l[0]}
+function grpClub(){const l=reuClubs();if(!l.length)return null;return l.find(c=>c.id===window._grpId)||grpParDefaut(l)}
+/* v1.27 : sans choix, on ouvre le groupe dont la prochaine réunion est la plus proche, sinon celui qui a le plus de membres */
+function grpParDefaut(l){const pro=c=>{const d=DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").map(r=>r.date).sort()[0];return d||"9999"},nb=c=>DB.membres.filter(m=>m.clubId===c.id).length;
+  return l.slice().sort((a,b)=>pro(a).localeCompare(pro(b))||nb(b)-nb(a)||a.nom.localeCompare(b.nom))[0]}
 function grpOng(){return GRP_ONGLETS.some(o=>o[0]===window._grpOng)?window._grpOng:"bord"}
 function grpAller(id,ong){window._grpId=id;if(ong)window._grpOng=ong;if(tab!=="reunions")go("reunions");else render()}
 function grpOnglet(k){window._grpOng=k;render();const z=document.querySelector(".grp-corps");if(z)z.scrollIntoView({block:"nearest"})}
@@ -4245,6 +4256,8 @@ function rowToggle(btn){const r=btn.closest(".rl-row"),o=!r.classList.contains("
   if(o){r.classList.add("open");btn.setAttribute("aria-expanded","true")}}
 function clubTone(c){if(!c.animId||!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"urgent";return clubNextAction(c).act?"todo":"ok"}
 function clubIco(c,ton){return !c.animId?"👤":ton==="urgent"?"📅":ton==="todo"?"🔔":"✓"}
+function nbPersonnes(l){const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();return new Set((l||[]).map(m=>m.animId?"a:"+m.animId:"n:"+nom(m.nom))).size} // v1.27
+function animsTerrain(){return DB.animateurs.filter(a=>a.ville||DB.clubs.some(c=>c.animId===a.id))} // v1.27 : sans la direction (ni ville ni groupe)
 function membreAJour(m){return m.formulaire&&m.contrat&&m.facture&&m.paiement}
 function clubRow(c,i){
   const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date));
@@ -4264,10 +4277,10 @@ function clubRow(c,i){
     </div></div></div></div>`;
 }
 /* Pastille sur l'onglet Clubs : clubs sans animateur ou sans réunion à venir. */
-function navBadges(){const n=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&clubTone(c)==="urgent").length;
+function navBadges(){const n=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&clubTone(c)!=="ok").length; // v1.27 : même compte que le filtre « À traiter » des Clubs
   document.querySelectorAll('.nav button[data-tab="clubs"],.nav button.nav-rub[data-rub="res"]').forEach(b=>{
   let e=b.querySelector(".nav-badge");if(!n){if(e)e.remove();return}
-  if(!e){e=document.createElement("span");e.className="nav-badge";b.appendChild(e)}e.textContent=n;e.title=n+" club"+(n>1?"s":"")+" sans animateur ou sans réunion"})}
+  if(!e){e=document.createElement("span");e.className="nav-badge";b.appendChild(e)}e.textContent=n;e.title=n+" groupe"+(n>1?"s":"")+" à traiter"})}
 function fchip(l,v,n){return `<button class="chip ${filter===v?"on":""}" onclick="filter='${v}';render()">${esc(l)}${n!==undefined?`<em>${n}</em>`:""}</button>`}
 function viewClubs(){
   const ids=scopedClubIds();
@@ -4377,7 +4390,7 @@ function animRow(a,i){
     </div></div></div></div>`;
 }
 function viewTeam(){
-  let anims=[...DB.animateurs];const wide=isWide();let k=0;
+  let anims=animsTerrain();const wide=isWide();let k=0;const direction=DB.animateurs.filter(a=>!anims.includes(a)).sort((a,b)=>a.nom.localeCompare(b.nom));
   const groups={};
   anims.forEach(a=>{const zn=zoneNomForVille(a.ville);(groups[zn]=groups[zn]||[]).push(a)});
   const zoneOrder=DB.zones.map(z=>z.nom).concat("Autres régions");
@@ -4393,7 +4406,7 @@ function viewTeam(){
     <div class="${wide?"grid two":"rl"}">${libres.map(c=>`<div class="rl-row" style="--vc:${villeColor(c.ville)}"><button class="rl-h" onclick="openClub('${c.id}')"><span class="rl-emb">${esc(initiales(c.nom.replace(/^CAP\s+/,"")))}</span><span class="rl-t"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)} · <span class="rl-no">animateur à nommer</span></small></span><span class="rl-ind"><span class="rl-flag urgent"></span></span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:"";
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Équipe</div><h2>Animateurs</h2><p>${anims.length} animateur${anims.length>1?"s":""}</p></div></div>
     <div class="searchbar">${ICO_LOUPE}<input id="tm-q" type="search" data-pred="equipe" autocomplete="off" placeholder="Tape les premières lettres d'un animateur, d'un club…"></div>
-    ${sections||emptyState("Aucun animateur","")}${pourvoir}<div style="height:8px"></div></div>`;
+    ${sections||emptyState("Aucun animateur","")}${direction.length?`<div class="month-label">Direction <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${direction.length}</span></div>${wide?animsTable(direction):`<div class="rl">${direction.map(a=>animRow(a,k++)).join("")}</div>`}`:""}${pourvoir}<div style="height:8px"></div></div>`;
 }
 
 function emptyState(t,p){return `<div class="empty"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><b>${t}</b><p>${p}</p></div>`}
@@ -4412,7 +4425,7 @@ function dashStats(clubs){
     actifs:clubs.filter(c=>c.statut==="actif").length,
     creation:clubs.filter(c=>c.statut==="creation").length,
     sansAnim:clubs.filter(c=>!c.animId).length,
-    membres:membres.length,
+    membres:nbPersonnes(membres),
     payes:membres.filter(m=>m.paiement).length,
     membresMois:membres.filter(m=>m.createdAt&&m.createdAt.slice(0,7)===isoJour(new Date()).slice(0,7)).length,
     reunionsAvenir:reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee").length,
@@ -4814,7 +4827,7 @@ var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
-    !ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Constellation","openConstellation()"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
+    !ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
   if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
     return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
@@ -4823,8 +4836,8 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[it("Carte","openCarte()"),nat&&it("Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
-  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()"),sup&&it("Rendement","openRendement()")].filter(Boolean);
+  if(r==="res")return[it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it("Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","window.open('documents.html','_blank')"),it("Vidéos de prise en main","window.open('documents.html#videos','_blank')"),it("Visite guidée","openAide()")];
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
@@ -5023,14 +5036,14 @@ function dashCountUp(root){
 function viewDashboard(reg){
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
   let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>${reg?"Ma région":"Synthèse"}</h2></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0">${SESSION.role==="superadmin"?`<button class="btn ghost mini" onclick="openRendement()">💰 Rendement</button>`:""}${SESSION.role!=="visiteur"?`<button class="btn ghost mini" onclick="openAdhesions()">📝 Adhésions${adhNouvelles()?` <b style="background:var(--crimson);color:#fff;border-radius:99px;padding:1px 7px;font-size:11px">${adhNouvelles()}</b>`:""}</button>`:""}<button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0"><button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>
     <div class="searchbar dash-q">${ICO_LOUPE}<input id="ds-q" type="search" data-pred="tout" autocomplete="off" placeholder="Rechercher partout : membre, groupe, demande, animateur, lieu…"></div>`;
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
   html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte();
-  const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${DB.animateurs.length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
+  const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
   const todo=dashSec("todo","⚡","À traiter","Ce qui attend une action, région par région",dashATraiter(sc),"dash-todo");
@@ -5319,14 +5332,14 @@ async function psaAnnuler(id){const {error}=await sb.rpc("cap_psa_annuler",{p_id
 /* v1.23 : chaque compte de l'équipe s'inscrit lui-même à n'importe quelle réunion du réseau (RPC cap_equipe_inscrire) */
 function equipeViensBloc(m){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";
   const avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";if(!avenir)return"";
-  const moi=(m.guests||[]).find(g=>g.profilId===SESSION.id);
-  return `<div class="viens ${moi?"on":""}">${moi?`<span>✓ Tu es inscrit à cette réunion</span><button class="btn ghost mini" onclick="equipeViens('${m.id}',false,this)">Je ne viens plus</button>`
+  const eq=m.equipe||[],moi=eq.find(g=>g.profilId===SESSION.id);
+  return `${eq.length?`<div class="viens-eq"><b>Équipe présente · ${eq.length}</b> ${eq.map(g=>esc(g.nom)).join(", ")}</div>`:""}<div class="viens ${moi?"on":""}">${moi?`<span>✓ Tu es inscrit à cette réunion</span><button class="btn ghost mini" onclick="equipeViens('${m.id}',false,this)">Je ne viens plus</button>`
     :`<span>Tu veux y aller ?</span><button class="btn" onclick="equipeViens('${m.id}',true,this)">✋ Je viens</button>`}</div>`}
 async function equipeViens(id,oui,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)return;if(btn)btn.disabled=true;
   const {data,error}=await sb.rpc("cap_equipe_inscrire",{p_reunion:id,p_viens:oui});
   if(error){if(btn)btn.disabled=false;toast(rlsMsg(error),"e");return}
-  m.guests=(m.guests||[]).filter(g=>g.profilId!==SESSION.id);
-  if(oui)m.guests.push({_id:data.invite_id,nom:SESSION.name,tel:"",par:"Équipe CAP",statut:"Intéressé",entreprise:"",metier:"",note:"Inscrit lui-même depuis le CRM",profilId:SESSION.id});
+  m.equipe=(m.equipe||[]).filter(g=>g.profilId!==SESSION.id);
+  if(oui)m.equipe.push({_id:data.invite_id,nom:SESSION.name,tel:"",par:"Équipe CAP",statut:"Intéressé",entreprise:"",metier:"",note:"Inscrit lui-même depuis le CRM",profilId:SESSION.id});
   toast(oui?"Tu es inscrit · "+ldReuLib(m):"Inscription retirée","s");meetingDetail(m,canEditReunion(m));render()}
 function natInvBloc(m){
   const su=SESSION&&(SESSION.role==="superadmin"||(!readOnly()&&canEditReunion(m))),n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
@@ -5800,7 +5813,8 @@ function viewEspace(){const F=mesFiches(),u=window._espUrl||"";
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href^="membre.html#"]');if(!a||e.ctrlKey||e.metaKey)return;e.preventDefault();espaceOuvrir(a.getAttribute("href"))},true);
 /* v1.25 : recommandations reçues par la personne connectée (ses fiches membre), à traiter depuis la Synthèse. */
 function mesFiches(){if(!SESSION||!DB)return[];const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(),moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
-  return DB.membres.filter(m=>(SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi))}
+  const cl=id=>DB.clubs.find(c=>c.id===id),ordre=(m=>{const c=cl(m.clubId);const d=c?DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").map(r=>r.date).sort()[0]:null;return (m.userId===SESSION.id?"0":"1")+(d||"9999")});
+  return DB.membres.filter(m=>(SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi)).sort((a,b)=>ordre(a).localeCompare(ordre(b)))} // v1.27 : la fiche déjà reliée au compte d'abord (l'ouvrir ne déplace plus le rattachement)
 function mesRecosATraiter(){const ids=new Set(mesFiches().map(m=>m.id));return (DB.recos||[]).filter(r=>ids.has(r.a)&&["envoyee","contact","devis"].includes(r.statut))}
 function dashMesRecos(){if(SESSION&&SESSION._voir)return"";const L=mesRecosATraiter();if(!L.length)return"";const ST={envoyee:"Nouvelle",contact:"Contacté",devis:"Devis envoyé"};
   const de=id=>{const m=DB.membres.find(x=>x.id===id);return m?m.nom:"Un membre"};
@@ -6865,7 +6879,7 @@ function dashBonjour(){
   const h=new Date().getHours(),sal=h<5||h>=18?"Bonsoir":"Bonjour";
   const prenom=(SESSION.name||"").split(/[ @.]/)[0];
   const ids=new Set(_dashScope.nat||[]);
-  const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
+  const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:adhAIntegrer().length+adhASaisir().length+reunionsSansBilan().filter(r=>ids.has(r.clubId)).length+(SESSION.role==="superadmin"?(DB.aEmbarquer||0):0)); // v1.27 : groupes à traiter + bilans + adhésions + comptes à embarquer
   return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">
     <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span><canvas class="h-pts" aria-hidden="true"></canvas>
     <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?(readOnly()?`${n} point${n>1?"s":""} à suivre dans le réseau →`:`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`):"Rien ne presse aujourd'hui ✓"}</small></span>
@@ -6933,7 +6947,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("📚","Documents","window.open('documents.html','_blank')")}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${vuePeutBasculer()?t("🏆","Zones","openZones()")+t("🚀","Lancements","openLancements()"):""}${t("📄","Rapport du mois","openRapport()")}</div>`;
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","openRapport()")}</div>`; // v1.27 : le reste est dans le menu
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
@@ -7502,7 +7516,7 @@ async function openParametres(){
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","window.open('documents.html','_blank')")}</div>
     <div class="set-sec">Aide</div>
@@ -8041,6 +8055,58 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.28.0 — TOUT CE QUI NOMME UNE DONNÉE Y MÈNE.
+   Après chaque rendu (page, panneau de droite, fiche), lierDonnees() parcourt ce qui n'est pas déjà cliquable :
+   - un nom de groupe, d'animateur, de lieu ou de membre devient un lien vers sa fiche ;
+   - « Animé par X » et « … · Nom du groupe » aussi ;
+   - une tuile chiffrée de Mon groupe ou d'une fiche mène à la liste qu'elle compte ;
+   - le texte d'une carte de réunion ouvre la réunion, comme sa pastille de date.
+   Rien à déclarer écran par écran : un nouvel écran en profite d'office.
+   ============================================================ */
+function _ldNorm(t){return String(t||"").replace(/\s+/g," ").trim().toLowerCase()}
+function _ldIndex(){const ix={};if(!DB)return ix;
+  const pose=(k,v)=>{k=_ldNorm(k);if(k.length>3&&!(k in ix))ix[k]=v};
+  DB.clubs.forEach(c=>{pose(c.nom,"club:"+c.id);pose(c.nom.replace(/^CAP\s+/,""),"club:"+c.id)});
+  DB.animateurs.forEach(a=>pose(a.nom,"anim:"+a.id));
+  DB.lieux.forEach(l=>pose(l.nom,"lieu:"+l.id));
+  const vus={};DB.membres.forEach(m=>{const k=_ldNorm(m.nom);vus[k]=(vus[k]||0)+1});
+  DB.membres.forEach(m=>{if(vus[_ldNorm(m.nom)]===1)pose(m.nom,"mb:"+m.clubId+":"+m.id)});
+  return ix}
+const _LD_CLIC="button,a,[onclick],[role=button],[role=link],summary,select,input,label,textarea,.lien-d,.lien-z";
+function _ldTuile(e,lib){const t=_ldNorm(lib),dansFiche=!!e.closest("#sheet");
+  if(!dansFiche&&tab==="reunions"){const o=/membre/.test(t)?"membres":/affaire|recommandation|\bca\b|signée|en \d{4}$|taux/.test(t)?"affaires":/présent/.test(t)?"cr":/réunion|réalisée|à venir|sans bilan|invité/.test(t)?"cal":null;
+    return o&&o!==grpOng()?"grp:"+o:null}
+  if(dansFiche){if(/à intégrer/.test(t))return"adh:todo";if(/à saisir/.test(t))return"adh:saisie";
+    const mot=/membre|à jour/.test(t)?"membres":/réunion|prochaine/.test(t)?"réunions":/club/.test(t)?"clubs":null;
+    return mot?"def:"+mot:null}
+  return null}
+function lierDonnees(racine){if(!racine||!DB||!SESSION)return;const ix=_ldIndex();
+  const marque=(e,cible,z)=>{e.classList.add(z?"lien-z":"lien-d");e.dataset.lien=cible;e.tabIndex=0;e.setAttribute("role","link")};
+  racine.querySelectorAll(".grp-st,.fh-k").forEach(e=>{if(e.closest(_LD_CLIC))return;const l=e.querySelector("span,small:last-child");const c=_ldTuile(e,l?l.textContent:"");if(c)marque(e,c,true)});
+  racine.querySelectorAll(".reu-card .reu-t").forEach(e=>{if(e.closest(_LD_CLIC))return;if(e.parentElement.querySelector(".reu-d"))marque(e,"frere:.reu-d",true)});
+  const w=document.createTreeWalker(racine,NodeFilter.SHOW_TEXT);let n;const faits=new Set(),textes=[];while((n=w.nextNode()))textes.push(n);
+  for(n of textes){const e=n.parentElement;if(!e||faits.has(e)||e.closest(_LD_CLIC)||e.closest(".page-head,h1,h2,.ariane,.fil,option")||(e.closest(".fh-t h3")&&!e.closest(".fh").querySelector(".rl-date")))continue; // le titre d'une fiche ne mène pas à elle-même ; celui d'une réunion mène à son groupe
+    const t=_ldNorm(e.childElementCount?n.textContent:e.textContent);if(t.length<4)continue;
+    let c=ix[t];
+    if(!c){const m=t.match(/animé par (.+)$/)||t.match(/^de (.+)$/);if(m)c=ix[m[1]]}
+    if(!c){const i=t.lastIndexOf(" · ");if(i>0)c=ix[t.slice(i+3)];if(c&&!/^(club|lieu):/.test(c))c=null}
+    if(!c)continue;
+    if(e.childElementCount){const sp=document.createElement("span");sp.textContent=n.textContent;n.replaceWith(sp);faits.add(sp);marque(sp,c)}else{faits.add(e);marque(e,c)}}}
+function lienOuvrir(e){const c=e.dataset.lien||"",i=c.indexOf(":"),k=c.slice(0,i),v=c.slice(i+1);
+  if(k==="club")openClub(v);else if(k==="anim")openAnim(v);else if(k==="lieu")openLieu(v);
+  else if(k==="mb"){const p=v.split(":");memberSheet(p[0],p[1])}
+  else if(k==="grp")grpOnglet(v);else if(k==="adh")openAdhesions(v);
+  else if(k==="frere"){const b=e.parentElement.querySelector(v);if(b)b.click()}
+  else if(k==="def"){const z=document.querySelector("#sheet .sheet"),h=[...z.querySelectorAll(".sec-h,.dash-h,.month-label,h4,.fh-sec,.divider+*")].find(x=>x!==e&&_ldNorm(x.textContent).startsWith(v));
+    if(h)h.scrollIntoView({behavior:"smooth",block:"start"});else{const g=typeof grpClub==="function"&&v==="membres"?null:null;void g}}}
+document.addEventListener("click",ev=>{const e=ev.target.closest&&ev.target.closest(".lien-d,.lien-z");if(!e||ev.target.closest("button,a,select,input,label,textarea"))return;ev.preventDefault();lienOuvrir(e)});
+document.addEventListener("keydown",ev=>{if(ev.key!=="Enter"&&ev.key!==" ")return;const e=document.activeElement;if(e&&e.matches&&e.matches(".lien-d,.lien-z")){ev.preventDefault();lienOuvrir(e)}});
+/* Un observateur relance la passe à chaque changement de la page, du panneau de droite ou d'une fiche (rendu complet ou partiel). */
+{let _ldT=null;const passe=()=>{_ldT=null;if(!DB||!SESSION)return;try{["view","rail","sheet-content"].forEach(id=>lierDonnees(document.getElementById(id)))}catch(e){console.warn(e)}};
+ const ob=new MutationObserver(()=>{if(_ldT)return;_ldT=setTimeout(passe,80)});
+ ["view","rail","sheet-content"].forEach(id=>{const z=document.getElementById(id);if(z)ob.observe(z,{childList:true,subtree:true})})}
 </script>
 </body>
 </html>

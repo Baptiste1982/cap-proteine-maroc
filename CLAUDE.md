@@ -361,6 +361,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `membre.html` : formulaire en deux parties « L'affaire » / « Le contact » (`TYPES_RECO`, `ORIGINES`), carte avec objet en titre, pastilles (`.r-aff`), montant devisé (étape devis → `dv-<id>`), relance (`relancerReco`, `data-rrelance`). CRM : `RECO_COLS` + objet, type, origine, montant devisé, relance dans `grpRecoForm`.
 - Banc `bni.mjs` 32/32.
 
+**📝 Compte rendu par format + visite guidée (v1.8.0, 17/11/2026)** — JB : « fais tout dans l'ordre ». Le national n'a PAS d'écran de compte rendu (menu animateur relevé), ni d'annuaire des animateurs accessible avec le compte de JB.
+- `CR_CANEVAS` (business, conference, visite, info = SI/RL) + `CR_FIN` (décisions, points à suivre) ; `crChamps(m)`. L'intervenant / l'entreprise visitée sont pré-remplis avec `reunions.theme`. Les rubriques de l'ancien canevas (`CR_CHAMPS`) déjà remplies restent affichées.
+- 🐛 `crEnregistrer` remplaçait tout `compte_rendu` et effaçait `compte_rendu.bilan` : le bilan est gardé. Extrait de la liste des comptes rendus : seulement les rubriques texte (`typeof x==="string"`).
+- Visite guidée : navigation à jour, étapes « Le cycle du groupe », « Bilan et compte rendu », nouvelle partie `recos` (mécanique BNI, ce que voit le CRM, « Ton espace membre » : cible seulement si `maFiche` existe pour le groupe affiché).
+- Bancs `cr.mjs` 14/14, `tuto.mjs` 28/28.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

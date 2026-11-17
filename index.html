@@ -2047,8 +2047,11 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.7.0";
+const APP_VERSION="1.8.0";
 const CHANGELOG=[
+  {v:"1.8.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Le compte rendu de réunion suit son format. Business : tour de table, présentation métier, remerciements et affaires annoncées, tête-à-tête prévus. Conférence : intervenant et sujet, points clés, questions, suites. Visite d'entreprise : entreprise visitée, déroulé, ce qu'on retient, opportunités d'affaires. Session d'information : déroulé, retour des invités, invités à relancer. Toujours en fin : décisions du groupe et points à suivre.","La visite guidée présente le cycle des réunions, le bilan et le compte rendu, et une nouvelle partie « Recommandations » (la mécanique BNI, ce que voit le CRM, ton espace membre)."],
+    "Corrigé":["Enregistrer un compte rendu effaçait le bilan de la réunion (recos passées en réunion, montant, notes). Le bilan est maintenant gardé."]}},
   {v:"1.7.0",date:"17 novembre 2026",notes:{
     "Ajouté":["La fiche de recommandation reprend les champs du CRM national : type (mise en relation ou information commerciale), objet, précision, budget estimé, date limite, appel d'offres avec les entreprises consultées, origine (relationnel Protéine, interclub, speed business…), civilité, 2e téléphone et adresse du contact.","Le membre qui reçoit la reco note le montant du devis envoyé, puis le montant gagné, et une date de relance (en rouge quand elle est passée). Le CRM affiche l'objet et le montant devisé, jamais le nom du client.","Une réunion du cycle (business, conférence, visite) part au national en « Réunion des membres », avec son thème."]}},
   {v:"1.6.0",date:"17 novembre 2026",notes:{
@@ -2659,13 +2662,13 @@ async function bootIntoApp(){
    entier ou par partie. Chaque étape : un onglet à ouvrir, un élément à mettre en lumière, un texte. ── */
 let _tutoEnAttente=false,_tuto=null;
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
-const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Synthèse"],["agenda","📅","Agenda et réunions"],["clubs","🏛","Clubs et membres"],["adhesions","📝","Adhésions en ligne"],["lieux","📍","Lieux et équipe"],["reglages","⚙️","Paramètres"]];
+const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Synthèse"],["agenda","📅","Agenda et réunions"],["clubs","🏛","Clubs et membres"],["recos","🤝","Recommandations"],["adhesions","📝","Adhésions en ligne"],["lieux","📍","Lieux et équipe"],["reglages","⚙️","Paramètres"]];
 function tutoEtapes(partie){
   const r=SESSION.role,ed=tutoPeutEditer(),prenom=String(SESSION.name||"").split(" ")[0],mes=r==="animateur"?"tes clubs":"les clubs";
   const P={
     accueil:[
       {t:`Bienvenue ${prenom} 👋`,x:`Voici le CRM du réseau CAP Maroc : réunions, clubs, membres et adhésions au même endroit. La visite prend deux minutes${r==="visiteur"?" ; ton accès est en lecture seule":""}. Tu peux la revoir à tout moment dans Paramètres.`},
-      {go:"dash",c:"#nav",t:"La navigation",x:"Sept espaces : Synthèse, Agenda, Réunions, Clubs, Membres, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
+      {go:"dash",c:"#nav",t:"La navigation",x:"Les espaces : Synthèse, Agenda, Groupe, Clubs, Membres, Demandes, Lieux et Équipe. Sur téléphone ils sont en bas de l'écran."}],
     synthese:[
       {go:"dash",c:"#view .dsec-chiffres",t:"Quatre chapitres",x:"La Synthèse se lit en quatre blocs, chacun avec sa couleur : le réseau en chiffres, à traiter, croissance, l'équipe. L'interrupteur National / Régional au-dessus change le périmètre de tous les blocs."},
       {go:"dash",c:"#view .stat.link",t:"Les chiffres clés",x:"Chaque chiffre est cliquable : il ouvre la liste exacte qu'il compte."},
@@ -2675,7 +2678,9 @@ function tutoEtapes(partie){
     agenda:[
       {go:"reunions",c:'#nav [data-tab="reunions"]',t:"Mon groupe",x:"Ton poste de pilotage, un groupe à la fois : le tableau de bord (membres, réunions faites, présences, affaires échangées), le calendrier du groupe, les membres et les métiers représentés ou recherchés, les comptes rendus et les affaires. « Planifier en série » crée d'un coup les réunions des prochains mois."},
       {go:"agenda",c:'#nav [data-tab="agenda"]',t:"L'agenda",x:"Toutes les réunions : SI (Session d'Information) et RL (Réunion de Lancement), avec leur statut : planifiée, confirmée, réalisée ou annulée."},
-      ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure et animateur."}]:[]),
+      ...(ed?[{go:"agenda",c:"#fab",t:"Planifier une réunion",x:"Le bouton + crée une réunion : club, lieu, date, heure, animateur, et pour un groupe en activité son format (business, conférence ou visite d'entreprise) avec l'intervenant ou l'entreprise visitée."},
+        {go:"reunions",c:'#view button[onclick="openPlanSerie()"]',t:"Le cycle du groupe",x:"« Planifier en série » cale toutes les réunions des prochains mois. Choisis « Cycle » : réunion business, conférence avec un intervenant extérieur, visite d'entreprise, puis business, et on recommence. La première réunion est une réunion business, tout le reste se cale seul sur 6 à 12 mois."},
+        {go:"reunions",t:"Bilan et compte rendu",x:"Après la réunion, le bilan prend une minute : présents, invités venus, adhésions, recos passées pendant la réunion et notes. Le compte rendu suit le format : tour de table et présentation métier pour une business, points clés pour une conférence, opportunités pour une visite."}]:[]),
       {go:"agenda",c:'#view [onclick^="openMeeting"], #cal .cal-corps',t:"Une réunion",x:"Le calendrier montre la semaine ou le mois : les flèches ‹ › changent de période. Ouvre une réunion pour suivre ses invités, de « à confirmer » jusqu'à « membre ». Une fois passée, renseigne son bilan : présents, invités venus, adhésions obtenues."}],
     clubs:[
       {go:"clubs",c:'#nav [data-tab="clubs"]',t:"Les clubs",x:`Chaque club montre son anneau de santé, ses membres, sa prochaine réunion et l'action utile à faire maintenant${r==="animateur"?" (tu vois tes clubs)":""}.`},
@@ -2683,6 +2688,10 @@ function tutoEtapes(partie){
       {go:"clubs",t:"Le dossier de chaque membre",x:`Dans la fiche d'un membre : ses étapes d'intégration (formulaire, contrat, facture, paiement), ses informations (entreprise, coordonnées) et ses documents : formulaire d'adhésion, contrat, contrat signé, autres pièces.${ed?" Tu peux compléter les informations et ajouter un document.":""}`},
       {go:"membres",c:'#nav [data-tab="membres"]',t:"L'annuaire des membres",x:`Tous les membres du réseau, tous clubs confondus. Cherche un nom, une entreprise, un métier ou une ville, puis ouvre sa fiche : pratique pour mettre deux membres en relation.`},
       {go:"membres",c:'#nav [data-tab="membres"]',t:"L'espace membre",x:`Chaque membre a son propre espace (annuaire, messages entre membres, invités à proposer). Dans sa fiche, section « Espace membre » : « Créer son code » donne un code d'accès à lui envoyer par WhatsApp. Il se connecte avec son mobile et ce code. La fiche te dit ensuite s'il s'est connecté.`}],
+    recos:[
+      {go:"clubs",t:"La mécanique des recos",x:"Comme au BNI : celui qui donne une recommandation l'a à son actif (CA transmis). Celui qui la reçoit est prévenu, la fait avancer (contact pris, devis, signée ou sans suite) et saisit lui-même le montant signé (son CA reçu)."},
+      {go:"clubs",t:"Ce que voit le CRM",x:"Les recos sont rangées par groupe : une étiquette avec le CA signé, qui se déplie sur le détail. On voit qui a recommandé qui, l'objet, l'étape et les montants, jamais le nom du client final : il reste entre les deux membres."},
+      ...(ed?[{go:"reunions",c:(()=>{try{const g=grpClub();return g&&maFiche(g.id)?'#view a[href^="membre.html#moi="]':undefined}catch(e){return undefined}})(),t:"Ton espace membre",x:"Si tu es aussi membre d'un groupe, « 🪪 Mon espace membre » ouvre ton espace en pleine page : donner une reco avec la fiche complète du contact (comme au CRM national), suivre celles que tu reçois, voir tes chiffres, ceux du groupe et de la région."}]:[])],
     adhesions:ed?[
       {go:"dash",c:isWide()?'#nav [data-tab="demandes"]':'#dem-btn',t:"Les demandes d'adhésion",x:`Le futur membre remplit le formulaire depuis le lien de son club ; sa demande et son PDF arrivent dans l'onglet Demandes, rangées en trois colonnes : à intégrer, à saisir au national, terminées. La prochaine action est en tête, la recherche trouve un nom, une entreprise ou un métier. Tu l'intègres au club en un clic : ses informations et son formulaire rejoignent son dossier.`},
       ...(r==="superadmin"?[{go:"dash",t:"Vers le CRM national",x:"Depuis une adhésion, « Envoyer au CRM national » crée le prospect, l'entreprise et la personne au national, puis génère le contrat. Le contrat est rangé dans le dossier du membre, prêt à imprimer et faire signer."}]:[])]:[],
@@ -3178,6 +3187,17 @@ async function openQuiConnecte(){
 const JOURS_LONG=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const RANGS={0:"chaque",1:"1er",2:"2e",3:"3e",4:"4e","-1":"dernier"};
 const CR_CHAMPS=[["deroule","Déroulé de la réunion","Ordre du jour, interventions, présentations de membres…"],["decisions","Décisions et recommandations","Mises en relation, affaires passées, décisions du groupe…"],["suivi","Points à suivre","Qui fait quoi d'ici la prochaine réunion"]];
+/* v1.8.0 : canevas du compte rendu selon le format de la réunion (déroulé d'un club d'affaires : tour de table,
+   présentation métier, remerciements…). Le national n'a pas d'écran de compte rendu : canevas maison, modifiable ici.
+   Les recos passées en réunion, le montant et les notes restent dans le bilan (compte_rendu.bilan). */
+const CR_FIN=[["decisions","Décisions du groupe","Calendrier, organisation, règles, cotisations…"],["suivi","Points à suivre","Qui fait quoi d'ici la prochaine réunion"]];
+const CR_CANEVAS={
+  business:[["tour","Tour de table","Les présentations de 60 secondes : ce que chacun cherche, les points marquants"],["presentation","Présentation métier","Qui a présenté son activité, ce qu'il faut retenir pour le recommander"],["remerciements","Remerciements et affaires annoncées","Affaires signées grâce au groupe, remerciements publics"],["tete_a_tete","Tête-à-tête prévus","Qui rencontre qui d'ici la prochaine réunion"]],
+  conference:[["intervenant","Intervenant et sujet",""],["points","Points clés à retenir","Les idées fortes de la conférence"],["questions","Questions et échanges","Ce qui a fait réagir le groupe"],["suites","Suites","Contacts pris avec l'intervenant, recos nées de la conférence"]],
+  visite:[["entreprise","Entreprise visitée",""],["deroule","Déroulé de la visite","Accueil, ateliers, personnes rencontrées"],["enseignements","Ce qu'on retient","Savoir-faire, chiffres, besoins de l'entreprise"],["opportunites","Opportunités d'affaires","Besoins repérés, membres qui peuvent y répondre"]],
+  info:[["deroule","Déroulé de la réunion","Présentation du club, témoignages, questions"],["retours","Retour des invités","Intérêt, objections, métiers représentés"],["relances","Invités à relancer ou à intégrer","Qui rappeler, qui a pris le formulaire d'adhésion"]]
+};
+function crChamps(m){return [...(CR_CANEVAS[m.format]||CR_CANEVAS.info),...CR_FIN]}
 function reuMesClubs(){return SESSION.animId?DB.clubs.filter(c=>c.animId===SESSION.animId):[]}
 function reuPeutTout(){return ["superadmin","directeur_national","directeur"].includes(SESSION.role)}
 function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)return DB.clubs.filter(c=>canEditClubId(c.id));return mine}
@@ -3391,7 +3411,7 @@ function grpCR(c,D){
   const l=D.passees.slice().reverse(),ecrits=l.filter(r=>r.crLe).length;
   return `<p class="grp-note">${ecrits} compte${ecrits>1?"s":""} rendu${ecrits>1?"s":""} écrit${ecrits>1?"s":""} sur ${l.length} réunion${l.length>1?"s":""} passée${l.length>1?"s":""}.</p>
     ${l.length?`<div class="cr-prog"><i style="width:${l.length?Math.round(ecrits/l.length*100):0}%"></i></div>`:""}
-    ${l.length?`<div class="grp-crl">${l.map((r,i)=>{const d=dObj(r.date),cr=r.cr||{},ext=Object.values(cr).find(x=>x&&String(x).trim());
+    ${l.length?`<div class="grp-crl">${l.map((r,i)=>{const d=dObj(r.date),cr=r.cr||{},ext=Object.values(cr).find(x=>typeof x==="string"&&x.trim());
       return `<button class="grp-cr ${r.crLe?"ok":"todo"}" style="--i:${Math.min(i,14)}" onclick="${r.crLe||canEditReunion(r)?`openCR('${r.id}')`:`openMeeting('${r.id}')`}">
         <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]} ${d.getFullYear()!==TODAY.getFullYear()?d.getFullYear():""}</small></span>
         <span class="gc-t"><b>${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${r.presents!=null?r.presents+" présent"+(r.presents>1?"s":"")+" · ":""}${r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":"")+" · ":""}${r.crLe?esc(ext?String(ext).slice(0,90):"Compte rendu écrit"):"Compte rendu à écrire"}</small></span>
@@ -3605,7 +3625,11 @@ function crBloc(m,editable){
 }
 function openCR(id){
   const m=DB.reunions.find(x=>x.id===id),c=club(m.clubId),d=dObj(m.date),ed=canEditReunion(m),cr=m.cr||{};
-  const champs=CR_CHAMPS.map(([k,l,ph])=>ed?`<div class="field"><label>${l}</label><textarea id="cr-${k}" rows="4" placeholder="${esc(ph)}">${esc(cr[k]||"")}</textarea></div>`
+  const liste=crChamps(m),cles=new Set(liste.map(x=>x[0]));
+  // Anciennes rubriques déjà remplies (ancien canevas) : gardées et affichées.
+  CR_CHAMPS.forEach(x=>{if(!cles.has(x[0])&&cr[x[0]]){liste.push(x);cles.add(x[0])}});
+  const defaut=k=>(k==="intervenant"||k==="entreprise")&&m.theme?m.theme:"";
+  const champs=liste.map(([k,l,ph])=>ed?`<div class="field"><label>${l}</label><textarea id="cr-${k}" rows="${k==="intervenant"||k==="entreprise"?2:4}" placeholder="${esc(ph)}">${esc(cr[k]||defaut(k))}</textarea></div>`
     :(cr[k]?`<div class="drow"><div class="tx"><div class="k">${l}</div><div class="v" style="font-weight:400;white-space:pre-line">${esc(cr[k])}</div></div></div>`:"")).join("");
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Compte rendu",sub:`${esc(c.nom.replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)} · ${esc(lieuNom(m.lieuId))}`})}
@@ -3616,9 +3640,11 @@ function openCR(id){
   openSheet();
 }
 async function crEnregistrer(id){
-  const m=DB.reunions.find(x=>x.id===id),cr={};
-  CR_CHAMPS.forEach(([k])=>{const v=document.getElementById("cr-"+k).value.trim();if(v)cr[k]=v});
-  if(!Object.keys(cr).length){toast("Le compte rendu est vide");return}
+  const m=DB.reunions.find(x=>x.id===id),cr={};let n=0;
+  // On garde le bilan (recos, montant, notes) et on remplace les rubriques écrites.
+  if(m.cr&&m.cr.bilan)cr.bilan=m.cr.bilan;
+  document.querySelectorAll('#sheet-content textarea[id^="cr-"]').forEach(t=>{const v=t.value.trim();if(v){cr[t.id.slice(3)]=v;n++}});
+  if(!n){toast("Le compte rendu est vide");return}
   const row={compte_rendu:cr,cr_le:new Date().toISOString(),cr_par:SESSION.id};
   if(m.statut==="planifiee"||m.statut==="confirmee")row.statut="realisee";
   const {error}=await sb.from("reunions").update(row).eq("id",id);

@@ -488,6 +488,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Audit du 17/11 (rôles simulés en base, appli rejouée en local sur un instantané) : ⚠ la LECTURE n'est pas cloisonnée par la RLS (`cap_can_see_club` = `cap_est_equipe()`), seules les écritures et les adhésions le sont ; 7 comptes animateurs ont encore `cap2026`. Décisions de JB attendues (périmètre de l'animateur, compte visiteur, données d'essai).
 - `*.supabase.co` est joignable depuis les sessions Claude Code (vérifié le 17/11).
 
+**🧭 Plan de travail après audit (17/11/2026)** — plan à cliquer https://claude.ai/artifact/1poPXjKAD61JFmtcerMYAQ ; JB : « mets tout en conseil ». Choix lus dans la base de la page (`plan/choix`). Sans réponse : G2 (3 recos à 1 880 000 MAD, essai ou réel) et G3 (Nawar Mounchit) → ne rien toucher.
+- Cible de JB : UNE seule appli qui s'adapte au rôle (membre, animateur, directeur de région, directeur national, super admin), espace membre dans l'appli, région → ville → groupes, chiffres au mois / trimestre / semestre / année à tous les niveaux.
+- Fait en base le 17/11 : les 7 comptes animateurs encore en `cap2026` et jamais connectés ont reçu un mot de passe aléatoire (plus aucun compte en `cap2026`) ; ils se rouvrent par Équipe → « Donner l'accès ». Chrystel passée en « Membre » dans les invités du 19/11.
+- **v1.27.0** (lot D/E, sur la branche, attend le GO prod) : `mapReunion.equipe` (inscriptions `profil_id`, hors `guests`), `nbPersonnes`, `animsTerrain`, `grpParDefaut`, `mesFiches` trié (fiche reliée d'abord), pastille Réseau = `clubTone!=="ok"`, bandeau = groupes + bilans + adhésions + comptes à embarquer, `dashOutils` à 3 raccourcis, Rendement dans Paramètres → Personnel, Constellation sous Réseau.
+- Reste, dans l'ordre : A2/B1 lecture en base par périmètre + animateur limité à ses groupes ; A3 visiteur sans coordonnées ; H périodes (sélecteur unique mois/trimestre/semestre/année, civil, avec écart) ; D2 bilan + compte rendu en un écran ; D5 statut de groupe calculé ; B2/B3 sélecteur d'espace et région par ville ; C1/C2 connexion unique et un compte pour plusieurs groupes ; G1 archiver les 13 réunions sans bilan. Après lancement : C3/C4 (espace membre et documents réécrits dans l'appli), F (PC / téléphone).
+- ⚠ Les chiffres animés (compteurs `data-count`) faussent un relevé fait trop tôt après le rendu : lire `dataset.count` ou les fonctions, pas le texte.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

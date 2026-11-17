@@ -2228,8 +2228,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.20.0";
+const APP_VERSION="1.21.0";
 const CHANGELOG=[
+  {v:"1.21.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads remontés automatiquement du Google Sheet toutes les 15 minutes : les nouveaux arrivent dans l'onglet Leads (« à contacter »), avec une notification sur le téléphone. Les leads déjà connus sont complétés (téléphone, LinkedIn, commentaire), jamais doublés."]}},
   {v:"1.20.0",date:"17 novembre 2026",notes:{"Amélioré":["Leads : « Tableau » serré par défaut (une ligne par lead, qui · quand dans chaque colonne, actions en petites icônes) et « Frise » d'étapes en option (contacté → invité → inscrit → venu). Présence notée d'un clic : Venu / Absent."]}},
   {v:"1.19.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads : trois affichages (cartes, liste, suivi en colonnes).","Chaque lead montre son fil : qui l'a contacté et quand, qui a envoyé l'invitation, quand et pour quelle réunion, s'il est inscrit, s'il est venu.","Les inscriptions par le lien national sont rapprochées des leads (même mobile ou même nom) : le lead passe en « Inscrit » tout seul. Après la réunion, « Venu ? Oui / Non »."]}},
   {v:"1.18.1",date:"17 novembre 2026",notes:{"Amélioré":["Pastille de date presque carrée, coins arrondis, fin cadre anthracite."]}},
@@ -2895,7 +2896,7 @@ async function bootIntoApp(){
   adhAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
-  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();
+  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();
   presenceDemarrer();
   horlogeDemarrer();
   if(typeof Lancement!=="undefined")Lancement.fin();
@@ -3083,6 +3084,7 @@ async function ouvrirLienAdhesion(){
 }
 /* Lien d'une notification « invité proposé » (?reunion=<id>) : ouvre la fiche de la réunion. */
 /* v1.4.0 : notification du fil d'un groupe → ?groupe=<club> ouvre l'onglet Discussion de ce groupe. */
+function ouvrirLienLeads(){const q=new URLSearchParams(location.search);if(!q.get("leads")||!SESSION||SESSION.role==="visiteur")return;history.replaceState(null,"",location.pathname);navDem("leads")}
 function ouvrirLienGroupe(){
   const id=new URLSearchParams(location.search).get("groupe");if(!id||!SESSION||SESSION.role==="visiteur")return;
   history.replaceState(null,"",location.pathname);
@@ -7721,6 +7723,9 @@ async function adhRafraichir(){
         if(o===undefined)annonce("🤝","Recommandation : "+membreNom(r.de)+" → "+membreNom(r.a),club(r.club_id).nom?String(club(r.club_id).nom).replace(/^CAP\s+/,""):"",()=>openRecos("nat"));
         else if(o!=="signee"&&r.statut==="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),r.montant!=null?"+ "+madFmt(r.montant):"","Voir les recos",()=>openRecos("nat","signee"));})}
     if(!pp.error)DB.presences=pp.data||[];
+    try{const ld=await sb.from("leads").select("*").order("created_at"); // v1.21 : les leads remontés du Google Sheet arrivent sans recharger
+      if(!ld.error){const av=new Set((DB.leads||[]).map(l=>l.id)),nl=(ld.data||[]).filter(l=>!av.has(l.id));DB.leads=ld.data||[];
+        if(nl.length&&av.size){annonce("📇",nl.length>1?nl.length+" nouveaux leads":"Nouveau lead",nl.map(l=>l.nom).join(", "),()=>navDem("leads"));if(SESSION&&document.querySelector('.ld'))render()}}}catch(e){}
     const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
     if(error||!data)return;
     const avant=new Set((DB.adhesions||[]).map(a=>a.id)),nouv=data.filter(a=>!avant.has(a.id)&&a.statut==="recue");

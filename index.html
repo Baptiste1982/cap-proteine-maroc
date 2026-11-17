@@ -2165,6 +2165,7 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.29 lecture seule : aucune coordonnée*/body.lecture a[href^="tel:"],body.lecture a[href*="wa.me"],body.lecture a[href^="mailto:"]{display:none!important}
 /*v1.28 liens de données*/.lien-d{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px;border-radius:4px}
 .lien-d:hover{color:var(--crimson-txt,var(--crimson));text-decoration-style:solid}
 .lien-z{cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s}.lien-z:hover{transform:translateY(-2px);border-color:var(--crimson-tint);box-shadow:0 8px 20px rgba(92,10,24,.09)}
@@ -2289,8 +2290,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.28.0";
+const APP_VERSION="1.29.0";
 const CHANGELOG=[
+  {v:"1.29.0",date:"17 novembre 2026",notes:{"Modifié":["Chacun ne lit que son périmètre, y compris dans la base : le super admin et le directeur national tout le réseau, un directeur sa région, un animateur ses groupes (membres, invités, documents, recommandations). Les leads sont réservés à la direction.","L'animateur arrive directement sur son groupe ; son accueil et ses listes ne montrent que ses groupes. L'agenda reste celui de tout le réseau, pour s'inscrire à n'importe quelle réunion.","Le compte en lecture seule ne voit plus aucune coordonnée."]}},
   {v:"1.28.0",date:"17 novembre 2026",notes:{"Ajouté":["Tout ce qui nomme une donnée y mène : un nom de groupe, d'animateur, de lieu ou de membre ouvre sa fiche, où qu'il soit écrit (planning de la région, fiches, rapport du mois, demandes, panneau de droite).","Les tuiles chiffrées de Mon groupe et des fiches ouvrent la liste qu'elles comptent ; le texte d'une carte de réunion ouvre la réunion."]}},
   {v:"1.27.0",date:"17 novembre 2026",notes:{"Modifié":["« À traiter » se compte partout de la même façon : la pastille du menu Réseau, le filtre des Clubs et le panneau de droite donnent le même nombre de groupes ; le bandeau d'accueil additionne groupes, bilans, adhésions et comptes à embarquer.","Une personne membre de plusieurs groupes compte une fois dans les totaux du réseau et de la région.","« Je viens » : l'équipe inscrite apparaît dans « Équipe présente », elle n'est plus comptée parmi les invités.","Équipe : la direction a sa propre rubrique, elle ne gonfle plus le nombre d'animateurs.","Mon groupe et Mon espace membre s'ouvrent sur le groupe dont la réunion est la plus proche.","Synthèse : trois raccourcis (Présenter, Carte, Rapport du mois) ; Constellation rejoint Carte, Zones et Lancements dans Réseau ; Rendement passe dans Paramètres → Personnel."]}},
   {v:"1.26.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
@@ -2847,15 +2849,17 @@ function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
 async function loadDB(){
-  const [zc,ac,cc,lc,rc,ic,mc]=await Promise.all([
+  const vit=!!SESSION&&SESSION.role==="visiteur"; // v1.29 : le compte en lecture seule lit des listes sans coordonnées
+  let [zc,ac,cc,lc,rc,ic,mc]=await Promise.all([
     sb.from("zones").select("*"),
     sb.from("animateurs").select("*"),
     sb.from("clubs").select("*"),
     sb.from("lieux").select("*"),
     sb.from("reunions").select("*"),
-    sb.from("invites").select("*"),
-    sb.from("membres").select("*")
+    vit?sb.rpc("cap_invites_vitrine"):sb.from("invites").select("*"),
+    vit?sb.rpc("cap_membres_vitrine"):sb.from("membres").select("*")
   ]);
+  if(vit&&ic.error)ic=await sb.from("invites").select("*");if(vit&&mc.error)mc=await sb.from("membres").select("*");
   const bad=[zc,ac,cc,lc,rc,ic,mc].find(x=>x.error);
   if(bad){console.error(bad.error);toast("Erreur de chargement des données")}
   DB={
@@ -3188,7 +3192,8 @@ function enterApp(){
   document.getElementById("pwd-btn").classList.toggle("hidden",SESSION.role==="visiteur");
   {const g=document.querySelector("#nav .nav-reu");if(g)g.hidden=readOnly()} // v1.25.1 : pas d'onglet « Mon groupe » en lecture seule
   document.getElementById("ver-pill").textContent="v"+APP_VERSION;
-  updateRegionLabel();go("dash");
+  document.body.classList.toggle("lecture",readOnly());
+  updateRegionLabel();go(SESSION.role==="animateur"&&SESSION.clubIds.length?"reunions":"dash"); // v1.29 : l'animateur arrive sur son groupe
 }
 
 /* ============================================================
@@ -3226,9 +3231,11 @@ function vueAppliquer(){if(!SESSION)return;const m=vueMode();
   if(!sr&&b){sr=document.createElement("select");sr.id="vue-region";sr.className="vue-reg-sel";sr.setAttribute("aria-label","Région affichée");sr.onchange=()=>vueRegionChoisir(sr.value);b.after(sr)}
   if(sr){sr.classList.toggle("hidden",!voir);if(voir){const nom=vueRegion().nom,o=zs.map(z=>`<option value="${z.id}" ${z.nom===nom?"selected":""}>📍 ${esc(z.nom)}</option>`).join("");if(sr.dataset.h!==o){sr.innerHTML=o;sr.dataset.h=o}}}
   const d=document.querySelector('.nav button[data-tab="dash"]');
-  if(d){const t=[...d.childNodes].reverse().find(n=>n.nodeType===3);const lib=m==="reg"&&SESSION.role!=="visiteur"?"Ma région":"Synthèse";if(t&&t.textContent!==lib)t.textContent=lib}}
+  if(d){const t=[...d.childNodes].reverse().find(n=>n.nodeType===3);const lib=SESSION.role==="animateur"?"Mes groupes":m==="reg"&&SESSION.role!=="visiteur"?"Ma région":"Synthèse";if(t&&t.textContent!==lib)t.textContent=lib}}
 function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueRegion();
-  const cl=DB.clubs.filter(c=>villes.includes(c.ville)),ids=new Set(cl.map(c=>c.id));
+  /* v1.29 : un animateur travaille sur ses groupes ; seul l'agenda lui montre tout le réseau (il peut s'inscrire à n'importe quelle réunion) */
+  const anim=SESSION.role==="animateur";if(anim&&tab==="agenda")return null;
+  const cl=DB.clubs.filter(c=>anim?(!!SESSION.animId&&c.animId===SESSION.animId):villes.includes(c.ville)),ids=new Set(cl.map(c=>c.id));
   const reu=DB.reunions.filter(r=>ids.has(r.clubId)),rids=new Set(reu.map(r=>r.id)),lieuxUtil=new Set(reu.map(r=>r.lieuId).filter(Boolean));
   const anims=new Set(cl.map(c=>c.animId).filter(Boolean));
   return{...DB,clubs:cl,reunions:reu,membres:DB.membres.filter(m=>ids.has(m.clubId)),

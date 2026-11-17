@@ -468,6 +468,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - `#burger` (en haut à gauche de la barre du haut, téléphone seulement) → `tiroirOuvrir()` : `#tiroir` en surimpression (fond voilé, panneau `min(86vw,360px)` depuis la gauche), contenu `navPlusHTML("tiroirFermer()")` (mêmes rubriques et sous-menus que l'ancien « Plus », via `avecVue`). Fermeture : croix, toucher le fond, glisser vers la gauche, Échap, ou un choix. `.nav-plus` est masqué : la barre du bas garde 4 onglets ; `openNavPlus()` ouvre le tiroir.
 - Bancs `burger.mjs` 11/11, `nav.mjs` 35/35 et `fil.mjs` 28/28 recalés sur le burger, `v09` 42/42.
 
+**📅 PSA, burger en rubriques, cloisonnement, espace membre dans le CRM (v1.25.0, 17/11/2026)** :
+- PSA (Équipe → Points sur activité, `openPSA`) : table `psa_creneaux` (+ `lien_visio`), RPC `cap_psa_reserver` / `cap_psa_annuler` (notifient le directeur par `notif-leads` v2, lien `/?psa=1`). Le directeur (`psaGere`) ouvre une plage découpée en 30/45 min (`psaForm`, `psaDecoupe`), lieu facultatif, lien Zoom à la création ou plus tard (🔗 `psaLienForm`, sur un créneau ou tous ceux sans lien). Animateur : créneaux libres de sa zone, mode « En ligne (Zoom) » par défaut, sur place ou téléphone ; voit « Rejoindre la réunion » quand le lien est posé. Banc `psa.mjs` 19/19.
+- Burger (téléphone) : `navPlusHTML` = rubriques colorées repliables (`NP_RUB`, `npBasculer`, une ouverte à la fois, celle de l'écran affiché). Mêmes sous-menus que le PC (`navSousItems`).
+- Cloisonnement : `navDir()` (superadmin, directeur_national, directeur). Envoi au national, Leads, Classeur, Archives réservés à la direction (menu + onglets de Demandes, `dmVueSeg` remet les autres sur « Demandes »).
+- Espace membre = onglet `espace` du CRM : `espaceOuvrir(url)` charge `membre.html#…` dans `#esp-host` (cadre à côté de `#view`, jamais recréé par `render`). Tout lien `a[href^="membre.html#"]` du CRM est intercepté. Dans `membre.html`, `DANS_CRM` : « ↩ CRM » appelle `top.go('dash')` (avant : il chargeait un second CRM dans l'onglet). `#moi=<fiche>&r=recues` ouvre les recommandations reçues. `lancement.js` ne joue pas dans un cadre. Menu : Mon groupe → Mon espace membre (`mesFiches`).
+- Synthèse : `dashMesRecos()` = recommandations reçues par la personne connectée (statut envoyée, contacté, devis), clic → son espace sur les recos reçues. Banc `esp.mjs` 17/17.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

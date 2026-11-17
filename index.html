@@ -2119,6 +2119,29 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 .ldf-pt.on i{border-color:#3DAA74;background:#3DAA74;color:#fff}.ldf-pt.on b{color:var(--ink)}
 .ldf-pt.att i{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson))}.ldf-pt.att b{color:var(--crimson-txt,var(--crimson))}.ldf-pt.ko i{border-color:var(--muted);background:var(--line)}
 @media(max-width:899px){.ldf-r{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}.ldf-fr{grid-column:1/-1;order:3}}
+/*v1.25 espace membre*/#esp-host{padding:0 clamp(12px,3vw,32px) 16px}#esp-host iframe{display:block;width:100%;height:calc(100dvh - 190px);min-height:480px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}
+.esp-page{padding-bottom:6px!important}.esp-tete{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.esp-fiches{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:899px){#esp-host{padding:0 8px 8px}#esp-host iframe{height:calc(100dvh - 210px);min-height:400px;border-radius:12px}}
+.mr-it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+.mr-tx{flex:1;min-width:0}.mr-tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mr-tx small{color:var(--muted)}
+.mr-st{font:700 10.5px Inter,sans-serif;padding:3px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,#3DAA74 18%,transparent);color:#3DAA74}.mr-st.mr-envoyee{background:color-mix(in srgb,var(--crimson) 18%,transparent);color:var(--crimson-txt,var(--crimson))}
+/*v1.25 burger*/.np2{gap:8px}.npg{border-radius:14px;border:1px solid var(--line);background:var(--card);overflow:hidden}
+.npg-h{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;font:700 15px Inter,sans-serif;color:var(--ink);text-align:left;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 22%,transparent),color-mix(in srgb,var(--c) 6%,transparent));border-left:4px solid var(--c)}
+.npg-h i{font-style:normal;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 30%,transparent);font-size:15px}
+.npg-h b{flex:1}.npg-h em{font-style:normal;font-size:11px;font-weight:700;background:var(--c);color:#fff;border-radius:999px;padding:2px 7px}
+.npg-ch{transition:transform .25s;color:var(--muted);font-size:20px;line-height:1}.npg.o .npg-ch{transform:rotate(90deg)}.npg.cur .npg-h b::after{content:" ·";color:var(--c)}
+.npg-s{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s ease}.npg.o .npg-s{grid-template-rows:1fr}.npg-in{overflow:hidden;min-height:0}
+.np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
+.tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
+@media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.25 PSA*/.psa-bloc{border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0;display:grid;gap:8px}.psa-moi{border-color:#3DAA74}
+.psa-bt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.psa-bt span{color:var(--muted);font-size:12.5px}.psa-bt .btn{margin-left:auto}
+.psa-j{display:grid;gap:6px}.psa-jt{font-size:12px;font-weight:700;text-transform:capitalize;color:var(--muted);margin-top:4px}
+.psa-l{display:grid;grid-template-columns:52px 56px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--line) 35%,transparent)}
+.psa-l.pris{background:color-mix(in srgb,#3DAA74 14%,transparent)}.psa-l small{color:var(--muted);font-size:11.5px}.psa-q{min-width:0;font-size:13px}.psa-q i{color:var(--muted)}.psa-q em{display:block;color:var(--muted);font-size:12px;font-style:normal}
+.psa-acts{display:flex;gap:4px}.psa-ok{color:#3DAA74}.psa-zoom{justify-self:start;text-decoration:none}.psa-tous{display:flex;gap:8px;align-items:center;font-size:13px;margin:4px 0}
+.psa-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.psa-l{grid-template-columns:48px minmax(0,1fr) auto}.psa-l small{display:none}}
 /*v1.24 téléphone : pas de glissement horizontal, menu burger*/
 .burger{display:none}
 @media(max-width:899px){
@@ -2197,6 +2220,7 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
     </div>
   </div>
   <div id="view"></div>
+  <div id="esp-host" hidden><iframe title="Espace membre"></iframe></div>
 </div>
 
 <nav id="nav" class="nav hidden"><span class="nav-pill" id="nav-pill" aria-hidden="true"></span>
@@ -2255,8 +2279,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.24.0";
+const APP_VERSION="1.25.0";
 const CHANGELOG=[
+  {v:"1.25.0",date:"17 novembre 2026",notes:{"Ajouté":["Points sur activité (Équipe → Points sur activité) : le directeur de région ouvre une plage (ex. mardi 9h-12h) découpée en créneaux de 30 ou 45 min ; les animateurs de sa région réservent le leur (en ligne par Zoom par défaut, sur place ou au téléphone) ; le lien Zoom se pose quand on veut (🔗), sur un créneau ou sur tous ; le directeur est notifié à chaque réservation ou annulation et voit le nom de chacun.","Menu burger du téléphone en rubriques colorées qui se déplient, comme sur l'ordinateur.","L'espace membre devient une page du CRM (Mon groupe → Mon espace membre) : il s'ouvre dans la zone principale, menu du CRM à gauche, plus d'onglet ni de second CRM. « ↩ CRM » ramène à la Synthèse.","Synthèse : bandeau « recommandations reçues à traiter » pour la personne connectée qui est aussi membre ; un clic ouvre directement ses recommandations reçues.","Cloisonnement : l'envoi au national, les leads, le classeur des PDF et les archives sont réservés à la direction ; les animateurs gardent leur groupe, l'agenda, les demandes et l'équipe."]}},
   {v:"1.24.0",date:"17 novembre 2026",notes:{"Ajouté":["Téléphone : menu burger en haut à gauche ; il ouvre un tiroir par-dessus l'écran avec toutes les rubriques et leurs sous-menus (fermeture par la croix, en touchant à côté ou en le glissant vers la gauche)."],"Corrigé":["Téléphone : la page ne glisse plus de droite à gauche."]}},
   {v:"1.23.0",date:"17 novembre 2026",notes:{"Ajouté":["« ✋ Je viens » dans chaque réunion à venir du réseau, quelle que soit la ville : on s'inscrit soi-même, on apparaît parmi les invités, et « Je ne viens plus » retire l'inscription."],"Corrigé":["Documents du réseau : « ↩ CRM » revient à l'onglet du CRM déjà ouvert, sans relancer l'appli ni l'animation d'ouverture."]}},
   {v:"1.22.0",date:"17 novembre 2026",notes:{"Ajouté":["Vue régionale : la direction nationale choisit la région dans un menu (Rabat · Salé · Kénitra, Casablanca, Marrakech… chaque nouvelle région s'y ajoute d'elle-même).","L'animateur d'un groupe crée lui-même l'invitation du CRM national pour sa réunion, et envoie le lien d'inscription par WhatsApp.","Message d'invitation : une ligne avec le numéro de celui qui envoie ; le modèle gardé par le super admin sert à toute l'équipe, chacun avec son prénom et son numéro.","Pastilles de date : elles s'inclinent au survol."],"Corrigé":["Le formulaire de réunion ne propose que les groupes que l'on peut modifier."]}},
@@ -2836,6 +2861,7 @@ async function loadDB(){
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
+  DB.psa=[];try{const ps=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!ps.error)DB.psa=ps.data||[]}catch(e){} // v1.25 PSA
   DB.leads=[];DB.reglages={}; // v1.18.0 : leads nationaux + réglages partagés (jamais bloquant)
   try{const [ld,rg]=await Promise.all([sb.from("leads").select("*").order("created_at"),sb.from("reglages").select("cle,valeur")]);
     if(!ld.error)DB.leads=ld.data||[];if(!rg.error)(rg.data||[]).forEach(x=>DB.reglages[x.cle]=x.valeur)}catch(e){console.warn(e)}
@@ -2927,7 +2953,7 @@ async function bootIntoApp(){
   adhAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
-  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();
+  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();
   presenceDemarrer();
   horlogeDemarrer();
   if(typeof Lancement!=="undefined")Lancement.fin();
@@ -3115,6 +3141,7 @@ async function ouvrirLienAdhesion(){
 }
 /* Lien d'une notification « invité proposé » (?reunion=<id>) : ouvre la fiche de la réunion. */
 /* v1.4.0 : notification du fil d'un groupe → ?groupe=<club> ouvre l'onglet Discussion de ce groupe. */
+function ouvrirLienPSA(){const q=new URLSearchParams(location.search);if(!q.get("psa")||!SESSION||SESSION.role==="visiteur")return;history.replaceState(null,"",location.pathname);openPSA()}
 function ouvrirLienLeads(){const q=new URLSearchParams(location.search);if(!q.get("leads")||!SESSION||SESSION.role==="visiteur")return;history.replaceState(null,"",location.pathname);navDem("leads")}
 function ouvrirLienGroupe(){
   const id=new URLSearchParams(location.search).get("groupe");if(!id||!SESSION||SESSION.role==="visiteur")return;
@@ -3267,12 +3294,13 @@ function updateRegionLabel(){
 const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="espace"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
   const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
   vueAppliquer();
-  v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam());
+  v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():tab==="espace"?viewEspace():viewTeam());
+  {const eh=document.getElementById("esp-host");if(eh)eh.hidden=tab!=="espace"||!window._espUrl}
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v);helloPoints(v)}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
@@ -4771,23 +4799,25 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("she
 /* v1.12.0 : menu en rubriques et sous-menus (maquette A validée par JB le 17/11/2026).
    Rubrique = un bouton du menu ; ses sous-menus (NAV_SOUS) mènent directement à un écran ou à un outil.
    La rubrique de l'onglet affiché est dépliée, les autres repliées ; au téléphone, « Plus » ouvre tout le menu. */
-const NAV_RUB_TAB={dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
+/* v1.25 : cloisonnement par rôle. Ce qui touche à la gestion du réseau (envoi au national, leads, classeur, archives) est réservé à la direction (superadmin, directeur national, directeur de zone) ; les animateurs gardent leur groupe, l'agenda, les demandes de leur groupe et l'équipe. */
+function navDir(){return !!SESSION&&["superadmin","directeur_national","directeur"].includes(SESSION.role)}
+const NAV_RUB_TAB={espace:"grp",dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
 const NAV_RUB_LIB={syn:"Synthèse",grp:"Mon groupe",age:"Agenda",adh:"Adhésions",res:"Réseau",equ:"Équipe",doc:"Ressources"};
 var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
     !ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Constellation","openConstellation()"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
-  if(r==="grp"){if(ro)return[];const c=grpClub();if(!c)return[];
+  if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
     return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
-      it("Vue membre ↗",`window.open('membre.html#equipe=${c.id}','_blank')`)]}
+      it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
   if(r==="age"){const nb=reunionsSansBilan().length;
     return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb})].filter(Boolean)}
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
-    return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
-      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),it("Archives","openArchivesAdh()")]}
+    return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
+      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
   if(r==="res")return[it("Carte","openCarte()"),nat&&it("Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
-  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()"),sup&&it("Rendement","openRendement()")].filter(Boolean);
+  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()"),sup&&it("Rendement","openRendement()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","window.open('documents.html','_blank')"),it("Vidéos de prise en main","window.open('documents.html#videos','_blank')"),it("Visite guidée","openAide()")];
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
@@ -4819,14 +4849,20 @@ function navRepliArmer(){clearTimeout(_navRepliT);const d=navRepliDelai(),nav=do
 
 /* Au téléphone : tout le menu dans une feuille, rubrique par rubrique. */
 function openNavPlus(){tiroirOuvrir()}
+/* v1.25 : burger en rubriques dépliantes, comme le menu du PC. En-tête coloré par rubrique, une seule ouverte à la fois
+   (celle de l'écran affiché au départ). Chaque rôle ne voit que ses rubriques et sous-menus (navSousItems). */
+const NP_RUB={syn:["📊","#C21835"],grp:["👥","#5B7FA3"],age:["📅","#3DAA74"],adh:["📝","#D9822B"],res:["🌐","#7E5BB5"],equ:["🧭","#2E9AA6"],doc:["📚","#8A8D94"],cpt:["⚙️","#6B6E75"]};
 function navPlusHTML(fermer){const tabs={syn:"dash",grp:"reunions",age:"agenda",adh:"demandes",equ:"team"};
-  const bloc=r=>{let l=navSousItems(r);
+  const items=r=>{if(r==="cpt")return[{lb:"Paramètres",act:"openParametres()"}];let l=navSousItems(r);
     if(r==="res")l=[{lb:"Clubs",act:"go('clubs')",on:tab==="clubs"},{lb:"Membres",act:"go('membres')",on:tab==="membres"},{lb:"Lieux",act:"go('lieux')",on:tab==="lieux"},...l];
-    if(!l.length&&tabs[r]&&!(r==="grp"&&readOnly()))l=[{lb:NAV_RUB_LIB[r],act:`go('${tabs[r]}')`,on:tab===tabs[r]}];
-    if(!l.length)return"";
-    return `<div class="np-sec">${esc(NAV_RUB_LIB[r])}</div><div class="np-l">${l.map(x=>`<button type="button" class="np-it${x.on?" sel":""}" onclick="${fermer};${x.act.replace(/"/g,"&quot;")}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}<span aria-hidden="true">›</span></button>`).join("")}</div>`};
-  return `<div class="np">${["syn","grp","age","adh","res","equ","doc"].map(bloc).join("")}
-    <div class="np-sec">Compte</div><div class="np-l"><button type="button" class="np-it" onclick="${fermer};openParametres()">Paramètres<span aria-hidden="true">›</span></button></div></div>`}
+    if(!l.length&&tabs[r]&&!(r==="grp"&&readOnly()))l=[{lb:NAV_RUB_LIB[r],act:`go('${tabs[r]}')`,on:tab===tabs[r]}];return l};
+  const rubs=["syn","grp","age","adh","res","equ","doc","cpt"].map(r=>[r,items(r)]).filter(([,l])=>l.length);
+  if(window._npOuv===undefined||!rubs.some(([r])=>r===window._npOuv))window._npOuv=NAV_RUB_TAB[tab]||"syn";
+  return `<div class="np np2">${rubs.map(([r,l])=>{const[ic,c]=NP_RUB[r],o=window._npOuv===r,n=l.reduce((t,x)=>t+(+x.n||0),0),cur=NAV_RUB_TAB[tab]===r;
+    return `<section class="npg${o?" o":""}${cur?" cur":""}" style="--c:${c}" data-np="${r}"><button type="button" class="npg-h" aria-expanded="${o}" onclick="npBasculer('${r}')"><i aria-hidden="true">${ic}</i><b>${r==="cpt"?"Compte":esc(NAV_RUB_LIB[r])}</b>${n&&!o?`<em>${n}</em>`:""}<span class="npg-ch" aria-hidden="true">›</span></button>
+      <div class="npg-s"><div class="npg-in">${l.map(x=>`<button type="button" class="np-it${x.on?" sel":""}" onclick="${fermer};${x.act.replace(/"/g,"&quot;")}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}<span aria-hidden="true">›</span></button>`).join("")}</div></div></section>`}).join("")}</div>`}
+function npBasculer(r){window._npOuv=window._npOuv===r?null:r;document.querySelectorAll(".np2 .npg").forEach(g=>{const o=g.dataset.np===window._npOuv;g.classList.toggle("o",o);const h=g.querySelector(".npg-h");h.setAttribute("aria-expanded",o);const em=h.querySelector("em");if(em)em.style.display=o?"none":""});
+  const g=document.querySelector(`.np2 .npg[data-np="${r}"].o`);if(g)setTimeout(()=>g.scrollIntoView({block:"nearest",behavior:"smooth"}),180)}
 /* v1.24 : menu burger (téléphone) — tiroir en surimpression depuis la gauche, toutes les rubriques et leurs sous-menus */
 function tiroirOuvrir(){let t=document.getElementById("tiroir");
   if(!t){t=document.createElement("div");t.id="tiroir";t.className="tiroir";t.setAttribute("role","dialog");t.setAttribute("aria-modal","true");t.setAttribute("aria-label","Menu");
@@ -4986,7 +5022,7 @@ function viewDashboard(reg){
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashDemandes()+dashBilanAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${DB.animateurs.length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -5211,6 +5247,68 @@ function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId
     adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
 function natInvMessage(m){return invRemplir(invModele(m.format?"autre":m.type),m)}
+/* v1.25 : PSA (points sur activité). Le directeur ouvre des plages découpées en créneaux de 30 ou 45 min,
+   les animateurs de sa région réservent (visio, téléphone ou présentiel) ; il est notifié (RPC cap_psa_reserver → notif-leads). */
+const PSA_MODES={visio:"🎥 En ligne (Zoom)",presentiel:"🤝 Sur place",telephone:"📞 Téléphone"};
+function psaGere(){return !!SESSION&&["superadmin","directeur_national","directeur"].includes(SESSION.role)&&!SESSION._voir}
+function psaFutur(){const t=Date.now()-15*60e3;return (DB.psa||[]).filter(c=>new Date(c.debut).getTime()>t)}
+function psaCompte(){if(!SESSION||!DB)return 0;const L=psaFutur();return psaGere()?L.filter(c=>c.directeur_id===SESSION.id&&c.reserve_par).length:L.filter(c=>!c.reserve_par&&c.directeur_id!==SESSION.id).length}
+function psaJourLib(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}
+function psaH(iso){const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")}
+function psaParJour(L){const g=new Map();L.forEach(c=>{const k=new Date(c.debut).toDateString();(g.get(k)||g.set(k,[]).get(k)).push(c)});return [...g.values()]}
+async function psaCharger(){const {data,error}=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!error)DB.psa=data||[];return !error}
+async function openPSA(){document.getElementById("sheet-content").innerHTML=`<h3>Points sur activité</h3>${skLignes?skLignes(4):""}`;openSheet();await psaCharger();psaRendu();navSous&&avecVue(()=>navSous())}
+function psaRendu(){const L=psaFutur(),moi=SESSION.id,g=psaGere();
+  const miens=L.filter(c=>c.directeur_id===moi),pour=L.filter(c=>c.directeur_id!==moi),maRes=pour.find(c=>c.reserve_par===moi),libres=pour.filter(c=>!c.reserve_par);
+  const ligneDir=c=>`<div class="psa-l ${c.reserve_par?"pris":""}"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${c.reserve_par?`<strong>${esc(c.reserve_nom||"Réservé")}</strong> · ${esc(PSA_MODES[c.mode]||"")}${c.note?`<em>${esc(c.note)}</em>`:""}`:`<i>Libre</i>`}</span>
+    <span class="psa-acts"><button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗</button>${c.reserve_par?`<button class="btn ghost mini" onclick="psaAnnuler('${c.id}')">Libérer</button>`:`<button class="btn ghost mini" onclick="psaSupprimer('${c.id}')" aria-label="Supprimer le créneau">✕</button>`}</span></div>`;
+  const ligneAnim=c=>`<div class="psa-l"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${esc(psaDir(c))}${c.lieu?` · ${esc(c.lieu)}`:""}</span><button class="btn mini" onclick="psaReserverForm('${c.id}')">Réserver</button></div>`;
+  const jours=(L2,f)=>psaParJour(L2).map(j=>`<div class="psa-j"><div class="psa-jt">${esc(psaJourLib(j[0].debut))}</div>${j.map(f).join("")}</div>`).join("");
+  document.getElementById("sheet-content").innerHTML=`<h3>Points sur activité</h3><div class="sheet-sub">Entretiens de 30 à 45 minutes entre le directeur de région et chaque animateur</div>
+    ${g?`<div class="psa-bloc"><div class="psa-bt"><b>Mes créneaux</b><span>${miens.filter(c=>c.reserve_par).length} réservé${miens.filter(c=>c.reserve_par).length>1?"s":""} sur ${miens.length}</span><button class="btn mini" onclick="psaForm()">＋ Ouvrir des créneaux</button></div>
+      ${miens.length?jours(miens,ligneDir):`<p class="fh-note">Aucun créneau ouvert. Ouvre une plage (par exemple mardi de 9h à 12h) : elle est découpée en créneaux, et les animateurs de ta région réservent le leur.</p>`}</div>`:""}
+    ${maRes?`<div class="psa-bloc psa-moi"><div class="psa-bt"><b>Ton PSA</b></div><div class="psa-l pris"><b>${psaH(maRes.debut)}</b><small>${esc(psaJourLib(maRes.debut))}</small><span class="psa-q">avec ${esc(psaDir(maRes))} · ${esc(PSA_MODES[maRes.mode]||"")}${maRes.lieu?` · ${esc(maRes.lieu)}`:""}</span><button class="btn ghost mini" onclick="psaAnnuler('${maRes.id}')">Annuler</button></div>${maRes.mode==="visio"?(maRes.lien_visio?`<a class="btn psa-zoom" href="${esc(maRes.lien_visio)}" target="_blank" rel="noopener">🎥 Rejoindre la réunion</a>`:`<p class="fh-note">Le lien de la réunion en ligne sera ajouté ici par ton directeur avant le rendez-vous.</p>`):""}</div>`:""}
+    ${!maRes&&(libres.length||!g)?`<div class="psa-bloc"><div class="psa-bt"><b>Créneaux disponibles</b><span>${libres.length}</span></div>${libres.length?jours(libres,ligneAnim):`<p class="fh-note">Pas de créneau ouvert pour l'instant. Ton directeur de région en proposera bientôt ; tu seras prévenu ici.</p>`}</div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`}
+function psaDir(c){const a=(DB.acces||[]).find(x=>x.id===c.directeur_id);return a&&a.nom||(c.directeur_id===SESSION.id?SESSION.name:"Le directeur de région")}
+function psaZoneId(){const n=vueRegion().nom,z=(DB.zones||[]).find(x=>x.nom===n);return z?z.id:(SESSION.zoneId||null)}
+function psaForm(){const dm=new Date(Date.now()+864e5),iso=dm.getFullYear()+"-"+String(dm.getMonth()+1).padStart(2,"0")+"-"+String(dm.getDate()).padStart(2,"0");window._psaDuree=window._psaDuree||30;
+  document.getElementById("sheet-content").innerHTML=`<h3>Ouvrir des créneaux PSA</h3><div class="sheet-sub">Région ${esc(vueRegion().nom)} : la plage est découpée en créneaux</div>
+    <div class="field"><label>Jour</label><input type="date" id="psa-j" value="${iso}" min="${isoJour(TODAY)}" oninput="psaApercu()"></div>
+    <div class="psa-2"><div class="field"><label>De</label>${heureChamp("psa-de","09:00","psaApercu()",true)}</div><div class="field"><label>À</label>${heureChamp("psa-a","12:00","psaApercu()",true)}</div></div>
+    <div class="field"><label>Durée d'un entretien</label><div class="seg psa-d">${[30,45].map(d=>`<button type="button" class="${window._psaDuree===d?"on":""}" onclick="window._psaDuree=${d};this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this));psaApercu()">${d} min</button>`).join("")}</div></div>
+    <div class="field"><label>Lien de la réunion en ligne <small>(facultatif, ajoutable plus tard)</small></label><input id="psa-lien" type="url" inputmode="url" placeholder="https://zoom.us/j/…" maxlength="400"></div>
+    <div class="field"><label>Lieu si rendez-vous sur place <small>(facultatif, sinon en ligne)</small></label><input id="psa-lieu" placeholder="Ex. Le Limonadier" maxlength="160"></div>
+    <p class="fh-note" id="psa-ap"></p>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openPSA()">Retour</button><button class="btn" onclick="psaCreer(this)">Ouvrir les créneaux</button></div>`;
+  openSheet();psaApercu()}
+function psaDecoupe(){const j=document.getElementById("psa-j").value,de=document.getElementById("psa-de").value,a=document.getElementById("psa-a").value,d=window._psaDuree||30;if(!j||!de||!a)return[];
+  const t0=new Date(j+"T"+de+":00"),t1=new Date(j+"T"+a+":00"),out=[];for(let t=t0.getTime();t+d*60e3<=t1.getTime();t+=d*60e3)out.push(new Date(t));return out}
+function psaApercu(){const el=document.getElementById("psa-ap");if(!el)return;const L=psaDecoupe();el.textContent=L.length?`${L.length} créneau${L.length>1?"x":""} : ${L.map(d=>psaH(d)).join(" · ")}`:"Choisis une plage d'au moins un créneau."}
+async function psaCreer(btn){const L=psaDecoupe();if(!L.length){toast("Plage trop courte","w");return}if(L[0].getTime()<Date.now()){toast("Ce moment est déjà passé","w");return}
+  const lieu=(document.getElementById("psa-lieu").value||"").trim()||null,lien=psaLienOk(document.getElementById("psa-lien").value),z=psaZoneId(),d=window._psaDuree||30;btn.disabled=true;
+  const {data,error}=await sb.from("psa_creneaux").insert(L.map(t=>({zone_id:z,directeur_id:SESSION.id,debut:t.toISOString(),duree_min:d,lieu,lien_visio:lien}))).select();btn.disabled=false;
+  if(error){toast(rlsMsg(error),"e");return}DB.psa=[...(DB.psa||[]),...(data||[])].sort((a,b)=>a.debut.localeCompare(b.debut));toast(L.length+" créneaux ouverts","s");psaRendu();navSous&&avecVue(()=>navSous())}
+function psaLienOk(v){v=(v||"").trim();if(!v)return null;if(!/^https?:\/\//i.test(v))v="https://"+v;return v}
+function psaLienForm(id){const c=(DB.psa||[]).find(x=>x.id===id);if(!c)return;const autres=psaFutur().filter(x=>x.directeur_id===SESSION.id&&x.id!==id&&!x.lien_visio).length;
+  document.getElementById("sheet-content").innerHTML=`<h3>Lien de la réunion</h3><div class="sheet-sub">${esc(psaJourLib(c.debut))} à ${psaH(c.debut)}${c.reserve_nom?" · "+esc(c.reserve_nom):""}</div>
+    <div class="field"><label>Lien Zoom (ou autre)</label><input id="psa-l2" type="url" inputmode="url" value="${esc(c.lien_visio||"")}" placeholder="https://zoom.us/j/…" maxlength="400"></div>
+    ${autres?`<label class="psa-tous"><input type="checkbox" id="psa-tous"> Mettre aussi ce lien sur mes ${autres} autre${autres>1?"s":""} créneau${autres>1?"x":""} sans lien</label>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="psaRendu()">Retour</button><button class="btn" onclick="psaLienSauver('${id}',this)">Enregistrer</button></div>`}
+async function psaLienSauver(id,btn){const v=psaLienOk(document.getElementById("psa-l2").value),tous=document.getElementById("psa-tous");
+  const ids=[id,...(tous&&tous.checked?psaFutur().filter(x=>x.directeur_id===SESSION.id&&x.id!==id&&!x.lien_visio).map(x=>x.id):[])];btn.disabled=true;
+  const {error}=await sb.from("psa_creneaux").update({lien_visio:v}).in("id",ids);btn.disabled=false;if(error){toast(rlsMsg(error),"e");return}
+  (DB.psa||[]).forEach(c=>{if(ids.includes(c.id))c.lien_visio=v});toast(v?"Lien enregistré":"Lien retiré","s");psaRendu()}
+async function psaSupprimer(id){const {error}=await sb.from("psa_creneaux").delete().eq("id",id);if(error){toast(rlsMsg(error),"e");return}DB.psa=(DB.psa||[]).filter(c=>c.id!==id);psaRendu()}
+function psaReserverForm(id){const c=(DB.psa||[]).find(x=>x.id===id);if(!c)return;window._psaMode=window._psaMode||"visio";
+  document.getElementById("sheet-content").innerHTML=`<h3>Réserver ton PSA</h3><div class="sheet-sub">${esc(psaJourLib(c.debut))} à ${psaH(c.debut)} · ${c.duree_min} min avec ${esc(psaDir(c))}</div>
+    <div class="field"><label>Comment ?</label><div class="seg psa-m">${Object.entries(PSA_MODES).map(([k,v])=>`<button type="button" class="${window._psaMode===k?"on":""}" onclick="window._psaMode='${k}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this))">${v}</button>`).join("")}</div></div>
+    ${c.lieu?`<p class="fh-note">Lieu ou lien prévu : ${esc(c.lieu)}</p>`:""}
+    <div class="field"><label>Un mot pour préparer <small>(facultatif)</small></label><textarea id="psa-note" rows="3" maxlength="400" placeholder="Ce dont tu veux parler"></textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="psaRendu()">Retour</button><button class="btn" onclick="psaReserver('${id}',this)">Réserver ce créneau</button></div>`}
+async function psaReserver(id,btn){btn.disabled=true;const {error}=await sb.rpc("cap_psa_reserver",{p_id:id,p_mode:window._psaMode||"visio",p_note:document.getElementById("psa-note").value||null});btn.disabled=false;
+  if(error){toast(rlsMsg(error),"e");await psaCharger();psaRendu();return}await psaCharger();toast("PSA réservé : ton directeur est prévenu","s");psaRendu();navSous&&avecVue(()=>navSous())}
+async function psaAnnuler(id){const {error}=await sb.rpc("cap_psa_annuler",{p_id:id});if(error){toast(rlsMsg(error),"e");return}await psaCharger();toast("Créneau libéré","s");psaRendu();navSous&&avecVue(()=>navSous())}
 /* v1.23 : chaque compte de l'équipe s'inscrit lui-même à n'importe quelle réunion du réseau (RPC cap_equipe_inscrire) */
 function equipeViensBloc(m){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";
   const avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";if(!avenir)return"";
@@ -5683,6 +5781,24 @@ async function mbFicheSauver(){
   toast("Fiche enregistrée");memberSheet(_mbf.clubId,_mbf.id);
 }
 /* v1.5.0 : la fiche membre de la personne connectée (animateur / directeur qui est aussi membre). */
+/* v1.25 : l'espace membre est une page du CRM (onglet « espace ») : il s'affiche dans la zone principale, menu du CRM
+   à gauche, dans un cadre gardé d'un rendu à l'autre (#esp-host, à côté de #view : render() ne le recrée jamais).
+   Tout lien vers membre.html#… du CRM passe par là (écouteur en capture) : plus d'onglet ni de second CRM. */
+function espaceOuvrir(url){if(!url)return;try{if(document.getElementById("sheet")?.classList.contains("open"))closeSheet()}catch(e){}const h=document.getElementById("esp-host"),f=h.querySelector("iframe");window._espUrl=url;f.src=url;go("espace")}
+function espaceDefaut(){const f=mesFiches()[0];return f?"membre.html#moi="+f.id:null}
+function viewEspace(){const F=mesFiches(),u=window._espUrl||"";
+  if(!u){const d=espaceDefaut();if(d){setTimeout(()=>espaceOuvrir(d),0)}else return `<div class="page"><h1 class="page-title">Mon espace membre</h1><p class="fh-note">Aucune fiche membre n'est reliée à ton compte. Elle se crée depuis Équipe → ta fiche → « Espace membre ».</p></div>`}
+  const titre=/#voir=/.test(u)?"Aperçu d'un espace membre":/#equipe=/.test(u)?"Vue membre du groupe":"Mon espace membre";
+  return `<div class="page esp-page"><div class="esp-tete"><h1 class="page-title">${titre}</h1>${F.length>1&&/#moi=/.test(u)?`<div class="esp-fiches">${F.map(m=>`<button type="button" class="chip${u.includes(m.id)?" on":""}" onclick="espaceOuvrir('membre.html#moi=${m.id}')">${esc((club(m.clubId)||{}).nom||"Groupe")}</button>`).join("")}</div>`:""}</div></div>`}
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href^="membre.html#"]');if(!a||e.ctrlKey||e.metaKey)return;e.preventDefault();espaceOuvrir(a.getAttribute("href"))},true);
+/* v1.25 : recommandations reçues par la personne connectée (ses fiches membre), à traiter depuis la Synthèse. */
+function mesFiches(){if(!SESSION||!DB)return[];const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(),moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
+  return DB.membres.filter(m=>(SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi))}
+function mesRecosATraiter(){const ids=new Set(mesFiches().map(m=>m.id));return (DB.recos||[]).filter(r=>ids.has(r.a)&&["envoyee","contact","devis"].includes(r.statut))}
+function dashMesRecos(){if(SESSION&&SESSION._voir)return"";const L=mesRecosATraiter();if(!L.length)return"";const ST={envoyee:"Nouvelle",contact:"Contacté",devis:"Devis envoyé"};
+  const de=id=>{const m=DB.membres.find(x=>x.id===id);return m?m.nom:"Un membre"};
+  return `<section class="dem mr" aria-label="Recommandations reçues"><div class="dem-h"><span class="dem-pulse"></span><b>🤝 ${L.length} recommandation${L.length>1?"s":""} reçue${L.length>1?"s":""} à traiter</b><button class="btn ghost mini" onclick="espaceOuvrir('membre.html#moi=${L[0].a}&r=recues')">Tout voir</button></div>
+    <div class="dem-l">${L.slice(0,4).map(r=>`<button type="button" class="mr-it" onclick="espaceOuvrir('membre.html#moi=${r.a}&r=recues')"><span class="mr-st mr-${r.statut}">${ST[r.statut]}</span><span class="mr-tx"><b>${esc(r.objet||"Recommandation")}</b><small>de ${esc(de(r.de))} · ${r.cree_le?new Date(r.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):""}</small></span><span aria-hidden="true">›</span></button>`).join("")}</div></section>`}
 function maFiche(clubId){if(!SESSION)return null;const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
   const moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
   return DB.membres.find(m=>(!clubId||m.clubId===clubId)&&((SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi)))||null}
@@ -7513,8 +7629,8 @@ function natCols(){
     {k:"signe",t:"Signées",s:"Historique complet",ico:"✅",l:all.filter(a=>natEtat(a)==="signe").sort((x,y)=>((y.national||{}).signe_le||"").localeCompare((x.national||{}).signe_le||""))}];
 }
 function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
-function dmVueSeg(){const v=["nat","form","leads"].includes(window._dmVue)?window._dmVue:"pipe",n=natAEnvoyer().length,nl=(DB.leads||[]).filter(l=>l.statut==="a_contacter").length;
-  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button><button role="tab" aria-selected="${v==="leads"}" class="${v==="leads"?"on":""}" onclick="window._dmVue='leads';render()">📇 Leads${nl?`<em>${nl}</em>`:""}</button>`}</div>`}
+function dmVueSeg(){if(!navDir()&&["nat","leads"].includes(window._dmVue))window._dmVue="pipe";const v=["nat","form","leads"].includes(window._dmVue)?window._dmVue:"pipe",dir=navDir(),n=natAEnvoyer().length,nl=(DB.leads||[]).filter(l=>l.statut==="a_contacter").length;
+  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button>${dir?`<button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>`:""}${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button>${dir?`<button role="tab" aria-selected="${v==="leads"}" class="${v==="leads"?"on":""}" onclick="window._dmVue='leads';render()">📇 Leads${nl?`<em>${nl}</em>`:""}</button>`:""}`}</div>`}
 /* v0.42.0 : le formulaire d'adhésion dans le CRM. « Remplir » envoie une vraie demande (elle arrive dans Demandes),
    « Consulter » ouvre le même formulaire en démonstration : rien n'est envoyé. */
 function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"demo":"vrai";
@@ -7874,7 +7990,7 @@ function filFicheRendu(){
   el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
-const FIL_ONGLETS={dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_ONGLETS={espace:"Espace membre",dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
 const FIL_FILTRES={anim:"Animateurs",todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}

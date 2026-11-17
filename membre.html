@@ -277,7 +277,7 @@ const DEMO=location.hash==="#demo";
 const EQ=(location.hash.match(/^#equipe=([0-9a-f-]{36})$/i)||[])[1]||null;
 /* v1.5.0 : #moi=<fiche> = un membre de l'équipe (animateur, directeur) ouvre SON espace membre depuis le CRM, avec la
    session du CRM. Le mode est gardé pour l'onglet (sessionStorage) ; jamais de déconnexion ici : ce serait celle du CRM. */
-let MOI=(location.hash.match(/^#moi=([0-9a-f-]{36})$/i)||[])[1]||null;
+let MOI=(location.hash.match(/^#moi=([0-9a-f-]{36})(?:&|$)/i)||[])[1]||null;const MOI_SUITE=(location.hash.match(/^#moi=[0-9a-f-]{36}&(.+)$/i)||[])[1]||""; // v1.25 : #moi=<fiche>&r=recues
 try{if(MOI)sessionStorage.setItem("cap-moi-crm",MOI);else MOI=sessionStorage.getItem("cap-moi-crm")}catch(e){}
 /* v1.17.0 : #voir=<fiche> = le super admin regarde l'espace d'un membre, exactement comme lui, en lecture seule.
    Session du CRM + en-tête x-cap-voir ; la base n'en tient compte que pour un superadmin et refuse toute écriture. */
@@ -343,7 +343,7 @@ async function demarrer(){
   if(DEMO){Object.assign(S,demo());return lancer()}
   const {data:moi,error}=await sb.rpc(VOIR?"cap_membre_moi":"cap_membre_lier");
   if(VOIR&&(error||!moi||moi.statut!=="ok")){$("app").innerHTML=`<div class="page"><div class="card"><b>Aperçu impossible</b><p class="sub">${esc(error?error.message:"Fiche introuvable, ou ton compte n'est pas super admin.")}</p><button class="btn ghost" onclick="voirQuitter()">Fermer l'aperçu</button></div></div>`;return}
-  if(VIA_CRM&&(error||moi.statut!=="ok")){$("app").innerHTML=`<div class="page"><div class="card"><b>Espace membre indisponible</b><p class="sub">${esc(error?error.message:"Ta fiche membre n'est pas reliée.")}</p><a class="btn ghost" href="/">Retour au CRM</a></div></div>`;return}
+  if(VIA_CRM&&(error||!moi||moi.statut!=="ok")){$("app").innerHTML=`<div class="page"><div class="card"><b>Espace membre indisponible</b><p class="sub">${esc(error?error.message:"Ta fiche membre n'est pas reliée.")}</p><a class="btn ghost" href="/">Retour au CRM</a></div></div>`;return}
   if(error){await sb.auth.signOut({scope:"local"});return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
   if(moi.statut!=="ok"){
     await sb.auth.signOut({scope:"local"});
@@ -1188,7 +1188,7 @@ async function demarrerMoi(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   const {data:{session}}=await sb.auth.getSession();
   if(!session){$("app").innerHTML=`<div class="page"><div class="card"><b>Connecte-toi d'abord au CRM.</b><p class="sub">Ton espace membre s'ouvre depuis le CRM, avec ta session.</p><a class="btn" href="/">Aller au CRM</a></div></div>`;return}
-  if(/^#moi=/.test(location.hash)){const {error}=await sb.rpc("cap_lier_mon_espace",{p_membre:MOI});history.replaceState(null,"",location.pathname);
+  if(/^#moi=/.test(location.hash)){const {error}=await sb.rpc("cap_lier_mon_espace",{p_membre:MOI});history.replaceState(null,"",location.pathname+(MOI_SUITE?"#"+MOI_SUITE:""));
     if(error){$("app").innerHTML=`<div class="page"><div class="card"><b>Impossible d'ouvrir ton espace membre</b><p class="sub">${esc(error.message)}</p><a class="btn ghost" href="/">Retour au CRM</a></div></div>`;return}}
   S.viaCrm=true;return demarrer();
 }
@@ -1200,7 +1200,12 @@ async function demarrerEquipe(){
   await chargerGv();if(S.gv&&S.gv.club)S.moi.club=S.gv.club.nom;
   await Promise.all([chargerAnnuaire(),chargerGroupe()]);ecouter();rendu();
 }
-function voirQuitter(){try{sessionStorage.removeItem("cap-voir-mb")}catch(e){}if(window.opener){window.close()}location.href="/"}
+function voirQuitter(){try{sessionStorage.removeItem("cap-voir-mb")}catch(e){}if(crmRetour())return;if(window.opener){window.close()}location.href="/"}
+/* v1.25 : l'espace membre vit dans le CRM (cadre de la page « Mon espace membre »). « ↩ CRM » ramène le CRM principal, sans en ouvrir un second. */
+const DANS_CRM=window.top!==window;
+function crmRetour(){if(!DANS_CRM)return false;try{window.top.go("dash");return true}catch(e){return false}}
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href="/"]');if(a&&crmRetour())e.preventDefault()},true);
+if(DANS_CRM)document.documentElement.classList.add("dans-crm");
 function voirBandeau(){if(!VOIR||document.getElementById("voir-band"))return;const b=document.createElement("div");b.id="voir-band";
   b.innerHTML=`<span>👁 Aperçu : l'espace de <b id="voir-nom">ce membre</b>, tel qu'il le voit. Lecture seule.</span><button type="button" onclick="voirQuitter()">Fermer l'aperçu</button>`;
   document.body.prepend(b);document.body.classList.add("voir-on")}

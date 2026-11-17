@@ -444,6 +444,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Sheet : `leadSheetTexte(l)` = « Contacté par X (WhatsApp) le … · invité à la réunion du … · Inscrit … · Venu » ; envoyé à chaque changement (dont l'envoi WhatsApp), et rattrapage au chargement des leads jamais écrits (`window._ldSheetRattrape`) dès que `reglages.leads_sheet_url` existe.
 - Banc `leads.mjs` 38/38.
 
+**📋 Leads en tableau serré + frise (v1.20.0, 17/11/2026)** — maquette https://claude.ai/artifact/LaQgtddVcuV8uNnY4fSvM1, JB : « tableau serré pour l'affichage standard, la frise en option, c'est celle que j'utiliserai ». `LD_MODES` = liste (« Tableau », défaut), frise, cartes, suivi (« Colonnes »). `leadListe` (une ligne ≈ 51 px : lead, téléphone, état, contacté qui · quand, invitation qui · quand, inscription, présence Venu/Absent), `leadFrise` (contacté → invité → inscrit → venu, trait vert `--p`), `ldEtat(l)`, `ldPrenomNom`, `ldCourt`. Actions `ldIcones` : 4 cases fixes (WhatsApp · téléphone ou LinkedIn · contacté · ⋯), case vide invisible quand l'action n'existe pas, pour que tout reste aligné. Banc `leads.mjs` 42/42.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -2102,7 +2102,7 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.20 leads serrés*/.ld-tab{min-width:880px}.ld-tab td:nth-child(3){white-space:nowrap}.ld-tab td{padding:7px 12px;vertical-align:middle}.ld-tab th{padding:8px 12px}
 .ld-nom b{display:block;font-weight:600}.ld-nom small{display:block;color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
 .ld-tel{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}.ld-qq{white-space:nowrap}.ld-qq small{color:var(--muted)}.ld-non{color:var(--crimson-txt,var(--crimson));white-space:nowrap}
-.ld-ibs{display:flex;gap:4px;justify-content:flex-end;white-space:nowrap}
+.ld-ibs{display:grid;grid-template-columns:repeat(4,30px);gap:4px;justify-content:end;width:132px;margin-left:auto}.ld-tab td:last-child{width:140px}.ld-ib.v{visibility:hidden}
 .ld-ib{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);display:inline-grid;place-items:center;cursor:pointer;font-size:13px;text-decoration:none;font-weight:700}
 .ld-ib.p{background:var(--crimson);border-color:var(--crimson);color:#fff}.ld-ib:hover{border-color:var(--crimson-txt,var(--crimson))}
 .ld-venu{display:inline-flex;gap:4px}.ld-venu button{font:600 11px var(--f,inherit);padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.ld-venu button:hover{border-color:#3DAA74;color:#3DAA74}
@@ -7569,8 +7569,9 @@ function leadActions(l,mini){const tel=l.telephone;return `${tel?`<button class=
 /*v1.20 : tableau serré (affichage standard) et frise d'étapes (option)*/
 function ldPrenomNom(n){const w=String(n||"").trim().split(/\s+/);return w.length>1?w[0]+" "+w.slice(1).map(x=>x[0]+".").join(""):w[0]||""}
 function ldCourt(iso){if(!iso)return"";const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+(d.getHours()||d.getMinutes()?" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"")}
-function ldIcones(l){const tel=l.telephone,b=(cl,t,ic,on)=>`<button class="ld-ib ${cl}" title="${t}" aria-label="${t}" onclick="${on}">${ic}</button>`;
-  return `<div class="ld-ibs">${tel?b("p","Inviter par WhatsApp","💬",`leadWa('${l.id}')`)+`<a class="ld-ib" title="Appeler ${esc(fmtTelAff("+"+mbWa(tel)))}" aria-label="Appeler" href="tel:+${esc(mbWa(tel))}">📞</a>`:l.linkedin?`<a class="ld-ib" title="LinkedIn" href="${esc(l.linkedin)}" target="_blank" rel="noopener">in</a>`:""}${l.statut==="a_contacter"||l.statut==="message_envoye"?b("","Marquer contacté","✓",`leadContacte('${l.id}')`):""}${b("","Suivi…","⋯",`leadSuivi('${l.id}')`)}</div>`}
+function ldIcones(l){const tel=l.telephone,vide=`<span class="ld-ib v" aria-hidden="true"></span>`,b=(cl,t,ic,on)=>`<button class="ld-ib ${cl}" title="${t}" aria-label="${t}" onclick="${on}">${ic}</button>`;
+  /* 4 cases fixes, toujours au même endroit : WhatsApp · téléphone ou LinkedIn · contacté · suivi (une case vide si l'action n'existe pas) */
+  return `<div class="ld-ibs">${tel?b("p","Inviter par WhatsApp","💬",`leadWa('${l.id}')`):vide}${tel?`<a class="ld-ib" title="Appeler ${esc(fmtTelAff("+"+mbWa(tel)))}" aria-label="Appeler" href="tel:+${esc(mbWa(tel))}">📞</a>`:l.linkedin?`<a class="ld-ib" title="LinkedIn" href="${esc(l.linkedin)}" target="_blank" rel="noopener">in</a>`:vide}${l.statut==="a_contacter"||l.statut==="message_envoye"?b("","Marquer contacté","✓",`leadContacte('${l.id}')`):vide}${b("","Suivi…","⋯",`leadSuivi('${l.id}')`)}</div>`}
 function ldEtat(l){const m=ldReu(l.reunion_id),x=leadInscription(l),passee=m&&m.date<isoJour(TODAY);
   return{c:l.contacte_le||l.contacte_par_nom?[ldPrenomNom(l.contacte_par_nom||"l'équipe"),ldCourt(l.contacte_le)]:null,
     i:l.message_le?[ldPrenomNom(l.message_par_nom||"l'équipe"),ldCourt(l.message_le),m]:null,x,

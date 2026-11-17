@@ -1972,6 +1972,8 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 .nav .nav-sec,.nav .nav-sous,.nav .nav-rub,.nav .nav-cv{display:none}
 .nav button[data-tab="team"]{display:none}
 .nav-plus{display:flex}
+.nav .nav-reco{color:var(--crimson-txt,var(--crimson));font-weight:700}.nav .nav-reco .nr-b{display:grid;place-items:center;width:44px;height:44px;margin-top:-20px;border-radius:50%;background:#B0122E;color:#fff;box-shadow:0 6px 16px rgba(176,18,46,.4),0 0 0 4px var(--card)}.nav .nav-reco .nr-b svg{width:22px;height:22px}.nav .nav-reco:active .nr-b{transform:scale(.9)}
+@media(min-width:900px){.nav .nav-reco{display:none!important}}
 .nav .nav-pc{display:none}
 @media(min-width:900px){.nav .nav-pc{display:inline}.nav .nav-tel{display:none}}
 @media(min-width:900px){
@@ -2295,6 +2297,7 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
   <div class="nav-sous" data-rub="syn"><div><div class="nav-sx" data-sx="syn"></div></div></div>
   <button data-tab="reunions" data-rub="grp" class="nav-reu" onclick="go('reunions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h5M8 17.5h8"/></svg><span class="nav-pc">Mon groupe</span><span class="nav-tel">Groupe</span><span class="nav-cv" aria-hidden="true"></span></button>
   <div class="nav-sous" data-rub="grp"><div><div class="nav-sx" data-sx="grp"></div></div></div>
+  <button type="button" class="nav-reco" onclick="recoRapide()" aria-label="Donner une recommandation" hidden><span class="nr-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Reco</button>
   <button data-tab="agenda" data-rub="age" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda<span class="nav-cv" aria-hidden="true"></span></button>
   <div class="nav-sous" data-rub="age"><div><div class="nav-sx" data-sx="age"></div></div></div>
   <div class="nav-sec">Développer</div>
@@ -2346,8 +2349,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.36.0";
+const APP_VERSION="1.37.0";
 const CHANGELOG=[
+  {v:"1.37.0",date:"17 novembre 2026",notes:{"Ajouté":["Au téléphone, un bouton « Reco » au centre de la barre du bas : un toucher ouvre le formulaire de recommandation, sans passer par un menu. Dans l'espace membre comme dans le CRM (pour qui a une fiche membre)."],"Corrigé":["Espace membre en thème sombre : le lieu de la prochaine réunion et la ligne « À faire » en rouge étaient illisibles."]}},
   {v:"1.36.0",date:"17 novembre 2026",notes:{"Ajouté":["Statistiques : taux de transformation (invités devenus membres, invités venus, recommandations signées), assiduité des membres et montant moyen d'une affaire, avec l'écart en points par rapport à la période de comparaison.","Comparaison au choix : période précédente, même période l'an dernier, ou une période passée prise dans la liste.","Portefeuille des membres : cotisations payées, dossiers complets, renouvellements dépassés, à renouveler sous 30 et 90 jours.","Classements : les groupes sur l'indicateur affiché, et les membres par affaires apportées. Un clic ouvre le groupe.","Dans un groupe, chaque membre a son assiduité, son dossier, son paiement et sa date de renouvellement.","L'export Excel reprend tous ces chiffres, la période de comparaison et le classement des membres."],"Modifié":["Les nouveaux membres sont comptés par personne : quelqu'un inscrit dans plusieurs groupes ne compte qu'une fois."]}},
   {v:"1.35.0",date:"17 novembre 2026",notes:{"Ajouté":["Les statistiques complètes à chaque niveau (menu Synthèse → Statistiques) : un directeur de région a les courbes, le détail par ville, groupe et membre, et le prévisionnel de sa région ; un responsable de groupe les a pour son ou ses groupes. La direction nationale garde tout le réseau. Chacun est limité à son périmètre par la base."]}},
   {v:"1.34.0",date:"17 novembre 2026",notes:{"Ajouté":["Suivi des invités après la réunion : dans la fiche d'une réunion passée, « 💌 Remercier les invités ». On note qui est venu, puis le message de remerciement s'ouvre dans WhatsApp, déjà rempli pour chaque invité : le groupe, le réseau Protéine, la prochaine réunion, le lien d'adhésion et le numéro de l'animateur.","Le message est un modèle modifiable, avec des repères qui se remplissent tout seuls. « Garder comme modèle » le conserve ; gardé par le super admin, il sert à toute l'équipe."],"Modifié":["Le bilan reprend le nombre d'invités notés venus."]}},
@@ -3309,7 +3313,7 @@ function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueReg
     zones:DB.zones.filter(z=>(z.villes||[]).some(v=>villes.includes(v))),
     acces:DB.acces?DB.acces.filter(x=>x.animateur_id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))):DB.acces,
     aEmbarquer:DB.acces?DB.acces.filter(x=>x.animateur_id&&x.role!=="visiteur"&&x.id!==SESSION.id&&(anims.has(x.animateur_id)||DB.animateurs.some(a=>a.id===x.animateur_id&&villes.includes(a.ville)))&&(x.mdp_initial||(!x.derniere_connexion&&!x.mdp_provisoire))).length:DB.aEmbarquer}}
-function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB;DB=p;try{return fn()}finally{DB=sv}}
+function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB,av=window._DBvrai;DB=p;if(!av)window._DBvrai=sv;try{return fn()}finally{DB=sv;window._DBvrai=av}}
 /* ---------- Accueil régional : cockpit + planning ---------- */
 const VILLE_TEINTE={Rabat:"#B0122E","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
 function vrTeinte(v){return VILLE_TEINTE[v]||villeColor(v)}
@@ -4921,6 +4925,7 @@ function navSous(){const nav=document.getElementById("nav");if(!nav||!SESSION)re
   const actif=NAV_RUB_TAB[tab]||null,ouv=_navFerme?null:(_navRubOuverte||actif);
   nav.querySelectorAll(".nav-sx").forEach(x=>{const h=navSousItems(x.dataset.sx).map(navItemHTML).join("");if(x.dataset.h!==h){x.innerHTML=h;x.dataset.h=h}});
   nav.querySelectorAll(".nav-sous").forEach(x=>{const r=x.dataset.rub,vide=!x.querySelector(".nav-sx").children.length&&r!=="res";x.classList.toggle("ouv",r===ouv&&!vide)});
+  {const rc=nav.querySelector(".nav-reco");if(rc)rc.hidden=!recoFiche()} // v1.37 : « Reco » au centre de la barre du téléphone, pour qui a une fiche membre
   const pl=nav.querySelector(".nav-plus");if(pl)pl.classList.toggle("on",["clubs","membres","lieux","team"].includes(tab));
   if(nav.dataset.ouv!==String(ouv)){nav.dataset.ouv=String(ouv);navRepliArmer();clearTimeout(window._navPT);window._navPT=setTimeout(()=>{if(typeof navPill==="function")navPill()},310)}
   nav.querySelectorAll("[data-rub]").forEach(b=>{if(b.tagName!=="BUTTON")return;const r=b.dataset.rub;b.classList.toggle("ouv",r===ouv);if(b.classList.contains("nav-rub"))b.classList.toggle("on",r===actif)});
@@ -5892,6 +5897,9 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 function mesFiches(){if(!SESSION||!DB)return[];const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(),moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
   const cl=id=>DB.clubs.find(c=>c.id===id),ordre=(m=>{const c=cl(m.clubId);const d=c?DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").map(r=>r.date).sort()[0]:null;return (m.userId===SESSION.id?"0":"1")+(d||"9999")});
   return DB.membres.filter(m=>(SESSION.animId&&m.animId===SESSION.animId)||(moi&&nom(m.nom)===moi)).sort((a,b)=>ordre(a).localeCompare(ordre(b)))} // v1.27 : la fiche déjà reliée au compte d'abord (l'ouvrir ne déplace plus le rattachement)
+/* v1.37 — donner une recommandation en un toucher depuis la barre du bas (téléphone) : ouvre le formulaire de son espace membre. */
+function recoFiche(){if(!SESSION||SESSION._voir||!DB)return null;const g=DB;try{if(window._DBvrai)DB=window._DBvrai;return mesFiches()[0]||null}finally{DB=g}} // la fiche se cherche dans tout le réseau, pas dans la vue filtrée
+function recoRapide(){const f=recoFiche();if(!f)return toast("Tu n'as pas de fiche membre : passe par Mon groupe → Affaires","w");espaceOuvrir("membre.html#moi="+f.id+"&r=nouvelle")}
 function mesRecosATraiter(){const ids=new Set(mesFiches().map(m=>m.id));return (DB.recos||[]).filter(r=>ids.has(r.a)&&["envoyee","contact","devis"].includes(r.statut))}
 function dashMesRecos(){if(SESSION&&SESSION._voir)return"";const L=mesRecosATraiter();if(!L.length)return"";const ST={envoyee:"Nouvelle",contact:"Contacté",devis:"Devis envoyé"};
   const de=id=>{const m=DB.membres.find(x=>x.id===id);return m?m.nom:"Un membre"};

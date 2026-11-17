@@ -437,6 +437,13 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Écriture au Sheet : `leadSheet(l)` POST no-cors vers `reglages.leads_sheet_url` (+ `leads_sheet_jeton`) ; script à coller dans le classeur : `docs/leads-apps-script.gs` (colonne « Suivi CRM », ligne trouvée par le nom). Tant que l'URL n'est pas posée, rien ne part.
 - Banc `leads.mjs` 26/26 (bureau + téléphone).
 
+**📇 Leads : vues, fil, inscription, présence (v1.19.0, 17/11/2026)** — JB : « modes d'affichage, liste », « bien voir où les messages ont été envoyés », « qui les a contactés et à quelle date », suivi « s'ils sont venus », « raccorde avec les inscriptions », et l'écriture dans le Sheet « dès que j'envoie le WhatsApp ».
+- Migration `20261117380000_leads_inscription_presence.sql` (appliquée) : `leads.inscrit_le`, `invite_id`, `venu`, `venu_note_le`.
+- `LD_MODES` (cartes, liste, suivi en 6 colonnes ; localStorage `cap-ldvue`). `leadEtapes(l)` = fil (📞 contacté par/le, 💬 invitation envoyée par/le + réunion, ✓ inscrit / … pas encore, ★ venu / ✕ pas venu / « Venu ? Oui / Non » après la réunion) ; `leadFil`, `leadListe`, `leadSuiviVue`, `leadActions`, `leadVenu`.
+- `leadInscription(l)` : le lead parmi les invités d'une réunion (même mobile sur 9 chiffres `ldTel`, ou mêmes mots du nom `ldNom`), réunions postérieures au message ; `leadsAuto()` (appelé par `leadsHTML`) passe le lead en « Inscrit » une fois (`window._ldAuto`). Les inscrits du lien national arrivent dans `invites` par `national-suivi` chaque heure.
+- Sheet : `leadSheetTexte(l)` = « Contacté par X (WhatsApp) le … · invité à la réunion du … · Inscrit … · Venu » ; envoyé à chaque changement (dont l'envoi WhatsApp), et rattrapage au chargement des leads jamais écrits (`window._ldSheetRattrape`) dès que `reglages.leads_sheet_url` existe.
+- Banc `leads.mjs` 38/38.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

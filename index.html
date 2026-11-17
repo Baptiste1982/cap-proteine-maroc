@@ -2028,6 +2028,7 @@ html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;bo
 <div id="ptr" class="ptr" aria-hidden="true"><span class="spin"></span><span id="ptr-t">Tirer pour rafraîchir</span></div>
 <div id="confetti" class="confetti"></div>
 
+<script src="lancement.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
@@ -2049,8 +2050,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.10.1";
+const APP_VERSION="1.11.0";
 const CHANGELOG=[
+  {v:"1.11.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Une animation d'ouverture, jouée à chaque connexion au CRM et à l'espace membre, sur téléphone comme sur ordinateur, même quand la connexion se fait toute seule. Des points arrivent des bords, se relient et convergent : le réseau se connecte, puis le globe Protéine s'allume. Elle dure environ trois secondes, le temps de charger les données. Si l'appareil demande moins d'animations, seul le logo s'affiche."]}},
   {v:"1.10.1",date:"17 novembre 2026",notes:{
     "Ajouté":["La personne qui gère les documents du réseau est accueillie à sa première connexion. Dans le CRM, une fenêtre lui montre où est son espace. Dans l'espace documents, une fenêtre explique les quatre gestes (déposer, décrire, choisir qui voit, partager) et ce à quoi elle a accès ; « Me montrer où déposer » met la zone de dépôt en lumière. Elle ne revient plus ensuite, sur aucun appareil (documents.html?accueil pour la revoir).",
       "Documents du réseau : une section « Vidéos de prise en main ». Les vidéos y sont rangées d'office au dépôt, la vignette se lit au survol, et elles se partagent par lien comme les autres documents."]}},
@@ -2656,8 +2659,9 @@ async function loadSessionProfile(){
   return true;
 }
 async function bootIntoApp(){
+  if(typeof Lancement!=="undefined")Lancement.jouer();
   const ok=await loadSessionProfile();
-  if(!ok){await sb.auth.signOut({scope:"local"});return false}
+  if(!ok){await sb.auth.signOut({scope:"local"});if(typeof Lancement!=="undefined")Lancement.fin();return false}
   montrerSquelette();
   await loadDB();
   if(SESSION.role==="animateur"&&SESSION.animId)
@@ -2670,6 +2674,7 @@ async function bootIntoApp(){
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();
   presenceDemarrer();
   horlogeDemarrer();
+  if(typeof Lancement!=="undefined")Lancement.fin();
   return true;
 }
 /* ── v0.19 : didacticiel. Visite guidée à la première connexion (après le changement du mot de passe

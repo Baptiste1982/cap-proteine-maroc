@@ -256,6 +256,7 @@ a.la{text-decoration:none}
   <button data-o="moi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Moi<span class="badge" id="nav-rc" hidden></span></button>
 </div></nav>
 <script src="documents-commun.js"></script>
+<script src="lancement.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
@@ -289,6 +290,7 @@ const ICO={envoi:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
 const DOMAINE="membres.cap-proteine.ma";
 function telE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("212"))return /^212[5-7]\d{8}$/.test(d)?d:null;if(d.startsWith("0"))d=d.slice(1);return /^[5-7]\d{8}$/.test(d)?"212"+d:null}
 function vueLogin(msg){
+  if(typeof Lancement!=="undefined")Lancement.fin();
   $("nav").hidden=true;
   $("app").innerHTML=`<div class="login">
     <img src="logo-proteine.png" alt="Club d'affaires Protéine Maroc">
@@ -320,6 +322,7 @@ async function seConnecter(){
 
 /* ---------- Démarrage ---------- */
 async function demarrer(){
+  if(typeof Lancement!=="undefined"){Lancement.jouer();setTimeout(()=>Lancement.fin(),15000)}
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   if(DEMO){Object.assign(S,demo());return lancer()}
   const {data:moi,error}=await sb.rpc("cap_membre_lier");
@@ -336,7 +339,7 @@ async function demarrer(){
   await chargerGv();await chargerGroupe();
   ecouter();lancer();
 }
-function lancer(){$("nav").hidden=false;
+function lancer(){$("nav").hidden=false;if(typeof Lancement!=="undefined")Lancement.fin();
   setInterval(()=>{if(document.hidden||S.onglet!=="chiffres"||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="chiffres")rendu(true)})},60000);
   if(!lienHash())rendu();
   notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil","accueil","moi"].includes(S.onglet))rendu(true)});

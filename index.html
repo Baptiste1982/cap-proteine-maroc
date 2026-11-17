@@ -2165,6 +2165,9 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.31 leads confiés*/.ld-att{display:inline-block;margin:6px 0 2px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--warn-tint);color:var(--warn)}.ld-att.lu{background:var(--ok-tint);color:var(--ok)}
+.ld-c.bt{margin-bottom:12px}.ld-c.bt.neuf{border-color:var(--crimson)}.bt-mot{margin:8px 0;padding:10px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line);font-size:13px;line-height:1.45}.bt-mot b{font-weight:700}
+.ld-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 /*v1.30 chiffres par période*/.per{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
 .per-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;margin-bottom:12px}
 .per-h small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}.per-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;font-weight:800}
@@ -2306,8 +2309,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.30.0";
+const APP_VERSION="1.31.0";
 const CHANGELOG=[
+  {v:"1.31.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads confiés aux animateurs : la direction traite un lead puis le confie à un animateur avec un mot (bouton « 📬 Confier » sur chaque lead). L'animateur le retrouve dans sa boîte « Contacts confiés » (menu Adhésions, « À faire » de Mon groupe, message à la connexion), l'invite à sa réunion par WhatsApp et note le suivi. La direction voit si le contact a été vu.","Vue régionale : la comparaison porte sur les villes de la région (Rabat, Salé, Kénitra)."]}},
   {v:"1.30.0",date:"17 novembre 2026",notes:{"Ajouté":["Chiffres par période : un seul choix (mois, trimestre, semestre, année) sur la Synthèse, l'accueil de la région et Mon groupe. Six chiffres d'activité (nouveaux membres, réunions tenues, invités, adhésions reçues, recommandations, affaires signées), chacun avec l'écart par rapport à la période précédente, et chacun ouvre sa liste.","Espace membre : Mes chiffres, ceux du groupe et de la région suivent la même période."],"Modifié":["Les affaires générées par les recos et les nouveaux membres de la Synthèse suivent la période choisie.","Espace membre : le compteur d'invités de la prochaine réunion ne compte plus l'équipe inscrite."]}},
   {v:"1.29.0",date:"17 novembre 2026",notes:{"Modifié":["Chacun ne lit que son périmètre, y compris dans la base : le super admin et le directeur national tout le réseau, un directeur sa région, un animateur ses groupes (membres, invités, documents, recommandations). Les leads sont réservés à la direction.","L'animateur arrive directement sur son groupe ; son accueil et ses listes ne montrent que ses groupes. L'agenda reste celui de tout le réseau, pour s'inscrire à n'importe quelle réunion.","Le compte en lecture seule ne voit plus aucune coordonnée."]}},
   {v:"1.28.0",date:"17 novembre 2026",notes:{"Ajouté":["Tout ce qui nomme une donnée y mène : un nom de groupe, d'animateur, de lieu ou de membre ouvre sa fiche, où qu'il soit écrit (planning de la région, fiches, rapport du mois, demandes, panneau de droite).","Les tuiles chiffrées de Mon groupe et des fiches ouvrent la liste qu'elles comptent ; le texte d'une carte de réunion ouvre la réunion."]}},
@@ -2985,7 +2989,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
-  adhAnnonce();
+  adhAnnonce();boiteAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();
@@ -3693,7 +3697,9 @@ function grpMoisSerie(D){
 function grpBord(c,D){
   const nb=D.membres.length,obj=Number(c.objectif)||0,ser=grpMoisSerie(D),mx=Math.max(1,...ser.map(x=>x.faites+x.autres));
   const pro=D.avenir[0],ed=canEditClubId(c.id);
+  const nbC=reuMesClubs().some(x=>x.id===c.id)?mesContactsAFaire().length:0;
   const todo=[
+    nbC&&[`📬 ${nbC} contact${nbC>1?"s":""} confié${nbC>1?"s":""} par la direction, à inviter`,`openBoite()`],
     D.acr.length&&[`📝 ${D.acr.length} compte${D.acr.length>1?"s":""} rendu${D.acr.length>1?"s":""} à écrire`,`grpOnglet('cr')`],
     D.sansBilan.length&&[`📊 ${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir`,`openBilan('${D.sansBilan[0].id}')`],
     !D.avenir.length&&[`📅 Aucune réunion à venir : planifie les prochaines`,`openPlanSerie()`],
@@ -4859,8 +4865,8 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
     return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb})].filter(Boolean)}
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
-      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it("Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
+  if(r==="res")return[it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","window.open('documents.html','_blank')"),it("Vidéos de prise en main","window.open('documents.html#videos','_blank')"),it("Visite guidée","openAide()")];
   return[]}
@@ -7108,7 +7114,9 @@ function zoneStats(z){
 const Z_MET=[["sante","Santé","Santé moyenne des clubs","/100"],["membres","Membres","Membres",""],["tenues","Réunions tenues","Réunions tenues sur 90 jours",""],["adh","Adhésions","Adhésions reçues sur 90 jours",""],["conv","Conversion","Invités devenus membres"," %"],["clubs","Clubs","Clubs (dont actifs)",""]];
 let _zMet=0;
 function openZones(){
-  const zs=zonesListe().map(z=>({...z,s:zoneStats(z)})).filter(z=>z.s.clubs);
+  /* v1.31 : en vue régionale, on compare les villes de la région (Rabat, Salé, Kénitra) ; en vue nationale, les régions */
+  const parVille=vueMode()==="reg",unites=parVille?vueRegion().villes.map(v=>({nom:v,villes:[v]})):zonesListe();
+  const zs=unites.map(z=>({...z,s:zoneStats(z)})).filter(z=>z.s.clubs||parVille);
   const [k,,lib,u]=Z_MET[_zMet];
   const l=zs.slice().sort((a,b)=>(b.s[k]??-1)-(a.s[k]??-1));const mx=Math.max(1,...l.map(z=>z.s[k]||0));
   const med=["🥇","🥈","🥉"];
@@ -7116,7 +7124,7 @@ function openZones(){
   const notes=[[lead("membres"),"compte le plus de membres"],[lead("tenues"),"tient le plus de réunions"],[lead("sante"),"a les clubs en meilleure santé"]].filter(x=>x[0]).map(x=>`<b>${esc(x[0])}</b> ${x[1]}`);
   const petite=zs.filter(z=>z.s.clubs===1).map(z=>esc(z.nom));
   document.getElementById("sheet-content").innerHTML=`
-    <h3>Comparaison des zones</h3><div class="sheet-sub">${zs.length} zones · mêmes indicateurs pour toutes</div>
+    <h3>${parVille?"Comparaison des villes":"Comparaison des zones"}</h3><div class="sheet-sub">${parVille?esc(vueRegion().nom)+" · ":""}${zs.length} ${parVille?"ville":"zone"}${zs.length>1?"s":""} · mêmes indicateurs pour toutes</div>
     <div class="zseg" role="tablist">${Z_MET.map(([,l],i)=>`<button role="tab" aria-selected="${i===_zMet}" class="${i===_zMet?"on":""}" onclick="_zMet=${i};openZones()">${l}</button>`).join("")}</div>
     <div>${l.map((z,i)=>{const v=z.s[k];return `<div class="zrow"><span><b>${med[i]?med[i]+" ":""}${esc(z.nom)}</b><br><small>${lib}${k==="clubs"?` · ${z.s.actifs} actif${z.s.actifs>1?"s":""}`:""}</small></span><span class="v">${v==null?"—":v+(u&&u!=="/100"?u:"")}${u==="/100"&&v!=null?`<small style="font-size:12px;color:var(--muted)">/100</small>`:""}</span><span class="zbar"><i style="width:${v?Math.max(3,v/mx*100):0}%;background:${i===0?"var(--crimson)":"var(--gold)"};animation-delay:${i*90}ms"></i></span></div>`}).join("")}</div>
     ${notes.length||petite.length?`<div class="znote">${notes.join(" · ")}${petite.length?`${notes.length?"<br>":""}Une seule implantation : ${petite.join(", ")}. C'est là que le réseau peut grandir.`:""}</div>`:""}
@@ -7763,7 +7771,7 @@ Bien cordialement,
 function leadModele(){try{return localStorage.getItem("cap-leadtpl2")||LEAD_MODELE}catch(e){return LEAD_MODELE}}
 function leadPrenom(n){const w=String(n||"").replace(/^(Dr|M\.|Mme|Mr)\s+/i,"").trim().split(/\s+/);return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():""}
 function leadReunions(){const auj=isoJour(TODAY);return DB.reunions.filter(m=>m.date>=auj&&m.statut!=="annulee").sort((a,b)=>(a.date+(a.heure||"")).localeCompare(b.date+(b.heure||"")))}
-function leadReunion(){const L=leadReunions();return L.find(m=>m.id===window._leadReu)||L.find(m=>m.nat&&m.nat.invitation_id)||L[0]||null}
+function leadReunion(){const L=leadReunions();return L.find(m=>m.id===window._leadReu)||(SESSION.role==="animateur"&&L.find(m=>SESSION.clubIds.includes(m.clubId)))||L.find(m=>m.nat&&m.nat.invitation_id)||L[0]||null}
 function leadVals(l,m){const dt=dObj(m.date),lu=m.lieuId?lieu(m.lieuId):null;return{prenom:leadPrenom(l.nom),type:m.type==="RL"?"de lancement":"d'information",jour:`ce ${["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,
     heure:m.heure?m.heure.replace(":","h").replace(/h00$/,"h"):"11h",lieu:lu?lu.nom:"à Rabat",adresse:lu&&lu.adresse?" ("+lu.adresse+")":"",
     lien:m.nat&&m.nat.invitation_id?natInvSuivi(m,"l"+String(l.id).replace(/-/g,"").slice(0,8)):adhLink(m.clubId),moi:(SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()}}
@@ -7804,6 +7812,7 @@ function leadsAuto(){const fait=window._ldAuto||(window._ldAuto=new Set());
     setTimeout(()=>leadMaj(l.id,{statut:"inscrit",invite_id:x.g._id,reunion_id:x.m.id,inscrit_le:l.inscrit_le||new Date().toISOString()},l.invite_id?"":`${l.nom} est inscrit à la réunion du ${ldReuLib(x.m)}`),0)})}
 /* Le fil d'un lead : chaque étape avec qui et quand */
 function leadEtapes(l){const E=[],m=ldReu(l.reunion_id),x=leadInscription(l),passee=m&&m.date<isoJour(TODAY);
+  if(l.attribue_a)E.push(["b","📬",`Confié à <b>${esc(animNom(l.attribue_a))}</b>${l.attribue_par_nom?" par "+esc(l.attribue_par_nom):""}${l.attribue_lu_le?" · vu":" · pas encore vu"}`,ldDate(l.attribue_le)]);
   if(l.contacte_le||l.contacte_par_nom)E.push(["ok","📞",`Contacté${l.contacte_par_nom?" par <b>"+esc(l.contacte_par_nom)+"</b>":""}`,ldDate(l.contacte_le)]);
   if(l.message_le)E.push(["b","💬",`Invitation WhatsApp envoyée${l.message_par_nom?" par <b>"+esc(l.message_par_nom)+"</b>":""}${m?" · réunion du "+esc(ldReuLib(m)):""}`,ldDate(l.message_le)]);
   if(x)E.push(["ok","✓",`Inscrit à la réunion du <b>${esc(ldReuLib(x.m))}</b>${x.g.par?" · "+esc(x.g.par):""}`,ldDate(l.inscrit_le)]);
@@ -7815,7 +7824,7 @@ function leadEtapes(l){const E=[],m=ldReu(l.reunion_id),x=leadInscription(l),pas
 function leadFil(l){const E=leadEtapes(l);return E.length?`<ol class="ld-fil">${E.map(([c,i,t,d])=>`<li class="${c}"><i>${i}</i><span>${t}${d?` <small>${esc(d)}</small>`:""}</span></li>`).join("")}</ol>`:`<p class="fh-note">Pas encore contacté.</p>`}
 function leadVenu(id,oui){leadMaj(id,{venu:oui,venu_note_le:new Date().toISOString()},oui?"Noté : venu":"Noté : pas venu")}
 function leadActions(l,mini){const tel=l.telephone;return `${tel?`<button class="btn mini" onclick="leadWa('${l.id}')">💬 ${mini?"WhatsApp":"Inviter par WhatsApp"}</button><a class="btn ghost mini" href="tel:+${esc(mbWa(tel))}">📞 ${esc(fmtTelAff("+"+mbWa(tel)))}</a>`:l.linkedin?`<a class="btn ghost mini" href="${esc(l.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:`<span class="fh-note">Pas de numéro</span>`}
-      ${l.statut==="a_contacter"||l.statut==="message_envoye"?`<button class="btn ghost mini" onclick="leadContacte('${l.id}')">✓ Contacté</button>`:""}<button class="btn ghost mini" onclick="leadSuivi('${l.id}')">Suivi…</button>`}
+      ${l.statut==="a_contacter"||l.statut==="message_envoye"?`<button class="btn ghost mini" onclick="leadContacte('${l.id}')">✓ Contacté</button>`:""}<button class="btn ghost mini" onclick="leadSuivi('${l.id}')">Suivi…</button>${navDir()?`<button class="btn ghost mini" onclick="leadAttribuer('${l.id}')">📬 ${l.attribue_a?"Confié":"Confier"}</button>`:""}`}
 /*v1.20 : tableau serré (affichage standard) et frise d'étapes (option)*/
 function ldPrenomNom(n){const w=String(n||"").trim().split(/\s+/);return w.length>1?w[0]+" "+w.slice(1).map(x=>x[0]+".").join(""):w[0]||""}
 function ldCourt(iso){if(!iso)return"";const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+(d.getHours()||d.getMinutes()?" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"")}
@@ -7853,7 +7862,7 @@ function leadCarte(l){const [lib,cl]=LEAD_ST[l.statut]||[l.statut,""],tel=l.tele
   const qui=l.statut==="contacte"||l.statut==="inscrit"?`Contacté${l.contacte_par_nom?" par "+esc(l.contacte_par_nom):""}${l.contacte_le?" le "+esc(adhDate(l.contacte_le)):""}`:l.message_le?`Message envoyé${l.message_par_nom?" par "+esc(l.message_par_nom):""} le ${esc(adhDate(l.message_le))}`:"";
   return `<article class="ld-c ${cl}"><div class="ld-h"><div class="ld-n"><b>${esc(l.nom)}</b><small>${esc(l.specialite||"")}${l.ville?" · "+esc(l.ville):""}${l.source?" · source "+esc(l.source):""}</small></div>
       <span class="ld-st ${cl}">${lib}</span>${l.a_rappeler?`<span class="ld-st w">📞 À rappeler</span>`:""}</div>
-    ${l.commentaire||l.notes?`<p class="ld-com">${esc([l.commentaire,l.notes].filter(Boolean).join(" · "))}</p>`:""}
+    ${leadAttribTag(l)}${l.commentaire||l.notes?`<p class="ld-com">${esc([l.commentaire,l.notes].filter(Boolean).join(" · "))}</p>`:""}
     ${leadFil(l)}${l.sheet_le?`<small class="ld-sheet">✓ Écrit dans le Google Sheet</small>`:""}
     <div class="ld-act">${leadActions(l)}</div></article>`}
 function leadMaj(id,patch,msg){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;Object.assign(l,patch);render();
@@ -8080,6 +8089,42 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.31.0 — LEADS CONFIÉS AUX ANIMATEURS. La direction traite un lead puis le confie à un animateur avec un mot
+   (leads.attribue_a / attribue_par_nom / attribue_le / attribue_note / attribue_lu_le). L'animateur le retrouve dans sa
+   boîte « Contacts confiés » (menu Adhésions, « À faire » de Mon groupe, message à la connexion), l'invite à sa réunion
+   avec les actions habituelles d'un lead, et note le suivi. La base ne lui montre que les leads qui lui sont confiés.
+   ============================================================ */
+const LEAD_NOTE_DEFAUT="Ce contact a déjà été informé des réunions Protéine par la direction. Il t'est confié : invite-le à ta prochaine réunion et note la suite ici.";
+function mesContacts(){return SESSION&&SESSION.animId?(DB.leads||[]).filter(l=>l.attribue_a===SESSION.animId).sort((a,b)=>String(b.attribue_le||"").localeCompare(String(a.attribue_le||""))):[]}
+function mesContactsNonLus(){return mesContacts().filter(l=>!l.attribue_lu_le)}
+function mesContactsAFaire(){return mesContacts().filter(l=>l.statut==="a_contacter"||l.statut==="message_envoye"||l.statut==="contacte")}
+function leadAttribTag(l){if(!l.attribue_a)return"";const a=anim(l.attribue_a);
+  return `<span class="ld-att${l.attribue_lu_le?" lu":""}" title="${l.attribue_lu_le?"Vu par l'animateur":"Pas encore vu"}">📬 Confié à ${esc(a?a.nom:"un animateur")}${l.attribue_le?" · "+esc(ldCourt(l.attribue_le)):""}${l.attribue_lu_le?" · vu":""}</span>`}
+function leadAttribuer(id){const l=(DB.leads||[]).find(x=>x.id===id);if(!l||!navDir())return;
+  const nom=n=>String(n||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(),v=nom(l.ville||l.feuille);
+  const A=animsTerrain().map(a=>({a,cl:DB.clubs.filter(c=>c.animId===a.id),pres:!!v&&(nom(a.ville)===v||DB.clubs.some(c=>c.animId===a.id&&nom(c.ville)===v))})).filter(x=>x.cl.length)
+    .sort((x,y)=>(y.pres-x.pres)||x.a.nom.localeCompare(y.a.nom));
+  const choisi=l.attribue_a||(A.find(x=>x.pres)||A[0]||{a:{}}).a.id;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:initiales(l.nom),title:"Confier · "+l.nom,sub:esc([l.specialite,l.ville].filter(Boolean).join(" · "))})}
+    <p class="fh-note">L'animateur reçoit ce contact dans sa boîte « Contacts confiés », avec ton mot. Il ne voit que les contacts qui lui sont confiés.</p>
+    <div class="field"><label for="la-a">Animateur</label><select id="la-a">${A.map(x=>`<option value="${x.a.id}" ${x.a.id===choisi?"selected":""}>${esc(x.a.nom)} · ${esc(x.cl.map(c=>c.nom.replace(/^CAP\s+/,"")).join(", "))}${x.pres?" · même ville":""}</option>`).join("")}</select></div>
+    <div class="field"><label for="la-n">Ton mot pour l'animateur</label><textarea id="la-n" rows="5">${esc(l.attribue_note||LEAD_NOTE_DEFAUT)}</textarea></div>
+    <div class="sheet-actions">${l.attribue_a?`<button class="btn ghost" onclick="leadReprendre('${id}')">Reprendre le contact</button>`:`<button class="btn ghost" onclick="closeSheet()">Annuler</button>`}<button class="btn" onclick="leadAttribuerOk('${id}')">📬 Confier</button></div>`;openSheet()}
+function leadAttribuerOk(id){const a=(document.getElementById("la-a")||{}).value,n=((document.getElementById("la-n")||{}).value||"").trim();if(!a){toast("Choisis d'abord un animateur","w");return}
+  closeSheet();leadMaj(id,{attribue_a:a,attribue_par:SESSION.id,attribue_par_nom:SESSION.name,attribue_le:new Date().toISOString(),attribue_note:n||LEAD_NOTE_DEFAUT,attribue_lu_le:null},"Contact confié à "+animNom(a))}
+function leadReprendre(id){closeSheet();leadMaj(id,{attribue_a:null,attribue_le:null,attribue_lu_le:null},"Contact repris par la direction")}
+function openBoite(){if(!SESSION||!SESSION.animId)return;const L=mesContacts(),nonLus=L.filter(l=>!l.attribue_lu_le);
+  document.getElementById("sheet-content").innerHTML=`<h3>📬 Contacts confiés</h3><p class="sheet-sub">${L.length?`${L.length} contact${L.length>1?"s":""} confié${L.length>1?"s":""} par la direction${nonLus.length?` · ${nonLus.length} nouveau${nonLus.length>1?"x":""}`:""}`:"La direction te confie ici les contacts à inviter à tes réunions."}</p>
+    ${L.length?L.map(l=>{const [lib,cl]=LEAD_ST[l.statut]||[l.statut,""];return `<article class="ld-c bt ${cl}${l.attribue_lu_le?"":" neuf"}"><div class="ld-h"><div class="ld-n"><b>${esc(l.nom)}</b><small>${esc([l.specialite,l.ville].filter(Boolean).join(" · "))}</small></div><span class="ld-st ${cl}">${lib}</span>${l.attribue_lu_le?"":`<span class="ld-st w">Nouveau</span>`}</div>
+      <p class="bt-mot"><b>${esc(l.attribue_par_nom||"La direction")}</b>${l.attribue_le?" · "+esc(ldCourt(l.attribue_le)):""}<br>${esc(l.attribue_note||LEAD_NOTE_DEFAUT)}</p>
+      ${l.commentaire||l.notes?`<p class="ld-com">${esc([l.commentaire,l.notes].filter(Boolean).join(" · "))}</p>`:""}${leadFil(l)}
+      <div class="ld-act">${leadActions(l,true)}</div></article>`}).join(""):`<div class="rail-vide">Aucun contact confié pour l'instant.</div>`}
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet();
+  if(nonLus.length&&!SESSION._voir){const t=new Date().toISOString(),ids=nonLus.map(l=>l.id);nonLus.forEach(l=>l.attribue_lu_le=t);
+    sb.from("leads").update({attribue_lu_le:t}).in("id",ids).then(({error})=>{if(error)console.warn(error);avecVue(()=>navSous())})}}
+function boiteAnnonce(){if(!SESSION||SESSION._voir||!SESSION.animId)return;const n=mesContactsNonLus().length;if(n)setTimeout(()=>toast(`📬 ${n} nouveau${n>1?"x":""} contact${n>1?"s":""} confié${n>1?"s":""} par la direction`,"s",openBoite),2600)}
 
 /* ============================================================
    v1.30.0 — CHIFFRES PAR PÉRIODE. Un seul choix (mois, trimestre, semestre, année), mémorisé (localStorage cap-periode,

@@ -2165,6 +2165,26 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.32 monitoring*/.mon .mon-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.mon-fil{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 14px;font-size:13.5px;font-weight:600}.mon-fil button{color:var(--crimson-txt,var(--crimson));padding:8px 2px;font:inherit}.mon-fil button:hover{text-decoration:underline}.mon-fil span{color:var(--muted)}
+.mon-per{display:flex;align-items:center;gap:10px}.mon-nav{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;line-height:1}.mon-nav:disabled{opacity:.35;cursor:default}
+.per-g.mon-g{grid-template-columns:repeat(7,minmax(0,1fr))}.per-t.sel{border-color:var(--crimson);box-shadow:inset 0 0 0 1px var(--crimson)}
+.mon-bloc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.mon-bloc h3{font-size:16px;font-weight:800;margin:0 0 12px;display:flex;align-items:baseline;gap:8px}.mon-bloc h3 em{font-style:normal;font:700 11px Inter,sans-serif;padding:2px 8px;border-radius:999px;background:var(--line);color:var(--muted)}
+.mon-courbe{width:100%;height:auto;display:block}.mon-courbe rect{fill:var(--gold,#5B7FA3);opacity:.55}.mon-courbe rect.now{fill:var(--crimson);opacity:1}.mon-courbe .ax{stroke:var(--line)}.mon-courbe text{font:600 11px Inter,sans-serif;fill:var(--muted);text-anchor:middle}.mon-courbe text.v{fill:var(--ink);font-weight:700}
+.mon-tw{overflow-x:auto;margin:0 -4px}.mon-tab{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.mon-tab th{text-align:right;font:700 10.5px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}.mon-tab th:first-child,.mon-tab td:first-child{text-align:left}
+.mon-tab td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.mon-tab td small{display:block;color:var(--muted);font-size:11.5px;font-weight:500;white-space:normal}
+.mon-tab tbody tr[role=link]{cursor:pointer}.mon-tab tbody tr[role=link]:hover,.mon-tab tbody tr[role=link]:focus-visible{background:var(--crimson-tint);outline:none}.mon-tab tbody tr:last-child td{border-bottom:0}
+.mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
+.mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
+.mon-pv small{font:700 10.5px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.mon-pv>b{font:800 22px/1.1 "Bricolage Grotesque",sans-serif;overflow-wrap:anywhere}.mon-pv span{font-size:12px;color:var(--muted)}.mon-pv span b{color:var(--ink)}
+.mon-hyps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px}.mon-hy{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--muted)}.mon-hy>span:last-child{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.mon-hy input{width:110px;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:15px}
+#view:fullscreen{background:var(--paper);overflow:auto;padding:2vh 3vw}#view:fullscreen .mon-act{display:none}#view:fullscreen .mon{font-size:115%}
+@media(max-width:1099px){.per-g.mon-g{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:560px){.per-g.mon-g{grid-template-columns:repeat(2,minmax(0,1fr))}.mon-prev{grid-template-columns:1fr}.mon-per{width:100%;justify-content:space-between}}
+@media print{#nav,.topbar,#fab,#rail,.mon-act,.per-seg,.mon-nav,.mon-hyps,#notifs,#toast{display:none!important}.app{margin:0!important;max-width:none!important}body{background:#fff!important}.mon-bloc,.per{box-shadow:none;break-inside:avoid}}
 /*v1.31 leads confiés*/.ld-att{display:inline-block;margin:6px 0 2px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--warn-tint);color:var(--warn)}.ld-att.lu{background:var(--ok-tint);color:var(--ok)}
 .ld-c.bt{margin-bottom:12px}.ld-c.bt.neuf{border-color:var(--crimson)}.bt-mot{margin:8px 0;padding:10px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line);font-size:13px;line-height:1.45}.bt-mot b{font-weight:700}
 .ld-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -2309,8 +2329,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.31.0";
+const APP_VERSION="1.32.0";
 const CHANGELOG=[
+  {v:"1.32.0",date:"17 novembre 2026",notes:{"Ajouté":["Monitoring national (menu Synthèse → Monitoring, direction nationale et comptes autorisés) : tous les groupes de toutes les régions sur un seul écran. Sept chiffres par période avec écart, courbe sur 12 mois, et le détail en cliquant : réseau, région, ville, groupe, membres. Flèches pour remonter aux périodes passées.","Prévisionnel à 3 mois, 6 mois et 1 an, avec sa base de calcul affichée : tendance réelle dès 6 mois d'activité, sinon hypothèses réglables.","Mode présentation plein écran, export Excel et impression PDF."]}},
   {v:"1.31.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads confiés aux animateurs : la direction traite un lead puis le confie à un animateur avec un mot (bouton « 📬 Confier » sur chaque lead). L'animateur le retrouve dans sa boîte « Contacts confiés » (menu Adhésions, « À faire » de Mon groupe, message à la connexion), l'invite à sa réunion par WhatsApp et note le suivi. La direction voit si le contact a été vu.","Vue régionale : la comparaison porte sur les villes de la région (Rabat, Salé, Kénitra)."]}},
   {v:"1.30.0",date:"17 novembre 2026",notes:{"Ajouté":["Chiffres par période : un seul choix (mois, trimestre, semestre, année) sur la Synthèse, l'accueil de la région et Mon groupe. Six chiffres d'activité (nouveaux membres, réunions tenues, invités, adhésions reçues, recommandations, affaires signées), chacun avec l'écart par rapport à la période précédente, et chacun ouvre sa liste.","Espace membre : Mes chiffres, ceux du groupe et de la région suivent la même période."],"Modifié":["Les affaires générées par les recos et les nouveaux membres de la Synthèse suivent la période choisie.","Espace membre : le compteur d'invités de la prochaine réunion ne compte plus l'équipe inscrite."]}},
   {v:"1.29.0",date:"17 novembre 2026",notes:{"Modifié":["Chacun ne lit que son périmètre, y compris dans la base : le super admin et le directeur national tout le réseau, un directeur sa région, un animateur ses groupes (membres, invités, documents, recommandations). Les leads sont réservés à la direction.","L'animateur arrive directement sur son groupe ; son accueil et ses listes ne montrent que ses groupes. L'agenda reste celui de tout le réseau, pour s'inscrire à n'importe quelle réunion.","Le compte en lecture seule ne voit plus aucune coordonnée."]}},
@@ -2969,7 +2990,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring};
   if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
     if(prof.role!=="superadmin"){voirOublier()}
     else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
@@ -3337,12 +3358,12 @@ function updateRegionLabel(){
 const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="espace"||tab==="membres"||tab==="demandes"||((tab==="team"||tab==="clubs")&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="monitoring"||tab==="espace"||tab==="membres"||tab==="demandes"||((tab==="team"||tab==="clubs")&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
   const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
   vueAppliquer();
-  v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():tab==="espace"?viewEspace():viewTeam());
+  v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():tab==="espace"?viewEspace():tab==="monitoring"?viewMonitoring():viewTeam());
   {const eh=document.getElementById("esp-host");if(eh)eh.hidden=tab!=="espace"||!window._espUrl}
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v);helloPoints(v)}
@@ -4851,13 +4872,13 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("she
    La rubrique de l'onglet affiché est dépliée, les autres repliées ; au téléphone, « Plus » ouvre tout le menu. */
 /* v1.25 : cloisonnement par rôle. Ce qui touche à la gestion du réseau (envoi au national, leads, classeur, archives) est réservé à la direction (superadmin, directeur national, directeur de zone) ; les animateurs gardent leur groupe, l'agenda, les demandes de leur groupe et l'équipe. */
 function navDir(){return !!SESSION&&["superadmin","directeur_national","directeur"].includes(SESSION.role)}
-const NAV_RUB_TAB={espace:"grp",dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
+const NAV_RUB_TAB={monitoring:"syn",espace:"grp",dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
 const NAV_RUB_LIB={syn:"Synthèse",grp:"Mon groupe",age:"Agenda",adh:"Adhésions",res:"Réseau",equ:"Équipe",doc:"Ressources"};
 var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
-    !ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
+    monPeut()&&it("Monitoring","navVers('monitoring')",{on:tab==="monitoring"}),!ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
   if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
     return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
@@ -8045,7 +8066,7 @@ function filFicheRendu(){
   el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
-const FIL_ONGLETS={espace:"Espace membre",demandes:"Demandes",dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_ONGLETS={monitoring:"Monitoring",espace:"Espace membre",demandes:"Demandes",dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
 const FIL_FILTRES={anim:"Animateurs",todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}
@@ -8089,6 +8110,93 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.32.0 — MONITORING NATIONAL (lot I). Écran « monitoring » (menu Synthèse) pour le super admin, le directeur national
+   et les comptes qui ont profiles.voit_monitoring. Données : RPC cap_monitoring() (tous les groupes, mois par mois,
+   chiffres seulement) et cap_monitoring_groupe(club) (membres d'un groupe et leurs affaires).
+   On descend en cliquant : réseau → région → ville → groupe → membres. Même choix de période que le reste de l'appli,
+   avec ◀ ▶ pour remonter dans le temps. Prévisionnel à 3, 6 et 12 mois : tendance réelle si au moins 6 mois d'activité,
+   sinon hypothèses réglables (localStorage cap-mon-hyp), base de calcul toujours affichée.
+   ============================================================ */
+function monPeut(){return !!SESSION&&(["superadmin","directeur_national"].includes(SESSION.role)||!!SESSION.monitoring)}
+var _mon={niv:"reseau",cle:null,met:"ca",decal:0,data:null,err:null,charge:false,grp:{}};
+const MON_MET=[["ca","Affaires signées",1],["recos","Recommandations"],["affaires","Affaires conclues"],["membres","Nouveaux membres"],["adh","Adhésions reçues"],["tenues","Réunions tenues"],["invites","Invités"]];
+const MON_HYP_DEF={cible:12,adh:1,recos:1,taux:30,panier:50000};
+function monHyp(){let h={};try{h=JSON.parse(localStorage.getItem("cap-mon-hyp")||"{}")}catch(e){}return Object.assign({},MON_HYP_DEF,h)}
+function monHypMaj(k,v){const h=monHyp();h[k]=Math.max(0,Number(String(v).replace(",","."))||0);try{localStorage.setItem("cap-mon-hyp",JSON.stringify(h))}catch(e){}render()}
+async function monCharger(force){if(_mon.charge||(_mon.data&&!force))return;_mon.charge=true;_mon.err=null;
+  const {data,error}=await sb.rpc("cap_monitoring");_mon.charge=false;
+  if(error||!data){_mon.err=(error&&error.message)||"Données indisponibles"}else{_mon.data=data;_mon.grp={}}
+  if(tab==="monitoring")render()}
+function monAller(niv,cle){_mon.niv=niv;_mon.cle=cle||null;render();window.scrollTo({top:0,behavior:"smooth"})}
+function monZone(c){return c.zone||c.ville}
+function monClubs(){const C=(_mon.data&&_mon.data.clubs)||[];
+  return _mon.niv==="region"?C.filter(c=>monZone(c)===_mon.cle):_mon.niv==="ville"?C.filter(c=>c.ville===_mon.cle):_mon.niv==="groupe"?C.filter(c=>c.id===_mon.cle):C}
+function monMoisDe(b){const l=[];let [y,m]=b.debut.split("-").map(Number);const [fy,fm]=b.fin.split("-").map(Number);
+  while(y<fy||(y===fy&&m<fm)){l.push(y+"-"+String(m).padStart(2,"0"));m++;if(m>12){m=1;y++}}return l}
+function monSomme(ids,mois){const S=new Set(ids),M=new Set(mois),t={ca:0,recos:0,affaires:0,membres:0,adh:0,tenues:0,invites:0,presents:0,presents_n:0};
+  ((_mon.data&&_mon.data.series)||[]).forEach(x=>{if(S.has(x.club_id)&&M.has(x.mois))for(const k in t)t[k]+=Number(x[k]||0)});return t}
+function monDerniers(n,fin){const l=[],d=fin?new Date(fin+"-01T00:00:00"):new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+  for(let i=n-1;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1);l.push(x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0"))}return l}
+function monPersonnes(cl){return new Set(cl.flatMap(c=>c.cles||[])).size}
+function monVal(k,v){return k==="ca"?madFmt(v):String(v)}
+function monEtin(vals){const mx=Math.max(1,...vals),w=64,h=18;return `<svg class="mon-etin" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${vals.map((v,i)=>{const bh=v?Math.max(2,v/mx*(h-2)):1;return `<rect x="${i*(w/vals.length)+.5}" y="${h-bh}" width="${w/vals.length-1.5}" height="${bh}" rx="1"/>`}).join("")}</svg>`}
+function monCourbe(ids,met){const mois=monDerniers(12),vals=mois.map(m=>monSomme(ids,[m])[met]),mx=Math.max(1,...vals),W=720,H=190,pl=8,pb=24,bw=(W-pl*2)/12;
+  return `<svg class="mon-courbe" viewBox="0 0 ${W} ${H}" role="img" aria-label="Douze derniers mois"><line x1="${pl}" y1="${H-pb}" x2="${W-pl}" y2="${H-pb}" class="ax"/>
+    ${vals.map((v,i)=>{const bh=v?Math.max(3,v/mx*(H-pb-26)):0,x=pl+i*bw+bw*.18,mo=Number(mois[i].slice(5))-1;
+      return `<g><rect x="${x}" y="${H-pb-bh}" width="${bw*.64}" height="${bh}" rx="4" class="${i===11?"now":""}"><title>${MOIS_LONG[mo]} ${mois[i].slice(0,4)} : ${monVal(met,v)}</title></rect>${v?`<text x="${x+bw*.32}" y="${H-pb-bh-6}" class="v">${met==="ca"?(v>=1e6?(v/1e6).toFixed(1).replace(".",",")+" M":Math.round(v/1e3)+" k"):v}</text>`:""}<text x="${x+bw*.32}" y="${H-7}" class="m">${MOIS[mo]}</text></g>`}).join("")}</svg>`}
+function monPrevision(ids,cl){const mois=monDerniers(12),S=mois.map(m=>monSomme(ids,[m])),actifs=S.filter(x=>x.recos||x.ca||x.membres||x.tenues).length,h=monHyp();
+  const membres=cl.reduce((a,c)=>a+Number(c.membres||0),0),g=cl.length;
+  if(actifs>=6){const tend=k=>{const y=S.map(x=>x[k]),n=y.length,mx=(n-1)/2,my=y.reduce((a,b)=>a+b,0)/n;let a=0,b=0;y.forEach((v,i)=>{a+=(i-mx)*(v-my);b+=(i-mx)*(i-mx)});const p=b?a/b:0;return H=>{let t=0;for(let i=1;i<=H;i++)t+=Math.max(0,my+p*(n-1+i-mx));return Math.round(t)}};
+    const fm=tend("membres"),fr=tend("recos"),fc=tend("ca");
+    return{mode:"tendance",actifs,lignes:[3,6,12].map(H=>({H,membres:membres+fm(H),recos:fr(H),ca:fc(H)})),base:`Tendance des 12 derniers mois (${actifs} mois avec de l'activité), prolongée en ligne droite.`}}
+  const reel=S.reduce((a,x)=>a+x.affaires,0),panier=reel?Math.round(S.reduce((a,x)=>a+x.ca,0)/reel):h.panier;
+  const lignes=[3,6,12].map(H=>{let m=membres,recos=0;for(let i=1;i<=H;i++){m=Math.min(g*h.cible,m+g*h.adh);recos+=m*h.recos}
+    return{H,membres:Math.round(m),recos:Math.round(recos),ca:Math.round(recos*h.taux/100*h.panier)}});
+  return{mode:"hypotheses",actifs,lignes,panierReel:reel?panier:null,base:`Historique trop court (${actifs} mois avec de l'activité sur 12) : projection sur les hypothèses ci-dessous, pour ${g} groupe${g>1?"s":""} et ${membres} membre${membres>1?"s":""} aujourd'hui.`}}
+function monEnfants(cl){const par=(f,niv)=>{const G={};cl.forEach(c=>{const k=f(c);(G[k]=G[k]||[]).push(c)});return Object.keys(G).sort((a,b)=>a.localeCompare(b)).map(k=>({nom:k,niv,cle:k,clubs:G[k]}))};
+  if(_mon.niv==="reseau")return{titre:"Les régions",l:par(monZone,"region")};
+  if(_mon.niv==="region")return{titre:"Les villes",l:par(c=>c.ville,"ville")};
+  if(_mon.niv==="ville")return{titre:"Les groupes",l:cl.map(c=>({nom:c.nom.replace(/^CAP\s+/,""),niv:"groupe",cle:c.id,clubs:[c],sous:c.animateur||"sans animateur"}))};
+  return null}
+async function monGroupeCharger(id){if(_mon.grp[id])return;_mon.grp[id]="…";const {data,error}=await sb.rpc("cap_monitoring_groupe",{p_club:id});_mon.grp[id]=error?[]:(data||[]);if(tab==="monitoring")render()}
+function monExport(){const cl=monClubs(),k=perChoix(),b=perBornes(k,_mon.decal),mois=monMoisDe(b),E=monEnfants(cl),sep=";",q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+  const L=[["Monitoring CAP Protéine",monTitre(),b.lib].map(q).join(sep),["Ligne","Groupes","Membres","Affaires signées (MAD)","Recommandations","Affaires conclues","Nouveaux membres","Adhésions reçues","Réunions tenues","Invités"].map(q).join(sep)];
+  const ligne=(n,c)=>{const t=monSomme(c.map(x=>x.id),mois);return [q(n),c.length,c.reduce((a,x)=>a+Number(x.membres||0),0),t.ca,t.recos,t.affaires,t.membres,t.adh,t.tenues,t.invites].join(sep)};
+  L.push(ligne("Total",cl));if(E)E.l.forEach(e=>L.push(ligne(e.nom,e.clubs)));
+  L.push("",["Mois","Affaires signées (MAD)","Recommandations","Affaires conclues","Nouveaux membres","Adhésions reçues","Réunions tenues","Invités"].map(q).join(sep));
+  monDerniers(12).forEach(m=>{const t=monSomme(cl.map(c=>c.id),[m]);L.push([m,t.ca,t.recos,t.affaires,t.membres,t.adh,t.tenues,t.invites].join(sep))});
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+L.join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="monitoring-"+monTitre().toLowerCase().replace(/[^a-z0-9]+/gi,"-")+"-"+b.lib.replace(/\s+/g,"-")+".csv";document.body.appendChild(a);a.click();a.remove();toast("Export prêt : ouvre-le dans Excel")}
+function monTitre(){return _mon.niv==="reseau"?"Réseau CAP Maroc":_mon.niv==="groupe"?((monClubs()[0]||{}).nom||"Groupe"):_mon.cle}
+function monPresenter(){const v=document.getElementById("view");if(document.fullscreenElement){document.exitFullscreen();return}if(v.requestFullscreen)v.requestFullscreen().catch(()=>toast("Plein écran indisponible sur cet appareil","w"));else toast("Plein écran indisponible sur cet appareil","w")}
+function viewMonitoring(){
+  if(!monPeut())return `<div class="page">${emptyState("Monitoring réservé","Cet écran est ouvert à la direction nationale et aux comptes qui en ont reçu le droit.")}</div>`;
+  if(!_mon.data){if(!_mon.err)monCharger();return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">Direction</div><h2>Monitoring</h2></div></div>${_mon.err?`<p class="fh-empty">${esc(_mon.err)}</p><button class="btn ghost mini" onclick="_mon.err=null;render()">Réessayer</button>`:skLignes(6)}</div>`}
+  const cl=monClubs(),ids=cl.map(c=>c.id),k=perChoix(),b=perBornes(k,_mon.decal),p=perBornes(k,_mon.decal-1),T=monSomme(ids,monMoisDe(b)),P=monSomme(ids,monMoisDe(p));
+  const C=_mon.data.clubs,c0=cl[0]||{},fil=[["reseau",null,"Réseau"]];
+  if(_mon.niv!=="reseau"){const z=_mon.niv==="region"?_mon.cle:monZone(c0);fil.push(["region",z,z]);
+    if(_mon.niv==="ville"||_mon.niv==="groupe"){fil.push(["ville",c0.ville,c0.ville]);if(_mon.niv==="groupe")fil.push(["groupe",c0.id,(c0.nom||"").replace(/^CAP\s+/,"")])}}
+  const tuile=(key,lib)=>{const v=T[key],e=v-P[key],cls=e>0?"up":e<0?"down":"eq";return `<button type="button" class="per-t${_mon.met===key?" sel":""}" onclick="_mon.met='${key}';render()" aria-pressed="${_mon.met===key}"><b>${key==="ca"?esc(madFmt(v)).replace(" MAD","<small> MAD</small>"):v}</b><span>${lib}</span><em class="${cls}" title="Écart avec ${esc(p.lib)}">${e===0?"=":(e>0?"+":"−")+(key==="ca"?madFmt(Math.abs(e)):Math.abs(e))}</em></button>`};
+  const pres=T.presents_n?Math.round(T.presents/T.presents_n):null,E=monEnfants(cl),mois12=monDerniers(12),metLib=(MON_MET.find(x=>x[0]===_mon.met)||MON_MET[0])[1];
+  const table=E?`<section class="mon-bloc"><h3>${E.titre} <em>${E.l.length}</em></h3><div class="mon-tw"><table class="mon-tab"><thead><tr><th>${E.titre.replace("Les ","").replace(/^./,x=>x.toUpperCase())}</th><th>Groupes</th><th>Membres</th><th>Affaires signées</th><th>Recos</th><th>Nouveaux</th><th>Réunions</th><th>Invités</th><th>12 mois · ${esc(metLib.toLowerCase())}</th></tr></thead><tbody>
+      ${E.l.map(e=>{const i=e.clubs.map(c=>c.id),t=monSomme(i,monMoisDe(b));return `<tr tabindex="0" role="link" onclick="monAller('${e.niv}','${String(e.cle).replace(/'/g,"\\'")}')" onkeydown="if(event.key==='Enter')this.click()"><td><b>${esc(e.nom)}</b>${e.sous?`<small>${esc(e.sous)}</small>`:""}</td><td>${e.clubs.length}</td><td>${e.clubs.reduce((a,c)=>a+Number(c.membres||0),0)}</td><td>${esc(madFmt(t.ca))}</td><td>${t.recos}</td><td>${t.membres}</td><td>${t.tenues}</td><td>${t.invites}</td><td>${monEtin(mois12.map(m=>monSomme(i,[m])[_mon.met]))}</td></tr>`}).join("")}</tbody></table></div><p class="per-n">Touche une ligne pour descendre d'un niveau.</p></section>`
+    :(()=>{const g=_mon.grp[c0.id];if(!g){monGroupeCharger(c0.id);return `<section class="mon-bloc"><h3>Les membres</h3>${skLignes(3)}</section>`}if(g==="…")return `<section class="mon-bloc"><h3>Les membres</h3>${skLignes(3)}</section>`;
+      return `<section class="mon-bloc"><h3>Les membres <em>${g.length}</em></h3><div class="mon-tw"><table class="mon-tab"><thead><tr><th>Membre</th><th>Entré le</th><th>Recos données</th><th>Recos reçues</th><th>Affaires apportées</th><th>Affaires reçues</th></tr></thead><tbody>${g.map(m=>`<tr><td><b>${esc(m.nom)}</b><small>${esc(m.metier||"")}</small></td><td>${m.entree?new Date(m.entree).toLocaleDateString("fr-FR"):""}</td><td>${m.donnees}</td><td>${m.recues}</td><td>${esc(madFmt(Number(m.ca_transmis||0)))}</td><td>${esc(madFmt(Number(m.ca_recu||0)))}</td></tr>`).join("")||`<tr><td colspan="6">Aucun membre pour l'instant.</td></tr>`}</tbody></table></div><p class="per-n">Totaux depuis l'entrée du membre${SESSION.role==="superadmin"?` · <button type="button" class="lien-b" onclick="grpAller('${c0.id}','bord')">Ouvrir l'espace du groupe</button>`:""}</p></section>`})();
+  const V=monPrevision(ids,cl),h=monHyp(),champ=(key,lib,u)=>`<label class="mon-hy"><span>${lib}</span><span><input type="number" inputmode="decimal" min="0" value="${h[key]}" onchange="monHypMaj('${key}',this.value)" aria-label="${lib}">${u}</span></label>`;
+  return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">Direction · monitoring</div><h2>${esc(monTitre().replace(/^CAP\s+/,""))}</h2><p>${cl.length} groupe${cl.length>1?"s":""} · ${monPersonnes(cl)} membre${monPersonnes(cl)>1?"s":""}${pres!=null?` · ${pres} présents en moyenne par réunion`:""}</p></div>
+      <div class="mon-act"><button class="btn ghost mini" onclick="monPresenter()">⤢ Présenter</button><button class="btn ghost mini" onclick="monExport()">⬇ Excel</button><button class="btn ghost mini" onclick="window.print()">🖨 PDF</button><button class="btn ghost mini" onclick="monCharger(true)" aria-label="Actualiser">🔄</button></div></div>
+    <nav class="mon-fil" aria-label="Niveau">${fil.map(([n,c,l],i)=>i<fil.length-1?`<button type="button" onclick="monAller('${n}',${c==null?"null":"'"+String(c).replace(/'/g,"\\'")+"'"})">${esc(l)}</button><span aria-hidden="true">›</span>`:`<b aria-current="page">${esc(l)}</b>`).join("")}</nav>
+    <section class="per"><div class="per-h"><div class="mon-per"><button type="button" class="mon-nav" onclick="_mon.decal--;render()" aria-label="Période précédente">‹</button><div><small>Période</small><b>${esc(b.lib)}</b></div><button type="button" class="mon-nav" onclick="_mon.decal=Math.min(0,_mon.decal+1);render()" ${_mon.decal>=0?"disabled":""} aria-label="Période suivante">›</button></div>${perSeg()}</div>
+      <div class="per-g mon-g">${MON_MET.map(([key,lib])=>tuile(key,lib.toLowerCase())).join("")}</div>
+      <p class="per-n">Écarts calculés par rapport à ${esc(p.lib)} · touche un chiffre pour l'afficher en courbe</p></section>
+    <section class="mon-bloc"><h3>${esc(metLib)} · 12 derniers mois</h3>${monCourbe(ids,_mon.met)}</section>
+    ${table}
+    <section class="mon-bloc"><h3>Prévisionnel <em>${V.mode==="tendance"?"tendance réelle":"hypothèses"}</em></h3>
+      <div class="mon-prev">${V.lignes.map(x=>`<div class="mon-pv"><small>Dans ${x.H===12?"1 an":x.H+" mois"}</small><b>${esc(madFmt(x.ca))}</b><span>d'affaires signées sur la période</span><span><b>${x.recos}</b> recommandations · <b>${x.membres}</b> membres</span></div>`).join("")}</div>
+      <p class="per-n"><b>Base de calcul.</b> ${esc(V.base)}${V.mode==="hypotheses"?` Membres : +${h.adh} par groupe et par mois, jusqu'à ${h.cible} par groupe. Recommandations : ${h.recos} par membre et par mois. Affaires signées : ${h.taux} % des recommandations, à ${esc(madFmt(h.panier))} en moyenne${V.panierReel?` (moyenne réelle constatée : ${esc(madFmt(V.panierReel))})`:""}.`:""}</p>
+      ${V.mode==="hypotheses"?`<div class="mon-hyps">${champ("cible","Membres visés par groupe","")}${champ("adh","Adhésions par groupe et par mois","")}${champ("recos","Recos par membre et par mois","")}${champ("taux","Recos qui aboutissent"," %")}${champ("panier","Montant moyen d'une affaire"," MAD")}</div>`:""}</section>
+    <p class="per-n">Calculé le ${new Date(_mon.data.calcule_le).toLocaleString("fr-FR",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})}</p><div style="height:8px"></div></div>`}
 
 /* ============================================================
    v1.31.0 — LEADS CONFIÉS AUX ANIMATEURS. La direction traite un lead puis le confie à un animateur avec un mot

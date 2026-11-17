@@ -334,6 +334,12 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - CRM : bouton « 👁 Vue membre » dans l'en-tête de l'espace Groupe (`membre.html#equipe=<id>`, nouvel onglet).
 - Bancs `v110.mjs` 36/36, `v130eq.mjs` 14/14, `membre.mjs` 65/65 (recalé : l'accueil est le groupe), `grp.mjs` 40/40, `v110crm.mjs` 20/20, `cst.mjs` 20/20, `cloison.mjs` 5/5.
 
+**🔔 Notifications du fil de groupe (v1.4.0, 17/11/2026)** — JB : « fais les notifications du fil de groupe ».
+- Migration `20261117140000_notif_fil_groupe.sql` (appliquée) : `messages_groupe.notifie_le` + déclencheur `messages_groupe_notifier` → `membres_notifier('groupe')`.
+- Edge `notif-membre` **v4** (verify_jwt:false, source dans `supabase/functions/notif-membre/index.ts` = déployée) : type `groupe`, réservation atomique de `notifie_le` (< 15 min) ; destinataires = membres du club avec `user_id` + profils dont `animateur_id` = animateur du club, sauf l'auteur ; étiquette `grp-<club>` (la dernière remplace la précédente) ; lien `/membre.html#g` (membres) ou `/?groupe=<club>` (équipe). Essai à blanc : 200 `deja_notifie_ou_ancien`.
+- `membre.html` : `#g` ouvre le fil (`lienHash`, message du service worker) ; texte de la carte Notifications. CRM : `ouvrirLienGroupe()` (`?groupe=` → `grpAller(id,'fil')`), sous-titre de la fenêtre Notifications.
+- Banc `v140.mjs` 6/6 (⚠ ne pas rappeler `bootIntoApp()` après `goto` : l'appli démarre déjà seule quand une session existe, le second démarrage remet la Synthèse) ; `membre` 65/65, `v110` 36/36, `v130eq` 14/14, `grp` 40/40, `v110crm` 20/20.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

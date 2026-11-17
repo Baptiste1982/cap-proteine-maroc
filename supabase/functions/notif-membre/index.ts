@@ -3,6 +3,8 @@
 //   type "invite"  : invité proposé par un membre → appareils de l'animateur du club et de la direction.
 //   type "reco"    : recommandation d'affaires reçue (v0.26.0) → appareils de celui qui la reçoit.
 //   type "reco_suivi" : la recommandation avance (contact, devis, signée…) → appareils de celui qui l'a donnée.
+//   type "groupe" : message dans le fil d'un groupe (v1.4.0) → membres du groupe ayant un compte + animateur du groupe,
+//                   jamais l'auteur ; même étiquette par groupe : le dernier message remplace le précédent.
 // verify_jwt:false — la fonction ne fait confiance qu'à la base : la ligne doit exister, dater de moins de
 // 15 min et ne pas avoir été notifiée (réservation atomique de notifie_le).
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -72,7 +74,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "methode" }, 405);
   let type = "", id = "";
   try { const b = await req.json(); type = String(b.type || ""); id = String(b.id || ""); } catch { return json({ error: "corps" }, 400); }
-  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite", "reco", "reco_suivi"].includes(type)) return json({ error: "parametres" }, 400);
+  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite", "reco", "reco_suivi", "groupe"].includes(type)) return json({ error: "parametres" }, 400);
   const depuis = new Date(Date.now() - 15 * 60e3).toISOString();
   try {
     if (type === "message") {
@@ -93,6 +95,27 @@ Deno.serve(async (req) => {
       return json({ ok: true, envoyes: n });
     }
     if (type === "reco" || type === "reco_suivi") return json(await reco(type, id, depuis));
+    if (type === "groupe") {
+      const { data: rows, error } = await sb.from("messages_groupe")
+        .update({ notifie_le: new Date().toISOString() })
+        .eq("id", id).is("notifie_le", null).gt("cree_le", depuis)
+        .select("id, club_id, auteur, auteur_nom, texte");
+      if (error) return json({ error: error.message }, 500);
+      if (!rows?.length) return json({ ok: true, envoyes: 0, raison: "deja_notifie_ou_ancien" });
+      const g = rows[0];
+      const { data: c } = await sb.from("clubs").select("nom, animateur_id").eq("id", g.club_id).maybeSingle();
+      const { data: mbs } = await sb.from("membres").select("user_id").eq("club_id", g.club_id).not("user_id", "is", null);
+      const membres = [...new Set((mbs || []).map((m) => m.user_id as string))].filter((u) => u !== g.auteur);
+      let equipe: string[] = [];
+      if (c?.animateur_id) {
+        const { data: profs } = await sb.from("profiles").select("id").eq("animateur_id", c.animateur_id);
+        equipe = (profs || []).map((p) => p.id as string).filter((u) => u !== g.auteur && !membres.includes(u));
+      }
+      const nom = (c?.nom || "").replace(/^CAP\s+/, "");
+      const base = { title: "👥 " + (nom || "Groupe") + " · " + g.auteur_nom, body: court(g.texte, 140), tag: "grp-" + g.club_id };
+      const n = (await envoyer(membres, { ...base, url: "/membre.html#g" })) + (await envoyer(equipe, { ...base, url: "/?groupe=" + g.club_id }));
+      return json({ ok: true, envoyes: n });
+    }
     // invite
     const { data: rows, error } = await sb.from("invites")
       .update({ notifie_le: new Date().toISOString() })

@@ -422,6 +422,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Ordinateur (≥ 900 px) : `.nav` encadrée (12 px des bords, 240 px de large, rayon 18 px), `.app` à 268 px. Grand écran : panneau `.rail` encadré, seuil passé de 1500 à **1800 px** (`railGrand`, `isRail`, media query), `--rail: clamp(360px,22vw,460px)`, `#tb-role` masqué quand le panneau est ouvert (la barre du haut tient sur une ligne). Fiches dans le panneau et plein écran encadrées aussi.
 - Bancs `themes.mjs` (7 thèmes, téléphone, Paramètres), `prop.mjs` (largeurs 1440 → 1920 : barre du haut sur une ligne, pas de défilement horizontal) ; `rail.mjs` 23/23 et `rail2.mjs` 17/17 recalés (panneau à 12 px du bord, 1900 px).
 
+**✨ Points du bandeau d'accueil (v1.16.0, 17/11/2026)** — maquette https://claude.ai/artifact/1xotCewVMdQMxbfSd4R9rc, JB : « les deux, traînée et aimant », « qu'elle reste animée ». `dashBonjour` pose `<canvas class="h-pts">` (remplace `.h-dust`) ; `helloPoints(v)` appelée dans `render` (onglet dash) branche une seule boucle `hpImage` (état `_hp`, réglages `HP` : force 1.2, rayon 260, 1 point / 6 500 px² entre 16 et 48, un point de traînée tous les 7 px). La boucle s'arrête quand le bandeau quitte la page, se met en pause onglet caché ; `_calme()` = image fixe. Banc `hp.mjs` 12/12 (bureau + téléphone).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

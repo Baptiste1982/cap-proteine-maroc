@@ -1076,6 +1076,7 @@ html.dark .nav::before{background-color:#fff;background-size:auto 70%;background
 @keyframes fPop{from{transform:scale(.5);opacity:0}}@keyframes fDrop{from{transform:translateY(-18px);opacity:0}}
 /* G */
 .h-dust{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.h-pts{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .h-dust i{position:absolute;width:3px;height:3px;border-radius:50%;background:#A9C2DA;opacity:0;animation:gMonte linear infinite}
 @keyframes gMonte{0%{transform:translateY(20px);opacity:0}20%{opacity:.75}100%{transform:translateY(-140px);opacity:0}}
 /* H */
@@ -2163,8 +2164,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.15.0";
+const APP_VERSION="1.16.0";
 const CHANGELOG=[
+  {v:"1.16.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Bandeau d'accueil de la Synthèse : les points blancs remontent en permanence en ondulant. Au passage de la souris (ou du doigt), les plus proches sont attirés vers elle et elle laisse une courte traînée. Le nombre de points suit la taille du bandeau. Rien ne bouge si le téléphone ou l'ordinateur demande moins d'animations."]}},
   {v:"1.15.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Sept thèmes au choix dans Paramètres → Apparence : Graphite (par défaut), Verre nuit, Verre clair, Verre bordeaux, Anthracite, Clair, et Comme le téléphone. Les thèmes en verre ont un fond animé de halos de couleur et des cartes en verre dépoli."],
     "Modifié":["Sur ordinateur, le menu de gauche est plus large (240 px) et encadré, détaché des bords. Le panneau d'aperçu de droite et les fiches qui s'y ouvrent sont encadrés de la même façon.","Le panneau d'aperçu de droite s'ouvre à partir de 1800 px de large (avant : 1500), pour laisser de la place au contenu. Avec ce panneau ouvert, la pastille du rôle disparaît de la barre du haut, qui reste sur une ligne."]}},
@@ -3141,7 +3144,7 @@ function render(){const v=document.getElementById("view");
   vueAppliquer();
   v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():viewTeam());
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
-  if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v)}
+  if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v);helloPoints(v)}
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
   animateRings(v);avecVue(navBadges);avecVue(demBadge);avecVue(navSous);avecVue(railRender);filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";
   if(_afId){const n=document.getElementById(_afId);if(n){n.focus();try{n.setSelectionRange(_afPos,_afPos)}catch(e){}predMaj(n)}}}
@@ -4312,6 +4315,41 @@ function vbEcrire(){
     if(k++<txt.length)_vbMsg.t=setTimeout(pas,36);else _vbMsg.t=setTimeout(vbEcrire,4200)})();
 }
 /* Branché après chaque rendu de la Synthèse vivante : compteurs, encre, message. */
+/* v1.16.0 : points du bandeau d'accueil (maquette validée par JB, variante « aimant + traînée »).
+   Au repos, ils remontent en ondulant et réapparaissent en bas. La souris (ou le doigt) les attire, d'autant plus qu'ils sont
+   proches, et laisse une courte traînée. Densité constante : ~1 point pour 6 500 px², entre 16 et 48 ; un point de traînée tous les 7 px parcourus. Une seule boucle,
+   arrêtée quand le bandeau quitte la page ; rien ne bouge si le système demande moins d'animations. */
+const HP={force:1.2,rayon:260,densite:6500,min:16,max:48,pas:7};
+const _hp={el:null,cv:null,ctx:null,pts:[],tr:[],m:null,raf:0,W:0,H:0,last:0,ro:null};
+function helloPoints(v){const el=(v||document).querySelector(".hello"),cv=el&&el.querySelector(".h-pts");if(!cv)return;
+  if(_hp.el===el)return;cancelAnimationFrame(_hp.raf);if(_hp.ro)_hp.ro.disconnect();
+  Object.assign(_hp,{el,cv,ctx:cv.getContext("2d"),pts:[],tr:[],m:null,last:0});
+  const calme=_calme&&_calme();
+  const taille=()=>{const r=el.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1),ow=_hp.W;_hp.W=r.width;_hp.H=r.height;cv.width=r.width*d;cv.height=r.height*d;_hp.ctx.setTransform(d,0,0,d,0,0);
+    if(!ow||Math.abs(ow-_hp.W)>40){const n=Math.max(HP.min,Math.min(HP.max,Math.round(_hp.W*_hp.H/HP.densite)));
+      _hp.pts=Array.from({length:n},()=>{const x=Math.random()*_hp.W,y=Math.random()*_hp.H;return{hx:x,hy:y,x,y,vx:0,vy:0,r:.8+Math.random()*1.5,a:.25+Math.random()*.4,ph:Math.random()*6.28,sp:.4+Math.random()*.7,mt:.12+Math.random()*.22}})}};
+  _hp.ro=new ResizeObserver(taille);_hp.ro.observe(el);taille();
+  if(calme){hpImage(0,true);return}
+  const pos=e=>{const r=el.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+  el.addEventListener("pointermove",e=>{const p=pos(e),m=_hp.m;
+    if(m){const dx=p.x-m.x,dy=p.y-m.y;_hp.cumul=(_hp.cumul||0)+Math.hypot(dx,dy);
+      while(_hp.cumul>=HP.pas){_hp.cumul-=HP.pas;const f=Math.random();_hp.tr.push({x:m.x+dx*f+(Math.random()-.5)*6,y:m.y+dy*f+(Math.random()-.5)*6,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,v:1,r:.8+Math.random()*1.4})}}
+    _hp.m=p});
+  ["pointerleave","pointercancel"].forEach(t=>el.addEventListener(t,()=>_hp.m=null));
+  _hp.raf=requestAnimationFrame(hpImage)}
+function hpImage(t,fige){const h=_hp,c=h.ctx;if(!h.el||!document.contains(h.el)){h.el=null;if(h.ro)h.ro.disconnect();return}
+  if(!fige&&document.hidden){h.last=0;h.raf=requestAnimationFrame(hpImage);return}
+  const dt=fige?0:Math.min(40,t-(h.last||t))/16.7;h.last=t;c.clearRect(0,0,h.W,h.H);
+  for(const p of h.pts){if(!fige){p.ph+=.018*p.sp*dt;p.hy-=p.mt*dt;if(p.hy<-10){p.hy=h.H+10;p.hx=Math.random()*h.W;p.x=p.hx;p.y=p.hy}}
+    const fx=p.hx+Math.cos(p.ph)*14,fy=p.hy+Math.sin(p.ph*1.3)*8;let tx=fx,ty=fy;
+    if(h.m){const dx=h.m.x-fx,dy=h.m.y-fy,d=Math.hypot(dx,dy),R=HP.rayon*HP.force;if(d<R){const k=Math.pow(1-d/R,1.3)*.42*HP.force;tx=fx+dx*k;ty=fy+dy*k}}
+    if(fige){p.x=tx;p.y=ty}else{p.vx+=(tx-p.x)*.045*dt;p.vy+=(ty-p.y)*.045*dt;p.vx*=Math.pow(.82,dt);p.vy*=Math.pow(.82,dt);p.x+=p.vx*dt;p.y+=p.vy*dt}
+    const pr=h.m?Math.max(0,1-Math.hypot(h.m.x-p.x,h.m.y-p.y)/180):0;
+    c.beginPath();c.arc(p.x,p.y,p.r+pr*1.2,0,6.283);c.fillStyle=`rgba(255,255,255,${Math.min(.95,p.a+pr*.5)})`;c.fill()}
+  for(let i=h.tr.length-1;i>=0;i--){const q=h.tr[i];q.v-=.03*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.v<=0){h.tr.splice(i,1);continue}
+    c.beginPath();c.arc(q.x,q.y,q.r*q.v,0,6.283);c.fillStyle=`rgba(255,255,255,${q.v*.75})`;c.fill()}
+  if(h.tr.length>200)h.tr.splice(0,h.tr.length-200);
+  if(!fige)h.raf=requestAnimationFrame(hpImage)}
 function vbBrancher(v){
   const h=v.querySelector(".hello");if(!h)return;
   if(synthMode()!=="vivante"){h.classList.remove("vivant");return}
@@ -6522,7 +6560,7 @@ function dashBonjour(){
   const ids=new Set(_dashScope.nat||[]);
   const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
   return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">
-    <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span><span class="h-dust" aria-hidden="true">${Array.from({length:12},(_,i)=>`<i style="left:${(i*37+11)%100}%;bottom:${(i*17)%45}%;animation-duration:${6+(i%5)}s;animation-delay:${(i*.7)%6}s"></i>`).join("")}</span>
+    <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span><canvas class="h-pts" aria-hidden="true"></canvas>
     <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`:"Rien ne presse aujourd'hui ✓"}</small></span>
     <span class="h-clock"><span class="h-time" data-hor="t">${horlogeTxt().h}</span><span class="h-date" data-hor="d">${horlogeTxt().d}</span></span>
     <span class="h-n"><b data-count="${n}">${n||"✓"}</b><small>${n?"à faire":"à jour"}</small></span></button>`;

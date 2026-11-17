@@ -2108,8 +2108,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.12.1";
+const APP_VERSION="1.12.2";
 const CHANGELOG=[
+  {v:"1.12.2",date:"17 novembre 2026",notes:{
+    "Ajouté":["Menu : un clic sur la rubrique ouverte replie ses sous-menus, sans changer d'écran ; un second clic les rouvre.","Les sous-menus se replient tout seuls après 5 secondes, tant que la souris n'est pas sur le menu. Le délai se règle dans Paramètres → Apparence → « Repli automatique du menu » (jamais, 3, 5, 8 ou 15 s)."]}},
   {v:"1.12.1",date:"17 novembre 2026",notes:{
     "Corrigé":["Constellation : elle reste en place. Les groupes ne tournent plus et le survol ne fait plus pivoter les orbites : le groupe visé s'agrandit sur place, avec sa fiche."]}},
   {v:"1.12.0",date:"17 novembre 2026",notes:{
@@ -3064,7 +3066,7 @@ function updateRegionLabel(){
    NAV
    ============================================================ */
 const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux","team"];let _navDir=null;
-function go(t){_navRubOuverte=null;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
+function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
@@ -4510,6 +4512,9 @@ function repliArmer(el,fermer){
   el._rt=setTimeout(()=>{if(!el.isConnected)return;if(el._survol||el.querySelector(":focus-visible")){repliArmer(el,el._fermer);return}el._fermer()},d*1000);
 }
 function repliRearmer(v){v.querySelectorAll("details.tj-reg[open]").forEach(d=>repliArmer(d,()=>{d.open=false}));v.querySelectorAll(".km-reg.ouvert,.km-grp.ouvert").forEach(p=>repliArmer(p,()=>kFermer(p)))}
+const NAV_REPLI_CHOIX=[0,3,5,8,15];
+function navRepliDelai(){try{const v=localStorage.getItem("cap-nav-repli");return v===null?5:Math.max(0,+v||0)}catch(e){return 5}}
+function choisirNavRepli(n){try{localStorage.setItem("cap-nav-repli",String(n))}catch(e){}toast(n?"Le menu se replie après "+n+" secondes":"Le menu reste déplié");navRepliArmer();openParametres()}
 function choisirRepli(n){try{localStorage.setItem("cap-repli",String(n))}catch(e){}toast(n?"Les listes se replient après "+n+" secondes":"Les listes restent dépliées");openParametres()}
 /* Panneau des fiches en plein écran (ordinateur) : on y navigue et on y agit comme sur une page. Reste en plein écran
    d'une fiche à l'autre, jusqu'au bouton ou à Échap. */
@@ -4525,7 +4530,7 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("she
    La rubrique de l'onglet affiché est dépliée, les autres repliées ; au téléphone, « Plus » ouvre tout le menu. */
 const NAV_RUB_TAB={dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
 const NAV_RUB_LIB={syn:"Synthèse",grp:"Mon groupe",age:"Agenda",adh:"Adhésions",res:"Réseau",equ:"Équipe",doc:"Ressources"};
-var _navRubOuverte=null;
+var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
@@ -4544,18 +4549,31 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
 function navSous(){const nav=document.getElementById("nav");if(!nav||!SESSION)return;
-  const actif=NAV_RUB_TAB[tab]||null,ouv=_navRubOuverte||actif;
+  const actif=NAV_RUB_TAB[tab]||null,ouv=_navFerme?null:(_navRubOuverte||actif);
   nav.querySelectorAll(".nav-sx").forEach(x=>{const h=navSousItems(x.dataset.sx).map(navItemHTML).join("");if(x.dataset.h!==h){x.innerHTML=h;x.dataset.h=h}});
   nav.querySelectorAll(".nav-sous").forEach(x=>{const r=x.dataset.rub,vide=!x.querySelector(".nav-sx").children.length&&r!=="res";x.classList.toggle("ouv",r===ouv&&!vide)});
   const pl=nav.querySelector(".nav-plus");if(pl)pl.classList.toggle("on",["clubs","membres","lieux","team"].includes(tab));
-  if(nav.dataset.ouv!==String(ouv)){nav.dataset.ouv=String(ouv);clearTimeout(window._navPT);window._navPT=setTimeout(()=>{if(typeof navPill==="function")navPill()},310)}
+  if(nav.dataset.ouv!==String(ouv)){nav.dataset.ouv=String(ouv);navRepliArmer();clearTimeout(window._navPT);window._navPT=setTimeout(()=>{if(typeof navPill==="function")navPill()},310)}
   nav.querySelectorAll("[data-rub]").forEach(b=>{if(b.tagName!=="BUTTON")return;const r=b.dataset.rub;b.classList.toggle("ouv",r===ouv);if(b.classList.contains("nav-rub"))b.classList.toggle("on",r===actif)});
   const nb=reunionsSansBilan().length,ag=nav.querySelector('button[data-tab="agenda"]');
   if(ag){let e=ag.querySelector(".nav-badge");if(!nb||readOnly()){if(e)e.remove()}else{if(!e){e=document.createElement("span");e.className="nav-badge";ag.appendChild(e)}e.textContent=nb;e.title=nb+" réunion"+(nb>1?"s":"")+" sans bilan"}}}
 function navVers(t,ancre){_navRubOuverte=null;if(tab!==t)go(t);else{render();window.scrollTo({top:0,behavior:"smooth"})}
   if(ancre)setTimeout(()=>{const e=document.querySelector(ancre);if(e)e.scrollIntoView({behavior:"smooth",block:"start"})},120)}
 function navDem(v){window._dmVue=v;_navRubOuverte=null;if(tab!=="demandes")go("demandes");else render()}
-function navOuvrir(r){_navRubOuverte=_navRubOuverte===r?null:r;navSous();setTimeout(navPill,320)}
+function navOuvrir(r){const nav=document.getElementById("nav"),ouv=nav&&nav.dataset.ouv;
+  if(ouv===r){_navFerme=true;_navRubOuverte=null}else{_navFerme=false;_navRubOuverte=r}navSous();setTimeout(navPill,320)}
+/* v1.12.2 : replier le menu. Un clic sur la rubrique déjà ouverte la replie (sans changer d'écran) ;
+   sinon les sous-menus se referment seuls après navRepliDelai() secondes, tant que la souris n'est pas sur le menu. */
+function navRepliArmer(){clearTimeout(_navRepliT);const d=navRepliDelai(),nav=document.getElementById("nav");
+  if(!d||_navSurvol||!nav||!isWide()||nav.dataset.ouv==="null"||!nav.dataset.ouv)return;
+  _navRepliT=setTimeout(()=>{_navFerme=true;_navRubOuverte=null;navSous();setTimeout(navPill,320)},d*1000)}
+(function(){const nav=document.getElementById("nav");if(!nav)return;
+  nav.addEventListener("pointerenter",e=>{if(e.pointerType!=="mouse")return;_navSurvol=true;clearTimeout(_navRepliT)});
+  nav.addEventListener("pointerleave",e=>{if(e.pointerType!=="mouse")return;_navSurvol=false;navRepliArmer()});
+  nav.addEventListener("click",e=>{if(!isWide())return;const b=e.target.closest&&e.target.closest("button[data-rub]");if(!b||b.closest(".nav-sous"))return;
+    if(nav.dataset.ouv===b.dataset.rub&&NAV_RUB_TAB[tab]===b.dataset.rub){e.preventDefault();e.stopImmediatePropagation();navOuvrir(b.dataset.rub)}
+    else if(nav.dataset.ouv!==b.dataset.rub&&NAV_RUB_TAB[tab]===b.dataset.rub){e.preventDefault();e.stopImmediatePropagation();_navFerme=false;_navRubOuverte=null;navSous();setTimeout(navPill,320)}},true)})();
+
 /* Au téléphone : tout le menu dans une feuille, rubrique par rubrique. */
 function openNavPlus(){const tabs={syn:"dash",grp:"reunions",age:"agenda",adh:"demandes",equ:"team"};
   const bloc=r=>{let l=navSousItems(r);
@@ -7010,6 +7028,8 @@ async function openParametres(){
     <div class="set-l"><div class="theme3" role="group" aria-label="Thème">${th("clair","Clair","#FAF6F4","#FFFFFF")}${th("sombre","Sombre","#1A1214","#241A1D")}${th("auto","Comme le téléphone","#FAF6F4","#1A1214")}</div></div>
     <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique des listes</b><small>Une région ou un groupe déplié se referme tout seul après ce délai sans y toucher.</small></div>
       <div class="repli-g" role="radiogroup" aria-label="Repli automatique">${REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${repliDelai()===n}" class="${repliDelai()===n?"on":""}" onclick="choisirRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
+    <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique du menu</b><small>Les sous-menus se referment tout seuls après ce délai, tant que la souris n'est pas sur le menu. Un clic sur une rubrique ouverte la replie aussi.</small></div>
+      <div class="repli-g" role="radiogroup" aria-label="Repli automatique du menu">${NAV_REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${navRepliDelai()===n}" class="${navRepliDelai()===n?"on":""}" onclick="choisirNavRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
     <div class="set-l repli-l"><div class="repli-t"><b>Affichage de la Synthèse</b><small>« Vivante » : cartes de tailles et couleurs différentes, chiffres qui roulent comme un compteur, encre au survol, message du jour dans le bandeau.</small></div>
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div>
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">

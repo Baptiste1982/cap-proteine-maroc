@@ -403,6 +403,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 
 **✦ Constellation stable (v1.12.1, 17/11/2026)** — JB : « ça tourne trop vite, ça suit la souris, remets le truc normal ». Dans `cstRender` → `place` : le temps n'avance plus (`acc` reste à 0), inclinaison fixe (`TILT`, `psi` 0), plus d'orbite qui pivote pour amener le groupe survolé devant (`vise=null`) ; le survol agrandit le groupe sur place (`it.f`) et le passe au premier plan (ordre du DOM). Disposition = celle de la capture de JB (région → villes → groupes). Régions = zones qui ont au moins un groupe (`regionsDe`) : au 17/11 il n'y a ni zone ni groupe à Tanger en base, donc pas de Tanger. Bancs `cst.mjs` 20/20, `cstfix.mjs` (immobile, survol sans déplacement).
 
+**↕ Menu repliable (v1.12.2, 17/11/2026)** — JB : « pouvoir replier tous les menus », « replis automatiques réglables ». `_navFerme` (tout replié, remis à false par `go`) ; écouteur en capture sur `#nav` (ordinateur) : clic sur la rubrique ouverte de l'onglet affiché = repli sans changer d'écran, clic sur cette rubrique repliée = réouverture. `navRepliArmer()` : repli après `navRepliDelai()` s (localStorage `cap-nav-repli`, défaut 5, 0 = jamais, `NAV_REPLI_CHOIX`), suspendu tant que la souris est sur le menu (pointerenter/leave souris). Réglage dans Paramètres → Apparence (`choisirNavRepli`). Banc `nav.mjs` 35/35.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -2048,8 +2048,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.9.0";
+const APP_VERSION="1.10.0";
 const CHANGELOG=[
+  {v:"1.10.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Documents du réseau : un espace où le bureau national dépose les documents dont les groupes ont besoin (PDF, Excel, Word, présentations, images, vidéos). Chaque document a son étiquette de type, un aperçu au survol, et s'ouvre d'un clic. On choisit qui le voit (animateurs, membres) et s'il se partage par un lien, à envoyer par WhatsApp. Accès : bouton « 📚 Documents » de la Synthèse, ou Paramètres.",
+      "Espace membre : « Documents du réseau » dans l'onglet « Moi », avec les documents ouverts aux membres.",
+      "Espace membre : une animation de célébration quand on envoie une recommandation, et quand une affaire est signée, avec son montant."]}},
   {v:"1.9.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Espace membre : une page d'accueil pour le membre. En haut, la prochaine réunion avec « Je viens » ou « Je ne viens pas ». Puis ce qu'il a à faire (une recommandation reçue à rappeler, des messages non lus, sa fiche à compléter), trois actions (recommander quelqu'un, inviter à la réunion, écrire au groupe), son bilan de l'année et « Bien démarrer » pour un nouveau membre.",
       "Espace membre : cinq onglets au lieu de six : Accueil, Mon groupe, Réseau, Messages, Moi. « Inviter » devient un bouton, les recommandations et les chiffres passent dans « Moi ».",
@@ -6337,7 +6341,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("📚","Documents","window.open('documents.html','_blank')")}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
@@ -6875,6 +6879,8 @@ async function openParametres(){
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    <div class="set-sec">Documents</div>
+    <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","window.open('documents.html','_blank')")}</div>
     <div class="set-sec">Aide</div>
     <div class="set-l">${r("🎓","Visite guidée","Revoir l'utilisation du CRM, en entier ou par partie","openAide()")}</div>
     <div class="set-sec">Application</div>

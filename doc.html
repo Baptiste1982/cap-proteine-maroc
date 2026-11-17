@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Document partagé · Protéine</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<meta name="theme-color" content="#B0122E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="documents-commun.js"></script>
+<style>
+/* Lien partagé d'un document du réseau (v1.10.0) : ouvert sans connexion. */
+:root{--crimson:#B0122E;--deep:#5C0A18;--ink:#1B1416;--muted:#5E5054;--paper:#FAF6F4;--card:#fff;--line2:#EFE5E7}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.tete{background:var(--deep);color:#fff;padding:14px max(18px,env(safe-area-inset-right)) 14px max(18px,env(safe-area-inset-left));display:flex;align-items:center;gap:12px}
+.tete img{width:38px;height:38px;border-radius:50%;background:#fff}.tete span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#E9D9B0;font-weight:700}
+main{flex:1;width:min(1100px,100%);margin:0 auto;padding:18px max(18px,env(safe-area-inset-right)) 24px max(18px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:14px}
+.fiche{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.fiche .t{flex:1;min-width:200px}
+h1{font-family:"Bricolage Grotesque",Inter,sans-serif;font-size:28px;margin:0;line-height:1.15}
+.fiche small{color:#7A6A6E;font-size:13px}.desc{margin:0;color:var(--muted)}
+.cadre{flex:1;min-height:65vh;border-radius:16px;overflow:hidden;border:1px solid var(--line2);background:#fff;display:flex}.cadre>*{flex:1}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:46px;border-radius:12px;border:0;background:var(--crimson);color:#fff;font-weight:700;font-size:15px;padding:0 18px;display:inline-flex;align-items:center;text-decoration:none}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid #EADDE0}
+.vide{text-align:center;color:var(--muted);padding:60px 16px}
+</style>
+</head>
+<body>
+<header class="tete"><img src="logo-globe-192.png" alt=""><span>Club d'Affaires Protéine Maroc</span></header>
+<main id="main"><p class="vide">Chargement…</p></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const st=document.createElement("style");st.textContent=DOC_CSS;document.head.appendChild(st);
+const sb=window.supabase.createClient(DOC_SB_URL,"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7",{auth:{persistSession:false}});
+(async()=>{
+  const id=new URLSearchParams(location.search).get("d"),m=document.getElementById("main");
+  if(!/^[0-9a-f-]{36}$/i.test(id||""))return m.innerHTML=`<p class="vide">Ce lien n'est pas complet. Demande à la personne qui te l'a envoyé de le partager à nouveau.</p>`;
+  const {data:d,error}=await sb.rpc("cap_document_lien",{p_id:id});
+  if(error||!d)return m.innerHTML=`<p class="vide">Ce document n'est plus partagé, ou le lien a changé.<br>Demande-le à ton animateur.</p>`;
+  document.title=d.titre+" · Protéine";
+  const k=docType(d.nom_fichier,d.type_mime),u=docUrl(d.chemin);
+  m.innerHTML=`<div class="fiche">${docPastille(d,48)}<div class="t"><h1>${docEsc(d.titre)}</h1><small>${docEsc(DOC_TYPES[k].lib)} · ${docEsc(docTaille(d.taille))} · ${docEsc(d.categorie)}</small></div>
+      <div class="actions"><a class="btn" href="${docEsc(u)}" download="${docEsc(d.nom_fichier)}">Télécharger</a><a class="btn ghost" href="${docEsc(u)}" target="_blank" rel="noopener">Ouvrir</a></div></div>
+    ${d.description?`<p class="desc">${docEsc(d.description)}</p>`:""}
+    <div class="cadre">${docApercu(d,false)}</div>`;
+  docRemplirTextes(m);
+})();
+</script>
+</body>
+</html>

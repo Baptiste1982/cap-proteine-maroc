@@ -190,6 +190,8 @@ textarea.champ:focus{border-color:var(--crimson)}
 .presence.ko .ico{background:var(--tint);color:var(--crimson)}.presence b{font-size:22px}.presence p{margin:0}
 @keyframes pop{from{transform:scale(.4);opacity:0}}
 /* v1.9.0 : accueil du membre, volets repliables, fil d'Ariane, pages qui glissent */
+.dp{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:9px;border:1.5px solid;flex-shrink:0}.dp b{font-weight:800;line-height:1}
+a.la{text-decoration:none}
 .page.entre{animation:glisseIn .28s cubic-bezier(.2,.8,.2,1)}.page.sort{animation:glisseOut .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes glisseIn{from{opacity:0;transform:translateX(28px)}}@keyframes glisseOut{from{opacity:0;transform:translateX(-28px)}}
 .ariane{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:3;background:var(--paper);margin:calc(-16px - var(--safe-t)) -18px 0;padding:calc(8px + var(--safe-t)) 12px 8px 18px;border-bottom:1px solid var(--line2)}
@@ -233,6 +235,14 @@ textarea.champ:focus{border-color:var(--crimson)}
 .ac-prog{height:6px;border-radius:3px;background:#EFE6E8;overflow:hidden}.ac-prog i{display:block;height:100%;background:var(--crimson);border-radius:3px}
 .ac-fait{font-size:14px;color:var(--muted);padding:4px 2px}
 .gv-fil .label{margin-bottom:2px}
+/* v1.10.0 : célébration (recommandation envoyée, affaire signée) */
+.fete{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.fete canvas{position:absolute;inset:0;width:100%;height:100%}
+.fete-c{position:relative;background:var(--card);border-radius:22px;padding:22px 26px;box-shadow:0 18px 50px rgba(27,20,22,.25);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;max-width:300px;animation:feteIn .5s cubic-bezier(.2,1.5,.4,1)}
+.fete-c .rond{width:64px;height:64px;border-radius:50%;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800}
+.fete-c b{font-family:"Bricolage Grotesque",sans-serif;font-size:21px}.fete-c span{font-size:14px;color:var(--muted)}.fete-c .gros{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:800;color:var(--crimson)}
+.fete.part .fete-c{animation:feteOut .35s ease forwards}
+@keyframes feteIn{from{opacity:0;transform:scale(.6) translateY(20px)}}@keyframes feteOut{to{opacity:0;transform:scale(.9)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
@@ -245,6 +255,7 @@ textarea.champ:focus{border-color:var(--crimson)}
   <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
   <button data-o="moi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Moi<span class="badge" id="nav-rc" hidden></span></button>
 </div></nav>
+<script src="documents-commun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
@@ -373,7 +384,7 @@ const membre=id=>S.annuaire.find(m=>m.id===id);
    ✕ pour revenir où l'on était. S.pile garde le chemin parcouru depuis l'onglet. */
 const ONGLETS_NAV=["accueil","mongroupe","annuaire","messages","moi"];
 const LIB_PAGE={accueil:"Accueil",mongroupe:"Mon groupe",annuaire:"Réseau",messages:"Messages",moi:"Moi",recos:"Mes recommandations",profil:"Ma fiche et mes réglages",
-  inviter:"Inviter à la réunion",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
+  inviter:"Inviter à la réunion",docs:"Documents du réseau",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
 const ETAT_PAGE=["fiche","conv","recoForm","recoTab","recoId"];
 S.pile=[];
 const racine=()=>S.eq?"mongroupe":"accueil";
@@ -406,7 +417,7 @@ function rendu(garderDefilement){
   $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe"||!!S.eq;
   const rc=aTraiterRecos().length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
   const v={accueil:vueAccueil,mongroupe:vueMonGroupe,annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,moi:vueMoi,profil:vueProfil,inviter:vueInviter,
-    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
+    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
   $("app").innerHTML=v();
   const pg=$("app").querySelector(".page");
   if(pg&&S.anim&&!garderDefilement)pg.classList.add(S.anim);
@@ -550,6 +561,7 @@ function vueMoi(){
       ${ligneAct(`data-aller="chiffres"`,"Mes chiffres",ch?`${esc(mad(ch.ca_transmis))} apportés · ${esc(mad(ch.ca_recu))} reçus`:"Moi, mon groupe, ma région")}
       ${ligneAct(`data-aller="profil"`,"Ma fiche","Photo, logo, présentation, ce que je cherche",{fin:`<span class="pct${pct<100?" bas":""}">${pct} %</span>`})}
       ${ligneAct(`data-aller="inviter"`,"Inviter quelqu'un","À la prochaine réunion du groupe")}
+      ${ligneAct(`data-aller="docs"`,"Documents du réseau","Kits, formulaires, présentations du bureau national")}
       ${ligneAct(`data-aller="profil"`,"Notifications et code d'accès",esc(notif))}
     </div>
     ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}
@@ -565,6 +577,7 @@ function vueReco(){
   return `<div class="page">${ariane()}${carteReco(r,r.a===S.moi.id)}</div>`;
 }
 
+/* (documents du réseau : voir plus bas) */
 /* ---------- Mes recommandations : regroupées par état, le détail s'ouvre au clic ---------- */
 function recoLigne(r,recue){
   const autre=membre(recue?r.de:r.a),noteEquipe=r.contact_nom===NON_COMM;
@@ -1022,7 +1035,7 @@ async function donnerReco(){
     type_reco:ty?ty.value:"mise_en_relation",objet:g("r-objet"),origine:Number(g("r-origine"))||1,budget:g("r-budget")||null,date_limite:g("r-limite")||null,appel_offre:ao,entreprises_consultees:ao?g("r-consultees"):"",civilite:g("r-civ"),tel2:g("r-tel2"),adresse:g("r-adresse")};
   if(DEMO){(S.recos=S.recos||[]).unshift({id:"r"+Date.now(),de:S.moi.id,a:v.a,contact_nom:nom,contact_tel:v.tel,contact_entreprise:v.entreprise,contact_email:v.email,contact_fonction:v.fonction,contact_ville:v.ville,chaleur:v.chaleur,contact_prevenu:v.prevenu,besoin:v.besoin,type_reco:v.type_reco,objet:v.objet,origine:v.origine,budget:v.budget,date_limite:v.date_limite,appel_offre:v.appel_offre,entreprises_consultees:v.entreprises_consultees,contact_civilite:v.civilite,contact_tel2:v.tel2,contact_adresse:v.adresse,statut:"envoyee",montant:null,cree_le:new Date().toISOString()})}
   else{const {error}=await sb.rpc("cap_membre_reco_donner_fiche",{p:v});if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyée : "+error.message);return}await chargerRecos()}
-  toast("Recommandation envoyée à "+(membre(S.recoPour)?.nom||"ce membre"));S.recosClub=undefined;
+  celebrer("Recommandation envoyée","Elle est à ton actif. "+(membre(S.recoPour)?.nom||"Le membre")+" est prévenu.");S.recosClub=undefined;
   Object.assign(S,{recoForm:false,recoTab:"donnees",recoPour:"",recoQ:""});S.anim="sort";window.scrollTo(0,0);rendu();
 }
 async function relancerReco(id,date){
@@ -1042,10 +1055,38 @@ async function avancerReco(id,st){
   Object.assign(r,{statut:st,montant:st==="signee"?montant:r.montant,montant_devis:devis??r.montant_devis,note_suivi:note||r.note_suivi,maj_le:new Date().toISOString()});
   if(corr){S.recosClub=undefined;toast("Montant corrigé");rendu(true);return}
   S.recosClub=undefined;
-  toast(st==="signee"?"Bravo ! "+(membre(r.de)?.nom||"Le membre")+" est prévenu.":st==="sans_suite"?"Noté : sans suite.":"Étape enregistrée, "+(membre(r.de)?.nom||"le membre")+" est prévenu.");
+  if(st==="signee")celebrer("Affaire signée !",(membre(r.de)?.nom||"Le membre")+" est prévenu : l'affaire compte à son actif.",mad(montant));else toast(st==="sans_suite"?"Noté : sans suite.":"Étape enregistrée, "+(membre(r.de)?.nom||"le membre")+" est prévenu.");
   rendu(true);
 }
 
+
+
+/* ---------- Documents du réseau (v1.10.0) : ceux que le bureau national montre aux membres ---------- */
+async function chargerDocs(){
+  if(DEMO){S.docs=[{id:"dd1",titre:"Kit du nouveau membre",description:"Tout pour bien démarrer : le fonctionnement du club, les règles des recommandations.",categorie:"Kit membre",chemin:"demo/kit.pdf",nom_fichier:"kit-nouveau-membre.pdf",taille:1840000,lien_public:true},
+    {id:"dd2",titre:"Fiche de recommandation",categorie:"Formulaires",chemin:"demo/fiche.xlsx",nom_fichier:"fiche-recommandation.xlsx",taille:48000,lien_public:true},
+    {id:"dd3",titre:"Présentation du réseau Protéine",categorie:"Présentations",chemin:"demo/pres.pptx",nom_fichier:"presentation-proteine.pptx",taille:6200000,lien_public:true}];return}
+  const {data,error}=await sb.from("documents_reseau").select("id,titre,description,categorie,chemin,nom_fichier,type_mime,taille,lien_public,epingle").eq("archive",false).eq("visible_membres",true).order("epingle",{ascending:false}).order("cree_le",{ascending:false});
+  S.docs=error?[]:(data||[]);
+}
+function vueDocs(){
+  if(S.docs===undefined){chargerDocs().then(()=>{if(S.onglet==="docs")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
+  const parCat={};S.docs.forEach(d=>(parCat[d.categorie||"Autres"]=parCat[d.categorie||"Autres"]||[]).push(d));
+  return `<div class="page">${ariane()}<div class="head"><div><h1>Documents du réseau</h1><p class="sub">Mis à disposition par le bureau national. Touche un document pour l'ouvrir.</p></div></div>
+    ${Object.keys(parCat).length?Object.entries(parCat).map(([c,l])=>volet("doc-"+c,esc(c),l.length,`<div class="la-l">${l.map(d=>`<a class="la" href="${esc(d.lien_public?docLien(d.id):docUrl(d.chemin))}" target="_blank" rel="noopener">${docPastille(d,34)}<span class="la-t"><b>${esc(d.titre)}</b><span>${esc(DOC_TYPES[docType(d.nom_fichier,d.type_mime)].lib)} · ${esc(docTaille(d.taille))}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}</div>`,{ouvert:true})).join("")
+      :`<p class="vide">Aucun document partagé avec les membres pour l'instant.</p>`}</div>`;
+}
+/* ---------- Célébration (v1.10.0) : une gerbe de confettis et une carte, 2 secondes ---------- */
+function celebrer(titre,sous,gros){
+  const d=document.createElement("div");d.className="fete";d.setAttribute("role","status");
+  d.innerHTML=`<canvas aria-hidden="true"></canvas><div class="fete-c"><span class="rond" aria-hidden="true">✓</span><b>${esc(titre)}</b>${gros?`<span class="gros">${esc(gros)}</span>`:""}${sous?`<span>${esc(sous)}</span>`:""}</div>`;
+  document.body.appendChild(d);
+  const reduit=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduit){const cv=d.querySelector("canvas"),k=devicePixelRatio||1,W=innerWidth,H=innerHeight;cv.width=W*k;cv.height=H*k;const g=cv.getContext("2d");g.scale(k,k);
+    const C=["#B0122E","#E0324E","#C8A24C","#5B7FA3","#24502A"],P=Array.from({length:110},(_,i)=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*13-4,r:Math.random()*6+3,a:Math.random()*6,va:(Math.random()-.5)*.4,c:C[i%C.length]}));
+    const t0=performance.now();(function f(t){const e=t-t0;g.clearRect(0,0,W,H);for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vy+=.38;p.vx*=.99;p.a+=p.va;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle=p.c;g.globalAlpha=Math.max(0,1-e/2000);g.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);g.restore()}if(e<2000)requestAnimationFrame(f)})(t0)}
+  setTimeout(()=>d.classList.add("part"),1900);setTimeout(()=>d.remove(),2300);
+}
 /* ---------- Présence par QR code (v0.26.0) ---------- */
 async function pointer(reunion,code){
   S.presence={etat:"en_cours"};aller("presence");

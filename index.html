@@ -1390,6 +1390,9 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .nat-avant{font-size:12.5px;color:var(--muted);margin:0 0 12px}.nat-avant a{color:var(--crimson-txt,var(--crimson));font-weight:700}
 .nat-envoyer{--tn:var(--crimson)}.nat-attente{--tn:#5B7FA3}.nat-signe{--tn:#2E8B57}
 .nat-dl{margin:0 0 9px 46px;display:grid;gap:3px;font-size:12px}.nat-dl div{display:flex;gap:8px}.nat-dl dt{color:var(--muted);min-width:78px}.nat-dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+/* v1.11.2 : colonne étroite (PC avec le panneau de droite) : la valeur passe sous son libellé au lieu de se casser lettre par lettre */
+.nat-card{container-type:inline-size}.nat-dl div{flex-wrap:wrap;column-gap:8px;row-gap:0}.nat-dl dd{flex:1 1 96px;overflow-wrap:break-word}
+@container (max-width:240px){.nat-dl{margin-left:0}.nat-dl dt{min-width:0;flex-basis:100%}}
 .dm-go.nat-ghost{background:none;color:var(--muted);border:1px solid var(--line)}
 @media(max-width:899px){
   .dm-seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
@@ -2050,8 +2053,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.11.1";
+const APP_VERSION="1.11.2";
 const CHANGELOG=[
+  {v:"1.11.2",date:"17 novembre 2026",notes:{
+    "Corrigé":["Envoi au national : dans une colonne étroite, les dates des cartes (reçue, envoyée, signée) ne se coupent plus lettre par lettre."]}},
   {v:"1.11.1",date:"17 novembre 2026",notes:{
     "Modifié":["Animation d'ouverture : le logo Protéine est plus grand et passe par-dessus le réseau, qui se resserre jusqu'au centre puis s'efface derrière lui. À la fin, il ne reste que le logo."]}},
   {v:"1.11.0",date:"17 novembre 2026",notes:{

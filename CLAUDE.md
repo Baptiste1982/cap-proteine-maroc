@@ -475,6 +475,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Espace membre = onglet `espace` du CRM : `espaceOuvrir(url)` charge `membre.html#…` dans `#esp-host` (cadre à côté de `#view`, jamais recréé par `render`). Tout lien `a[href^="membre.html#"]` du CRM est intercepté. Dans `membre.html`, `DANS_CRM` : « ↩ CRM » appelle `top.go('dash')` (avant : il chargeait un second CRM dans l'onglet). `#moi=<fiche>&r=recues` ouvre les recommandations reçues. `lancement.js` ne joue pas dans un cadre. Menu : Mon groupe → Mon espace membre (`mesFiches`).
 - Synthèse : `dashMesRecos()` = recommandations reçues par la personne connectée (statut envoyée, contacté, devis), clic → son espace sur les recos reçues. Banc `esp.mjs` 17/17.
 
+**🧹 Correctifs d'affichage après audit (v1.25.1, 17/11/2026 — sur la branche `claude/sharp-bardeen-oghj1x`, PAS en prod : attend le GO de JB)** :
+- Téléphone : `.vue-reg-sel:not(.hidden)~.tb-clock{display:none}` sous 600 px (avec bascule + choix de région, `#set-btn` sortait de l'écran). Liens `.fil-c` et `.rl-links` plus hauts sous 900 px.
+- Libellés en vue régionale : eyebrow de `viewAgenda` et sous-titre de `viewMembres` = `vueRegion().nom`.
+- Boutons alignés sur le menu : `dashOutils` (Zones, Lancements = `vuePeutBasculer()`), Classeur et Export saisie = `navDir()`, « + » des Clubs masqué sans `canManageStructure()`.
+- Lecture seule (visiteur) : `.nav-reu` masqué dans `enterApp`, pas de rubrique Adhésions dans le burger, bandeau « points à suivre ». `FIL_ONGLETS.demandes`.
+- Audit du 17/11 (rôles simulés en base, appli rejouée en local sur un instantané) : ⚠ la LECTURE n'est pas cloisonnée par la RLS (`cap_can_see_club` = `cap_est_equipe()`), seules les écritures et les adhésions le sont ; 7 comptes animateurs ont encore `cap2026`. Décisions de JB attendues (périmètre de l'animateur, compte visiteur, données d'essai).
+- `*.supabase.co` est joignable depuis les sessions Claude Code (vérifié le 17/11).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

@@ -2165,6 +2165,9 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.25.1 : au téléphone, quand le choix de région est affiché, l'heure de la barre du haut s'efface (le bouton Paramètres sortait de l'écran) ; liens du fil d'Ariane et des lignes plus hauts sous le doigt */
+@media(max-width:600px){.vue-reg-sel:not(.hidden)~.tb-clock{display:none}}
+@media(max-width:899px){.fil-c{padding:9px 0}.rl-links button,.rl-links a{padding:9px 0}.rl-links{row-gap:0}}
 html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s}
 @media(hover:hover){html :hover>:is(.rail-date,.reu-d,.rl-date,.mtg-date){transform:rotate(-8deg) scale(1.06);box-shadow:3px 5px 10px -4px rgba(0,0,0,.45)}}
 @media(prefers-reduced-motion:reduce){html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:none}html :hover>:is(.rail-date,.reu-d,.rl-date,.mtg-date){transform:none}}
@@ -2279,8 +2282,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.25.0";
+const APP_VERSION="1.25.1";
 const CHANGELOG=[
+  {v:"1.25.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
   {v:"1.25.0",date:"17 novembre 2026",notes:{"Ajouté":["Points sur activité (Équipe → Points sur activité) : le directeur de région ouvre une plage (ex. mardi 9h-12h) découpée en créneaux de 30 ou 45 min ; les animateurs de sa région réservent le leur (en ligne par Zoom par défaut, sur place ou au téléphone) ; le lien Zoom se pose quand on veut (🔗), sur un créneau ou sur tous ; le directeur est notifié à chaque réservation ou annulation et voit le nom de chacun.","Menu burger du téléphone en rubriques colorées qui se déplient, comme sur l'ordinateur.","L'espace membre devient une page du CRM (Mon groupe → Mon espace membre) : il s'ouvre dans la zone principale, menu du CRM à gauche, plus d'onglet ni de second CRM. « ↩ CRM » ramène à la Synthèse.","Synthèse : bandeau « recommandations reçues à traiter » pour la personne connectée qui est aussi membre ; un clic ouvre directement ses recommandations reçues.","Cloisonnement : l'envoi au national, les leads, le classeur des PDF et les archives sont réservés à la direction ; les animateurs gardent leur groupe, l'agenda, les demandes et l'équipe."]}},
   {v:"1.24.0",date:"17 novembre 2026",notes:{"Ajouté":["Téléphone : menu burger en haut à gauche ; il ouvre un tiroir par-dessus l'écran avec toutes les rubriques et leurs sous-menus (fermeture par la croix, en touchant à côté ou en le glissant vers la gauche)."],"Corrigé":["Téléphone : la page ne glisse plus de droite à gauche."]}},
   {v:"1.23.0",date:"17 novembre 2026",notes:{"Ajouté":["« ✋ Je viens » dans chaque réunion à venir du réseau, quelle que soit la ville : on s'inscrit soi-même, on apparaît parmi les invités, et « Je ne viens plus » retire l'inscription."],"Corrigé":["Documents du réseau : « ↩ CRM » revient à l'onglet du CRM déjà ouvert, sans relancer l'appli ni l'animation d'ouverture."]}},
@@ -3172,6 +3176,7 @@ function enterApp(){
   const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
   document.getElementById("admin-btn").classList.toggle("hidden",SESSION.role!=="superadmin");
   document.getElementById("pwd-btn").classList.toggle("hidden",SESSION.role==="visiteur");
+  {const g=document.querySelector("#nav .nav-reu");if(g)g.hidden=readOnly()} // v1.25.1 : pas d'onglet « Mon groupe » en lecture seule
   document.getElementById("ver-pill").textContent="v"+APP_VERSION;
   updateRegionLabel();go("dash");
 }
@@ -3294,7 +3299,7 @@ function updateRegionLabel(){
 const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="espace"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="espace"||tab==="membres"||tab==="demandes"||((tab==="team"||tab==="clubs")&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
   const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
@@ -3418,7 +3423,7 @@ function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=
 function viewMembres(){
   const ids=new Set(scopedClubIds());const tous=DB.membres.filter(m=>ids.has(m.clubId));
   const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
-  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} dans tout le réseau</p></div></div>
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} ${vueMode()==="reg"?"dans la région "+esc(vueRegion().nom):"dans tout le réseau"}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="mb-q" type="search" data-pred="membres" placeholder="Tape les premières lettres : nom, entreprise, métier, club…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
     <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
@@ -4035,7 +4040,7 @@ function viewAgenda(){
     cards+=wide?meetingTr(m):meetingRow(m);});cards+=CLOSE;cards=cards.replace(/<div class="rl"><\/div>/g,"");}
 
   return `<div class="page">
-    <div class="page-head"><div><div class="eyebrow">Tout le réseau</div><h2>Agenda</h2></div>
+    <div class="page-head"><div><div class="eyebrow">${vueMode()==="reg"?esc(vueRegion().nom):"Tout le réseau"}</div><h2>Agenda</h2></div>
       ${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div>
     <div class="stats">
       <div class="stat link ${filter==="up"?"on":""}" onclick="filter='up';render()"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
@@ -4855,7 +4860,7 @@ const NP_RUB={syn:["📊","#C21835"],grp:["👥","#5B7FA3"],age:["📅","#3DAA74
 function navPlusHTML(fermer){const tabs={syn:"dash",grp:"reunions",age:"agenda",adh:"demandes",equ:"team"};
   const items=r=>{if(r==="cpt")return[{lb:"Paramètres",act:"openParametres()"}];let l=navSousItems(r);
     if(r==="res")l=[{lb:"Clubs",act:"go('clubs')",on:tab==="clubs"},{lb:"Membres",act:"go('membres')",on:tab==="membres"},{lb:"Lieux",act:"go('lieux')",on:tab==="lieux"},...l];
-    if(!l.length&&tabs[r]&&!(r==="grp"&&readOnly()))l=[{lb:NAV_RUB_LIB[r],act:`go('${tabs[r]}')`,on:tab===tabs[r]}];return l};
+    if(!l.length&&tabs[r]&&!((r==="grp"||r==="adh")&&readOnly()))l=[{lb:NAV_RUB_LIB[r],act:`go('${tabs[r]}')`,on:tab===tabs[r]}];return l};
   const rubs=["syn","grp","age","adh","res","equ","doc","cpt"].map(r=>[r,items(r)]).filter(([,l])=>l.length);
   if(window._npOuv===undefined||!rubs.some(([r])=>r===window._npOuv))window._npOuv=NAV_RUB_TAB[tab]||"syn";
   return `<div class="np np2">${rubs.map(([r,l])=>{const[ic,c]=NP_RUB[r],o=window._npOuv===r,n=l.reduce((t,x)=>t+(+x.n||0),0),cur=NAV_RUB_TAB[tab]===r;
@@ -6089,7 +6094,7 @@ async function openAdhesionsFiche(f){
     ${rows}
     <div class="adh-legend"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au club · saisie dans le CRM national${all.some(adhEnRetard)?` — <b>en retard</b> : en attente depuis plus de ${ADH_DELAI_J} jours`:""}</div>
     ${grp.length?secHead("Par groupe",vivantes.length)+`<div class="rank">${grp.map(([g,n])=>`<div class="rank-row"><div class="rn">${esc(g.replace(/^CAP\s+/,""))}</div><div class="bar"><i style="width:${Math.round(n/mx*100)}%"></i></div><div class="rv">${n}</div></div>`).join("")}</div>`:""}
-    <button class="btn ghost" style="margin-top:14px;width:100%" onclick="openClasseur()">📁 Classeur des PDF</button>
+    ${navDir()?`<button class="btn ghost" style="margin-top:14px;width:100%" onclick="openClasseur()">📁 Classeur des PDF</button>`:""}
     ${readOnly()?"":`${secHead("Envoyer le lien")}
     <div class="field"><label>Club concerné (facultatif)</label><select id="adh-club"><option value="">— Sans club —</option>${clubOpts}</select></div>
     <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>
@@ -6861,9 +6866,9 @@ function dashBonjour(){
   const n=DB.clubs.filter(c=>ids.has(c.id)&&clubTone(c)!=="ok").length+(SESSION.role==="visiteur"?0:(adhAIntegrer().length?1:0)+(adhASaisir().length?1:0));
   return `<button class="hello" onclick="const t=document.getElementById('dash-todo');if(t)t.scrollIntoView({behavior:'smooth',block:'center'})">
     <span class="h-blob b1"></span><span class="h-blob b2"></span><span class="h-shine"></span><canvas class="h-pts" aria-hidden="true"></canvas>
-    <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`:"Rien ne presse aujourd'hui ✓"}</small></span>
+    <span class="h-l"><b class="h-sal">${sal} ${esc(prenom)} <span class="h-wave">👋</span></b><small class="h-sub">${n?(readOnly()?`${n} point${n>1?"s":""} à suivre dans le réseau →`:`${n} action${n>1?"s":""} t'attend${n>1?"ent":""} →`):"Rien ne presse aujourd'hui ✓"}</small></span>
     <span class="h-clock"><span class="h-time" data-hor="t">${horlogeTxt().h}</span><span class="h-date" data-hor="d">${horlogeTxt().d}</span></span>
-    <span class="h-n"><b data-count="${n}">${n||"✓"}</b><small>${n?"à faire":"à jour"}</small></span></button>`;
+    <span class="h-n"><b data-count="${n}">${n||"✓"}</b><small>${n?(readOnly()?"à suivre":"à faire"):"à jour"}</small></span></button>`;
 }
 function dashObjectif(sc){
   const ids=new Set(_dashScope[sc]||[]);
@@ -6926,7 +6931,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("📚","Documents","window.open('documents.html','_blank')")}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${t("🏆","Zones","openZones()")}${t("🚀","Lancements","openLancements()")}${t("📄","Rapport du mois","openRapport()")}</div>`;
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("📚","Documents","window.open('documents.html','_blank')")}${t("✦","Le réseau","openConstellation()")}${t("🗺","Carte","openCarte()")}${vuePeutBasculer()?t("🏆","Zones","openZones()")+t("🚀","Lancements","openLancements()"):""}${t("📄","Rapport du mois","openRapport()")}</div>`;
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
@@ -7871,7 +7876,7 @@ function viewDemandes(){
   const parG={};viv.forEach(a=>{const g=adhGroupe(a);parG[g]=(parG[g]||0)+1});const grp=Object.entries(parG).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...grp.map(x=>x[1]));
   const k=(n,l,cls,fn)=>`<button class="dm-k ${cls||""}" ${fn?`onclick="${fn}"`:"disabled"}><b data-count="${n}">${n}</b><span>${l}</span></button>`;
   return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${navDir()?`<button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}`:""}</div></div>
     ${dmVueSeg()}
     ${window._dmVue==="leads"?leadsHTML()+`</div>`:window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
     <div class="dm-ks"${window._dmVue==="nat"?" hidden":""}>${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
@@ -7990,7 +7995,7 @@ function filFicheRendu(){
   el.innerHTML=`<button class="fil-ret" onclick="filAller(${_fil.length-2})" aria-label="Revenir à ${esc(_fil[_fil.length-2].t)}">←</button><span class="fil-l">${_fil.map((x,i)=>i<_fil.length-1?`<button class="fil-c" onclick="filAller(${i})">${esc(x.t||"Fiche")}</button><span class="fil-s">›</span>`:`<b>${esc(x.t||"")}</b>`).join("")}</span>`;
 }
 function filAller(i){const e=_fil[i];if(!e)return;_fil=_fil.slice(0,i);_filClicFiche=true;window[e.n](...e.a)}
-const FIL_ONGLETS={espace:"Espace membre",dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
+const FIL_ONGLETS={espace:"Espace membre",demandes:"Demandes",dash:"Synthèse",agenda:"Agenda",reunions:"Mon groupe",clubs:"Clubs",membres:"Membres",lieux:"Lieux",team:"Équipe"};
 const FIL_FILTRES={anim:"Animateurs",todo:"à traiter",actif:"actifs",creation:"en création",up:"à venir",tbd:"lieu à définir",SI:"sessions d'info",RL:"lancements"};
 function filPageNoter(t){
   if(_filPageRejeu){_filPageRejeu=false;return}

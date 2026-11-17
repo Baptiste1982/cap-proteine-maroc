@@ -2195,6 +2195,7 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 .mon-rang button b{grid-column:2;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mon-rang button small{grid-column:2;color:var(--muted);font-size:11.5px}.mon-rang button span{grid-column:3;grid-row:1/3;font-weight:800;font-variant-numeric:tabular-nums}.mon-rang button:hover{background:var(--crimson-tint)}
 .mon-ok{color:#2E8B57;font-weight:700}.mon-ko{color:var(--crimson-txt,var(--crimson));font-weight:700}.mon-av{color:var(--gold);font-weight:700}
 @media(max-width:899px){.per-g.mon-g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
 .mon-pv small{font:700 10.5px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.mon-pv>b{font:800 22px/1.1 "Bricolage Grotesque",sans-serif;overflow-wrap:anywhere}.mon-pv span{font-size:12px;color:var(--muted)}.mon-pv span b{color:var(--ink)}
@@ -2349,8 +2350,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.37.0";
+const APP_VERSION="1.38.0";
 const CHANGELOG=[
+  {v:"1.38.0",date:"17 novembre 2026",notes:{"Modifié":["Le statut d'un groupe se calcule tout seul : « Actif » dès 5 membres, ou dès qu'une réunion de lancement ou du cycle est tenue ; sinon « En création ». Il se met à jour à chaque membre ajouté ou retiré et à chaque bilan.","Dans la fiche d'un groupe, une case permet de garder « Actif » un groupe dont la vie n'est pas saisie dans le CRM."]}},
   {v:"1.37.0",date:"17 novembre 2026",notes:{"Ajouté":["Au téléphone, un bouton « Reco » au centre de la barre du bas : un toucher ouvre le formulaire de recommandation, sans passer par un menu. Dans l'espace membre comme dans le CRM (pour qui a une fiche membre)."],"Corrigé":["Espace membre en thème sombre : le lieu de la prochaine réunion et la ligne « À faire » en rouge étaient illisibles."]}},
   {v:"1.36.0",date:"17 novembre 2026",notes:{"Ajouté":["Statistiques : taux de transformation (invités devenus membres, invités venus, recommandations signées), assiduité des membres et montant moyen d'une affaire, avec l'écart en points par rapport à la période de comparaison.","Comparaison au choix : période précédente, même période l'an dernier, ou une période passée prise dans la liste.","Portefeuille des membres : cotisations payées, dossiers complets, renouvellements dépassés, à renouveler sous 30 et 90 jours.","Classements : les groupes sur l'indicateur affiché, et les membres par affaires apportées. Un clic ouvre le groupe.","Dans un groupe, chaque membre a son assiduité, son dossier, son paiement et sa date de renouvellement.","L'export Excel reprend tous ces chiffres, la période de comparaison et le classement des membres."],"Modifié":["Les nouveaux membres sont comptés par personne : quelqu'un inscrit dans plusieurs groupes ne compte qu'une fois."]}},
   {v:"1.35.0",date:"17 novembre 2026",notes:{"Ajouté":["Les statistiques complètes à chaque niveau (menu Synthèse → Statistiques) : un directeur de région a les courbes, le détail par ville, groupe et membre, et le prévisionnel de sa région ; un responsable de groupe les a pour son ou ses groupes. La direction nationale garde tout le réseau. Chacun est limité à son périmètre par la base."]}},
@@ -2896,13 +2898,20 @@ const EMAIL_DOMAIN="cap-proteine.ma";
    qu'une fois le vrai profil lu et vérifié superadmin (_voirActif). La base ne le prend en compte que pour un superadmin
    et refuse toute écriture pendant l'aperçu (migration 20261117350000_voir_comme.sql). */
 let VOIR_CRM=null,_voirActif=false;try{VOIR_CRM=JSON.parse(sessionStorage.getItem("cap-voir")||"null")}catch(e){}
-const sb=window.supabase.createClient(SB_URL,SB_KEY,{global:{fetch:(u,o={})=>{if(_voirActif&&VOIR_CRM&&VOIR_CRM.v){const h=new Headers(o.headers||{});h.set("x-cap-voir",VOIR_CRM.v);o={...o,headers:h}}return fetch(u,o)}}});
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{global:{fetch:(u,o={})=>{if(_voirActif&&VOIR_CRM&&VOIR_CRM.v){const h=new Headers(o.headers||{});h.set("x-cap-voir",VOIR_CRM.v);o={...o,headers:h}}
+  const p=fetch(u,o);if(o.method&&o.method!=="GET"&&o.method!=="HEAD"&&/\/rest\/v1\/(membres|reunions)\b/.test(String(u)))p.then(()=>{clearTimeout(window._csT);window._csT=setTimeout(clubsStatutRelire,700)},()=>{});return p}}});
+/* v1.38 — le statut d'un groupe (actif / en création) est calculé par la base à chaque changement de membres ou de réunions :
+   après une écriture sur ces tables, on le relit. */
+const CLUB_ACTIF_MEMBRES=5;
+async function clubsStatutRelire(){if(typeof DB==="undefined"||!DB||!SESSION)return;const {data,error}=await sb.from("clubs").select("id,statut,statut_fixe");if(error||!data)return;let ch=false;
+  data.forEach(r=>{const c=DB.clubs.find(x=>x.id===r.id);if(c&&(c.statut!==r.statut||c.statutFixe!==!!r.statut_fixe)){c.statut=r.statut;c.statutFixe=!!r.statut_fixe;ch=true}});
+  if(ch&&!document.getElementById("sheet").classList.contains("open"))render()}
 let DB=null,SESSION=null,tab="agenda",filter="all";
 
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
+function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
 const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi,type_reco,objet,origine,budget,date_limite,montant_devis,relance_le";
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
@@ -6035,18 +6044,20 @@ function clubForm(id){
     <div class="field"><label>Nom du club</label><input id="c-nom" value="${esc(c.nom)}" placeholder="CAP Ville Nom"></div>
     <div class="field"><label>Ville</label><select data-pills id="c-ville">${villeOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
-    <div class="frow"><div class="field"><label>Statut</label><select data-pills id="c-statut"><option value="creation" ${c.statut==="creation"?"selected":""}>En création</option><option value="actif" ${c.statut==="actif"?"selected":""}>Actif</option></select></div><div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div></div>
+    <div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div>
+    <div class="field"><label>Statut</label><p class="c-stat"><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
+      <label class="c-fixe"><input type="checkbox" id="c-fixe" ${c.statutFixe?"checked":""}> Groupe déjà actif, dont la vie n'est pas saisie ici : le garder « Actif »</label></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce club</div>`:""}`;
   openSheet();
 }
 async function saveClub(id){
   const g=x=>document.getElementById(x).value;const nom=g("c-nom").trim();if(!nom){toast("Nom requis");return}
-  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut:g("c-statut"),objectif:parseInt(g("c-objectif"))||null};
+  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut_fixe:document.getElementById("c-fixe").checked,objectif:parseInt(g("c-objectif"))||null}; // v1.38 : le statut est calculé par la base
   if(id){
-    const {error}=await sb.from("clubs").update(row).eq("id",id);
+    const {data,error}=await sb.from("clubs").update(row).eq("id",id).select("statut").single();
     if(error){toast(rlsMsg(error));return}
-    Object.assign(club(id),mapClub({id,...row}));
+    Object.assign(club(id),{nom:row.nom,ville:row.ville,animId:row.animateur_id,statutFixe:row.statut_fixe,objectif:row.objectif??"",statut:(data&&data.statut)||club(id).statut});
   }else{
     const {data,error}=await sb.from("clubs").insert(row).select().single();
     if(error){toast(rlsMsg(error));return}

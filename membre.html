@@ -151,6 +151,20 @@ textarea.champ:focus{border-color:var(--crimson)}
 .reco .de{font-size:12.5px;color:var(--soft)}.montant{color:#2F5B33}
 .chip-st{flex-shrink:0;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:10px;background:#F1E8EA;color:var(--muted)}
 .chip-st.contact,.chip-st.devis{background:#E8EEF6;color:#2C4A73}.chip-st.signee{background:#EAF2EA;color:#24502A}.chip-st.envoyee{background:var(--tint);color:var(--crimson)}
+.r-meta{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;font-weight:600}
+.chaleur{color:var(--crimson);letter-spacing:.5px}.chaleur.c1,.chaleur.c2{color:var(--muted)}
+.prev{color:var(--muted)}.prev.ok{color:#24502A}
+.r-coord{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--ink);user-select:all}
+.note-suivi{margin:0;font-size:13px;color:var(--muted)}.note-suivi b{color:var(--ink);margin-right:4px}
+.montant-in{display:flex;flex-direction:column;gap:8px}
+.r-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.chaleurs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.chx{cursor:pointer}.chx input{position:absolute;opacity:0;pointer-events:none}
+.chx span{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;font-size:10.5px;line-height:1.15;padding:8px 4px;border:1px solid var(--line,#E4D9DB);border-radius:10px;color:var(--muted);min-height:58px}
+.chx span b{font-size:16px;color:var(--ink)}
+.chx input:checked+span{border-color:var(--crimson);background:var(--tint);color:var(--crimson)}.chx input:checked+span b{color:var(--crimson)}
+.chx input:focus-visible+span{outline:2px solid var(--crimson);outline-offset:2px}
+.prevenu{display:flex;align-items:center;gap:8px;font-size:14px}.prevenu input{width:18px;height:18px;accent-color:var(--crimson)}
 .frise{display:flex;gap:4px}
 .frise span{flex:1;display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;color:var(--soft);min-width:0}
 .frise span i{height:5px;border-radius:3px;background:#EFE6E8;transition:background .4s}
@@ -188,7 +202,12 @@ const DEMO=location.hash==="#demo";
 /* v1.3.0 : #equipe=<club> = la direction (CRM) regarde un groupe comme un membre. On reprend la session du CRM
    (même site, clé de stockage par défaut). Lecture du groupe et écriture dans son fil seulement. */
 const EQ=(location.hash.match(/^#equipe=([0-9a-f-]{36})$/i)||[])[1]||null;
-const sb=EQ?window.supabase.createClient(SB_URL,SB_KEY):window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
+/* v1.5.0 : #moi=<fiche> = un membre de l'équipe (animateur, directeur) ouvre SON espace membre depuis le CRM, avec la
+   session du CRM. Le mode est gardé pour l'onglet (sessionStorage) ; jamais de déconnexion ici : ce serait celle du CRM. */
+let MOI=(location.hash.match(/^#moi=([0-9a-f-]{36})$/i)||[])[1]||null;
+try{if(MOI)sessionStorage.setItem("cap-moi-crm",MOI);else MOI=sessionStorage.getItem("cap-moi-crm")}catch(e){}
+const VIA_CRM=!!MOI&&!EQ;
+const sb=(EQ||VIA_CRM)?window.supabase.createClient(SB_URL,SB_KEY):window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
 const S={moi:null,annuaire:[],msgs:[],onglet:"accueil",fiche:null,conv:null,q:"",filtre:"tous",tel:"",etape:"tel",canal:null};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -242,6 +261,7 @@ async function demarrer(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   if(DEMO){Object.assign(S,demo());return lancer()}
   const {data:moi,error}=await sb.rpc("cap_membre_lier");
+  if(VIA_CRM&&(error||moi.statut!=="ok")){$("app").innerHTML=`<div class="page"><div class="card"><b>Espace membre indisponible</b><p class="sub">${esc(error?error.message:"Ta fiche membre n'est pas reliée.")}</p><a class="btn ghost" href="/">Retour au CRM</a></div></div>`;return}
   if(error){await sb.auth.signOut({scope:"local"});return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
   if(moi.statut!=="ok"){
     await sb.auth.signOut({scope:"local"});
@@ -330,6 +350,7 @@ function vueAccueil(){
   const quandR=p?dateReu(p.date,p.heure?String(p.heure).slice(0,5):""):"";
   const ST={"envoyee":"Envoyée","contact":"Contact pris","devis":"Devis","signee":"Signée","sans_suite":"Sans suite"};
   return `<div class="page">
+    ${S.viaCrm?`<div class="eq-band">🪪 Ton espace membre, ouvert depuis le CRM<a class="btn mini ghost" href="/">↩ CRM</a></div>`:""}
     ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" onclick="window.close()">Fermer</button></div>`:""}
     <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
       <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
@@ -514,7 +535,7 @@ function vueProfil(){
       <button class="btn ghost" type="submit">Changer mon code</button>
     </form>
     <p class="note">Ton nom, ton métier et le nom de ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
-    <button class="btn ghost" id="p-out" type="button">Me déconnecter</button></div>`;
+    ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}</div>`;
 }
 async function enregistrerProfil(){
   const v={p_cherche:$("p-cherche").value,p_tel_visible:$("p-tel").checked,p_annuaire:$("p-annu").checked};
@@ -654,10 +675,13 @@ async function proposerInvite(){
 /* ---------- Recommandations d'affaires (v0.26.0) ---------- */
 const ETAPES_RECO=[["envoyee","Envoyée"],["contact","Contact pris"],["devis","Devis envoyé"],["signee","Affaire signée"]];
 const LIB_RECO={envoyee:"Envoyée",contact:"Contact pris",devis:"Devis envoyé",signee:"Affaire signée 🎉",sans_suite:"Sans suite"};
+const CHALEUR=[["1","Simple piste"],["2","Intéressé"],["3","Besoin réel"],["4","Attend ton appel"],["5","Prêt à signer"]];
+const NON_COMM="Non communiqué";
+const telWa=t=>{let d=String(t||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("0"))d="212"+d.slice(1);return d};
 const mad=n=>new Intl.NumberFormat("fr-FR").format(Math.round(Number(n)||0)).replace(/ | /g," ")+" MAD";
 async function chargerRecos(){
   if(DEMO)return;
-  const {data,error}=await sb.from("recommandations").select("id,de,a,contact_nom,contact_tel,contact_entreprise,besoin,statut,montant,cree_le,maj_le").order("cree_le",{ascending:false}).limit(500);
+  const {data,error}=await sb.from("recommandations").select("id,de,a,contact_nom,contact_tel,contact_entreprise,contact_email,contact_fonction,contact_ville,chaleur,contact_prevenu,besoin,note_suivi,statut,montant,cree_le,maj_le").order("cree_le",{ascending:false}).limit(500);
   if(!error)S.recos=data||[];
 }
 /* v1.2.0 : tableau de bord chiffré (moi, mon groupe, ma région). La région ne donne que des totaux : jamais le détail
@@ -698,18 +722,25 @@ function frise(st){
   return `<div class="frise" role="img" aria-label="Étape : ${esc(LIB_RECO[st]||st)}">${ETAPES_RECO.map((e,i)=>`<span class="${i<=k?"ok":""}${i===k?" cur":""}"><i></i>${esc(e[1])}</span>`).join("")}</div>`;
 }
 function carteReco(r,recue){
-  const autre=membre(recue?r.de:r.a);
+  const autre=membre(recue?r.de:r.a),noteEquipe=r.contact_nom===NON_COMM;
   const prochaines=recue&&!["signee","sans_suite"].includes(r.statut)?ETAPES_RECO.slice(ETAPES_RECO.findIndex(e=>e[0]===r.statut)+1):[];
+  const ch=r.chaleur?CHALEUR[r.chaleur-1]:null,tel=r.contact_tel?r.contact_tel.replace(/\s/g,""):"";
+  const coord=[r.contact_fonction,r.contact_entreprise,r.contact_ville].filter(Boolean).join(" · ");
   return `<div class="card reco" data-reco="${r.id}">
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
-      <span class="t" style="min-width:0"><b>${esc(r.contact_nom)}</b><span>${esc([r.contact_entreprise,r.contact_tel&&recue?r.contact_tel:""].filter(Boolean).join(" · ")||"—")}</span></span>
+      <span class="t" style="min-width:0"><b>${noteEquipe?"Affaire notée en réunion":esc(r.contact_nom)}</b><span>${esc(coord||(noteEquipe?"par l'animateur du groupe":"—"))}</span></span>
       <span class="chip-st ${r.statut}">${esc(LIB_RECO[r.statut]||r.statut)}</span></div>
+    ${ch||r.contact_prevenu!=null?`<div class="r-meta">${ch?`<span class="chaleur c${r.chaleur}" title="Chaleur ${r.chaleur}/5">${"●".repeat(r.chaleur)}${"○".repeat(5-r.chaleur)} ${esc(ch[1])}</span>`:""}${r.contact_prevenu?`<span class="prev ok">Prévenu de l'appel</span>`:r.contact_prevenu===false?`<span class="prev">Pas encore prévenu</span>`:""}</div>`:""}
     ${r.besoin?`<p class="besoin">« ${esc(r.besoin)} »</p>`:""}
+    ${(r.contact_tel||r.contact_email)&&!noteEquipe?`<div class="r-coord">${r.contact_tel?`<span>📞 ${esc(r.contact_tel)}</span>`:""}${r.contact_email?`<span>✉️ ${esc(r.contact_email)}</span>`:""}</div>`:""}
     <small class="de">${recue?"De":"Pour"} <b>${esc(autre?.nom||"un membre")}</b> · ${esc(new Date(r.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}${r.statut==="signee"&&r.montant!=null?` · <b class="montant">${esc(mad(r.montant))}</b>`:""}</small>
     ${frise(r.statut)}
-    ${recue&&r.contact_tel&&r.statut==="envoyee"?`<a class="btn ghost" href="tel:${esc(r.contact_tel.replace(/\s/g,""))}">Appeler ${esc(r.contact_nom.split(" ")[0])}</a>`:""}
-    ${prochaines.length?`<div class="r-acts">${prochaines.map(e=>`<button class="btn ${e[0]==="signee"?"":"ghost"} mini" data-ravance="${r.id}" data-st="${e[0]}">${esc(e[1])}</button>`).join("")}<button class="btn ghost mini sobre" data-ravance="${r.id}" data-st="sans_suite">Sans suite</button></div>
-      <div class="montant-in" id="mt-${r.id}" hidden><input class="champ1" type="number" inputmode="numeric" min="0" step="100" placeholder="Montant de l'affaire (MAD HT)" aria-label="Montant de l'affaire"><button class="btn mini" data-ravance="${r.id}" data-st="signee_ok">Valider</button></div>`:""}
+    ${r.note_suivi?`<p class="note-suivi"><b>${recue?"Ton suivi":"Suivi de "+esc(autre?.nom||"")}</b> ${esc(r.note_suivi)}</p>`:""}
+    ${recue&&!noteEquipe&&!["signee","sans_suite"].includes(r.statut)&&(tel||r.contact_email)?`<div class="r-acts">${tel?`<a class="btn ghost mini" href="tel:${esc(tel)}">Appeler</a><a class="btn ghost mini" href="https://wa.me/${esc(telWa(tel))}" target="_blank" rel="noopener">WhatsApp</a>`:""}${r.contact_email?`<a class="btn ghost mini" href="mailto:${esc(r.contact_email)}">E-mail</a>`:""}</div>`:""}
+    ${prochaines.length?`<div class="r-acts">${prochaines.map(e=>`<button class="btn ${e[0]==="signee"?"":"ghost"} mini" data-ravance="${r.id}" data-st="${e[0]}">${esc(e[1])}</button>`).join("")}<button class="btn ghost mini sobre" data-ravance="${r.id}" data-st="sans_suite">Sans suite / annulée</button></div>`:""}
+    ${recue&&r.statut==="signee"?`<div class="r-acts"><button class="btn ghost mini sobre" data-ravance="${r.id}" data-st="signee">Corriger le montant</button></div>`:""}
+    ${recue?`<div class="montant-in" id="mt-${r.id}" hidden><input class="champ1" type="number" inputmode="numeric" min="0" step="100" placeholder="Montant de l'affaire (MAD HT)" aria-label="Montant de l'affaire" value="${r.montant!=null?esc(r.montant):""}"><input class="champ1" maxlength="1000" placeholder="Un mot sur l'affaire (facultatif)" aria-label="Note" data-note><button class="btn mini" data-ravance="${r.id}" data-st="signee_ok">Valider</button></div>
+      <div class="montant-in" id="ss-${r.id}" hidden><input class="champ1" maxlength="1000" placeholder="Pourquoi ? (annulée, pas de budget, injoignable…)" aria-label="Raison" data-note><button class="btn mini" data-ravance="${r.id}" data-st="sans_suite_ok">Valider</button></div>`:""}
   </div>`;
 }
 function vueRecos(){
@@ -718,7 +749,7 @@ function vueRecos(){
   const tab=S.recoTab||"recues",l=(S.recos||[]).filter(r=>tab==="recues"?r.a===S.moi.id:r.de===S.moi.id);
   const nr=(S.recos||[]).filter(r=>r.a===S.moi.id).length,nd=(S.recos||[]).filter(r=>r.de===S.moi.id).length;
     return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recos et chiffres</h1><p class="sub">Tes chiffres, ceux de ton groupe et de ta région. Tu passes un contact qui a un besoin à un membre : il te dit où ça en est.</p></div></div>
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recos et chiffres</h1><p class="sub">Tu donnes une reco : elle est à ton actif (CA transmis). Le membre qui la reçoit la fait avancer et saisit le montant signé (son CA reçu).</p></div></div>
     ${tableauHTML()}
     <button class="btn" data-rdonner="">Donner une recommandation</button>
     <div class="seg" role="tablist"><button role="tab" aria-selected="${tab==="recues"}" class="${tab==="recues"?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${tab==="donnees"}" class="${tab==="donnees"?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
@@ -740,10 +771,17 @@ function vueDonnerReco(){
       <div style="display:flex;flex-direction:column;gap:6px"><span class="label">Pour quel membre ? * <b id="r-sel" style="color:var(--crimson);text-transform:none;letter-spacing:0">${esc(p?.nom||"")}</b></span>
         <input class="champ1" id="r-q" placeholder="Nom, métier, club…" value="${esc(S.recoQ||"")}" autocomplete="off" aria-label="Chercher un membre">
         <div class="dests" id="r-liste">${listeDestinataires()}</div></div>
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Le contact *</span><input class="champ1" id="r-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son entreprise</span><input class="champ1" id="r-ent" maxlength="120"></label>
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son mobile</span><input class="champ1" id="r-tel" type="tel" inputmode="tel" maxlength="40" placeholder="06…"></label>
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son besoin</span><textarea class="champ" id="r-besoin" maxlength="1000" placeholder="Ce qu'il cherche, le délai, s'il attend l'appel…"></textarea></label>
+      <p class="note" style="margin:0">Le contact ne sera visible que par toi et par le membre qui le reçoit. Plus tu donnes d'informations, plus il pourra bien le traiter.</p>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Prénom et nom du contact *</span><input class="champ1" id="r-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>
+      <div class="r-2"><label style="display:flex;flex-direction:column;gap:6px"><span class="label">Mobile</span><input class="champ1" id="r-tel" type="tel" inputmode="tel" maxlength="40" placeholder="06…"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">E-mail</span><input class="champ1" id="r-email" type="email" inputmode="email" maxlength="160" placeholder="nom@domaine.ma"></label></div>
+      <p class="note" style="margin:-6px 0 0">Au moins un des deux : téléphone ou e-mail.</p>
+      <div class="r-2"><label style="display:flex;flex-direction:column;gap:6px"><span class="label">Entreprise</span><input class="champ1" id="r-ent" maxlength="120"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Fonction</span><input class="champ1" id="r-fonction" maxlength="120" placeholder="Gérant, DAF…"></label></div>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ville</span><input class="champ1" id="r-ville" maxlength="80"></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son besoin</span><textarea class="champ" id="r-besoin" maxlength="1000" placeholder="Ce qu'il cherche, le budget, le délai, le meilleur moment pour l'appeler…"></textarea></label>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="label">Chaleur de la reco</span><div class="chaleurs" role="radiogroup">${CHALEUR.map(([k,l])=>`<label class="chx"><input type="radio" name="r-chaleur" value="${k}"><span><b>${k}</b>${esc(l)}</span></label>`).join("")}</div></div>
+      <label class="prevenu"><input type="checkbox" id="r-prevenu"> Il sait que ce membre va le contacter</label>
       <button class="btn" type="submit">Envoyer la recommandation</button>
     </form></div>`;
 }
@@ -751,20 +789,24 @@ async function donnerReco(){
   const g=id=>$(id).value.trim(),nom=g("r-nom");
   if(!S.recoPour){toast("Choisis le membre à qui tu la donnes");return}
   if(!nom){toast("Indique au moins le nom du contact");return}
+  if(!g("r-tel")&&!g("r-email")){toast("Indique son téléphone ou son e-mail");$("r-tel").focus();return}
+  const ch=document.querySelector('input[name="r-chaleur"]:checked');
   const b=$("f-reco").querySelector("button[type=submit]");b.disabled=true;b.textContent="Envoi…";
-  const v={p_a:S.recoPour,p_nom:nom,p_tel:g("r-tel"),p_entreprise:g("r-ent"),p_besoin:g("r-besoin")};
-  if(DEMO){(S.recos=S.recos||[]).unshift({id:"r"+Date.now(),de:S.moi.id,a:v.p_a,contact_nom:nom,contact_tel:v.p_tel,contact_entreprise:v.p_entreprise,besoin:v.p_besoin,statut:"envoyee",montant:null,cree_le:new Date().toISOString()})}
+  const v={p_a:S.recoPour,p_nom:nom,p_tel:g("r-tel"),p_entreprise:g("r-ent"),p_besoin:g("r-besoin"),p_email:g("r-email"),p_fonction:g("r-fonction"),p_ville:g("r-ville"),p_chaleur:ch?Number(ch.value):null,p_prevenu:$("r-prevenu").checked};
+  if(DEMO){(S.recos=S.recos||[]).unshift({id:"r"+Date.now(),de:S.moi.id,a:v.p_a,contact_nom:nom,contact_tel:v.p_tel,contact_entreprise:v.p_entreprise,contact_email:v.p_email,contact_fonction:v.p_fonction,contact_ville:v.p_ville,chaleur:v.p_chaleur,contact_prevenu:v.p_prevenu,besoin:v.p_besoin,statut:"envoyee",montant:null,cree_le:new Date().toISOString()})}
   else{const {error}=await sb.rpc("cap_membre_reco_donner",v);if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyée : "+error.message);return}await chargerRecos()}
   toast("Recommandation envoyée à "+(membre(S.recoPour)?.nom||"ce membre"));S.recosClub=undefined;
   aller("recos",{recoForm:false,recoTab:"donnees",recoPour:"",recoQ:""});
 }
 async function avancerReco(id,st){
-  let montant=null;
-  if(st==="signee"){const z=$("mt-"+id);if(z){z.hidden=false;z.querySelector("input").focus();return}}
-  if(st==="signee_ok"){const i=$("mt-"+id).querySelector("input");montant=Number(i.value);if(!i.value||!(montant>=0)){toast("Indique le montant de l'affaire");i.focus();return}st="signee"}
-  const r=(S.recos||[]).find(x=>x.id===id);if(!r)return;
-  if(!DEMO){const {error}=await sb.rpc("cap_membre_reco_avancer",{p_id:id,p_statut:st,p_montant:montant});if(error){toast("Non enregistré : "+error.message);return}}
-  Object.assign(r,{statut:st,montant:st==="signee"?montant:r.montant,maj_le:new Date().toISOString()});
+  let montant=null,note="";const r=(S.recos||[]).find(x=>x.id===id);if(!r)return;
+  if(st==="signee"||st==="sans_suite"){const z=$((st==="signee"?"mt-":"ss-")+id);if(z){z.hidden=false;z.querySelector("input").focus();return}}
+  if(st==="signee_ok"){const z=$("mt-"+id),i=z.querySelector("input");montant=Number(i.value);note=z.querySelector("[data-note]").value.trim();if(!i.value||!(montant>=0)){toast("Indique le montant de l'affaire");i.focus();return}st="signee"}
+  if(st==="sans_suite_ok"){note=$("ss-"+id).querySelector("[data-note]").value.trim();st="sans_suite"}
+  const corr=st==="signee"&&r.statut==="signee";
+  if(!DEMO){const {error}=await sb.rpc("cap_membre_reco_avancer",{p_id:id,p_statut:st,p_montant:montant,p_note:note});if(error){toast("Non enregistré : "+error.message);return}}
+  Object.assign(r,{statut:st,montant:st==="signee"?montant:r.montant,note_suivi:note||r.note_suivi,maj_le:new Date().toISOString()});
+  if(corr){S.recosClub=undefined;toast("Montant corrigé");rendu(true);return}
   S.recosClub=undefined;
   toast(st==="signee"?"Bravo ! "+(membre(r.de)?.nom||"Le membre")+" est prévenu.":st==="sans_suite"?"Noté : sans suite.":"Étape enregistrée, "+(membre(r.de)?.nom||"le membre")+" est prévenu.");
   rendu(true);
@@ -834,13 +876,21 @@ function demo(){
     {id:"m2",de:"d2",a:"d1",texte:"Bonjour Tarek ! Avec plaisir. Quelle surface, et pour quand ?",cree_le:t(30),lu_le:null},
     {id:"m3",de:"d2",a:"d1",texte:"Je peux passer voir les locaux jeudi.",cree_le:t(28),lu_le:null},
     {id:"m4",de:"d3",a:"d1",texte:"Tu as le contact du gérant de la franchise ?",cree_le:t(1500),lu_le:t(1400)}];
-  const recos=[{id:"r1",de:"d2",a:"d1",contact_nom:"Hicham Berrada",contact_tel:"06 62 11 22 33",contact_entreprise:"Berrada Immobilier",besoin:"Cherche un expert-comptable pour sa nouvelle SARL, dès ce mois.",statut:"envoyee",montant:null,cree_le:t(90)},
+  const recos=[{id:"r1",de:"d2",a:"d1",contact_nom:"Hicham Berrada",contact_tel:"06 62 11 22 33",contact_entreprise:"Berrada Immobilier",contact_email:"h.berrada@berrada-immo.ma",contact_fonction:"Gérant",contact_ville:"Rabat",chaleur:4,contact_prevenu:true,besoin:"Cherche un expert-comptable pour sa nouvelle SARL, dès ce mois.",statut:"envoyee",montant:null,cree_le:t(90)},
     {id:"r2",de:"d1",a:"d2",contact_nom:"Laila Fassi",contact_tel:null,contact_entreprise:"Franchise Café Doré",besoin:"Aménagement de deux points de vente à Agdal.",statut:"devis",montant:null,cree_le:t(4000)},
     {id:"r3",de:"d1",a:"d5",contact_nom:"Omar Tazi",contact_tel:null,contact_entreprise:"Tazi Events",besoin:null,statut:"signee",montant:18000,cree_le:t(9000)}];
   const grp=[{id:"g1",club_id:"c1",auteur_nom:"Jean-Baptiste Chiotti",membre_id:null,texte:"Bonjour à tous ! Réunion jeudi 11 h au Limonadier. Pensez à vos invités.",cree_le:t(300)},{id:"g2",club_id:"c1",auteur_nom:"Nawal Mansouri",membre_id:"d2",texte:"J'amène une promotrice, elle cherche un expert-comptable 😉",cree_le:t(120)}];
   return {grp,moi:{id:"d1",nom:"Tarek Amar",club:"CAP Rabat Signature",ville:"Rabat",metier:"Expert-comptable",cherche:null,tel_visible:false,annuaire_visible:true},annuaire,msgs,recos};
 }
 
+async function demarrerMoi(){
+  $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){$("app").innerHTML=`<div class="page"><div class="card"><b>Connecte-toi d'abord au CRM.</b><p class="sub">Ton espace membre s'ouvre depuis le CRM, avec ta session.</p><a class="btn" href="/">Aller au CRM</a></div></div>`;return}
+  if(/^#moi=/.test(location.hash)){const {error}=await sb.rpc("cap_lier_mon_espace",{p_membre:MOI});history.replaceState(null,"",location.pathname);
+    if(error){$("app").innerHTML=`<div class="page"><div class="card"><b>Impossible d'ouvrir ton espace membre</b><p class="sub">${esc(error.message)}</p><a class="btn ghost" href="/">Retour au CRM</a></div></div>`;return}}
+  S.viaCrm=true;return demarrer();
+}
 async function demarrerEquipe(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   const {data:{session}}=await sb.auth.getSession();
@@ -851,6 +901,7 @@ async function demarrerEquipe(){
 }
 (async()=>{
   if(EQ)return demarrerEquipe();
+  if(VIA_CRM)return demarrerMoi();
   if(DEMO)return vueLogin({ok:true,t:"Démonstration : entre n'importe quel mobile et le code 123456. Rien n'est enregistré."});
   const {data:{session}}=await sb.auth.getSession();
   if(session)demarrer();else vueLogin();

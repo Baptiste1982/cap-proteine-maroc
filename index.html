@@ -2165,6 +2165,11 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
+/*v1.28 liens de données*/.lien-d{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px;border-radius:4px}
+.lien-d:hover{color:var(--crimson-txt,var(--crimson));text-decoration-style:solid}
+.lien-z{cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s}.lien-z:hover{transform:translateY(-2px);border-color:var(--crimson-tint);box-shadow:0 8px 20px rgba(92,10,24,.09)}
+.lien-d:focus-visible,.lien-z:focus-visible{outline:2px solid var(--crimson-txt,var(--crimson));outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.lien-z{transition:none}.lien-z:hover{transform:none}}
 /*v1.27*/.viens-eq{font-size:12.5px;color:var(--muted);margin:10px 0 -2px}.viens-eq b{color:var(--ink);font-weight:700;margin-right:6px}
 /*v1.25.1 : au téléphone, quand le choix de région est affiché, l'heure de la barre du haut s'efface (le bouton Paramètres sortait de l'écran) ; liens du fil d'Ariane et des lignes plus hauts sous le doigt */
 @media(max-width:600px){.vue-reg-sel:not(.hidden)~.tb-clock{display:none}}
@@ -2284,8 +2289,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.27.0";
+const APP_VERSION="1.28.0";
 const CHANGELOG=[
+  {v:"1.28.0",date:"17 novembre 2026",notes:{"Ajouté":["Tout ce qui nomme une donnée y mène : un nom de groupe, d'animateur, de lieu ou de membre ouvre sa fiche, où qu'il soit écrit (planning de la région, fiches, rapport du mois, demandes, panneau de droite).","Les tuiles chiffrées de Mon groupe et des fiches ouvrent la liste qu'elles comptent ; le texte d'une carte de réunion ouvre la réunion."]}},
   {v:"1.27.0",date:"17 novembre 2026",notes:{"Modifié":["« À traiter » se compte partout de la même façon : la pastille du menu Réseau, le filtre des Clubs et le panneau de droite donnent le même nombre de groupes ; le bandeau d'accueil additionne groupes, bilans, adhésions et comptes à embarquer.","Une personne membre de plusieurs groupes compte une fois dans les totaux du réseau et de la région.","« Je viens » : l'équipe inscrite apparaît dans « Équipe présente », elle n'est plus comptée parmi les invités.","Équipe : la direction a sa propre rubrique, elle ne gonfle plus le nombre d'animateurs.","Mon groupe et Mon espace membre s'ouvrent sur le groupe dont la réunion est la plus proche.","Synthèse : trois raccourcis (Présenter, Carte, Rapport du mois) ; Constellation rejoint Carte, Zones et Lancements dans Réseau ; Rendement passe dans Paramètres → Personnel."]}},
   {v:"1.26.1",date:"17 novembre 2026",notes:{"Corrigé":["Téléphone : en vue régionale avec le choix de région, le bouton Paramètres ne sort plus de l'écran.","Vue régionale : l'Agenda et l'annuaire des membres annoncent la région affichée, plus « tout le réseau ».","Chaque rôle ne voit que ses boutons : Zones et Lancements pour la direction nationale, Classeur et Export saisie pour la direction, le « + » des Clubs pour ceux qui peuvent en créer.","Compte en lecture seule : plus d'onglet « Mon groupe » ni de rubrique Adhésions qui menaient à un écran réservé ; le bandeau annonce des points à suivre, pas des actions à faire.","Fil d'Ariane : « Demandes » écrit correctement ; liens plus faciles à toucher au téléphone."]}},
   {v:"1.26.0",date:"17 novembre 2026",notes:{"Ajouté":["Espace membre aux couleurs du CRM : il suit le thème choisi dans le CRM (Graphite par défaut), logo clair en thème sombre.","Annuaire du réseau dans l'espace membre : « Ma région » ou « Tout le réseau » (classé par région), recherche dès les premières lettres sur le nom, le prénom, le métier ou l'activité, avec des propositions (métiers et membres) à choisir au clavier ou au doigt."],"Amélioré":["Téléphones affichés partout de la même façon : +212 6 61 23 45 67, quelle que soit la saisie ; numéros étrangers sur le même modèle (+33 6 57 76 26 40). Les numéros enregistrés ne changent pas."]}},
@@ -8049,6 +8055,58 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
 ["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
+
+/* ============================================================
+   v1.28.0 — TOUT CE QUI NOMME UNE DONNÉE Y MÈNE.
+   Après chaque rendu (page, panneau de droite, fiche), lierDonnees() parcourt ce qui n'est pas déjà cliquable :
+   - un nom de groupe, d'animateur, de lieu ou de membre devient un lien vers sa fiche ;
+   - « Animé par X » et « … · Nom du groupe » aussi ;
+   - une tuile chiffrée de Mon groupe ou d'une fiche mène à la liste qu'elle compte ;
+   - le texte d'une carte de réunion ouvre la réunion, comme sa pastille de date.
+   Rien à déclarer écran par écran : un nouvel écran en profite d'office.
+   ============================================================ */
+function _ldNorm(t){return String(t||"").replace(/\s+/g," ").trim().toLowerCase()}
+function _ldIndex(){const ix={};if(!DB)return ix;
+  const pose=(k,v)=>{k=_ldNorm(k);if(k.length>3&&!(k in ix))ix[k]=v};
+  DB.clubs.forEach(c=>{pose(c.nom,"club:"+c.id);pose(c.nom.replace(/^CAP\s+/,""),"club:"+c.id)});
+  DB.animateurs.forEach(a=>pose(a.nom,"anim:"+a.id));
+  DB.lieux.forEach(l=>pose(l.nom,"lieu:"+l.id));
+  const vus={};DB.membres.forEach(m=>{const k=_ldNorm(m.nom);vus[k]=(vus[k]||0)+1});
+  DB.membres.forEach(m=>{if(vus[_ldNorm(m.nom)]===1)pose(m.nom,"mb:"+m.clubId+":"+m.id)});
+  return ix}
+const _LD_CLIC="button,a,[onclick],[role=button],[role=link],summary,select,input,label,textarea,.lien-d,.lien-z";
+function _ldTuile(e,lib){const t=_ldNorm(lib),dansFiche=!!e.closest("#sheet");
+  if(!dansFiche&&tab==="reunions"){const o=/membre/.test(t)?"membres":/affaire|recommandation|\bca\b|signée|en \d{4}$|taux/.test(t)?"affaires":/présent/.test(t)?"cr":/réunion|réalisée|à venir|sans bilan|invité/.test(t)?"cal":null;
+    return o&&o!==grpOng()?"grp:"+o:null}
+  if(dansFiche){if(/à intégrer/.test(t))return"adh:todo";if(/à saisir/.test(t))return"adh:saisie";
+    const mot=/membre|à jour/.test(t)?"membres":/réunion|prochaine/.test(t)?"réunions":/club/.test(t)?"clubs":null;
+    return mot?"def:"+mot:null}
+  return null}
+function lierDonnees(racine){if(!racine||!DB||!SESSION)return;const ix=_ldIndex();
+  const marque=(e,cible,z)=>{e.classList.add(z?"lien-z":"lien-d");e.dataset.lien=cible;e.tabIndex=0;e.setAttribute("role","link")};
+  racine.querySelectorAll(".grp-st,.fh-k").forEach(e=>{if(e.closest(_LD_CLIC))return;const l=e.querySelector("span,small:last-child");const c=_ldTuile(e,l?l.textContent:"");if(c)marque(e,c,true)});
+  racine.querySelectorAll(".reu-card .reu-t").forEach(e=>{if(e.closest(_LD_CLIC))return;if(e.parentElement.querySelector(".reu-d"))marque(e,"frere:.reu-d",true)});
+  const w=document.createTreeWalker(racine,NodeFilter.SHOW_TEXT);let n;const faits=new Set(),textes=[];while((n=w.nextNode()))textes.push(n);
+  for(n of textes){const e=n.parentElement;if(!e||faits.has(e)||e.closest(_LD_CLIC)||e.closest(".page-head,h1,h2,.ariane,.fil,option")||(e.closest(".fh-t h3")&&!e.closest(".fh").querySelector(".rl-date")))continue; // le titre d'une fiche ne mène pas à elle-même ; celui d'une réunion mène à son groupe
+    const t=_ldNorm(e.childElementCount?n.textContent:e.textContent);if(t.length<4)continue;
+    let c=ix[t];
+    if(!c){const m=t.match(/animé par (.+)$/)||t.match(/^de (.+)$/);if(m)c=ix[m[1]]}
+    if(!c){const i=t.lastIndexOf(" · ");if(i>0)c=ix[t.slice(i+3)];if(c&&!/^(club|lieu):/.test(c))c=null}
+    if(!c)continue;
+    if(e.childElementCount){const sp=document.createElement("span");sp.textContent=n.textContent;n.replaceWith(sp);faits.add(sp);marque(sp,c)}else{faits.add(e);marque(e,c)}}}
+function lienOuvrir(e){const c=e.dataset.lien||"",i=c.indexOf(":"),k=c.slice(0,i),v=c.slice(i+1);
+  if(k==="club")openClub(v);else if(k==="anim")openAnim(v);else if(k==="lieu")openLieu(v);
+  else if(k==="mb"){const p=v.split(":");memberSheet(p[0],p[1])}
+  else if(k==="grp")grpOnglet(v);else if(k==="adh")openAdhesions(v);
+  else if(k==="frere"){const b=e.parentElement.querySelector(v);if(b)b.click()}
+  else if(k==="def"){const z=document.querySelector("#sheet .sheet"),h=[...z.querySelectorAll(".sec-h,.dash-h,.month-label,h4,.fh-sec,.divider+*")].find(x=>x!==e&&_ldNorm(x.textContent).startsWith(v));
+    if(h)h.scrollIntoView({behavior:"smooth",block:"start"});else{const g=typeof grpClub==="function"&&v==="membres"?null:null;void g}}}
+document.addEventListener("click",ev=>{const e=ev.target.closest&&ev.target.closest(".lien-d,.lien-z");if(!e||ev.target.closest("button,a,select,input,label,textarea"))return;ev.preventDefault();lienOuvrir(e)});
+document.addEventListener("keydown",ev=>{if(ev.key!=="Enter"&&ev.key!==" ")return;const e=document.activeElement;if(e&&e.matches&&e.matches(".lien-d,.lien-z")){ev.preventDefault();lienOuvrir(e)}});
+/* Un observateur relance la passe à chaque changement de la page, du panneau de droite ou d'une fiche (rendu complet ou partiel). */
+{let _ldT=null;const passe=()=>{_ldT=null;if(!DB||!SESSION)return;try{["view","rail","sheet-content"].forEach(id=>lierDonnees(document.getElementById(id)))}catch(e){console.warn(e)}};
+ const ob=new MutationObserver(()=>{if(_ldT)return;_ldT=setTimeout(passe,80)});
+ ["view","rail","sheet-content"].forEach(id=>{const z=document.getElementById(id);if(z)ob.observe(z,{childList:true,subtree:true})})}
 </script>
 </body>
 </html>

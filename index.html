@@ -2082,6 +2082,14 @@ html .mtg-date{min-width:50px}html .mtg-date .d{font-size:22px}
 
 /*v1.17 : place de la barre de défilement réservée en permanence : rien ne bouge quand elle apparaît (fin de l'animation d'ouverture)*/
 html{scrollbar-gutter:stable}
+/*v1.18 leads*/.ld{display:grid;gap:12px}.ld-tete{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.ld-tete h3{margin:0 0 4px}
+.ld-reu{display:grid;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.ld-reu label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.ld-warn{color:var(--gold)}
+.ld-chips{display:flex;gap:6px;flex-wrap:wrap}.ld-liste{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.ld-c{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:14px;padding:12px 14px;display:grid;gap:8px}.ld-c.w{border-left-color:var(--crimson)}.ld-c.b{border-left-color:var(--gold)}.ld-c.ok{border-left-color:#3DAA74}.ld-c.off{opacity:.65}
+.ld-h{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}.ld-n{flex:1;min-width:0}.ld-n b{display:block;font-size:15px}.ld-n small{color:var(--muted);font-size:12.5px}
+.ld-st{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--soft);white-space:nowrap}.ld-st.w{background:var(--crimson-tint);color:var(--crimson-txt,var(--crimson))}.ld-st.b{background:var(--gold-tint);color:var(--gold)}.ld-st.ok{background:rgba(61,170,116,.15);color:#3DAA74}
+.ld-com,.ld-qui{margin:0;font-size:13px;color:var(--muted)}.ld-qui{color:var(--ink)}.ld-act{display:flex;gap:6px;flex-wrap:wrap}.ld-cb{display:flex;gap:8px;align-items:center;margin:6px 0 10px;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -2183,8 +2191,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.17.0";
+const APP_VERSION="1.18.0";
 const CHANGELOG=[
+  {v:"1.18.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Leads nationaux (Adhésions → Leads nationaux, ou l'onglet 📇 Leads) : les contacts transmis par le national, avec leur état (à contacter, message envoyé, contacté, inscrit, pas intéressé) et « à rappeler ».","Invitation WhatsApp prête pour chaque lead : la prochaine réunion, son lien d'inscription suivi, la question « souhaitez-vous que je vous appelle avant ? » et le numéro de celui qui envoie. Texte modifiable et gardé comme modèle.","« ✓ Contacté » et « Suivi… » notent qui a contacté et quand ; l'état part aussi dans le Google Sheet des leads une fois le lien installé."]}},
   {v:"1.17.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Voir comme… (super admin, Paramètres → Administration) : le CRM tel que le voit un animateur, un directeur ou un membre de l'équipe, et l'espace membre tel que le voit un membre (aussi depuis sa fiche : « 👁 Voir comme ce membre »). C'est la base de données qui répond comme pour cette personne. L'aperçu est en lecture seule : rien ne peut être modifié en son nom. Un bandeau rappelle l'aperçu et permet de le quitter.","Réglages des points du bandeau d'accueil dans Paramètres → Apparence : mouvement (auto, toujours, arrêtés), force de l'aimant, nombre de points."],
     "Modifié":["Les pastilles de date (panneau de droite, groupes, agenda) : le mois sur une bande rouge, le jour en grand sur fond blanc, dans un cadre net.","Animation d'ouverture un quart plus lente, avec un fondu de sortie plus doux. La place de la barre de défilement est réservée : l'écran ne bouge plus à la fin de l'animation."],
@@ -2754,6 +2764,9 @@ async function loadDB(){
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
+  DB.leads=[];DB.reglages={}; // v1.18.0 : leads nationaux + réglages partagés (jamais bloquant)
+  try{const [ld,rg]=await Promise.all([sb.from("leads").select("*").order("created_at"),sb.from("reglages").select("cle,valeur")]);
+    if(!ld.error)DB.leads=ld.data||[];if(!rg.error)(rg.data||[]).forEach(x=>DB.reglages[x.cle]=x.valeur)}catch(e){console.warn(e)}
   DB.recos=[];DB.presences=[];
   try{const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
     if(!rr.error){DB.recos=rr.data||[];DB._recosVus=true}if(!pp.error)DB.presences=pp.data||[];}catch(e){console.warn(e)}
@@ -4687,9 +4700,9 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
       it("Vue membre ↗",`window.open('membre.html#equipe=${c.id}','_blank')`)]}
   if(r==="age"){const nb=reunionsSansBilan().length;
     return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb})].filter(Boolean)}
-  if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe";
+  if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
-      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),it("Archives","openArchivesAdh()")]}
+      it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),it("Archives","openArchivesAdh()")]}
   if(r==="res")return[it("Carte","openCarte()"),nat&&it("Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()"),sup&&it("Rendement","openRendement()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","window.open('documents.html','_blank')"),it("Vidéos de prise en main","window.open('documents.html#videos','_blank')"),it("Visite guidée","openAide()")];
@@ -5117,7 +5130,8 @@ function natInvSuivi(m,src){const n=m&&m.nat;if(!n||!n.invitation_id)return n&&n
 function natClicNom(src){if(!src)return"Lien sans origine";if(src==="qr")return"QR code";
   const k=src.slice(1).toLowerCase();if(src[0]==="a"){const a=DB.animateurs.find(x=>String(x.id).replace(/-/g,"").slice(0,8)===k);return a?a.nom:"Un animateur"}
   if(src[0]==="u")return SESSION&&String(SESSION.id).replace(/-/g,"").slice(0,8)===k?"Toi":"Un compte de l'équipe";
-  if(src[0]==="m"){const x=DB.membres.find(y=>String(y.id).replace(/-/g,"").slice(0,8)===k);return x?x.nom:"Un membre"}return"Autre"}
+  if(src[0]==="m"){const x=DB.membres.find(y=>String(y.id).replace(/-/g,"").slice(0,8)===k);return x?x.nom:"Un membre"}
+  if(src[0]==="l"){const x=(DB.leads||[]).find(y=>String(y.id).replace(/-/g,"").slice(0,8)===k);return x?"Lead · "+x.nom:"Un lead"}return"Autre"}
 async function natClicsCharger(m){const z=document.getElementById("nic-"+m.id);if(!z||!m.nat||!m.nat.invitation_id)return;
   const {data,error}=await sb.from("liens_clics").select("source,visiteur,created_at").eq("reunion_id",m.id).order("created_at",{ascending:false}).limit(2000);
   if(error){z.remove();return}const L=data||[];
@@ -7373,8 +7387,8 @@ function natCols(){
     {k:"signe",t:"Signées",s:"Historique complet",ico:"✅",l:all.filter(a=>natEtat(a)==="signe").sort((x,y)=>((y.national||{}).signe_le||"").localeCompare((x.national||{}).signe_le||""))}];
 }
 function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
-function dmVueSeg(){const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",n=natAEnvoyer().length;
-  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button>`}</div>`}
+function dmVueSeg(){const v=["nat","form","leads"].includes(window._dmVue)?window._dmVue:"pipe",n=natAEnvoyer().length,nl=(DB.leads||[]).filter(l=>l.statut==="a_contacter").length;
+  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button><button role="tab" aria-selected="${v==="leads"}" class="${v==="leads"?"on":""}" onclick="window._dmVue='leads';render()">📇 Leads${nl?`<em>${nl}</em>`:""}</button>`}</div>`}
 /* v0.42.0 : le formulaire d'adhésion dans le CRM. « Remplir » envoie une vraie demande (elle arrive dans Demandes),
    « Consulter » ouvre le même formulaire en démonstration : rien n'est envoyé. */
 function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"demo":"vrai";
@@ -7438,6 +7452,100 @@ function dmPipeHTML(){
     <div class="dm-cols">${cols.map(c=>`<section class="dm-col dm-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
       <div class="dm-list">${c.l.length?(c.k==="fini"?c.l.slice(0,12):c.l).map((a,i)=>dmCarte(a,i,c.k)).join(""):`<p class="dm-vide">${window._dmQ?"Aucun résultat":c.k==="todo"?"Rien à intégrer ✓":c.k==="saisie"?"Rien à saisir ✓":"Aucune pour l'instant"}</p>`}</div></section>`).join("")}</div>`;
 }
+/* ---------- v1.18.0 : LEADS NATIONAUX ----------
+   Liste Leads CAP Maroc (Google Sheet) référencée dans le CRM. Invitation WhatsApp à la prochaine réunion (lien suivi,
+   source « l » + lead : les ouvertures sont comptées par lead), question « appel avant ? », marquage contacté.
+   Chaque changement d'état est écrit dans le Google Sheet par son script Apps Script (reglages.leads_sheet_url). */
+const LEAD_ST={a_contacter:["À contacter","w"],message_envoye:["Message envoyé","b"],contacte:["Contacté","ok"],inscrit:["Inscrit","ok"],pas_interesse:["Pas intéressé","off"]};
+const LEAD_MODELE=`Bonjour {prenom},
+
+Je me permets de vous écrire de la part du Club d'Affaires Protéine Rabat et Région, le réseau de chefs d'entreprise qui se recommandent des affaires entre eux.
+
+Nous organisons une réunion {type} {jour} à {heure}, {lieu}{adresse}. C'est l'occasion de découvrir le club et de rencontrer des entrepreneurs de la région.
+
+Inscription en une minute :
+{lien}
+
+Souhaitez-vous que je vous appelle avant, pour vous présenter le club et répondre à vos questions ? Si oui, dites-moi le moment qui vous convient.
+
+Pour toute information complémentaire, ou pour être rappelé, vous pouvez m'écrire ou m'appeler au {tel}.
+
+Bien cordialement,
+{moi}`;
+function leadModele(){try{return localStorage.getItem("cap-leadtpl2")||LEAD_MODELE}catch(e){return LEAD_MODELE}}
+function leadPrenom(n){const w=String(n||"").replace(/^(Dr|M\.|Mme|Mr)\s+/i,"").trim().split(/\s+/);return w[0]?w[0][0].toUpperCase()+w[0].slice(1).toLowerCase():""}
+function leadReunions(){const auj=isoJour(TODAY);return DB.reunions.filter(m=>m.date>=auj&&m.statut!=="annulee").sort((a,b)=>(a.date+(a.heure||"")).localeCompare(b.date+(b.heure||"")))}
+function leadReunion(){const L=leadReunions();return L.find(m=>m.id===window._leadReu)||L.find(m=>m.nat&&m.nat.invitation_id)||L[0]||null}
+function leadVals(l,m){const dt=dObj(m.date),lu=m.lieuId?lieu(m.lieuId):null;return{prenom:leadPrenom(l.nom),type:m.type==="RL"?"de lancement":"d'information",jour:`ce ${["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,
+    heure:m.heure?m.heure.replace(":","h").replace(/h00$/,"h"):"11h",lieu:lu?lu.nom:"à Rabat",adresse:lu&&lu.adresse?" ("+lu.adresse+")":"",
+    lien:m.nat&&m.nat.invitation_id?natInvSuivi(m,"l"+String(l.id).replace(/-/g,"").slice(0,8)):adhLink(m.clubId),moi:(SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()}}
+function leadMonTel(){const an=SESSION.animId&&DB.animateurs.find(a=>a.id===SESSION.animId),t=(an&&an.tel)||SESSION.tel||"";return t?fmtTelAff("+"+mbWa(t)):"(votre numéro)"}
+function leadMessage(l,m){if(!m)return"";const v=leadVals(l,m);
+  return leadModele().replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x)}
+function leadsHTML(){const L=(DB.leads||[]).slice(),f=window._leadF||"tous",m=leadReunion(),RE=leadReunions();
+  const cnt=k=>L.filter(l=>l.statut===k).length,list=L.filter(l=>f==="tous"||(f==="rappel"?l.a_rappeler:l.statut===f));
+  const ordre={a_contacter:0,message_envoye:1,contacte:2,inscrit:3,pas_interesse:4};list.sort((a,b)=>(ordre[a.statut]-ordre[b.statut])||a.nom.localeCompare(b.nom));
+  const chip=(k,l,n)=>`<button class="chip ${f===k?"on":""}" onclick="window._leadF='${k}';render()">${l}${n!=null?`<em>${n}</em>`:""}</button>`;
+  return `<section class="ld"><div class="ld-tete"><div><h3>📇 Leads nationaux</h3><p class="fh-note">Liste « Leads CAP Maroc ». Invite par WhatsApp à la prochaine réunion, puis note qui a été contacté : le Google Sheet est mis à jour.</p></div>
+    <button class="btn ghost mini" onclick="leadForm()">＋ Ajouter un lead</button></div>
+    <div class="ld-reu"><label>Réunion de l'invitation</label><select onchange="window._leadReu=this.value;render()">${RE.slice(0,12).map(x=>{const d=dObj(x.date),c=club(x.clubId)||{};return `<option value="${x.id}" ${m&&m.id===x.id?"selected":""}>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} · ${x.heure?x.heure.slice(0,5):""} · ${esc((c.nom||"").replace(/^CAP\s+/,""))}${x.nat&&x.nat.invitation_id?" · lien national":""}</option>`}).join("")||`<option>Aucune réunion à venir</option>`}</select>
+      ${m&&!(m.nat&&m.nat.invitation_id)?`<small class="ld-warn">Cette réunion n'a pas encore d'invitation au national : le message enverra le lien d'adhésion du groupe.</small>`:""}</div>
+    <div class="ld-chips">${chip("tous","Tous",L.length)}${chip("a_contacter","À contacter",cnt("a_contacter"))}${chip("message_envoye","Message envoyé",cnt("message_envoye"))}${chip("contacte","Contactés",cnt("contacte"))}${chip("rappel","📞 À rappeler",L.filter(l=>l.a_rappeler).length)}</div>
+    <div class="ld-liste">${list.map(leadCarte).join("")||`<p class="fh-empty">Aucun lead dans ce filtre.</p>`}</div></section>`}
+function leadCarte(l){const [lib,cl]=LEAD_ST[l.statut]||[l.statut,""],tel=l.telephone;
+  const qui=l.statut==="contacte"||l.statut==="inscrit"?`Contacté${l.contacte_par_nom?" par "+esc(l.contacte_par_nom):""}${l.contacte_le?" le "+esc(adhDate(l.contacte_le)):""}`:l.message_le?`Message envoyé${l.message_par_nom?" par "+esc(l.message_par_nom):""} le ${esc(adhDate(l.message_le))}`:"";
+  return `<article class="ld-c ${cl}"><div class="ld-h"><div class="ld-n"><b>${esc(l.nom)}</b><small>${esc(l.specialite||"")}${l.ville?" · "+esc(l.ville):""}${l.source?" · source "+esc(l.source):""}</small></div>
+      <span class="ld-st ${cl}">${lib}</span>${l.a_rappeler?`<span class="ld-st w">📞 À rappeler</span>`:""}</div>
+    ${l.commentaire||l.notes?`<p class="ld-com">${esc([l.commentaire,l.notes].filter(Boolean).join(" · "))}</p>`:""}
+    ${qui?`<p class="ld-qui">${qui}${l.sheet_le?` · <span title="Écrit dans le Google Sheet">✓ Sheet</span>`:""}</p>`:""}
+    <div class="ld-act">${tel?`<button class="btn mini" onclick="leadWa('${l.id}')">💬 Inviter par WhatsApp</button><a class="btn ghost mini" href="tel:${esc(mbWa(tel).replace(/^/,"+"))}">📞 ${esc(fmtTelAff("+"+mbWa(tel)))}</a>`:l.linkedin?`<a class="btn ghost mini" href="${esc(l.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:`<span class="fh-note">Pas de numéro</span>`}
+      ${l.statut!=="contacte"&&l.statut!=="inscrit"?`<button class="btn ghost mini" onclick="leadContacte('${l.id}')">✓ Contacté</button>`:""}
+      <button class="btn ghost mini" onclick="leadSuivi('${l.id}')">Suivi…</button></div></article>`}
+function leadMaj(id,patch,msg){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;Object.assign(l,patch);render();
+  sb.from("leads").update(patch).eq("id",id).then(({error})=>{if(error){toast(rlsMsg(error),"e");return}if(msg)toast(msg);leadSheet(l)})}
+function leadWa(id){const l=(DB.leads||[]).find(x=>x.id===id),m=leadReunion();if(!l)return;if(!m){toast("Aucune réunion à venir","w");return}
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:initiales(l.nom),title:"Invitation · "+l.nom,sub:esc(l.specialite||"")})}
+    <p class="fh-note">Relis et ajuste avant d'envoyer. Le message demande s'il souhaite être appelé avant la réunion.</p>
+    <div class="emb-2" style="margin-bottom:10px"><button class="btn" onclick="leadWaEnvoyer('${id}')">Envoyer par WhatsApp</button><button class="btn ghost" onclick="leadCopier()">Copier</button></div>
+    <div class="field"><textarea id="ld-txt" rows="12" style="width:100%;font:inherit;line-height:1.45;max-height:46vh">${esc(leadMessage(l,m))}</textarea></div>
+    <div class="emb-2" style="margin-top:8px"><button class="btn ghost mini" onclick="leadGarderModele('${id}')">Garder ce texte comme modèle</button></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
+function leadWaEnvoyer(id){const l=(DB.leads||[]).find(x=>x.id===id),t=(document.getElementById("ld-txt")||{}).value||"";if(!l)return;
+  window.open(`https://wa.me/${mbWa(l.telephone)}?text=${encodeURIComponent(t)}`,"_blank","noopener");closeSheet();
+  const m=leadReunion();leadMaj(id,{statut:l.statut==="a_contacter"?"message_envoye":l.statut,message_le:new Date().toISOString(),message_par_nom:SESSION.name,reunion_id:m?m.id:null},"Invitation envoyée à "+l.nom)}
+async function leadCopier(){const t=(document.getElementById("ld-txt")||{}).value||"";try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
+function leadGarderModele(id){const l=(DB.leads||[]).find(x=>x.id===id),m=leadReunion();let t=(document.getElementById("ld-txt")||{}).value||"";if(!l||!m)return;
+  /* on remet les repères pour les valeurs propres à ce lead */
+  Object.entries(leadVals(l,m)).sort((a,b)=>String(b[1]).length-String(a[1]).length).forEach(([k,v])=>{if(v&&String(v).length>2)t=t.split(v).join("{"+k+"}")});
+  try{localStorage.setItem("cap-leadtpl2",t)}catch(e){}toast("Modèle gardé : le prénom et le lien seront remplis pour chaque lead");leadWa(id)}
+function leadContacte(id){leadMaj(id,{statut:"contacte",contacte_le:new Date().toISOString(),contacte_par:SESSION.id,contacte_par_nom:SESSION.name},"Marqué contacté")}
+function leadSuivi(id){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:initiales(l.nom),title:l.nom,sub:esc(l.specialite||"")})}
+    <div class="field"><label>État</label><select id="ld-st">${Object.entries(LEAD_ST).map(([k,[lb]])=>`<option value="${k}" ${l.statut===k?"selected":""}>${lb}</option>`).join("")}</select></div>
+    <label class="ld-cb"><input type="checkbox" id="ld-rap" ${l.a_rappeler?"checked":""}> Souhaite être appelé avant la réunion</label>
+    <div class="field"><label>Téléphone</label><input id="ld-tel" value="${esc(l.telephone||"")}" inputmode="tel"></div>
+    <div class="field"><label>Notes</label><textarea id="ld-notes" rows="4">${esc(l.notes||"")}</textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="leadSuiviSauver('${id}')">Enregistrer</button></div>`;openSheet()}
+function leadSuiviSauver(id){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;const st=document.getElementById("ld-st").value;
+  const p={statut:st,a_rappeler:document.getElementById("ld-rap").checked,telephone:document.getElementById("ld-tel").value.trim()||null,notes:document.getElementById("ld-notes").value.trim()||null};
+  if((st==="contacte"||st==="inscrit")&&!l.contacte_le)Object.assign(p,{contacte_le:new Date().toISOString(),contacte_par:SESSION.id,contacte_par_nom:SESSION.name});
+  closeSheet();leadMaj(id,p,"Suivi enregistré")}
+function leadForm(){document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"＋",title:"Ajouter un lead",sub:"Il rejoint la liste des leads nationaux"})}
+    <div class="field"><label>Nom et prénom</label><input id="lf-nom"></div><div class="field"><label>Spécialité</label><input id="lf-spe"></div>
+    <div class="field"><label>Téléphone</label><input id="lf-tel" inputmode="tel"></div><div class="field"><label>Ville</label><input id="lf-ville" value="Rabat"></div>
+    <div class="field"><label>Source</label><input id="lf-src" placeholder="LinkedIn, Instagram, recommandation…"></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="leadAjouter()">Ajouter</button></div>`;openSheet()}
+async function leadAjouter(){const g=i=>(document.getElementById(i).value||"").trim(),nom=g("lf-nom");if(!nom){toast("Le nom est obligatoire","w");return}
+  const {data,error}=await sb.from("leads").insert({nom,specialite:g("lf-spe")||null,telephone:g("lf-tel")||null,ville:g("lf-ville")||null,source:g("lf-src")||null,feuille:g("lf-ville")||null}).select().single();
+  if(error){toast(rlsMsg(error),"e");return}(DB.leads=DB.leads||[]).push(data);closeSheet();window._dmVue="leads";render();toast("Lead ajouté")}
+/* Écriture dans le Google Sheet : POST vers le script Apps Script (texte brut, sans pré-vol). La réponse n'est pas lisible
+   (no-cors) : on note l'envoi dans leads.sheet_le. */
+function leadSheet(l){const u=(DB.reglages||{}).leads_sheet_url;if(!u||!l.feuille)return;
+  const [lib]=LEAD_ST[l.statut]||[l.statut];
+  const txt=l.statut==="contacte"||l.statut==="inscrit"?`${lib} par ${l.contacte_par_nom||"l'équipe"} le ${adhDate(l.contacte_le||new Date().toISOString())}`:l.statut==="message_envoye"?`Invitation WhatsApp envoyée par ${l.message_par_nom||"l'équipe"} le ${adhDate(l.message_le||new Date().toISOString())}`:lib;
+  fetch(u,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({jeton:(DB.reglages||{}).leads_sheet_jeton||"",feuille:l.feuille,nom:l.nom,suivi:txt+(l.a_rappeler?" · à rappeler":"")+(l.notes?" · "+l.notes:"")})})
+    .then(()=>{const t=new Date().toISOString();l.sheet_le=t;sb.from("leads").update({sheet_le:t,sheet_err:null}).eq("id",l.id).then(()=>{})})
+    .catch(e=>{sb.from("leads").update({sheet_err:String(e&&e.message||e)}).eq("id",l.id).then(()=>{})})}
 function viewDemandes(){
   if(!SESSION||SESSION.role==="visiteur")return `<div class="page"><p class="fh-empty">Accès réservé à l'équipe.</p></div>`;
   const all=(DB.adhesions||[]),viv=all.filter(a=>a.statut!=="rejetee"),cle=adhMoisCle(new Date().toISOString());
@@ -7449,7 +7557,7 @@ function viewDemandes(){
   return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}</div></div>
     ${dmVueSeg()}
-    ${window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
+    ${window._dmVue==="leads"?leadsHTML()+`</div>`:window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
     <div class="dm-ks"${window._dmVue==="nat"?" hidden":""}>${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
     <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" data-pred="demandes" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
       ${window._dmVue==="nat"?"":`<button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>`}${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>

@@ -377,6 +377,17 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Bancs `v190.mjs` 76/76, `rep.mjs` 8/8, `membre.mjs` 67/67 et `v110.mjs` 36/36 recalés.
 - Animation de lancement à chaque connexion : 3 propositions (https://claude.ai/artifact/Dtst7mg3mSUhGZgj3v4ivg), choix de JB attendu.
 
+**📚 Documents du réseau, célébrations, didacticiel (v1.10.0, 17/11/2026)** — demande JB : un espace où Rita (bureau national) dépose les documents des groupes sans passer par nous, chaque fichier avec son type, aperçu au survol, ouverture au clic, liens à partager aux animateurs et aux membres.
+- `documents.html` (session du CRM, même clé de stockage ; formulaire de connexion sinon) : dépôt par glisser-déposer ou sélection (50 Mo max), volets par catégorie (`CATS` + catégories libres) et « ★ À la une », filtres par type, recherche, vue cartes ou liste, aperçu au survol (souris seulement, `#survol`), fenêtre au clic (télécharger, ouvrir, copier le lien, WhatsApp, Modifier). Gestion = `cap_gere_documents()` (superadmin, directeur_national, ou `profiles.gere_documents`) ; les autres comptes d'équipe voient en lecture les documents `visible_animateurs`.
+- `doc.html?d=<id>` : lien partagé, sans connexion, par la RPC `cap_document_lien` (seulement `lien_public` et non archivé ; compte les ouvertures dans `vues`).
+- `documents-commun.js` : `docType` (pdf, xls, doc, ppt, img, video, audio, zip, txt, autre), `docPastille`, `docApercu` (PDF en iframe, Office par view.officeapps.live.com, image, vidéo, texte), `docUrl`, `docLien`. Utilisé par documents.html, doc.html et membre.html.
+- Migration `20261117260000_documents_reseau.sql` (appliquée) : `profiles.gere_documents`, table `documents_reseau` (RLS : gestion = tout ; équipe si `visible_animateurs` ; membre si `visible_membres`), bucket public `reseau` (chemins aléatoires), RPC `cap_document_lien` (anon).
+- ⚠ Rita n'a pas encore de compte : la créer, puis `update profiles set gere_documents = true where …`.
+- Espace membre : page `docs` (Moi → Documents du réseau) ; `celebrer(titre, sous, montant)` = confettis + carte 2 s, à l'envoi d'une recommandation et à la signature d'une affaire.
+- CRM : bouton « 📚 Documents » dans les outils de la Synthèse et dans Paramètres.
+- Didacticiel vidéo de l'espace membre (4 min 43, 1080p, sans son) : enregistré par Playwright, en mode démonstration, avec un cadre et des légendes ; script et cadre dans le scratchpad (`tools/didac.mjs`, `tools/_didac.html`, à copier à la racine du dépôt pour le rejouer). Non versionnée (16 Mo).
+- Bancs `docs.mjs` 62/62, `mbdocs.mjs` OK.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

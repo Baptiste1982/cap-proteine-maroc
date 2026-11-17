@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Documents du réseau Protéine</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png?v=2">
+<meta name="theme-color" content="#B0122E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="documents-commun.js"></script>
+<style>
+/* Documents du réseau (v1.10.0) : l'espace où le bureau national dépose et partage les documents des groupes. */
+:root{--crimson:#B0122E;--deep:#5C0A18;--tint:#F8E9EC;--or:#C8A24C;--ink:#1B1416;--muted:#5E5054;--soft:#7A6A6E;--paper:#FAF6F4;--card:#FFFFFF;--line:#EADDE0;--line2:#EFE5E7;--ardoise:#3B5B7A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+h1,h2,.bri{font-family:"Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em;margin:0}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
+[hidden]{display:none!important}
+.tete{background:var(--deep);color:#fff}
+.tete-in{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-right)) 26px max(18px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:16px}
+.marque{display:flex;align-items:center;gap:12px}.marque img{width:42px;height:42px;border-radius:50%;background:#fff}
+.marque span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#E9D9B0;font-weight:700}
+.marque a{margin-left:auto;color:#F8E9EC;font-size:13.5px;font-weight:600;text-decoration:none;border:1px solid rgba(248,233,236,.35);border-radius:10px;padding:8px 12px}
+.tete h1{font-size:34px;font-weight:800}.tete p{margin:4px 0 0;color:#EAD5D9;max-width:70ch}
+.outils{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cherche{flex:1 1 280px;display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-radius:12px;background:#fff;color:var(--ink)}
+.cherche input{border:0;outline:0;flex:1;min-width:0;font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{height:36px;padding:0 13px;border-radius:18px;border:1px solid rgba(248,233,236,.35);background:transparent;color:#F8E9EC;font-size:13px;font-weight:600}
+.chip.on{background:#fff;color:var(--deep);border-color:#fff}
+main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-right)) 60px max(18px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:16px}
+.depot{border:2px dashed #D9C3C8;border-radius:18px;background:var(--card);padding:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;transition:border-color .2s,background .2s}
+.depot.survol{border-color:var(--crimson);background:var(--tint)}
+.depot .ico{width:52px;height:52px;border-radius:14px;background:var(--tint);color:var(--crimson);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.depot div{flex:1 1 260px;min-width:0}.depot b{font-size:16px}.depot p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.btn{height:44px;border-radius:12px;border:0;background:var(--crimson);color:#fff;font-weight:700;font-size:14.5px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}.btn.mini{height:38px;font-size:13.5px;padding:0 12px}
+.btn:disabled{opacity:.55;cursor:default}
+.envoi{display:flex;flex-direction:column;gap:6px}.envoi div{display:flex;align-items:center;gap:10px;font-size:13.5px;background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:8px 12px}
+.envoi i{flex:1;height:5px;border-radius:3px;background:#EFE6E8;overflow:hidden}.envoi i b{display:block;height:100%;background:var(--crimson);transition:width .3s}
+.resume{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--muted);font-size:13.5px}
+.vue{margin-left:auto;display:flex;background:#EFE6E8;border-radius:10px;padding:3px}.vue button{border:0;background:none;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--muted)}.vue button.on{background:#fff;color:var(--ink)}
+.volet{background:var(--card);border:1px solid var(--line2);border-radius:18px;overflow:hidden}
+.volet>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:56px;padding:12px 16px;cursor:pointer}
+.volet>summary::-webkit-details-marker{display:none}.volet>summary:focus-visible{outline:2px solid var(--crimson);outline-offset:-2px;border-radius:18px}
+.v-t{flex:1;min-width:0;font-family:"Bricolage Grotesque",Inter,sans-serif;font-weight:700;font-size:17px}
+.v-n{min-width:28px;height:28px;padding:0 9px;border-radius:14px;background:#F1E8EA;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.v-ch{color:var(--soft);transition:transform .25s}.volet[open] .v-ch{transform:rotate(180deg)}.volet[open]>summary{border-bottom:1px solid var(--line2)}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding:14px}
+.liste .grille{grid-template-columns:1fr;gap:6px}
+.doc{position:relative;display:flex;flex-direction:column;gap:10px;text-align:left;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:14px;transition:border-color .15s,transform .15s,box-shadow .15s;min-width:0}
+.doc:hover{border-color:var(--crimson);box-shadow:0 8px 22px rgba(92,10,24,.08)}
+.doc .haut{display:flex;align-items:flex-start;gap:12px}
+.doc .t{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.doc .t b{font-size:15px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.doc .t small{font-size:12.5px;color:var(--soft)}
+.doc .desc{font-size:13px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.doc .vis{display:flex;flex-wrap:wrap;gap:5px}.doc .vis span{font-size:11.5px;font-weight:600;border-radius:8px;padding:3px 7px;background:#F1EDEE;color:var(--muted)}
+.doc .vis span.on{background:#E8EEF4;color:var(--ardoise)}.doc .vis span.off{background:transparent;color:#B9AAAE;text-decoration:line-through}
+.doc .ouvrir{position:absolute;inset:0;border:0;background:none;border-radius:14px}
+.doc .ouvrir:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+.doc .rap{position:relative;z-index:1;display:flex;gap:6px;flex-wrap:wrap}
+.liste .doc{flex-direction:row;align-items:center;padding:10px 14px}.liste .doc .desc{display:none}.liste .doc .haut{flex:1;align-items:center}.liste .doc .vis{flex-wrap:nowrap}
+.epingle{position:absolute;top:10px;right:10px;color:var(--or);font-size:15px;z-index:1}
+.vide{text-align:center;color:var(--muted);padding:30px 14px}
+#survol{position:fixed;z-index:40;width:360px;height:280px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 18px 50px rgba(27,20,22,.28);border:1px solid var(--line);pointer-events:none;opacity:0;transform:translateY(6px) scale(.98);transition:opacity .18s,transform .18s;display:flex;flex-direction:column}
+#survol.on{opacity:1;transform:none}
+#survol .sv-c{flex:1;min-height:0}#survol .sv-p{padding:8px 12px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line2);background:#fff}
+.voile{position:fixed;inset:0;z-index:50;background:rgba(27,20,22,.55);display:flex;align-items:stretch;justify-content:center;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));animation:fond .2s}
+@keyframes fond{from{opacity:0}}
+.fen{width:min(1100px,100%);background:var(--card);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;animation:monte .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes monte{from{opacity:0;transform:translateY(24px)}}
+.fen-h{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.fen-h .t{flex:1;min-width:180px;display:flex;flex-direction:column}.fen-h .t b{font-size:17px}.fen-h .t small{color:var(--soft);font-size:12.5px}
+.fen-x{width:44px;height:44px;border-radius:22px;border:0;background:#F1E8EA;font-size:17px}
+.fen-c{flex:1;min-height:0;display:flex}.fen-c>*{flex:1}
+.fen-c .ap-f,.fen-c .ap-i,.fen-c .ap-t,.fen-c .ap-v{height:100%;min-height:60vh}
+.fen-a{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line2)}
+.form{padding:18px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.form input[type=text],.form textarea,.form select{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:15px;color:var(--ink);background:#fff;outline:0}
+.form input:focus,.form textarea:focus,.form select:focus{border-color:var(--crimson)}
+.form .coche{flex-direction:row;align-items:center;gap:10px;font-size:14.5px;color:var(--ink);font-weight:500}.form .coche input{width:20px;height:20px;accent-color:var(--crimson)}
+.login{max-width:420px;margin:12vh auto;background:var(--card);border:1px solid var(--line2);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.login input{height:48px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font-size:15px}
+.msg{font-size:14px;border-radius:12px;padding:10px 12px;background:var(--tint);color:var(--deep)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;z-index:60;animation:monte .25s}
+@media(max-width:640px){.tete h1{font-size:27px}.liste .doc .vis{display:none}#survol{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="tete"><div class="tete-in">
+  <div class="marque"><img src="logo-globe-192.png" alt=""><span>Club d'Affaires Protéine Maroc</span><a href="/" id="retour-crm">↩ CRM</a></div>
+  <div><h1>Documents du réseau</h1><p id="sous">Les documents dont les groupes ont besoin : kits, formulaires, présentations, règlements.</p></div>
+  <div class="outils" id="outils" hidden>
+    <label class="cherche"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A6E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Chercher un document…" aria-label="Chercher un document"></label>
+    <div class="chips" id="types"></div>
+  </div>
+</div></header>
+<main id="main"><p class="vide">Chargement…</p></main>
+<div id="survol" aria-hidden="true"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb=window.supabase.createClient(DOC_SB_URL,"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7");
+const EMAIL_DOMAIN="cap-proteine.ma";
+const CATS=["Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Communication","Formation","Autres"];
+const S={docs:[],gere:false,q:"",type:"tous",vue:"grille",envois:[]};
+try{S.vue=localStorage.getItem("cap-docs-vue")||"grille"}catch(e){}
+const $=id=>document.getElementById(id),esc=docEsc;
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3000)}
+const st=document.createElement("style");st.textContent=DOC_CSS;document.head.appendChild(st);
+const CHEV='<svg class="v-ch" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+
+/* ---------- Connexion : la session du CRM sert ici ---------- */
+function vueLogin(msg){
+  $("outils").hidden=true;
+  $("main").innerHTML=`<form class="login" id="f-login"><h2>Se connecter</h2><p style="margin:0;color:var(--muted)">Avec ton identifiant et ton mot de passe du CRM Protéine.</p>${msg?`<div class="msg">${esc(msg)}</div>`:""}
+    <input id="l-u" autocomplete="username" placeholder="Identifiant" aria-label="Identifiant"><input id="l-p" type="password" autocomplete="current-password" placeholder="Mot de passe" aria-label="Mot de passe">
+    <button class="btn" type="submit">Entrer</button></form>`;
+  $("f-login").onsubmit=async e=>{e.preventDefault();const u=$("l-u").value.trim().toLowerCase(),p=$("l-p").value;
+    const {error}=await sb.auth.signInWithPassword({email:u.includes("@")?u:u+"@"+EMAIL_DOMAIN,password:p});
+    if(error)return vueLogin("Identifiant ou mot de passe incorrect.");demarrer()};
+}
+async function demarrer(){
+  const {data:{session}}=await sb.auth.getSession();if(!session)return vueLogin();
+  const [g,d]=await Promise.all([sb.rpc("cap_gere_documents"),sb.from("documents_reseau").select("*").order("epingle",{ascending:false}).order("cree_le",{ascending:false})]);
+  if(d.error)return vueLogin("Accès impossible : "+d.error.message);
+  S.gere=g.data===true;S.docs=d.data||[];
+  $("sous").textContent=S.gere?"Dépose ici les documents dont les groupes ont besoin. Chaque document se partage par un lien, et peut être montré aux animateurs et aux membres.":"Les documents mis à disposition par le bureau national. Survole un document pour l'aperçu, clique pour l'ouvrir.";
+  $("outils").hidden=false;rendu();
+  const id=new URLSearchParams(location.search).get("d");if(id&&S.docs.find(x=>x.id===id))ouvrir(id);
+}
+
+/* ---------- Liste ---------- */
+const TYPES_FILTRE=[["tous","Tous"],["pdf","PDF"],["xls","Excel"],["doc","Word"],["ppt","Présentations"],["img","Images"],["video","Vidéos"],["autre","Autres"]];
+function filtres(){
+  const mots=norm(S.q).split(/\s+/).filter(Boolean);
+  return S.docs.filter(d=>S.gere||!d.archive).filter(d=>{const k=docType(d.nom_fichier,d.type_mime);return S.type==="tous"||(S.type==="autre"?!["pdf","xls","doc","ppt","img","video"].includes(k):k===S.type)})
+    .filter(d=>{const t=norm([d.titre,d.description,d.categorie,d.nom_fichier].join(" "));return mots.every(w=>t.includes(w))});
+}
+function carte(d){
+  const k=docType(d.nom_fichier,d.type_mime),date=new Date(d.maj_le||d.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
+  const vis=S.gere?`<div class="vis">${d.archive?`<span>Archivé</span>`:""}<span class="${d.visible_animateurs?"on":"off"}" title="${d.visible_animateurs?"Visible":"Masqué"} pour les animateurs">Animateurs</span><span class="${d.visible_membres?"on":"off"}" title="${d.visible_membres?"Visible":"Masqué"} pour les membres">Membres</span><span class="${d.lien_public?"on":"off"}" title="${d.lien_public?"Partageable":"Pas partageable"} par lien">Lien</span>${d.vues?`<span>${d.vues} ouverture${d.vues>1?"s":""}</span>`:""}</div>`:"";
+  return `<div class="doc" data-id="${d.id}">${d.epingle?`<span class="epingle" title="À la une">★</span>`:""}
+    <div class="haut">${docPastille(d,42)}<span class="t"><b>${esc(d.titre)}</b><small>${esc(DOC_TYPES[k].lib)} · ${esc(docTaille(d.taille))} · ${esc(date)}</small></span></div>
+    ${d.description?`<p class="desc">${esc(d.description)}</p>`:""}${vis}
+    <button class="ouvrir" data-ouvrir="${d.id}" aria-label="Ouvrir ${esc(d.titre)}"></button></div>`;
+}
+function voletOuvert(id){try{const v=localStorage.getItem("cap-docs-v-"+id);return v===null?true:v==="1"}catch(e){return true}}
+function rendu(){
+  $("types").innerHTML=TYPES_FILTRE.map(([k,l])=>`<button class="chip ${S.type===k?"on":""}" data-type="${k}">${l}</button>`).join("");
+  const l=filtres(),parCat={};l.forEach(d=>(parCat[d.categorie||"Autres"]=parCat[d.categorie||"Autres"]||[]).push(d));
+  const cats=[...CATS.filter(c=>parCat[c]),...Object.keys(parCat).filter(c=>!CATS.includes(c)).sort()];
+  const une=l.filter(d=>d.epingle&&!d.archive);
+  const depot=S.gere?`<div class="depot" id="depot"><span class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
+      <div><b>Déposer des documents</b><p>Glisse tes fichiers ici, ou choisis-les. PDF, Excel, Word, présentations, images, vidéos : jusqu'à 50 Mo par fichier.</p></div>
+      <label class="btn">Choisir des fichiers<input type="file" id="fichiers" multiple hidden></label></div>
+      ${S.envois.length?`<div class="envoi">${S.envois.map(e=>`<div><span style="flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.nom)}</span><i><b style="width:${e.pct}%"></b></i><span>${e.etat}</span></div>`).join("")}</div>`:""}`:"";
+  $("main").className=S.vue==="liste"?"liste":"";
+  $("main").innerHTML=`${depot}
+    <div class="resume"><span>${l.length} document${l.length>1?"s":""}${S.q||S.type!=="tous"?" trouvé"+(l.length>1?"s":""):""}</span>
+      <div class="vue" role="group" aria-label="Affichage"><button class="${S.vue==="grille"?"on":""}" data-vue="grille">Cartes</button><button class="${S.vue==="liste"?"on":""}" data-vue="liste">Liste</button></div></div>
+    ${une.length&&!S.q?`<details class="volet" data-v="une" ${voletOuvert("une")?"open":""}><summary><span class="v-t">★ À la une</span><span class="v-n">${une.length}</span>${CHEV}</summary><div class="grille">${une.map(carte).join("")}</div></details>`:""}
+    ${cats.length?cats.map(c=>`<details class="volet" data-v="${esc(c)}" ${voletOuvert(c)?"open":""}><summary><span class="v-t">${esc(c)}</span><span class="v-n">${parCat[c].length}</span>${CHEV}</summary><div class="grille">${parCat[c].map(carte).join("")}</div></details>`).join("")
+      :`<p class="vide">${S.docs.length?"Aucun document ne correspond.":S.gere?"Aucun document pour l'instant. Dépose le premier ci-dessus.":"Aucun document partagé pour l'instant."}</p>`}`;
+  brancher();
+}
+function brancher(){
+  document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{S.type=b.dataset.type;rendu()});
+  document.querySelectorAll("[data-vue]").forEach(b=>b.onclick=()=>{S.vue=b.dataset.vue;try{localStorage.setItem("cap-docs-vue",S.vue)}catch(e){}rendu()});
+  document.querySelectorAll("details[data-v]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-docs-v-"+d.dataset.v,d.open?"1":"0")}catch(e){}});
+  document.querySelectorAll("[data-ouvrir]").forEach(b=>b.onclick=()=>ouvrir(b.dataset.ouvrir));
+  document.querySelectorAll(".doc").forEach(c=>{c.onmouseenter=()=>survolDebut(c);c.onmouseleave=survolFin});
+  const f=$("fichiers");if(f)f.onchange=()=>{deposer([...f.files]);f.value=""};
+  const z=$("depot");if(z){["dragenter","dragover"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add("survol")}));
+    ["dragleave","drop"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove("survol")}));
+    z.addEventListener("drop",e=>deposer([...e.dataTransfer.files]))}
+}
+$("q").oninput=e=>{S.q=e.target.value;rendu();$("q").focus()};
+
+/* ---------- Aperçu au survol (souris seulement) ---------- */
+let _sv=null,_svId=null;
+function survolDebut(c){
+  if(!matchMedia("(hover:hover) and (pointer:fine)").matches)return;
+  clearTimeout(_sv);_sv=setTimeout(()=>{
+    const d=S.docs.find(x=>x.id===c.dataset.id);if(!d)return;const z=$("survol"),r=c.getBoundingClientRect();
+    if(_svId!==d.id){z.innerHTML=`<div class="sv-c">${docApercu(d,true)}</div><div class="sv-p">Clique pour ouvrir · ${esc(DOC_TYPES[docType(d.nom_fichier,d.type_mime)].lib)}</div>`;docRemplirTextes(z);_svId=d.id}
+    let x=r.right+12,y=r.top;if(x+370>innerWidth)x=r.left-372;if(x<8)x=Math.min(innerWidth-368,r.left);if(y+290>innerHeight)y=innerHeight-292;if(y<8)y=8;
+    z.style.left=x+"px";z.style.top=y+"px";z.classList.add("on");
+  },380);
+}
+function survolFin(){clearTimeout(_sv);$("survol").classList.remove("on")}
+
+/* ---------- Ouvrir un document ---------- */
+function ouvrir(id){
+  survolFin();const d=S.docs.find(x=>x.id===id);if(!d)return;const k=docType(d.nom_fichier,d.type_mime),u=docUrl(d.chemin);
+  const v=document.createElement("div");v.className="voile";v.innerHTML=`<div class="fen" role="dialog" aria-modal="true" aria-label="${esc(d.titre)}">
+    <div class="fen-h">${docPastille(d,38)}<span class="t"><b>${esc(d.titre)}</b><small>${esc(DOC_TYPES[k].lib)} · ${esc(docTaille(d.taille))} · ${esc(d.categorie)}</small></span><button class="fen-x" data-fermer aria-label="Fermer">✕</button></div>
+    ${d.description?`<p style="margin:0;padding:10px 16px;color:var(--muted);font-size:14px;border-bottom:1px solid var(--line2)">${esc(d.description)}</p>`:""}
+    <div class="fen-c">${docApercu(d,false)}</div>
+    <div class="fen-a"><a class="btn" href="${esc(u)}" download="${esc(d.nom_fichier)}">Télécharger</a><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir dans un onglet</a>
+      ${d.lien_public?`<button class="btn ghost" data-copier>Copier le lien de partage</button><a class="btn ghost" href="https://wa.me/?text=${encodeURIComponent(d.titre+" : "+docLien(d.id))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>`:""}
+      ${S.gere?`<button class="btn ghost" data-modifier style="margin-left:auto">Modifier</button>`:""}</div></div>`;
+  document.body.appendChild(v);docRemplirTextes(v);document.body.style.overflow="hidden";
+  const fermer=()=>{v.remove();document.body.style.overflow="";document.removeEventListener("keydown",echap)};
+  const echap=e=>{if(e.key==="Escape")fermer()};document.addEventListener("keydown",echap);
+  v.onclick=e=>{if(e.target===v)fermer()};v.querySelector("[data-fermer]").onclick=fermer;v.querySelector("[data-fermer]").focus();
+  const cp=v.querySelector("[data-copier]");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(docLien(d.id));toast("Lien copié : colle-le dans un message")}catch(e){prompt("Copie ce lien :",docLien(d.id))}};
+  const md=v.querySelector("[data-modifier]");if(md)md.onclick=()=>{fermer();modifier(d.id)};
+}
+
+/* ---------- Gérer (bureau national) ---------- */
+function slug(n){return String(n).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w.\-]+/g,"-").replace(/-+/g,"-").slice(-120)}
+async function deposer(fichiers){
+  if(!S.gere||!fichiers.length)return;
+  const {data:{user}}=await sb.auth.getUser();
+  for(const f of fichiers){
+    const e={nom:f.name,pct:5,etat:"Envoi…"};S.envois.push(e);rendu();
+    if(f.size>52428800){e.etat="Trop lourd (50 Mo max)";e.pct=0;rendu();continue}
+    const chemin=crypto.randomUUID()+"/"+slug(f.name);
+    const t=setInterval(()=>{if(e.pct<90){e.pct+=8;const b=[...document.querySelectorAll(".envoi b")][S.envois.indexOf(e)];if(b)b.style.width=e.pct+"%"}},250);
+    const up=await sb.storage.from(DOC_BUCKET).upload(chemin,f,{contentType:f.type||undefined,upsert:false});clearInterval(t);
+    if(up.error){e.etat="Échec : "+up.error.message;e.pct=0;rendu();continue}
+    const titre=f.name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim()||f.name;
+    const ins=await sb.from("documents_reseau").insert({titre,chemin,nom_fichier:f.name,type_mime:f.type||null,taille:f.size,categorie:"Autres",cree_par:user&&user.id}).select().single();
+    if(ins.error){e.etat="Échec : "+ins.error.message;e.pct=0;rendu();continue}
+    S.docs.unshift(ins.data);e.pct=100;e.etat="✓ Déposé";rendu();
+  }
+  setTimeout(()=>{S.envois=S.envois.filter(x=>!x.etat.startsWith("✓"));rendu()},2500);
+  const dernier=S.docs[0];if(fichiers.length===1&&dernier)modifier(dernier.id,true);
+}
+function modifier(id,nouveau){
+  const d=S.docs.find(x=>x.id===id);if(!d)return;
+  const autres=[...new Set(S.docs.map(x=>x.categorie).filter(c=>c&&!CATS.includes(c)))];
+  const v=document.createElement("div");v.className="voile";v.innerHTML=`<div class="fen" style="max-width:640px;height:auto;align-self:center;max-height:100%" role="dialog" aria-modal="true" aria-label="Modifier le document">
+    <div class="fen-h">${docPastille(d,38)}<span class="t"><b>${nouveau?"Document déposé : décris-le":"Modifier le document"}</b><small>${esc(d.nom_fichier)} · ${esc(docTaille(d.taille))}</small></span><button class="fen-x" data-fermer aria-label="Fermer">✕</button></div>
+    <form class="form" id="f-doc">
+      <label>Titre<input type="text" id="d-titre" maxlength="200" value="${esc(d.titre)}" required></label>
+      <label>Description<textarea id="d-desc" maxlength="2000" rows="3" placeholder="À quoi sert ce document, pour qui, quand l'utiliser…">${esc(d.description||"")}</textarea></label>
+      <label>Catégorie<select id="d-cat">${[...CATS,...autres].map(c=>`<option ${c===d.categorie?"selected":""}>${esc(c)}</option>`).join("")}<option value="__nouv">+ Nouvelle catégorie…</option></select></label>
+      <label id="d-nouv-l" hidden>Nom de la nouvelle catégorie<input type="text" id="d-nouv" maxlength="60"></label>
+      <label class="coche"><input type="checkbox" id="d-anim" ${d.visible_animateurs?"checked":""}> Visible par les animateurs (CRM)</label>
+      <label class="coche"><input type="checkbox" id="d-mb" ${d.visible_membres?"checked":""}> Visible par les membres (espace membre)</label>
+      <label class="coche"><input type="checkbox" id="d-lien" ${d.lien_public?"checked":""}> Partageable par lien (toute personne qui a le lien peut l'ouvrir)</label>
+      <label class="coche"><input type="checkbox" id="d-une" ${d.epingle?"checked":""}> À la une</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">Enregistrer</button>
+        <button class="btn ghost" type="button" data-archiver>${d.archive?"Remettre en ligne":"Archiver"}</button>
+        <button class="btn ghost" type="button" data-suppr style="color:var(--crimson);margin-left:auto">Supprimer</button></div>
+      <p id="d-conf" hidden class="msg" style="margin:0">Supprimer définitivement « ${esc(d.titre)} » ? Les liens déjà envoyés ne marcheront plus. <button class="btn mini" type="button" data-oui style="margin-left:8px">Oui, supprimer</button></p>
+    </form></div>`;
+  document.body.appendChild(v);
+  const fermer=()=>v.remove();v.onclick=e=>{if(e.target===v)fermer()};v.querySelector("[data-fermer]").onclick=fermer;
+  const sel=v.querySelector("#d-cat");sel.onchange=()=>{v.querySelector("#d-nouv-l").hidden=sel.value!=="__nouv"};
+  v.querySelector("#f-doc").onsubmit=async e=>{e.preventDefault();
+    const cat=sel.value==="__nouv"?(v.querySelector("#d-nouv").value.trim()||"Autres"):sel.value;
+    const m={titre:v.querySelector("#d-titre").value.trim(),description:v.querySelector("#d-desc").value.trim()||null,categorie:cat,visible_animateurs:v.querySelector("#d-anim").checked,
+      visible_membres:v.querySelector("#d-mb").checked,lien_public:v.querySelector("#d-lien").checked,epingle:v.querySelector("#d-une").checked,maj_le:new Date().toISOString()};
+    if(!m.titre)return toast("Donne un titre au document");
+    const {error}=await sb.from("documents_reseau").update(m).eq("id",d.id);if(error)return toast("Non enregistré : "+error.message);
+    Object.assign(d,m);fermer();rendu();toast("Document enregistré");
+  };
+  v.querySelector("[data-archiver]").onclick=async()=>{const {error}=await sb.from("documents_reseau").update({archive:!d.archive,maj_le:new Date().toISOString()}).eq("id",d.id);
+    if(error)return toast("Non enregistré : "+error.message);d.archive=!d.archive;fermer();rendu();toast(d.archive?"Archivé : plus visible des animateurs ni des membres":"Remis en ligne")};
+  v.querySelector("[data-suppr]").onclick=()=>{v.querySelector("#d-conf").hidden=false};
+  v.querySelector("[data-oui]").onclick=async()=>{
+    await sb.storage.from(DOC_BUCKET).remove([d.chemin]);
+    const {error}=await sb.from("documents_reseau").delete().eq("id",d.id);if(error)return toast("Suppression impossible : "+error.message);
+    S.docs=S.docs.filter(x=>x.id!==d.id);fermer();rendu();toast("Document supprimé")};
+}
+demarrer();
+</script>
+</body>
+</html>

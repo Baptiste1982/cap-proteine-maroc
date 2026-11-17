@@ -480,6 +480,14 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Annuaire : RPC `cap_annuaire_regions()` (club → zone dont les villes contiennent la ville du club, sinon la ville). `S.portee` region|national, `S.maRegion`, `annMatch` (chaque mot tapé commence un mot de la fiche), `annSuggestions`/`suggHTML` (métiers et activités avec nombre, puis membres ; ↑ ↓ Entrée Échap), tout le réseau groupé par région (la sienne d'abord), chips de régions. Banc `annu.mjs` 12/12.
 - Téléphones : `tel-commun.js` (`telAff`, `telE164`, copie de la règle ADM `fmtPhone`) chargé par le CRM et l'espace membre ; `fmtTelAff` = `telAff`. Affichage seulement, la base garde la saisie. ⚠ Tout nouvel affichage de numéro passe par `telAff`.
 
+**🧹 Correctifs d'affichage après audit (v1.26.1, 17/11/2026, GO de JB)** :
+- Téléphone : `.vue-reg-sel:not(.hidden)~.tb-clock{display:none}` sous 600 px (avec bascule + choix de région, `#set-btn` sortait de l'écran). Liens `.fil-c` et `.rl-links` plus hauts sous 900 px.
+- Libellés en vue régionale : eyebrow de `viewAgenda` et sous-titre de `viewMembres` = `vueRegion().nom`.
+- Boutons alignés sur le menu : `dashOutils` (Zones, Lancements = `vuePeutBasculer()`), Classeur et Export saisie = `navDir()`, « + » des Clubs masqué sans `canManageStructure()`.
+- Lecture seule (visiteur) : `.nav-reu` masqué dans `enterApp`, pas de rubrique Adhésions dans le burger, bandeau « points à suivre ». `FIL_ONGLETS.demandes`.
+- Audit du 17/11 (rôles simulés en base, appli rejouée en local sur un instantané) : ⚠ la LECTURE n'est pas cloisonnée par la RLS (`cap_can_see_club` = `cap_est_equipe()`), seules les écritures et les adhésions le sont ; 7 comptes animateurs ont encore `cap2026`. Décisions de JB attendues (périmètre de l'animateur, compte visiteur, données d'essai).
+- `*.supabase.co` est joignable depuis les sessions Claude Code (vérifié le 17/11).
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

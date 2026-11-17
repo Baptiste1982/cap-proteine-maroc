@@ -9,7 +9,7 @@ const Lancement=(()=>{
   const COUL=["#E0324E","#B0122E","#8FB0D1","#E9D9B0","#FFFFFF"];
   let el=null,t0=0,raf=0,finDemandee=false;
   const actif=()=>{let f=null;try{f=localStorage.getItem("cap-lancement")}catch(e){}
-    if(f==="off")return false;if(navigator.webdriver&&f!=="force")return false;return true};
+    if(f==="off")return false;try{if(sessionStorage.getItem("cap-lanc-skip")){sessionStorage.removeItem("cap-lanc-skip");return false}}catch(e){}if(navigator.webdriver&&f!=="force")return false;return true};
   function jouer(){
     if(el||!actif())return;
     const reduit=matchMedia("(prefers-reduced-motion: reduce)").matches;finDemandee=false;

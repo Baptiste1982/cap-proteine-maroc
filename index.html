@@ -2047,8 +2047,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.6.0";
+const APP_VERSION="1.7.0";
 const CHANGELOG=[
+  {v:"1.7.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["La fiche de recommandation reprend les champs du CRM national : type (mise en relation ou information commerciale), objet, précision, budget estimé, date limite, appel d'offres avec les entreprises consultées, origine (relationnel Protéine, interclub, speed business…), civilité, 2e téléphone et adresse du contact.","Le membre qui reçoit la reco note le montant du devis envoyé, puis le montant gagné, et une date de relance (en rouge quand elle est passée). Le CRM affiche l'objet et le montant devisé, jamais le nom du client.","Une réunion du cycle (business, conférence, visite) part au national en « Réunion des membres », avec son thème."]}},
   {v:"1.6.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Cycle des réunions d'un groupe en activité : 🤝 réunion business → 🎤 conférence (intervenant extérieur) → 🏭 visite d'entreprise → 🤝 business, puis on recommence. Dans « Planifier en série », choisis « Cycle » : la première réunion est une réunion business et toutes les suivantes se calent seules, sur 6 mois par défaut (jusqu'à 12). Retirer une date décale le cycle sur la suivante, et une nouvelle série reprend là où le groupe en était.","Chaque réunion porte son format (business, conférence, visite) avec l'intervenant et le sujet, ou l'entreprise visitée. Il s'affiche dans la fiche, l'agenda, l'espace du groupe et l'espace membre. Nouveau filtre « Cycle des groupes » dans l'agenda."]}},
   {v:"1.5.0",date:"17 novembre 2026",notes:{
@@ -2526,7 +2528,9 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
-const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi";
+const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi,type_reco,objet,origine,budget,date_limite,montant_devis,relance_le";
+const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
+const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
@@ -3413,7 +3417,7 @@ function grpAffaires(c,D){
       ${top.length?`<div class="ga-tab"><div class="ga-h"><span>Membre</span><span>Recos données / reçues</span><span>CA transmis</span><span>CA reçu</span></div>${top.map(([id,x])=>`<div class="ga-r link" onclick="memberSheet('${c.id}','${id}')"><span class="ga-n">${esc(membreNom(id))}</span><span>${x.d} / ${x.r}</span><b class="ga-out">${x.ca?esc(madFmt(x.ca)):"—"}</b><b class="ga-in">${x.rc?esc(madFmt(x.rc)):"—"}</b></div>`).join("")}</div>`:`<p class="fh-empty">Pas encore de membre dans le groupe.</p>`}
     </div><div>
       <div class="month-label">Dernières recommandations</div>
-      ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>Reco du ${esc(adhDate(r.cree_le))}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
+      ${D.recos.length?`<div class="rank">${D.recos.slice(0,20).map(r=>`<div class="rank-row ${ed?"link":""}" ${ed?`onclick="grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>${r.objet?esc(r.objet)+" · ":""}Reco du ${esc(adhDate(r.cree_le))}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`).join("")}</div>`:`<p class="fh-empty">Les recommandations données par les membres (depuis leur espace membre) ou notées ici apparaîtront dans cette liste.</p>`}
     </div></div>`;
 }
 function grpRecoForm(id){
@@ -3424,8 +3428,12 @@ function grpRecoForm(id){
     ${ficheHead({vc:villeColor(c.ville),ini:"🤝",title:r?"Affaire":"Noter une affaire",sub:esc(c.nom.replace(/^CAP\s+/,""))+" · recommandation entre deux membres"})}
     <div class="frow"><div class="field"><label>Donnée par · CA transmis</label><select id="rc-de" ${r?"disabled":""}>${opt(r?r.de:ms[0]&&ms[0].id)}</select></div><div class="field"><label>Reçue par · CA reçu</label><select id="rc-a" ${r?"disabled":""}>${opt(r?r.a:ms[1]&&ms[1].id)}</select></div></div>
     <p class="fh-note" style="margin:0 0 10px">Celui qui donne la reco l'a à son actif (CA transmis). Celui qui la reçoit la fait avancer et saisit le montant signé (CA reçu). Le client final reste entre eux : il n'apparaît pas dans le CRM.</p>
+    <div class="frow"><div class="field"><label>Type</label><select id="rc-type" data-pills>${Object.entries(RECO_TYPES).map(([k,l])=>`<option value="${k}" ${(r?r.type_reco:"mise_en_relation")===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
+      <div class="field"><label>Origine</label><select id="rc-orig">${RECO_ORIGINES.map(([k,l])=>`<option value="${k}" ${Number(r?r.origine||1:1)===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div></div>
+    <div class="field"><label>Objet (sans le nom du client)</label><input id="rc-objet" maxlength="200" value="${esc(r?r.objet||"":"")}" placeholder="Ex. Aménagement de bureaux"></div>
     <div class="frow"><div class="field"><label>Où en est la reco</label><select id="rc-st" onchange="document.getElementById('rc-mt-f').hidden=this.value!=='signee'">${Object.entries(RECO_LIB).map(([k,l])=>`<option value="${k}" ${(r?r.statut:"envoyee")===k?"selected":""}>${esc(l)}</option>`).join("")}</select></div>
       <div class="field" id="rc-mt-f" ${(r&&r.statut==="signee")?"":"hidden"}><label>Montant signé (MAD HT)</label><input id="rc-mt" type="number" min="0" step="100" value="${r&&r.montant!=null?r.montant:""}"></div></div>
+    <div class="frow"><div class="field"><label>Montant devisé (MAD HT)</label><input id="rc-devis" type="number" min="0" step="100" value="${r&&r.montant_devis!=null?r.montant_devis:""}"></div><div class="field"><label>Relancer le</label><input id="rc-rel" type="date" value="${esc(r?r.relance_le||"":"")}"></div></div>
     <div class="field"><label>Note de suivi (facultatif)</label><input id="rc-note" maxlength="1000" value="${esc(r?r.note_suivi||"":"")}" placeholder="Annulée, pas de budget, signée en deux fois…"></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="grpRecoSauver(${r?`'${r.id}'`:""})">Enregistrer</button></div>`;
   openSheet();
@@ -3434,13 +3442,13 @@ async function grpRecoSauver(id){
   const c=grpClub(),g=x=>{const e=document.getElementById(x);return e?e.value.trim():""};
   const st=g("rc-st"),mt=st==="signee"&&g("rc-mt")!==""?Number(g("rc-mt")):null;
   if(id){const r=DB.recos.find(x=>x.id===id),o=r.statut;
-    const note=g("rc-note")||null;
-    const {error}=await sb.from("recommandations").update({statut:st,montant:mt,note_suivi:note,maj_le:new Date().toISOString()}).eq("id",id);
-    if(error){toast(rlsMsg(error));return}Object.assign(r,{statut:st,montant:mt,note_suivi:note,maj_le:new Date().toISOString()});closeSheet();render();
+    const up={statut:st,montant:mt,note_suivi:g("rc-note")||null,type_reco:g("rc-type")||null,origine:Number(g("rc-orig"))||1,objet:g("rc-objet")||null,montant_devis:g("rc-devis")!==""?Number(g("rc-devis")):null,relance_le:g("rc-rel")||null,maj_le:new Date().toISOString()};
+    const {error}=await sb.from("recommandations").update(up).eq("id",id);
+    if(error){toast(rlsMsg(error));return}Object.assign(r,up);closeSheet();render();
     if(st==="signee"&&o!=="signee")celebrer("🤝","Affaire signée grâce à "+membreNom(r.de),mt!=null?"+ "+madFmt(mt):"","Voir",()=>grpOnglet("affaires"));else toast("Affaire mise à jour");return}
   const de=g("rc-de"),a=g("rc-a");
   if(de===a){toast("Choisis deux membres différents");return}
-  const row={club_id:c.id,de,a,contact_nom:RECO_NON_COMM,statut:st,montant:mt,note_suivi:g("rc-note")||null};
+  const row={club_id:c.id,de,a,contact_nom:RECO_NON_COMM,statut:st,montant:mt,note_suivi:g("rc-note")||null,type_reco:g("rc-type")||null,origine:Number(g("rc-orig"))||1,objet:g("rc-objet")||null,montant_devis:g("rc-devis")!==""?Number(g("rc-devis")):null,relance_le:g("rc-rel")||null};
   const {data,error}=await sb.from("recommandations").insert(row).select(RECO_COLS).single();
   if(error){toast(rlsMsg(error));return}
   DB.recos=[data,...(DB.recos||[])];
@@ -4179,7 +4187,7 @@ function openRecos(sc,filtre){
   openSheet();
 }
 /* v1.5.0 : recommandations rangées par groupe. Une étiquette par groupe (nom, nombre, CA signé) qui se déplie. */
-function recoLigne(r){const ed=r.club_id&&canEditClubId(r.club_id);return `<div class="rank-row ${ed?"link":""}" ${ed?`onclick="window._reuTous=true;window._grpId='${r.club_id}';grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>Reco du ${esc(adhDate(r.cree_le))}${r.statut==="signee"?" · CA transmis par "+esc(membreNom(r.de))+", reçu par "+esc(membreNom(r.a)):""}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`}
+function recoLigne(r){const ed=r.club_id&&canEditClubId(r.club_id);return `<div class="rank-row ${ed?"link":""}" ${ed?`onclick="window._reuTous=true;window._grpId='${r.club_id}';grpRecoForm('${r.id}')"`:""}><div class="rn">${esc(membreNom(r.de))} <span class="mut">→</span> ${esc(membreNom(r.a))}<small>${r.objet?esc(r.objet)+" · ":""}Reco du ${esc(adhDate(r.cree_le))}${r.montant_devis!=null?" · devis "+esc(madFmt(r.montant_devis)):""}${r.statut==="signee"?" · CA transmis par "+esc(membreNom(r.de))+", reçu par "+esc(membreNom(r.a)):""}${r.note_suivi?" · « "+esc(r.note_suivi)+" »":""}</small></div><span class="reco-st ${r.statut}">${esc(RECO_LIB[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(madFmt(r.montant)):""}</span></div>`}
 function recosParGroupe(l){
   const par={};l.forEach(r=>(par[r.club_id]=par[r.club_id]||[]).push(r));
   const gs=Object.entries(par).map(([id,x])=>({id,c:club(id)||{nom:"Groupe inconnu",ville:""},x,ca:x.filter(r=>r.statut==="signee").reduce((a,r)=>a+Number(r.montant||0),0)})).sort((a,b)=>b.ca-a.ca||b.x.length-a.x.length);

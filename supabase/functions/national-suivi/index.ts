@@ -202,12 +202,12 @@ Deno.serve(async (req) => {
     if (body.action === 'invitation_reunion') {
       // Invitation au national pour une réunion de notre CRM (création, ou mise à jour des dates si elle existe déjà).
       // Modèle : la dernière invitation du national du même type (SI → Réunion d'information, RL → Réunion de lancement).
-      const { data: r, error: e1 } = await admin.from('reunions').select('id, type, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
+      const { data: r, error: e1 } = await admin.from('reunions').select('id, type, format, theme, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
       if (e1 || !r) throw new Error('Réunion introuvable');
       if (r.statut === 'annulee') throw new Error('Réunion annulée : pas d\'invitation.');
       const { data: l } = r.lieu_id ? await admin.from('lieux').select('nom').eq('id', r.lieu_id).single() : { data: null };
       const N0 = new National(); await N0.connexion();
-      const idType = r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3;
+      const idType = r.format ? 3 : r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3; // v1.6.1 : réunion du cycle = « Réunion des membres »
       const invs = await invitationsListe(N0);
       const nat = r.national || {};
       const maj = nat.invitation_id && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';
@@ -220,7 +220,7 @@ Deno.serve(async (req) => {
       const d = new Date(r.date + 'T12:00:00Z'), j2 = (k: number) => { const x = new Date(d); x.setUTCDate(x.getUTCDate() - k); return x.toISOString().slice(0, 10).split('-').reverse().join('/'); };
       const h = /^\d\d:\d\d/.test(r.heure || '') ? r.heure.slice(0, 5) : '11:00', hf = String(Math.min(23, +h.slice(0, 2) + 3)).padStart(2, '0') + h.slice(2);
       const jour = j2(0);
-      const res = await invitationEcrire(N0, { source, maj: !!maj, idType, idHote, dateDebut: `${jour} à ${h}`, dateFin: `${jour} à ${hf}`, dateReponse: j2(1), dateRappel: j2(2), dateRelance: j2(3), essai: body.essai });
+      const res = await invitationEcrire(N0, { source, maj: !!maj, idType, idHote, dateDebut: `${jour} à ${h}`, dateFin: `${jour} à ${hf}`, dateReponse: j2(1), dateRappel: j2(2), dateRelance: j2(3), theme: r.theme || undefined, essai: body.essai });
       if (res.ok && !res.essai) {
         const national = { invitation_id: res.id, lien: res.lien, qr: res.qr, date: r.date, heure: h, lieu: l?.nom || '', modele: maj ? nat.modele : source, cree_le: nat.cree_le || new Date().toISOString(), maj_le: new Date().toISOString() };
         await admin.from('reunions').update({ national }).eq('id', r.id);

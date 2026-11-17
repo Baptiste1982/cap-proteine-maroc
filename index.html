@@ -2063,6 +2063,25 @@ html.th-verre .hello,html.th-bordeaux .hello{background:linear-gradient(120deg,r
 html.th-bordeaux .hello{background:linear-gradient(120deg,rgba(212,42,76,.9),rgba(110,16,40,.75) 60%,rgba(200,120,70,.45))}
 html.th-verreclair .hello{background:linear-gradient(120deg,#B0122E,#8E0F27 55%,#5B7FA3)}
 
+#voir-band{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);
+  padding:8px 8px 8px 16px;border-radius:999px;background:#5B7FA3;color:#fff;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+#voir-band button{background:#fff;color:#36556F;border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap}
+@media(min-width:900px){#voir-band{bottom:18px;left:calc(50% + 134px)}}
+
+.hp-reg{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:0 14px 14px}.hp-reg>span{font-size:12.5px;color:var(--muted);font-weight:600}.hp-reg .repli-g{padding:0}
+
+/*v1.17 pastille de date (JB : « encadrer la capsule, rouge, blanc et la date ») : mois sur bande rouge, jour sur fond blanc, cadre net */
+html :is(.rail-date,.reu-d,.rl-date,.mtg-date){display:flex;flex-direction:column;align-items:stretch;padding:0;overflow:hidden;border-radius:10px;
+  background:#fff;color:#1B1416;border:1.5px solid rgba(27,20,22,.16);border-top:1.5px solid rgba(27,20,22,.16);box-shadow:0 2px 6px -2px rgba(0,0,0,.25);line-height:1;text-align:center}
+html.dark :is(.rail-date,.reu-d,.rl-date,.mtg-date){border-color:rgba(255,255,255,.22)}
+html :is(.rail-date,.reu-d,.rl-date) small,html .mtg-date .m{order:-1;display:block;margin:0;padding:3px 2px;background:#C21835;color:#fff;font:700 10px/1.2 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{display:block;padding:4px 0 5px;color:#1B1416;font-family:"Bricolage Grotesque",sans-serif;font-weight:800}
+html .reu-d em{color:#6B6266;opacity:1;margin:0;padding:0 0 5px;font-size:10px}
+html .mtg-date{min-width:50px}html .mtg-date .d{font-size:22px}
+
+
+/*v1.17 : place de la barre de défilement réservée en permanence : rien ne bouge quand elle apparaît (fin de l'animation d'ouverture)*/
+html{scrollbar-gutter:stable}
 </style>
 </head>
 <body>
@@ -2164,8 +2183,12 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.16.0";
+const APP_VERSION="1.17.0";
 const CHANGELOG=[
+  {v:"1.17.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Voir comme… (super admin, Paramètres → Administration) : le CRM tel que le voit un animateur, un directeur ou un membre de l'équipe, et l'espace membre tel que le voit un membre (aussi depuis sa fiche : « 👁 Voir comme ce membre »). C'est la base de données qui répond comme pour cette personne. L'aperçu est en lecture seule : rien ne peut être modifié en son nom. Un bandeau rappelle l'aperçu et permet de le quitter.","Réglages des points du bandeau d'accueil dans Paramètres → Apparence : mouvement (auto, toujours, arrêtés), force de l'aimant, nombre de points."],
+    "Modifié":["Les pastilles de date (panneau de droite, groupes, agenda) : le mois sur une bande rouge, le jour en grand sur fond blanc, dans un cadre net.","Animation d'ouverture un quart plus lente, avec un fondu de sortie plus doux. La place de la barre de défilement est réservée : l'écran ne bouge plus à la fin de l'animation."],
+    "Corrigé":["Les points du bandeau d'accueil disparaissaient quand la Synthèse se redessinait (chaque minute environ) ; et, sur un ordinateur réglé pour réduire les animations, ils étaient effacés au premier redimensionnement."]}},
   {v:"1.16.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Bandeau d'accueil de la Synthèse : les points blancs remontent en permanence en ondulant. Au passage de la souris (ou du doigt), les plus proches sont attirés vers elle et elle laisse une courte traînée. Le nombre de points suit la taille du bandeau. Rien ne bouge si le téléphone ou l'ordinateur demande moins d'animations."]}},
   {v:"1.15.0",date:"17 novembre 2026",notes:{
@@ -2679,7 +2702,11 @@ const CHANGELOG=[
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co";
 const SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
 const EMAIL_DOMAIN="cap-proteine.ma";
-const sb=window.supabase.createClient(SB_URL,SB_KEY);
+/* v1.17.0 : « Voir comme » (super admin). sessionStorage cap-voir = {v:'u:<compte>'} ; l'en-tête x-cap-voir n'est posé
+   qu'une fois le vrai profil lu et vérifié superadmin (_voirActif). La base ne le prend en compte que pour un superadmin
+   et refuse toute écriture pendant l'aperçu (migration 20261117350000_voir_comme.sql). */
+let VOIR_CRM=null,_voirActif=false;try{VOIR_CRM=JSON.parse(sessionStorage.getItem("cap-voir")||"null")}catch(e){}
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{global:{fetch:(u,o={})=>{if(_voirActif&&VOIR_CRM&&VOIR_CRM.v){const h=new Headers(o.headers||{});h.set("x-cap-voir",VOIR_CRM.v);o={...o,headers:h}}return fetch(u,o)}}});
 let DB=null,SESSION=null,tab="agenda",filter="all";
 
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
@@ -2793,6 +2820,13 @@ async function loadSessionProfile(){
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
   SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le};
+  if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
+    if(prof.role!=="superadmin"){voirOublier()}
+    else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
+      if(e2||!c){_voirActif=false;voirOublier();toast("Aperçu impossible : compte introuvable","e")}
+      else SESSION={id:c.id,role:c.role,name:c.nom||"Compte",zoneId:c.zone_id,animId:c.animateur_id,clubIds:[],_nat:false,tutoVu:true,
+        _voir:{nom:c.nom||"Compte",role:c.role},_vrai:{id:user.id,nom:prof.nom}}}}
+  voirBandeau();
   return true;
 }
 async function bootIntoApp(){
@@ -2806,7 +2840,7 @@ async function bootIntoApp(){
   enterApp();
   verifierMdpInitial();
   adhAnnonce();
-  docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
+  if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();
   presenceDemarrer();
@@ -3315,7 +3349,7 @@ window.addEventListener("resize",()=>predFermer());
    ============================================================ */
 let _presT=null,_presVis=false,_presListe=[];
 function presenceVoit(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
-function presencePing(){try{if(SESSION&&document.visibilityState==="visible")sb.rpc("cap_ping").then(()=>{},()=>{})}catch(e){}}
+function presencePing(){try{if(SESSION&&!SESSION._voir&&document.visibilityState==="visible")sb.rpc("cap_ping").then(()=>{},()=>{})}catch(e){}}
 function presenceDemarrer(){
   presencePing();presenceMaj();clearInterval(_presT);
   _presT=setInterval(()=>{presencePing();presenceMaj();adhRafraichir()},60000);
@@ -4320,15 +4354,24 @@ function vbEcrire(){
    proches, et laisse une courte traînée. Densité constante : ~1 point pour 6 500 px², entre 16 et 48 ; un point de traînée tous les 7 px parcourus. Une seule boucle,
    arrêtée quand le bandeau quitte la page ; rien ne bouge si le système demande moins d'animations. */
 const HP={force:1.2,rayon:260,densite:6500,min:16,max:48,pas:7};
+/* v1.17.0 : réglages dans Paramètres → Apparence (localStorage cap-hp) : mouvement auto|toujours|arret, force, nombre. */
+const HP_CHOIX={mouv:[["auto","Auto"],["toujours","Toujours"],["arret","Arrêtés"]],force:[[0.7,"Douce"],[1.2,"Normale"],[1.8,"Forte"]],densite:[[11000,"Peu"],[6500,"Normal"],[3800,"Beaucoup"]]};
+function hpPrefs(){let o={};try{o=JSON.parse(localStorage.getItem("cap-hp")||"{}")||{}}catch(e){}return{mouv:o.mouv||"auto",force:+o.force||1.2,densite:+o.densite||6500}}
+function hpAppliquer(){const o=hpPrefs();HP.force=o.force;HP.densite=o.densite}
+function hpFige(){const m=hpPrefs().mouv;return m==="arret"||(m==="auto"&&_calme())}
+function choisirHp(k,v){const o=hpPrefs();o[k]=v;try{localStorage.setItem("cap-hp",JSON.stringify(o))}catch(e){}hpAppliquer();_hp.el=null;render();openParametres()}
+function hpReglagesHTML(){const o=hpPrefs(),g=(k,lab)=>`<div class="repli-g" role="radiogroup" aria-label="${lab}">${HP_CHOIX[k].map(([v,l])=>`<button type="button" role="radio" aria-checked="${o[k]==v}" class="${o[k]==v?"on":""}" onclick="choisirHp('${k}',${typeof v==="string"?"'"+v+"'":v})">${l}</button>`).join("")}</div>`;
+  return `<div class="set-l repli-l"><div class="repli-t"><b>Points du bandeau d'accueil</b><small>Ils remontent en ondulant ; la souris les attire et laisse une traînée. « Auto » les arrête si ton ordinateur ou ton téléphone demande moins d'animations.</small></div>
+    <div class="hp-reg"><span>Mouvement</span>${g("mouv","Mouvement des points")}<span>Force</span>${g("force","Force de l'aimant")}<span>Nombre</span>${g("densite","Nombre de points")}</div></div>`}
 const _hp={el:null,cv:null,ctx:null,pts:[],tr:[],m:null,raf:0,W:0,H:0,last:0,ro:null};
 function helloPoints(v){const el=(v||document).querySelector(".hello"),cv=el&&el.querySelector(".h-pts");if(!cv)return;
   if(_hp.el===el)return;cancelAnimationFrame(_hp.raf);if(_hp.ro)_hp.ro.disconnect();
-  Object.assign(_hp,{el,cv,ctx:cv.getContext("2d"),pts:[],tr:[],m:null,last:0});
-  const calme=_calme&&_calme();
+  hpAppliquer();Object.assign(_hp,{el,cv,ctx:cv.getContext("2d"),pts:[],tr:[],m:null,last:0,W:0,H:0}); /* W:0 : un bandeau redessiné repart avec ses points (sinon vide) */
+  const calme=hpFige();
   const taille=()=>{const r=el.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1),ow=_hp.W;_hp.W=r.width;_hp.H=r.height;cv.width=r.width*d;cv.height=r.height*d;_hp.ctx.setTransform(d,0,0,d,0,0);
-    if(!ow||Math.abs(ow-_hp.W)>40){const n=Math.max(HP.min,Math.min(HP.max,Math.round(_hp.W*_hp.H/HP.densite)));
+    if(!ow||Math.abs(ow-_hp.W)>40){const k=6500/HP.densite,n=Math.max(Math.round(HP.min*k),Math.min(Math.round(HP.max*k),Math.round(_hp.W*_hp.H/HP.densite)));
       _hp.pts=Array.from({length:n},()=>{const x=Math.random()*_hp.W,y=Math.random()*_hp.H;return{hx:x,hy:y,x,y,vx:0,vy:0,r:.8+Math.random()*1.5,a:.25+Math.random()*.4,ph:Math.random()*6.28,sp:.4+Math.random()*.7,mt:.12+Math.random()*.22}})}};
-  _hp.ro=new ResizeObserver(taille);_hp.ro.observe(el);taille();
+  _hp.ro=new ResizeObserver(()=>{taille();if(calme)hpImage(0,true)});_hp.ro.observe(el);taille();
   if(calme){hpImage(0,true);return}
   const pos=e=>{const r=el.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
   el.addEventListener("pointermove",e=>{const p=pos(e),m=_hp.m;
@@ -5513,7 +5556,8 @@ function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
   const etat=m.inscrit?(m.vuLe?`<span class="mb-esp on">✓ Connecté, dernière fois le ${esc(adhDate(m.vuLe))}</span>`:`<span class="mb-esp">Code créé, jamais connecté</span>`):tel?`<span class="mb-esp">Pas encore d'accès</span>`:`<span class="mb-esp off">Mobile manquant</span>`;
   const mien=maFiche()&&maFiche(m.clubId)&&maFiche(m.clubId).id===m.id;
-  return `${secHead("Espace membre",undefined,mien?`<a class="btn mini" href="membre.html#moi=${m.id}" target="_blank" rel="noopener">🪪 Ouvrir mon espace</a>`:"")}
+  const voir=SESSION&&SESSION.role==="superadmin"&&!mien?`<a class="btn mini ghost" href="membre.html#voir=${m.id}" target="_blank" rel="noopener">👁 Voir comme ce membre</a>`:"";
+  return `${secHead("Espace membre",undefined,mien?`<a class="btn mini" href="membre.html#moi=${m.id}" target="_blank" rel="noopener">🪪 Ouvrir mon espace</a>`:voir)}
     <div class="drow"><div class="tx"><div class="k">Accès à l'annuaire et aux messages</div><div class="v">${etat}</div></div>${tel&&canEd?`<a href="#" onclick="mbCodeAcces('${m.id}');return false">${m.inscrit?"Nouveau code":"Créer son code"}</a>`:""}</div>
     <div id="mb-code-${m.id}"></div>
     ${!tel?`<p class="fh-note">Il se connecte avec son mobile et un code d'accès : ${canEd?"ajoute d'abord son mobile dans « Informations ».":"son mobile doit être renseigné dans ses informations."}</p>`:""}`;
@@ -7149,6 +7193,29 @@ function appliquerTheme(){const t=themeResolu(),d=!!(THEMES.find(x=>x[0]===t)||[
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(themeChoisi()==="auto")appliquerTheme()})}catch(e){}
 function choisirTheme(t){try{localStorage.setItem("cap-theme",t)}catch(e){}appliquerTheme();openParametres();const x=THEMES.find(y=>y[0]===t);toast(t==="auto"?"Le thème suit le téléphone":"Thème : "+(x?x[1]:t))}
 /* ---------- Paramètres : tous les réglages au même endroit ---------- */
+/* ---------- v1.17.0 : Voir comme (super admin, lecture seule) ---------- */
+const ROLE_LIB_VOIR={superadmin:"Super admin",directeur_national:"Directeur national",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Lecture seule"};
+function voirOublier(){try{sessionStorage.removeItem("cap-voir")}catch(e){}VOIR_CRM=null}
+function voirQuitter(){voirOublier();_voirActif=false;location.reload()}
+function voirCompte(id,nom){try{sessionStorage.setItem("cap-voir",JSON.stringify({v:"u:"+id,nom}))}catch(e){}location.reload()}
+function voirBandeau(){const b=document.getElementById("voir-band");if(!SESSION||!SESSION._voir){if(b)b.remove();document.body.classList.remove("voir-on");return}
+  if(b)return;const d=document.createElement("div");d.id="voir-band";d.setAttribute("role","status");
+  d.innerHTML=`<span>👁 Tu vois le CRM comme <b>${esc(SESSION._voir.nom)}</b> (${esc(ROLE_LIB_VOIR[SESSION._voir.role]||SESSION._voir.role)}). Lecture seule.</span><button type="button" onclick="voirQuitter()">Quitter l'aperçu</button>`;
+  document.body.appendChild(d);document.body.classList.add("voir-on")}
+let _voirOng="comptes",_voirQ="";
+function openVoirComme(){if(!SESSION||SESSION.role!=="superadmin")return;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"👁",title:"Voir comme…",sub:"Exactement ce que la personne voit. Rien ne peut être modifié pendant l'aperçu."})}
+    <div class="seg" role="tablist" style="margin:4px 0 10px"><button class="${_voirOng==="comptes"?"on":""}" onclick="_voirOng='comptes';openVoirComme()">Équipe (CRM)</button><button class="${_voirOng==="membres"?"on":""}" onclick="_voirOng='membres';openVoirComme()">Membres (espace membre)</button></div>
+    <div class="field"><input id="voir-q" placeholder="Premières lettres du nom…" value="${esc(_voirQ)}" oninput="_voirQ=this.value;voirListe()" autocomplete="off"></div>
+    <div id="voir-liste" class="set-l"></div>`;openSheet();voirListe();setTimeout(()=>{const q=document.getElementById("voir-q");if(q)q.focus()},60)}
+function voirListe(){const z=document.getElementById("voir-liste");if(!z)return;const mots=predMots(_voirQ);
+  const ok=t=>{const w=predMots(t);return mots.every(m=>w.some(x=>x.startsWith(m)))};
+  let h="";
+  if(_voirOng==="comptes"){const L=(DB.acces||[]).filter(c=>c.id!==SESSION.id&&ok((c.nom||"")+" "+(c.email||""))).sort((a,b)=>(a.nom||"").localeCompare(b.nom||""));
+    h=L.map(c=>`<button class="set-r" onclick="voirCompte('${c.id}','${esc((c.nom||"").replace(/'/g,"’"))}')"><span class="ic">${esc(initiales(c.nom||"?"))}</span><span class="t"><b>${esc(c.nom||c.email||"Compte")}</b><small>${esc(ROLE_LIB_VOIR[c.role]||c.role)}</small></span><span class="go">›</span></button>`).join("")||`<p class="fh-empty" style="padding:12px">Aucun compte ne correspond.</p>`}
+  else{const L=DB.membres.filter(m=>ok(m.nom+" "+((club(m.clubId)||{}).nom||""))).sort((a,b)=>a.nom.localeCompare(b.nom)).slice(0,80);
+    h=L.map(m=>`<a class="set-r" href="membre.html#voir=${m.id}" target="_blank" rel="noopener"><span class="ic">${esc(initiales(m.nom))}</span><span class="t"><b>${esc(m.nom)}</b><small>${esc(((club(m.clubId)||{}).nom||"").replace(/^CAP\s+/,""))}${m.inscrit?" · a son espace":" · n'a pas encore ouvert son espace"}</small></span><span class="go">↗</span></a>`).join("")||`<p class="fh-empty" style="padding:12px">Aucun membre ne correspond.</p>`}
+  z.innerHTML=h}
 async function openParametres(){
   const role=SESSION.role,t=themeChoisi(),sa=role==="superadmin";
   const r=(ic,tit,sub,fn)=>`<button class="set-r" onclick="${fn}"><span class="ic">${ic}</span><span class="t"><b>${tit}</b>${sub?`<small>${sub}</small>`:""}</span><span class="go">›</span></button>`;
@@ -7164,13 +7231,15 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Repli automatique">${REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${repliDelai()===n}" class="${repliDelai()===n?"on":""}" onclick="choisirRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
     <div class="set-l repli-l"><div class="repli-t"><b>Repli automatique du menu</b><small>Les sous-menus se referment tout seuls après ce délai, tant que la souris n'est pas sur le menu. Un clic sur une rubrique ouverte la replie aussi.</small></div>
       <div class="repli-g" role="radiogroup" aria-label="Repli automatique du menu">${NAV_REPLI_CHOIX.map(n=>`<button type="button" role="radio" aria-checked="${navRepliDelai()===n}" class="${navRepliDelai()===n?"on":""}" onclick="choisirNavRepli(${n})">${n?n+" s":"Jamais"}</button>`).join("")}</div></div>
+    ${hpReglagesHTML()}
     <div class="set-l repli-l"><div class="repli-t"><b>Affichage de la Synthèse</b><small>« Vivante » : cartes de tailles et couleurs différentes, chiffres qui roulent comme un compteur, encre au survol, message du jour dans le bandeau.</small></div>
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div>
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
-    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
+    ${sa?`<div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","window.open('documents.html','_blank')")}</div>
     <div class="set-sec">Aide</div>

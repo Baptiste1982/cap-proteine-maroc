@@ -108,6 +108,26 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;z-index:60;animation:monte .25s}
 @media(max-width:640px){.tete h1{font-size:27px}.liste .doc .vis{display:none}#survol{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* v1.13.0 accès */
+.acc-corps{padding:14px 16px 18px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.acc-sec{font:700 11px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;display:flex;gap:8px;align-items:center}
+.acc-sec em{font-style:normal;background:var(--crimson);color:#fff;border-radius:99px;padding:0 7px;font-size:10.5px;letter-spacing:0}
+.acc-glob{display:flex;flex-direction:column;gap:6px}
+.acc-ajout{position:relative;display:flex;flex-direction:column;gap:6px}
+.acc-ajout input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.acc-propo{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.acc-propo button,.acc-p{display:flex;align-items:center;gap:10px;padding:9px 12px;text-align:left;background:none;border:0;border-top:1px solid var(--line2);color:var(--ink);font:inherit;cursor:pointer}
+.acc-propo button:first-child{border-top:0}.acc-propo button:hover{background:rgba(127,127,127,.08)}
+.acc-propo .plus{margin-left:auto;color:var(--crimson);font-weight:700;font-size:13px;white-space:nowrap}
+.acc-p{cursor:default;border:1px solid var(--line);border-radius:12px}
+.acc-l{display:flex;flex-direction:column;gap:6px}
+.acc-p .t,.acc-propo span:nth-child(2){display:flex;flex-direction:column;min-width:0;flex:1}
+.acc-p small,.acc-propo small{color:var(--muted);font-size:12.5px}
+.acc-p .btn{margin-left:auto;white-space:nowrap}
+.acc-f .av,.acc-propo .av,.acc-p .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--crimson);color:#fff;font:700 12px Inter,sans-serif;flex:none}
+.acc-hist{font-size:13px;color:var(--muted)}.acc-hist summary{cursor:pointer;font-weight:600}.acc-h{padding:4px 0}
+.acc-coupe{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:6px}
+.acc-coupe div{display:flex;flex-direction:column;flex:1;min-width:200px}.acc-coupe small{color:var(--muted);font-size:12.5px}
 </style>
 </head>
 <body>
@@ -127,7 +147,7 @@ const sb=window.supabase.createClient(DOC_SB_URL,"sb_publishable_2uW0CfYvPRJ8TsJ
 const EMAIL_DOMAIN="cap-proteine.ma";
 const VID_CAT="Vidéos de prise en main";
 const CATS=[VID_CAT,"Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Communication","Formation","Autres"];
-const S={docs:[],gere:false,q:"",type:"tous",vue:"grille",envois:[]};
+const S={docs:[],gere:false,q:"",type:"tous",vue:"grille",envois:[],acces:[],personnes:null};
 try{S.vue=localStorage.getItem("cap-docs-vue")||"grille"}catch(e){}
 const $=id=>document.getElementById(id),esc=docEsc;
 const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
@@ -150,6 +170,7 @@ async function demarrer(){
   const [g,d]=await Promise.all([sb.rpc("cap_gere_documents"),sb.from("documents_reseau").select("*").order("epingle",{ascending:false}).order("cree_le",{ascending:false})]);
   if(d.error)return vueLogin("Accès impossible : "+d.error.message);
   S.gere=g.data===true;S.docs=d.data||[];
+  try{const {data:{user}}=await sb.auth.getUser();S.moi=user&&user.id;const a=await sb.from("documents_acces").select("*").is("retire_le",null);S.acces=a.data||[]}catch(e){S.acces=[]}
   $("sous").textContent=S.gere?"Dépose ici les documents dont les groupes ont besoin. Chaque document se partage par un lien, et peut être montré aux animateurs et aux membres.":"Les documents mis à disposition par le bureau national. Survole un document pour l'aperçu, clique pour l'ouvrir.";
   $("outils").hidden=false;rendu();
   const qs=new URLSearchParams(location.search),id=qs.get("d");if(id&&S.docs.find(x=>x.id===id))ouvrir(id);
@@ -165,7 +186,7 @@ function filtres(){
 }
 function carte(d){
   const k=docType(d.nom_fichier,d.type_mime),date=new Date(d.maj_le||d.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
-  const vis=S.gere?`<div class="vis">${d.archive?`<span>Archivé</span>`:""}<span class="${d.visible_animateurs?"on":"off"}" title="${d.visible_animateurs?"Visible":"Masqué"} pour les animateurs">Animateurs</span><span class="${d.visible_membres?"on":"off"}" title="${d.visible_membres?"Visible":"Masqué"} pour les membres">Membres</span><span class="${d.lien_public?"on":"off"}" title="${d.lien_public?"Partageable":"Pas partageable"} par lien">Lien</span>${d.vues?`<span>${d.vues} ouverture${d.vues>1?"s":""}</span>`:""}</div>`:"";
+  const vis=S.gere?`<div class="vis">${d.archive?`<span>Archivé</span>`:""}<span class="${d.visible_animateurs?"on":"off"}" title="${d.visible_animateurs?"Visible":"Masqué"} pour les animateurs">Animateurs</span><span class="${d.visible_membres?"on":"off"}" title="${d.visible_membres?"Visible":"Masqué"} pour les membres">Membres</span><span class="${d.lien_public?"on":"off"}" title="${d.lien_public?"Partageable":"Pas partageable"} par lien">Lien</span>${accNb(d.id)?`<span class="on" title="Accès donné à ${accNb(d.id)} personne${accNb(d.id)>1?"s":""}">👤 ${accNb(d.id)}</span>`:""}${d.vues?`<span>${d.vues} ouverture${d.vues>1?"s":""}</span>`:""}</div>`:(S.acces.some(a=>a.document_id===d.id&&a.user_id===S.moi)?`<div class="vis"><span class="on">Partagé avec toi</span></div>`:"");
   return `<div class="doc" data-id="${d.id}">${d.epingle?`<span class="epingle" title="À la une">★</span>`:""}
     <div class="haut">${docPastille(d,42)}<span class="t"><b>${esc(d.titre)}</b><small>${esc(DOC_TYPES[k].lib)} · ${esc(docTaille(d.taille))} · ${esc(date)}</small></span></div>
     ${d.description?`<p class="desc">${esc(d.description)}</p>`:""}${vis}
@@ -236,13 +257,14 @@ function ouvrir(id){
     <div class="fen-c">${docApercu(d,false)}</div>
     <div class="fen-a"><a class="btn" href="${esc(u)}" download="${esc(d.nom_fichier)}">Télécharger</a><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir dans un onglet</a>
       ${d.lien_public?`<button class="btn ghost" data-copier>Copier le lien de partage</button><a class="btn ghost" href="https://wa.me/?text=${encodeURIComponent(d.titre+" : "+docLien(d.id))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>`:""}
-      ${S.gere?`<button class="btn ghost" data-modifier style="margin-left:auto">Modifier</button>`:""}</div></div>`;
+      ${S.gere?`<button class="btn ghost" data-acces style="margin-left:auto">👤 Qui y a accès</button><button class="btn ghost" data-modifier>Modifier</button>`:""}</div></div>`;
   document.body.appendChild(v);docRemplirTextes(v);document.body.style.overflow="hidden";
   const fermer=()=>{v.remove();document.body.style.overflow="";document.removeEventListener("keydown",echap)};
   const echap=e=>{if(e.key==="Escape")fermer()};document.addEventListener("keydown",echap);
   v.onclick=e=>{if(e.target===v)fermer()};v.querySelector("[data-fermer]").onclick=fermer;v.querySelector("[data-fermer]").focus();
   const cp=v.querySelector("[data-copier]");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(docLien(d.id));toast("Lien copié : colle-le dans un message")}catch(e){prompt("Copie ce lien :",docLien(d.id))}};
   const md=v.querySelector("[data-modifier]");if(md)md.onclick=()=>{fermer();modifier(d.id)};
+  const ac=v.querySelector("[data-acces]");if(ac)ac.onclick=()=>{fermer();acces(d.id)};
 }
 
 /* ---------- Accueil de la personne qui gère les documents (v1.10.1) ----------
@@ -258,7 +280,7 @@ function accueil(){
       <div class="acc-e">
         <div><b class="n">1</b><span><strong>Déposer</strong>Glisse tes fichiers dans le cadre en pointillés en haut de la page, ou « Choisir des fichiers ». PDF, Excel, Word, présentations, images, vidéos : jusqu'à 50 Mo chacun.</span></div>
         <div><b class="n">2</b><span><strong>Décrire et ranger</strong>Après chaque dépôt : un titre, une phrase d'explication, une catégorie (Kit animateur, Kit membre, Formulaires…). « À la une » le met en tête de page.</span></div>
-        <div><b class="n">3</b><span><strong>Choisir qui le voit</strong>Les animateurs, dans leur CRM. Les membres, dans leur espace membre. Le lien : toute personne qui l'a peut l'ouvrir, même sans compte.</span></div>
+        <div><b class="n">3</b><span><strong>Choisir qui le voit</strong>Tous les animateurs, tous les membres, ou toute personne qui a le lien. Ou bien des personnes précises : « 👤 Qui y a accès », tu tapes les premières lettres d'un nom et tu donnes l'accès. « Retirer l'accès » le reprend, et l'ancien lien du fichier cesse de marcher.</span></div>
         <div><b class="n">4</b><span><strong>Partager</strong>Ouvre un document : « Copier le lien » ou « Envoyer par WhatsApp ». Sur chaque carte, tu vois combien de fois le lien a été ouvert.</span></div>
       </div>
       <div class="acc-a"><b>Ce à quoi tu as accès</b><ul>
@@ -312,6 +334,7 @@ function modifier(id,nouveau){
       <label class="coche"><input type="checkbox" id="d-lien" ${d.lien_public?"checked":""}> Partageable par lien (toute personne qui a le lien peut l'ouvrir)</label>
       <label class="coche"><input type="checkbox" id="d-une" ${d.epingle?"checked":""}> À la une</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">Enregistrer</button>
+        <button class="btn ghost" type="button" data-acces>👤 Qui y a accès</button>
         <button class="btn ghost" type="button" data-archiver>${d.archive?"Remettre en ligne":"Archiver"}</button>
         <button class="btn ghost" type="button" data-suppr style="color:var(--crimson);margin-left:auto">Supprimer</button></div>
       <p id="d-conf" hidden class="msg" style="margin:0">Supprimer définitivement « ${esc(d.titre)} » ? Les liens déjà envoyés ne marcheront plus. <button class="btn mini" type="button" data-oui style="margin-left:8px">Oui, supprimer</button></p>
@@ -330,10 +353,73 @@ function modifier(id,nouveau){
   v.querySelector("[data-archiver]").onclick=async()=>{const {error}=await sb.from("documents_reseau").update({archive:!d.archive,maj_le:new Date().toISOString()}).eq("id",d.id);
     if(error)return toast("Non enregistré : "+error.message);d.archive=!d.archive;fermer();rendu();toast(d.archive?"Archivé : plus visible des animateurs ni des membres":"Remis en ligne")};
   v.querySelector("[data-suppr]").onclick=()=>{v.querySelector("#d-conf").hidden=false};
+  v.querySelector("[data-acces]").onclick=()=>{fermer();acces(d.id)};
   v.querySelector("[data-oui]").onclick=async()=>{
     await sb.storage.from(DOC_BUCKET).remove([d.chemin]);
     const {error}=await sb.from("documents_reseau").delete().eq("id",d.id);if(error)return toast("Suppression impossible : "+error.message);
     S.docs=S.docs.filter(x=>x.id!==d.id);fermer();rendu();toast("Document supprimé")};
+}
+/* ---------- Accès personne par personne (v1.13.0) ----------
+   Rita donne un document à une personne précise (animateur, bureau, membre qui a son espace) et peut le lui retirer.
+   Retirer = la ligne garde la trace (retire_le) ET le fichier change d'adresse : un lien copié avant ne marche plus.
+   « Couper tous les accès » : décoche animateurs, membres et lien, retire toutes les personnes, change l'adresse. */
+function accNb(id){return S.acces.filter(a=>a.document_id===id&&!a.retire_le).length}
+async function accPersonnes(){if(S.personnes)return S.personnes;const {data,error}=await sb.rpc("cap_docs_personnes");if(error){toast("Liste des personnes indisponible : "+error.message);return[]}S.personnes=data||[];return S.personnes}
+const ROLE_LIB={superadmin:"Super admin",directeur_national:"Direction nationale",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
+function accDetail(p){return p.type==="membre"?"Membre · "+(p.detail||"").replace(/^CAP\s+/,""):(ROLE_LIB[p.detail]||p.detail||"Équipe")}
+function ini(n){return String(n||"?").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase()}
+async function accRenouvelerLien(d){
+  const nouv=crypto.randomUUID()+"/"+slug(d.nom_fichier);
+  const mv=await sb.storage.from(DOC_BUCKET).move(d.chemin,nouv);if(mv.error){toast("Adresse du fichier non changée : "+mv.error.message);return false}
+  const {error}=await sb.from("documents_reseau").update({chemin:nouv,maj_le:new Date().toISOString()}).eq("id",d.id);
+  if(error){toast("Adresse non enregistrée : "+error.message);return false}d.chemin=nouv;return true}
+async function acces(id){
+  const d=S.docs.find(x=>x.id===id);if(!d)return;
+  const v=document.createElement("div");v.className="voile";v.innerHTML=`<div class="fen acc-f" style="max-width:640px;height:auto;align-self:center;max-height:100%" role="dialog" aria-modal="true" aria-label="Qui a accès">
+    <div class="fen-h">${docPastille(d,38)}<span class="t"><b>Qui a accès à « ${esc(d.titre)} »</b><small>Donne ou retire l'accès, personne par personne</small></span><button class="fen-x" data-fermer aria-label="Fermer">✕</button></div>
+    <div class="acc-corps" id="acc-corps"><p class="vide">Chargement…</p></div></div>`;
+  document.body.appendChild(v);document.body.style.overflow="hidden";
+  const fermer=()=>{v.remove();document.body.style.overflow="";rendu()};v.onclick=e=>{if(e.target===v)fermer()};v.querySelector("[data-fermer]").onclick=fermer;
+  const pers=await accPersonnes();const nomDe=u=>{const p=pers.find(x=>x.user_id===u);return p?p.nom:"Compte"};
+  let q="";
+  const dessiner=async()=>{
+    const {data:lignes}=await sb.from("documents_acces").select("*").eq("document_id",d.id).order("donne_le",{ascending:false});
+    const actifs=(lignes||[]).filter(a=>!a.retire_le),passes=(lignes||[]).filter(a=>a.retire_le);
+    S.acces=S.acces.filter(a=>a.document_id!==d.id).concat(actifs);
+    const deja=new Set(actifs.map(a=>a.user_id)),mots=q.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").split(/\s+/).filter(Boolean);
+    const propo=q.trim()?pers.filter(p=>!deja.has(p.user_id)).filter(p=>{const t=(p.nom+" "+accDetail(p)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");return mots.every(m=>t.split(/[\s·'-]+/).some(w=>w.startsWith(m)))}).slice(0,8):[];
+    const date=x=>new Date(x).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+    $("acc-corps").innerHTML=`
+      <div class="acc-sec">Pour tout un public</div>
+      <div class="acc-glob">
+        <label class="coche"><input type="checkbox" data-g="visible_animateurs" ${d.visible_animateurs?"checked":""}> Tous les animateurs (dans leur CRM)</label>
+        <label class="coche"><input type="checkbox" data-g="visible_membres" ${d.visible_membres?"checked":""}> Tous les membres (dans leur espace membre)</label>
+        <label class="coche"><input type="checkbox" data-g="lien_public" ${d.lien_public?"checked":""}> Toute personne qui a le lien, même sans compte</label>
+      </div>
+      <div class="acc-sec">Personnes précises <em>${actifs.length}</em></div>
+      <div class="acc-ajout"><input type="search" id="acc-q" placeholder="Ajouter une personne : tape les premières lettres du nom…" value="${esc(q)}" autocomplete="off">
+        ${propo.length?`<div class="acc-propo">${propo.map(p=>`<button type="button" data-ajout="${p.user_id}"><span class="av">${esc(ini(p.nom))}</span><span><b>${esc(p.nom)}</b><small>${esc(accDetail(p))}</small></span><span class="plus">+ Donner l'accès</span></button>`).join("")}</div>`:q.trim()?`<p class="vide">Personne ne correspond (seuls les comptes du CRM et les membres qui ont leur espace apparaissent).</p>`:""}</div>
+      <div class="acc-l">${actifs.length?actifs.map(a=>{const p=pers.find(x=>x.user_id===a.user_id)||{nom:"Compte",type:"equipe"};return `<div class="acc-p"><span class="av">${esc(ini(p.nom))}</span><span class="t"><b>${esc(p.nom)}</b><small>${esc(accDetail(p))} · accès donné le ${date(a.donne_le)}${a.donne_par?" par "+esc(nomDe(a.donne_par)):""}</small></span><button type="button" class="btn mini ghost" data-retirer="${a.id}">Retirer l'accès</button></div>`}).join(""):`<p class="vide">Aucune personne précise pour l'instant.</p>`}</div>
+      ${passes.length?`<details class="acc-hist"><summary>Historique : ${passes.length} accès retiré${passes.length>1?"s":""}</summary>${passes.map(a=>`<div class="acc-h"><b>${esc(nomDe(a.user_id))}</b> · donné le ${date(a.donne_le)}, retiré le ${date(a.retire_le)}${a.retire_par?" par "+esc(nomDe(a.retire_par)):""}</div>`).join("")}</details>`:""}
+      <div class="acc-coupe"><div><b>Couper tous les accès</b><small>Retire tout le monde, ferme le lien et change l'adresse du fichier : les liens déjà envoyés ne marchent plus. Le document reste chez toi.</small></div><button type="button" class="btn ghost" data-couper style="color:var(--crimson)">Tout couper</button></div>`;
+    const qi=$("acc-q");qi.oninput=()=>{q=qi.value;const pos=qi.selectionStart;dessiner().then(()=>{const n=$("acc-q");if(n){n.focus();n.setSelectionRange(pos,pos)}})};
+    v.querySelectorAll("[data-g]").forEach(c=>c.onchange=async()=>{const k=c.dataset.g,m={[k]:c.checked,maj_le:new Date().toISOString()};
+      const {error}=await sb.from("documents_reseau").update(m).eq("id",d.id);if(error){c.checked=!c.checked;return toast("Non enregistré : "+error.message)}
+      d[k]=c.checked;if(k==="lien_public"&&!c.checked){await accRenouvelerLien(d)}toast(c.checked?"Accès ouvert":"Accès retiré"+(k==="lien_public"?" : le lien ne marche plus":""))});
+    v.querySelectorAll("[data-ajout]").forEach(b=>b.onclick=async()=>{const u=b.dataset.ajout;
+      const {error}=await sb.from("documents_acces").insert({document_id:d.id,user_id:u,donne_par:S.moi});if(error)return toast("Accès non donné : "+error.message);
+      q="";toast("Accès donné à "+nomDe(u));dessiner()});
+    v.querySelectorAll("[data-retirer]").forEach(b=>b.onclick=async()=>{const a=actifs.find(x=>x.id===b.dataset.retirer);
+      const {error}=await sb.from("documents_acces").update({retire_le:new Date().toISOString(),retire_par:S.moi}).eq("id",a.id);if(error)return toast("Non retiré : "+error.message);
+      await accRenouvelerLien(d);toast("Accès retiré à "+nomDe(a.user_id)+" : l'ancien lien du fichier ne marche plus");dessiner()});
+    v.querySelector("[data-couper]").onclick=async()=>{const b=v.querySelector("[data-couper]");if(!b.dataset.sur){b.dataset.sur=1;b.textContent="Confirmer : tout couper";return}
+      const now=new Date().toISOString();
+      const r1=await sb.from("documents_reseau").update({visible_animateurs:false,visible_membres:false,lien_public:false,maj_le:now}).eq("id",d.id);if(r1.error)return toast("Non coupé : "+r1.error.message);
+      Object.assign(d,{visible_animateurs:false,visible_membres:false,lien_public:false});
+      if(actifs.length){const r2=await sb.from("documents_acces").update({retire_le:now,retire_par:S.moi}).eq("document_id",d.id).is("retire_le",null);if(r2.error)toast("Personnes non retirées : "+r2.error.message)}
+      await accRenouvelerLien(d);toast("Tous les accès sont coupés");dessiner()};
+  };
+  dessiner();
 }
 demarrer();
 </script>

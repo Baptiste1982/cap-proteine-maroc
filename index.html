@@ -2108,8 +2108,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.12.2";
+const APP_VERSION="1.13.0";
 const CHANGELOG=[
+  {v:"1.13.0",date:"17 novembre 2026",notes:{
+    "Ajouté":["Documents du réseau : « 👤 Qui y a accès » sur chaque document. On donne l'accès à une personne précise (animateur, bureau ou membre qui a son espace) en tapant les premières lettres de son nom, et on le retire d'un clic. Le retrait garde une trace (qui, quand) et change l'adresse du fichier : un lien copié avant ne marche plus.","« Tout couper » retire tout le monde, ferme le lien de partage et change l'adresse du fichier, sans supprimer le document.","La personne qui a reçu un document le retrouve dans sa page Documents (marqué « Partagé avec toi ») ou dans son espace membre."]}},
   {v:"1.12.2",date:"17 novembre 2026",notes:{
     "Ajouté":["Menu : un clic sur la rubrique ouverte replie ses sous-menus, sans changer d'écran ; un second clic les rouvre.","Les sous-menus se replient tout seuls après 5 secondes, tant que la souris n'est pas sur le menu. Le délai se règle dans Paramètres → Apparence → « Repli automatique du menu » (jamais, 3, 5, 8 ou 15 s)."]}},
   {v:"1.12.1",date:"17 novembre 2026",notes:{

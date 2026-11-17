@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inscription · Club d'Affaires Protéine</title>
+<meta property="og:site_name" content="Club d'Affaires Protéine Rabat et Région">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Inscription à la réunion · Club d'Affaires Protéine">
+<meta property="og:description" content="Inscris-toi en une minute.">
+<meta property="og:image" content="https://cap-proteine-maroc.vercel.app/icone-512.png?v=2">
+<meta name="robots" content="noindex">
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.5 Inter,system-ui,sans-serif;background:#FAF6F4;color:#1B1416;text-align:center;padding:24px}
+.r{width:34px;height:34px;border-radius:50%;border:3px solid #F1D5DB;border-top-color:#B0122E;margin:0 auto 14px;animation:t .8s linear infinite}
+@keyframes t{to{transform:rotate(1turn)}}
+a{color:#B0122E;font-weight:600}
+</style>
+</head>
+<body>
+<div><div class="r"></div><p>Ouverture du formulaire d'inscription…</p><p id="lien" hidden><a href="#">Ouvrir le formulaire</a></p></div>
+<script>
+/* Lien d'inscription suivi : compte le clic puis renvoie vers le formulaire du CRM national.
+   Les aperçus de WhatsApp n'exécutent pas ce script : ils ne comptent pas. */
+(function(){
+  const p=new URLSearchParams(location.search),n=(p.get("n")||"").replace(/\D/g,""),s=p.get("s")||"";
+  const repli=n?"https://animateur.ma.caproteine.com/invitation/inscription?ref="+n:"https://www.caproteine.com/";
+  let fait=false;
+  const aller=u=>{if(fait)return;fait=true;const a=document.querySelector("#lien a");a.href=u;document.getElementById("lien").hidden=false;location.replace(u)};
+  if(!n){aller(repli);return}
+  let v="";try{v=localStorage.getItem("cap-vis")||"";if(!v){v=(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)).replace(/[^a-z0-9-]/gi,"");localStorage.setItem("cap-vis",v)}}catch(e){}
+  setTimeout(()=>aller(repli),2000);
+  fetch("https://xsppsqjigdgaybmowzaq.supabase.co/rest/v1/rpc/cap_lien_clic",{method:"POST",keepalive:true,
+    headers:{"Content-Type":"application/json",apikey:"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7"},
+    body:JSON.stringify({p_inv:n,p_source:s,p_visiteur:v})})
+    .then(r=>r.ok?r.json():null).then(u=>aller(typeof u==="string"&&/^https:\/\/[a-z.]*caproteine\.com\//.test(u)?u:repli)).catch(()=>aller(repli));
+})();
+</script>
+</body>
+</html>

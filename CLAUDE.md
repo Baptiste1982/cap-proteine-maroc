@@ -367,6 +367,16 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 - Visite guidée : navigation à jour, étapes « Le cycle du groupe », « Bilan et compte rendu », nouvelle partie `recos` (mécanique BNI, ce que voit le CRM, « Ton espace membre » : cible seulement si `maFiche` existe pour le groupe affiché).
 - Bancs `cr.mjs` 14/14, `tuto.mjs` 28/28.
 
+**🏠 Accueil du membre, volets, fil d'Ariane (v1.9.0, 17/11/2026)** — maquette validée par JB (https://claude.ai/artifact/6Wg5VmpFE3AqyuEFHnKwPh). Règle de JB pour l'espace membre : **ce qui se répète va dans des volets qui se replient, avec un titre explicite et le nombre ; le détail s'ouvre au clic, la page glisse, fil d'Ariane en haut et ✕ pour revenir ; le plus d'éléments cliquables possible**.
+- `membre.html` : 5 onglets `ONGLETS_NAV` (accueil, mongroupe, annuaire = « Réseau », messages, moi). Les autres pages (fiche, conv, groupe, recos, reco, chiffres, profil, inviter, presence) s'ouvrent par `aller(o, extra)`, qui empile `{o, ex:snap()}` dans `S.pile` ; `retour()` / `revenirA(i)` dépilent. `ariane()` en tête des sous-pages (sticky), `data-retour` / `data-ariane`. Animation `.page.entre` / `.sort` (`S.anim`). ⚠ Une nouvelle sous-page : l'ajouter au dictionnaire de `rendu()` et à `LIB_PAGE` ; un état propre à la page dans `ETAT_PAGE`.
+- `volet(id, titre, compte, corps, {ouvert})` = `<details data-volet>` (état dans localStorage `cap-volet-<id>`) ; `ligneAct(attr, titre, sous, {fin, fort})` = ligne cliquable.
+- Accueil `vueAccueil` : `carteReunion(p, true)` avec « Je viens / Je ne viens pas » (`repondre` → RPC `cap_membre_repondre`), volet « À faire » (`aTraiterRecos`, `relancesDues`, messages non lus, `fichePct`), 3 actions, bilan (`mesChiffres`) → `vueChiffres`, « Bien démarrer ». L'ancien tableau de bord du groupe = `vueMonGroupe` en volets (onglet « Mon groupe », et seule vue en `#equipe=`). `vueMoi` = menu ; `vueRecos` groupe les recommandations par état en volets, `vueReco` = détail (`carteReco`).
+- Vocabulaire : « Recommandations » partout côté membre (clic JB), « affaires apportées / reçues ».
+- Migration `20261117240000_reunion_reponses_membres.sql` (appliquée, prod `20261117093332`) : table `reunion_reponses` (unique réunion × membre, oui|non ; lecture : le membre ou `cap_can_see_club`), RPC `cap_membre_repondre`, `cap_groupe_vue` → `prochaine.ma_reponse/viennent/absents`. CRM : `repCharger(m)` dans `meetingDetail` (`#rep-bloc`).
+- ⚠ Les statuts des réunions sont en minuscules sans accent (`planifiee`, `confirmee`, `realisee`, `annulee`). Au 17/11 : 1 réunion à venir, 13 passées sans bilan (pas 15).
+- Bancs `v190.mjs` 76/76, `rep.mjs` 8/8, `membre.mjs` 67/67 et `v110.mjs` 36/36 recalés.
+- Animation de lancement à chaque connexion : 3 propositions (https://claude.ai/artifact/Dtst7mg3mSUhGZgj3v4ivg), choix de JB attendu.
+
 **⚠️ À traiter** :
 1. **Tester le front câblé dans un navigateur** (login réel + CRUD) — non testable depuis les sessions Claude Code : l'hôte `*.supabase.co` est bloqué par l'egress policy.
 2. **Purger le mot de passe `cap2026`** : outil prêt en v0.33.0 (« Embarquer l'équipe »), reste à l'utiliser pour les 7 animateurs concernés.

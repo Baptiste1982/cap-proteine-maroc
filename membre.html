@@ -189,18 +189,61 @@ textarea.champ:focus{border-color:var(--crimson)}
 .presence .ico{width:64px;height:64px;border-radius:32px;background:#EAF2EA;color:#24502A;font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:center;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
 .presence.ko .ico{background:var(--tint);color:var(--crimson)}.presence b{font-size:22px}.presence p{margin:0}
 @keyframes pop{from{transform:scale(.4);opacity:0}}
+/* v1.9.0 : accueil du membre, volets repliables, fil d'Ariane, pages qui glissent */
+.page.entre{animation:glisseIn .28s cubic-bezier(.2,.8,.2,1)}.page.sort{animation:glisseOut .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes glisseIn{from{opacity:0;transform:translateX(28px)}}@keyframes glisseOut{from{opacity:0;transform:translateX(-28px)}}
+.ariane{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:3;background:var(--paper);margin:calc(-16px - var(--safe-t)) -18px 0;padding:calc(8px + var(--safe-t)) 12px 8px 18px;border-bottom:1px solid var(--line2)}
+.ariane nav{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:13px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.ariane nav::-webkit-scrollbar{display:none}
+.ariane nav button{border:0;background:none;padding:6px 0;color:var(--crimson);font-weight:600;font-size:13px;white-space:nowrap}
+.ariane nav span{color:var(--soft)}.ariane nav b{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.ariane .ferme{width:44px;height:44px;border-radius:22px;border:0;background:#F1E8EA;color:var(--ink);font-size:17px;flex-shrink:0}
+.volet{background:var(--card);border:1px solid var(--line2);border-radius:16px;overflow:hidden}
+.volet>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:10px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.volet>summary::-webkit-details-marker{display:none}
+.volet>summary:focus-visible{outline:2px solid var(--crimson);outline-offset:-2px;border-radius:16px}
+.v-t{flex:1;min-width:0;font-family:"Bricolage Grotesque",Inter,sans-serif;font-weight:700;font-size:15.5px}
+.v-n{flex-shrink:0;min-width:26px;height:26px;padding:0 9px;border-radius:13px;background:#F1E8EA;color:var(--ink);font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.v-ch{flex-shrink:0;color:var(--soft);transition:transform .25s}.volet[open] .v-ch{transform:rotate(180deg)}
+.volet[open]>summary{border-bottom:1px solid var(--line2)}
+.v-c{padding:12px;display:flex;flex-direction:column;gap:10px;animation:rise .25s ease}
+.la-l{display:flex;flex-direction:column;gap:8px}
+.la{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;text-align:left;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:10px 12px;color:inherit;transition:transform .15s,border-color .15s}
+.la:hover{border-color:var(--crimson)}.la:active{transform:scale(.985)}
+.la.fort{background:var(--tint);border-color:transparent}
+.la-pt{width:10px;height:10px;border-radius:50%;background:#8FA7C0;flex-shrink:0}.la-pt.r{background:var(--crimson)}
+.la-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.la-t b{font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.la-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.la.fort .la-t b,.la.fort .la-t span{color:var(--darker)}
+.la-fin{flex-shrink:0}.la-t .chip-st{font-style:normal;margin-right:4px}.la-fl{flex-shrink:0;font-size:20px;color:var(--soft);line-height:1}
+.la .av{width:38px;height:38px;font-size:13px}
+.pct{font-size:13px;font-weight:700;color:#24502A}.pct.bas{color:var(--crimson)}
+.ac-tete{display:flex;align-items:center;gap:14px}.ac-tete h1{font-size:26px;font-weight:800}.ac-tete .sub{margin:2px 0 0}
+.ac-tete .av.grand{width:64px;height:64px;font-size:22px}
+.ac-reu{display:flex;flex-direction:column;gap:5px;background:var(--deep);color:var(--tint);border-color:transparent}.ac-reu b{color:#fff}
+.ac-lieu{font-size:14px}.ac-cpt{font-size:13px;color:var(--or);font-weight:600}
+.ac-rep{display:flex;gap:8px;margin-top:8px}
+.ac-rep button{flex:1;min-height:48px;border-radius:12px;border:1.5px solid rgba(248,233,236,.35);background:transparent;color:#fff;font-weight:700;font-size:15px;transition:background .2s,border-color .2s,transform .15s}
+.ac-rep button:active{transform:scale(.97)}.ac-rep button.on.oui{background:var(--crimson);border-color:var(--crimson)}.ac-rep button.on.non{background:#fff;border-color:#fff;color:var(--deep)}
+.ac-ok{font-size:13px;color:var(--tint)}
+.ac-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ac-a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:96px;padding:12px 6px;border-radius:16px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-weight:600;font-size:13px;line-height:1.25;text-align:center;transition:transform .15s}
+.ac-a svg{color:var(--crimson)}.ac-a.fort{background:var(--crimson);border-color:var(--crimson);color:#fff}.ac-a.fort svg{color:#fff}.ac-a:active{transform:scale(.96)}
+.ac-bilan{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;background:var(--ink);color:#fff;border:0;border-radius:18px;padding:16px;font:inherit}
+.ac-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ac-duo span{display:flex;flex-direction:column;gap:2px;min-width:0}.ac-duo b{font-size:21px;overflow-wrap:anywhere}.ac-duo small{font-size:12px;color:#D9CFD1}
+.ac-pied{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#D9CFD1}.ac-pied em{font-style:normal;font-weight:700;color:#fff}
+.ac-prog{height:6px;border-radius:3px;background:#EFE6E8;overflow:hidden}.ac-prog i{display:block;height:100%;background:var(--crimson);border-radius:3px}
+.ac-fait{font-size:14px;color:var(--muted);padding:4px 2px}
+.gv-fil .label{margin-bottom:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
 <nav class="bas" id="nav" hidden><div class="in">
-  <button data-o="accueil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>Groupe</button>
-  <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>Annuaire</button>
+  <button data-o="accueil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>Accueil</button>
+  <button data-o="mongroupe"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5"/></svg>Mon groupe</button>
+  <button data-o="annuaire"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Réseau</button>
   <button data-o="messages"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Messages<span class="badge" id="nav-nl" hidden></span></button>
-  <button data-o="inviter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>Inviter</button>
-  <button data-o="recos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11l4-4 3 3 5-5"/><path d="M14 5h5v5"/><path d="M4 20h16"/><path d="M6 16v4M11 13v7M16 15v5"/></svg>Recos<span class="badge" id="nav-rc" hidden></span></button>
-  <button data-o="profil"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
+  <button data-o="moi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Moi<span class="badge" id="nav-rc" hidden></span></button>
 </div></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -283,9 +326,9 @@ async function demarrer(){
   ecouter();lancer();
 }
 function lancer(){$("nav").hidden=false;
-  setInterval(()=>{if(document.hidden||S.onglet!=="recos"||S.recoForm||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="recos"&&!S.recoForm)rendu(true)})},60000);
+  setInterval(()=>{if(document.hidden||S.onglet!=="chiffres"||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="chiffres")rendu(true)})},60000);
   if(!lienHash())rendu();
-  notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil"].includes(S.onglet))rendu(true)});
+  notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil","accueil","moi"].includes(S.onglet))rendu(true)});
   if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#([cpr]=.+|g)$/i);if(h){location.hash=h[0]}});}
 // Liens entrants : #c=<membre> (conversation), #r=recues|donnees (recommandations), #p=<réunion>.<code> (QR de présence)
 function lienHash(){
@@ -316,7 +359,7 @@ function ecouter(){
     const r=p.new;if(!r||!r.id||(r.de!==S.moi.id&&r.a!==S.moi.id))return;
     const i=(S.recos||[]).findIndex(x=>x.id===r.id);
     if(i>=0)S.recos[i]=r;else{(S.recos=S.recos||[]).unshift(r);if(r.a===S.moi.id)toast("Nouvelle recommandation de "+(membre(r.de)?.nom||"un membre"))}
-    S.recosClub=undefined;if(["recos","annuaire","profil","messages"].includes(S.onglet))rendu(true);
+    S.recosClub=undefined;if(["recos","reco","annuaire","profil","messages","accueil","moi"].includes(S.onglet))rendu(true);
   }).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages_groupe"},p=>{
     const r=p.new;if(!r||!r.id||r.club_id!==clubId())return;
     if(!(S.grp||[]).some(x=>x.id===r.id)){(S.grp=S.grp||[]).push(r);if(r.membre_id!==S.moi.id&&S.onglet!=="groupe")toast("Groupe · "+r.auteur_nom+" : "+r.texte.slice(0,60))}
@@ -325,20 +368,64 @@ function ecouter(){
 }
 const membre=id=>S.annuaire.find(m=>m.id===id);
 
-/* ---------- Navigation ---------- */
-function aller(o,extra){Object.assign(S,{onglet:o},extra||{});window.scrollTo(0,0);rendu()}
+/* ---------- Navigation (v1.9.0) ----------
+   Cinq onglets en bas. Tout le reste s'ouvre par-dessus, comme une fenêtre qui glisse : fil d'Ariane en haut,
+   ✕ pour revenir où l'on était. S.pile garde le chemin parcouru depuis l'onglet. */
+const ONGLETS_NAV=["accueil","mongroupe","annuaire","messages","moi"];
+const LIB_PAGE={accueil:"Accueil",mongroupe:"Mon groupe",annuaire:"Réseau",messages:"Messages",moi:"Moi",recos:"Mes recommandations",profil:"Ma fiche et mes réglages",
+  inviter:"Inviter à la réunion",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
+const ETAT_PAGE=["fiche","conv","recoForm","recoTab","recoId"];
+S.pile=[];
+const racine=()=>S.eq?"mongroupe":"accueil";
+function snap(){const e={};ETAT_PAGE.forEach(k=>e[k]=S[k]);return e}
+function libPage(o,ex){ex=ex||{};
+  if(o==="fiche")return (membre(ex.fiche)||{}).nom||"Fiche";
+  if(o==="conv")return (membre(ex.conv)||{}).nom||"Conversation";
+  if(o==="recos"&&ex.recoForm)return "Recommander quelqu'un";
+  if(o==="reco"){const r=(S.recos||[]).find(x=>x.id===ex.recoId);return r&&r.objet?r.objet:"Recommandation"}
+  return LIB_PAGE[o]||o}
+function aller(o,extra){
+  if(ONGLETS_NAV.includes(o))S.pile=[];
+  else S.pile.push({o:S.onglet,ex:snap()});
+  Object.assign(S,{onglet:o},extra||{});S.anim="entre";window.scrollTo(0,0);rendu();
+}
+function revenirA(i){const p=S.pile[i];S.pile=S.pile.slice(0,i);Object.assign(S,{onglet:p.o},p.ex);S.anim="sort";window.scrollTo(0,0);rendu()}
+function retour(){if(!S.pile.length){S.anim="sort";Object.assign(S,{onglet:racine(),recoForm:false});window.scrollTo(0,0);return rendu()}revenirA(S.pile.length-1)}
+function ariane(){
+  if(ONGLETS_NAV.includes(S.onglet))return "";
+  const avant=S.pile.length?S.pile.map((p,i)=>`<button type="button" data-ariane="${i}">${esc(libPage(p.o,p.ex))}</button><span aria-hidden="true">›</span>`).join("")
+    :`<button type="button" data-retour>${esc(LIB_PAGE[racine()])}</button><span aria-hidden="true">›</span>`;
+  return `<div class="ariane"><nav aria-label="Fil d'Ariane">${avant}<b aria-current="page">${esc(libPage(S.onglet,snap()))}</b></nav><button type="button" class="ferme" data-retour aria-label="Fermer et revenir">✕</button></div>`;
+}
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>aller(b.dataset.o));
 function rendu(garderDefilement){
   const y=window.scrollY;
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===S.onglet||((S.onglet==="conv"||S.onglet==="groupe")&&b.dataset.o==="messages")||(S.onglet==="fiche"&&b.dataset.o===(S.ficheDe||"annuaire"))));
+  const actif=ONGLETS_NAV.includes(S.onglet)?S.onglet:((S.pile.find(p=>ONGLETS_NAV.includes(p.o))||{}).o||racine());
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.o===actif));
   const nl=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length+(S.onglet==="groupe"?0:grpNonLus());const bn=$("nav-nl");bn.hidden=!nl;bn.textContent=nl;
   $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe"||!!S.eq;
-  const rc=(S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee").length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
-  const v={annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,profil:vueProfil,inviter:vueInviter,recos:vueRecos,presence:vuePresence,groupe:vueGroupe,accueil:vueAccueil}[S.onglet];
+  const rc=aTraiterRecos().length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
+  const v={accueil:vueAccueil,mongroupe:vueMonGroupe,annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,moi:vueMoi,profil:vueProfil,inviter:vueInviter,
+    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
   $("app").innerHTML=v();
+  const pg=$("app").querySelector(".page");
+  if(pg&&S.anim&&!garderDefilement)pg.classList.add(S.anim);
+  S.anim=null;
   brancher();
-  if(S.onglet==="conv"||S.onglet==="groupe"){const f=document.querySelector(".fil");window.scrollTo(0,document.body.scrollHeight)}
+  if(S.onglet==="conv"||S.onglet==="groupe")window.scrollTo(0,document.body.scrollHeight);
   else if(garderDefilement)window.scrollTo(0,y);
+}
+
+/* ---------- Volets repliables (v1.9.0) : un titre explicite, le nombre, et le détail au clic ----------
+   L'état ouvert / fermé de chaque volet est retenu sur l'appareil. */
+const CHEVRON='<svg class="v-ch" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+function voletOuvert(id,def){try{const v=localStorage.getItem("cap-volet-"+id);return v===null?def:v==="1"}catch(e){return def}}
+function volet(id,titre,compte,corps,o){o=o||{};
+  return `<details class="volet${o.ton?" "+o.ton:""}" data-volet="${id}" ${voletOuvert(id,!!o.ouvert)?"open":""}><summary><span class="v-t">${titre}</span>${compte!==undefined&&compte!==null&&compte!==""?`<span class="v-n">${esc(compte)}</span>`:""}${CHEVRON}</summary><div class="v-c">${corps}</div></details>`;
+}
+/* Une ligne cliquable : pastille, titre, sous-titre, flèche. */
+function ligneAct(attr,titre,sous,o){o=o||{};
+  return `<button type="button" class="la${o.fort?" fort":""}" ${attr}>${o.av||`<span class="la-pt${o.fort?" r":""}" aria-hidden="true"></span>`}<span class="la-t"><b>${titre}</b>${sous?`<span>${sous}</span>`:""}</span>${o.fin?`<span class="la-fin">${o.fin}</span>`:""}<span class="la-fl" aria-hidden="true">›</span></button>`;
 }
 
 /* ---------- Mon groupe (v1.3.0) : l'accueil du groupe en un écran ---------- */
@@ -350,45 +437,160 @@ const JOURS=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche
 function rythmeTxt(c){if(!c||!c.rythme_jour)return"";const j=JOURS[c.rythme_jour]||"";
   const r=c.rythme_pas==2?"Un "+j+" sur deux":c.rythme_rang>0?["","1er","2e","3e","4e"][c.rythme_rang]+" "+j+" du mois":c.rythme_rang==-1?"Dernier "+j+" du mois":"Chaque "+j;
   return r+(c.heure?" · "+String(c.heure).slice(0,5).replace(":"," h "):"")+(c.lieu?" · "+c.lieu:"")}
+/* ---------- Accueil du membre (v1.9.0) : ce qui le concerne, en un écran ----------
+   La prochaine réunion avec « Je viens », ce qu'il a à faire, trois actions, son bilan, ses premiers pas.
+   Le tableau de bord du groupe est dans l'onglet « Mon groupe ». */
+const FORMATS_M={business:"Réunion business",conference:"Conférence",visite:"Visite d'entreprise"};
+const typeReu=p=>p.format?FORMATS_M[p.format]||p.format:p.type==="RL"?"Réunion de lancement":p.type==="SI"?"Session d'information":"Réunion";
+const auj=()=>new Date().toISOString().slice(0,10);
+function aTraiterRecos(){return (S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee")}
+function relancesDues(){return (S.recos||[]).filter(r=>r.a===S.moi.id&&r.relance_le&&r.relance_le<=auj()&&!["signee","sans_suite"].includes(r.statut))}
+function ficheEtapes(){const f=moiFiche();return [["photo","Ajouter ma photo",!!f.photo],["logo","Ajouter le logo de ma société",!!f.logo],["pres","Présenter mon activité",!!f.presentation],
+  ["liens","Mon site ou mon LinkedIn",!!(f.site||f.linkedin)],["cherche","Dire ce que je cherche",!!(S.moi.cherche||f.cherche)]]}
+function fichePct(){const e=ficheEtapes();return Math.round(e.filter(x=>x[2]).length/e.length*100)}
+function mesChiffres(){const g=S.gv;return (g&&g.chiffres&&g.chiffres.moi)||(S.recosClub&&S.recosClub.moi)||null}
+function carteReunion(p,avecReponse){
+  if(!p)return `<div class="card"><b>Pas de réunion planifiée.</b><p class="sub">Elle apparaîtra ici dès que ton animateur l'aura programmée.</p></div>`;
+  const h=p.heure?String(p.heure).slice(0,5):"",rep=p.ma_reponse;
+  return `<div class="card ac-reu">
+    <span class="label" style="color:var(--or)">Prochaine réunion · ${esc(typeReu(p))}</span>${p.theme?`<span class="gv-theme">${esc(p.theme)}</span>`:""}
+    <b class="bri" style="font-size:21px">${esc(dateReu(p.date,h))}</b>
+    <span class="ac-lieu">${esc([p.lieu||"Lieu à confirmer",p.ville].filter(Boolean).join(" · "))}</span>
+    <span class="ac-cpt">${p.viennent?`${p.viennent} membre${p.viennent>1?"s":""} vien${p.viennent>1?"nent":"t"}`:"Personne n'a encore confirmé"}${p.absents?` · ${p.absents} excusé${p.absents>1?"s":""}`:""} · ${p.invites||0} invité${p.invites>1?"s":""}</span>
+    ${avecReponse?`<div class="ac-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rep==="oui"?"on oui":""}" data-rep="oui" aria-pressed="${rep==="oui"}">Je viens</button><button type="button" class="${rep==="non"?"on non":""}" data-rep="non" aria-pressed="${rep==="non"}">Je ne viens pas</button></div>
+    ${rep?`<span class="ac-ok">${rep==="oui"?"C'est noté : ton animateur sait que tu viens.":"C'est noté : ton animateur sait que tu ne viens pas."}</span>`:""}`:""}
+  </div>`;
+}
+async function repondre(rep){
+  const p=S.gv&&S.gv.prochaine;if(!p)return;
+  const avant=p.ma_reponse;if(avant===rep)return;
+  if(DEMO){if(avant==="oui")p.viennent--;if(avant==="non")p.absents--;if(rep==="oui")p.viennent++;else p.absents++;p.ma_reponse=rep}
+  else{const {data,error}=await sb.rpc("cap_membre_repondre",{p_reunion:p.id,p_reponse:rep});if(error){toast("Réponse non enregistrée : "+error.message);return}Object.assign(p,data)}
+  toast(rep==="oui"?"À "+(dateReu(p.date,"").split(" ")[0])+" !":"Ton absence est notée");rendu(true);
+}
 function vueAccueil(){
   const g=S.gv;
   if(g===undefined){chargerGv().then(()=>{if(S.onglet==="accueil")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
-  if(!g||g.erreur)return `<div class="page"><div class="card"><b>Groupe indisponible</b><p class="sub">${esc(g&&g.erreur||"")}</p></div></div>`;
-  const c=g.club||{},nom=String(c.nom||"").replace(/^CAP\s+/,""),p=g.prochaine,ch=g.chiffres||{},gr=ch.groupe||{},rg=ch.region||{},mb=g.membres||[],mr=c.metiers_recherches||[];
-  const quandR=p?dateReu(p.date,p.heure?String(p.heure).slice(0,5):""):"";
-  const ST={"envoyee":"Envoyée","contact":"Contact pris","devis":"Devis","signee":"Signée","sans_suite":"Sans suite"};
+  const c=(g&&g.club)||{},nom=String(c.nom||S.moi.club||"").replace(/^CAP\s+/,""),p=g&&g.prochaine;
+  const prenom=String(S.moi.nom||"").split(/\s+/)[0];
+  // À faire : ce qui attend le membre, chaque ligne mène à l'endroit où le faire.
+  const todo=[];
+  aTraiterRecos().slice(0,3).forEach(r=>todo.push(ligneAct(`data-reco-ouvrir="${r.id}"`,esc((membre(r.de)?.nom||"Un membre").split(/\s+/)[0])+" t'a recommandé un contact",esc(r.objet||r.contact_entreprise||"À rappeler"),{fort:true})));
+  if(aTraiterRecos().length>3)todo.push(ligneAct(`data-aller="recos"`,`${aTraiterRecos().length-3} autre${aTraiterRecos().length>4?"s":""} recommandation${aTraiterRecos().length>4?"s":""} reçue${aTraiterRecos().length>4?"s":""}`,"À rappeler",{fort:true}));
+  relancesDues().slice(0,2).forEach(r=>todo.push(ligneAct(`data-reco-ouvrir="${r.id}"`,"Relance prévue",esc(r.objet||r.contact_nom||""))));
+  const nlD=S.msgs.filter(m=>m.a===S.moi.id&&!m.lu_le).length,nlG=grpNonLus();
+  if(nlD)todo.push(ligneAct(`data-aller="messages"`,`${nlD} message${nlD>1?"s":""} non lu${nlD>1?"s":""}`,"Tes messages directs"));
+  if(nlG)todo.push(ligneAct(`data-aller="groupe"`,`${nlG} nouveau${nlG>1?"x":""} message${nlG>1?"s":""} dans le fil`,"Le fil de ton groupe"));
+  const pct=fichePct();
+  if(pct<100)todo.push(ligneAct(`data-aller="profil"`,"Complète ta fiche",`Remplie à ${pct} %`));
+  const m=mesChiffres();
+  const etapes=[["Me connecter avec mon code",true],...ficheEtapes().slice(0,3).map(e=>[e[1],e[2]]),["Recevoir les notifications",S.notif==="actif"]];
+  const faites=etapes.filter(e=>e[1]).length;
   return `<div class="page">
     ${S.viaCrm?`<div class="eq-band">🪪 Ton espace membre, ouvert depuis le CRM<a class="btn mini ghost" href="/">↩ CRM</a></div>`:""}
+    <div class="ac-tete">${av({id:S.moi.id,nom:S.moi.nom,photo:moiFiche().photo})}<div><h1>Bonjour ${esc(prenom)}</h1><p class="sub">${esc(nom)}${c.animateur?" · animé par "+esc(String(c.animateur).split(/\s+/)[0]):""}</p></div></div>
+    ${carteReunion(p,true)}
+    ${volet("afaire","À faire",todo.length||"0",todo.length?`<div class="la-l">${todo.join("")}</div>`:`<p class="vide" style="padding:10px">Rien à faire pour l'instant. Tout est à jour.</p>`,{ouvert:true})}
+    <div class="ac-actions">
+      <button type="button" class="ac-a fort" data-rdonner=""><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Recommander quelqu'un</button>
+      <button type="button" class="ac-a" data-aller="inviter"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M12 14v4M10 16h4"/></svg>Inviter à la réunion</button>
+      <button type="button" class="ac-a" data-aller="groupe"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Écrire au groupe</button>
+    </div>
+    <button type="button" class="ac-bilan" data-aller="chiffres"><span class="label" style="color:#C9D6E3">Ton bilan ${new Date().getFullYear()}</span>
+      <span class="ac-duo"><span><b class="bri">${esc(mad(m&&m.ca_transmis))}</b><small>d'affaires apportées au groupe</small></span><span><b class="bri">${esc(mad(m&&m.ca_recu))}</b><small>d'affaires reçues du groupe</small></span></span>
+      <span class="ac-pied">${m?`${m.donnees||0} recommandation${m.donnees>1?"s":""} donnée${m.donnees>1?"s":""} · ${m.recues||0} reçue${m.recues>1?"s":""}`:"Tes chiffres"}<em>Détail ›</em></span></button>
+    ${faites<etapes.length?volet("demarrer","Bien démarrer",`${faites} sur ${etapes.length}`,`<div class="ac-prog"><i style="width:${Math.round(faites/etapes.length*100)}%"></i></div><div class="la-l">${etapes.map(([l,ok])=>ok?`<span class="ac-fait">✓ ${esc(l)}</span>`:ligneAct(`data-aller="profil"`,esc(l),"")).join("")}</div>`,{ouvert:true}):""}
+  </div>`;
+}
+
+/* ---------- Mon groupe (v1.3.0, réorganisé en volets en v1.9.0) ---------- */
+function vueMonGroupe(){
+  const g=S.gv;
+  if(g===undefined){chargerGv().then(()=>{if(S.onglet==="mongroupe")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
+  if(!g||g.erreur)return `<div class="page"><div class="card"><b>Groupe indisponible</b><p class="sub">${esc(g&&g.erreur||"")}</p></div></div>`;
+  const c=g.club||{},nom=String(c.nom||"").replace(/^CAP\s+/,""),p=g.prochaine,ch=g.chiffres||{},gr=ch.groupe||{},rg=ch.region||{},mb=g.membres||[],mr=c.metiers_recherches||[];
+  const ST={"envoyee":"Envoyée","contact":"Contact pris","devis":"Devis","signee":"Signée","sans_suite":"Sans suite"};
+  const inv=g.invites||[],recos=g.recos||[];
+  const chiffres=`<div class="gv-kpis">
+      <div class="gv-k fort"><span>Affaires du groupe · ${esc(new Date().toLocaleDateString("fr-FR",{month:"long"}))}</span><b class="bri">${esc(mad(gr.ca_mois))}</b><small>Depuis janvier : ${esc(mad(gr.ca_annee))}</small></div>
+      <div class="gv-k"><b class="bri">${gr.recos_mois??0}</b><span>recommandations ce mois</span></div>
+      <div class="gv-k"><b class="bri">${gr.affaires_mois??0}</b><span>affaires signées</span></div>
+      <div class="gv-k"><b class="bri">${mb.length}</b><span>membres</span></div>
+      <div class="gv-k"><b class="bri">${g.reunions&&g.reunions.faites_annee||0}</b><span>réunions tenues en ${new Date().getFullYear()}</span></div></div>
+    ${gr.serie?`<span class="label">Affaires signées par le groupe, 12 mois</span>${barres(gr.serie,"ca")}`:""}
+    ${rg.nom?`<div class="gv-reg"><span>🌍 ${esc(rg.nom)}</span><b>${esc(mad(rg.ca_mois))}</b> ce mois · ${rg.recos_mois} recommandations · ${rg.groupes} groupes</div>`:""}
+    ${S.eq?"":`<button class="btn ghost" data-aller="chiffres">Voir tous les chiffres</button>`}`;
+  const membres=`<div class="gv-mb">${mb.map(m=>`<button class="gv-m${m.moi?" moi":""}" ${S.eq&&!membre(m.id)?"":`data-fiche="${m.id}"`}>${av({id:m.id,nom:m.nom,photo:m.photo})}<span><b>${esc(m.nom)}${m.moi?" · toi":""}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Métier à renseigner")}</small></span></button>`).join("")}</div>`;
+  const invites=inv.length?inv.map((x,i)=>{const [lb,co]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"],t=x.tel?String(x.tel).replace(/[^\d+]/g,""):"";return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>${x.invite_par?(/lien/i.test(x.invite_par)?"Inscrit par le lien d'invitation":"Invité par "+esc(x.invite_par)):""}${x.email?" · "+esc(x.email):""}</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span style="font-size:12px;font-weight:700;color:${co}">${esc(lb)}</span>${t?`<a class="ico" style="width:36px;height:36px" href="tel:${esc(t)}" aria-label="Appeler ${esc(x.nom)}">${ICO.tel}</a>`:""}</span></div>`}).join("")
+    :`<p class="vide" style="padding:12px">Pas encore d'invité.</p>`;
+  const lrecos=recos.length?`<div class="gv-recos">${recos.map(x=>`<div><span>${esc(String(x.de_nom||"?").split(" ")[0])} → ${esc(String(x.a_nom||"?").split(" ")[0])}</span><em class="chip-st ${x.statut}">${esc(ST[x.statut]||x.statut)}${x.statut==="signee"&&x.montant!=null?" · "+esc(mad(x.montant)):""}</em></div>`).join("")}</div>`:`<p class="vide" style="padding:12px">Pas encore de recommandation dans le groupe.</p>`;
+  return `<div class="page">
     ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" onclick="window.close()">Fermer</button></div>`:""}
     <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
       <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
-    ${p?`<div class="card gv-reu"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(p.format?({business:"🤝 Réunion business",conference:"🎤 Conférence",visite:"🏭 Visite d'entreprise"})[p.format]:p.type==="RL"?"Lancement":p.type==="SI"?"Session d'information":p.type||"")}</span>${p.theme?`<span class="gv-theme">${esc(p.theme)}</span>`:""}
-      <b class="bri" style="font-size:20px">${esc(quandR)}</b><span>${esc([p.lieu||"Lieu à confirmer",p.ville].filter(Boolean).join(" · "))}</span>
-      <div class="gv-reu-b"><span>${p.invites} invité${p.invites>1?"s":""} inscrit${p.invites>1?"s":""}</span>${S.eq?"":`<button class="btn mini" data-aller="inviter">Inviter quelqu'un</button>`}</div></div>`
-      :`<div class="card"><b>Pas de réunion planifiée.</b><p class="sub">Elle apparaîtra ici dès que l'animateur l'aura programmée.</p></div>`}
-    <div class="gv-kpis">
-      <div class="gv-k fort"><span>CA du groupe · ${esc(new Date().toLocaleDateString("fr-FR",{month:"long"}))}</span><b class="bri">${esc(mad(gr.ca_mois))}</b><small>Depuis janvier : ${esc(mad(gr.ca_annee))}</small></div>
-      <div class="gv-k"><b class="bri">${gr.recos_mois??0}</b><span>recos ce mois</span></div>
-      <div class="gv-k"><b class="bri">${gr.affaires_mois??0}</b><span>affaires signées</span></div>
-      <div class="gv-k"><b class="bri">${mb.length}</b><span>membres</span></div>
-      <div class="gv-k"><b class="bri">${g.reunions&&g.reunions.faites_annee||0}</b><span>réunions tenues en ${new Date().getFullYear()}</span></div>
-    </div>
-    ${ch.moi?`<div class="gv-moi"><span>Toi :</span> <b>${esc(mad(ch.moi.ca_transmis))}</b> transmis · <b>${esc(mad(ch.moi.ca_recu))}</b> reçu${ch.moi.recues_en_cours?` · <em>${ch.moi.recues_en_cours} reco${ch.moi.recues_en_cours>1?"s":""} à faire avancer</em>`:""}</div>`:""}
-    ${gr.serie?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">CA signé par le groupe, 12 mois</span>${barres(gr.serie,"ca")}</div>`:""}
-    ${rg.nom?`<div class="gv-reg"><span>🌍 ${esc(rg.nom)}</span><b>${esc(mad(rg.ca_mois))}</b> ce mois · ${rg.recos_mois} recos · ${rg.groupes} groupes</div>`:""}
-    ${S.eq?"":`<button class="btn ghost" data-aller="recos">Voir tous les chiffres et mes recos</button>`}
-    <div class="label">Membres et métiers · ${mb.length}</div>
-    <div class="gv-mb">${mb.map(m=>`<button class="gv-m${m.moi?" moi":""}" ${S.eq&&!membre(m.id)?"":`data-fiche="${m.id}"`}>${av({id:m.id,nom:m.nom,photo:m.photo})}<span><b>${esc(m.nom)}${m.moi?" · toi":""}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Métier à renseigner")}</small></span></button>`).join("")}</div>
-    ${mr.length?`<div class="label">Métiers recherchés par le groupe</div><div class="gv-chips">${mr.map(x=>`<span>${esc(x)}</span>`).join("")}</div><p class="note" style="margin:0">Tu connais quelqu'un ? Invite-le à la prochaine réunion.</p>`:""}
-    ${p?`<div class="label">Invités de la prochaine réunion · ${(g.invites||[]).length}</div>${(g.invites||[]).length?(g.invites||[]).map((x,i)=>{const [lb,co]=STATUT_INV[x.statut]||[x.statut,"#7A6A6E"],t=x.tel?String(x.tel).replace(/[^\d+]/g,""):"";return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>${x.invite_par?(/lien/i.test(x.invite_par)?"Inscrit par le lien d'invitation":"Invité par "+esc(x.invite_par)):""}${x.email?" · "+esc(x.email):""}</small></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span style="font-size:12px;font-weight:700;color:${co}">${esc(lb)}</span>${t?`<a class="ico" style="width:36px;height:36px" href="tel:${esc(t)}" aria-label="Appeler ${esc(x.nom)}">${ICO.tel}</a>`:""}</span></div>`}).join(""):`<p class="vide" style="padding:12px">Pas encore d'invité.</p>`}`:""}
-    <div class="label">Dernières recommandations du groupe</div>
-    ${(g.recos||[]).length?`<div class="card gv-recos">${g.recos.map(x=>`<div><span>${esc(String(x.de_nom||"?").split(" ")[0])} → ${esc(String(x.a_nom||"?").split(" ")[0])}</span><em class="chip-st ${x.statut}">${esc(ST[x.statut]||x.statut)}${x.statut==="signee"&&x.montant!=null?" · "+esc(mad(x.montant)):""}</em></div>`).join("")}</div>`:`<p class="vide" style="padding:12px">Pas encore de recommandation dans le groupe.</p>`}
-    <div class="label">Fil du groupe</div>
-    <button class="card gv-fil" data-aller="groupe">${(g.messages||[]).length?g.messages.slice(-3).map(x=>`<span><b>${esc(String(x.auteur_nom).split(" ")[0])}</b> ${esc(x.texte.slice(0,90))}</span>`).join(""):`<span>Aucun message. Lance la discussion.</span>`}<em>Ouvrir le fil ›</em></button>
+    ${carteReunion(p,false)}
+    ${volet("g-chiffres","Les chiffres du groupe",mad(gr.ca_mois),chiffres)}
+    ${volet("g-membres","Membres et métiers",mb.length,membres,{ouvert:true})}
+    ${mr.length?volet("g-recherches","Métiers recherchés",mr.length,`<div class="gv-chips">${mr.map(x=>`<span>${esc(x)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0">Tu connais quelqu'un ? Invite-le à la prochaine réunion.</p>${S.eq?"":`<button class="btn ghost" data-aller="inviter" style="margin-top:8px;width:100%">Inviter quelqu'un</button>`}`):""}
+    ${p?volet("g-invites","Invités à la prochaine réunion",inv.length,invites):""}
+    ${volet("g-recos","Recommandations du groupe",recos.length,lrecos)}
+    <button class="card gv-fil" data-aller="groupe"><span class="label">Fil du groupe</span>${(g.messages||[]).length?g.messages.slice(-3).map(x=>`<span><b>${esc(String(x.auteur_nom).split(" ")[0])}</b> ${esc(x.texte.slice(0,90))}</span>`).join(""):`<span>Aucun message. Lance la discussion.</span>`}<em>Ouvrir le fil ›</em></button>
   </div>`;
 }
+
+/* ---------- Moi : mon compte, mes recommandations, mes chiffres ---------- */
+function vueMoi(){
+  const m=S.moi,f=moiFiche(),pct=fichePct(),at=aTraiterRecos().length,ch=mesChiffres();
+  const nR=(S.recos||[]).filter(r=>r.a===m.id).length,nD=(S.recos||[]).filter(r=>r.de===m.id).length;
+  const notif={actif:"Activées",inactif:"Désactivées",refuse:"Bloquées",ios:"À installer",non:"Non disponibles"}[S.notif||"non"];
+  return `<div class="page">
+    <div class="ac-tete">${av({id:m.id,nom:m.nom,photo:f.photo},"grand")}<div><h1>${esc(m.nom)}</h1><p class="sub">${esc([m.metier,f.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</p></div></div>
+    <div class="la-l">
+      ${ligneAct(`data-aller="recos"`,"Mes recommandations",`${nR} reçue${nR>1?"s":""} · ${nD} donnée${nD>1?"s":""}`,{fin:at?`<span class="badge">${at} à traiter</span>`:"",fort:!!at})}
+      ${ligneAct(`data-aller="chiffres"`,"Mes chiffres",ch?`${esc(mad(ch.ca_transmis))} apportés · ${esc(mad(ch.ca_recu))} reçus`:"Moi, mon groupe, ma région")}
+      ${ligneAct(`data-aller="profil"`,"Ma fiche","Photo, logo, présentation, ce que je cherche",{fin:`<span class="pct${pct<100?" bas":""}">${pct} %</span>`})}
+      ${ligneAct(`data-aller="inviter"`,"Inviter quelqu'un","À la prochaine réunion du groupe")}
+      ${ligneAct(`data-aller="profil"`,"Notifications et code d'accès",esc(notif))}
+    </div>
+    ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}
+  </div>`;
+}
+function vueChiffres(){
+  if(S.recosClub===undefined)chargerRecosClub().then(()=>{if(S.onglet==="chiffres")rendu(true)});
+  return `<div class="page">${ariane()}<div class="head"><div><h1>Mes chiffres</h1><p class="sub">Une recommandation que tu donnes est à ton actif : affaires apportées. Celle que tu reçois, tu la fais avancer et tu saisis le montant signé : affaires reçues.</p></div></div>${tableauHTML()}</div>`;
+}
+function vueReco(){
+  const r=(S.recos||[]).find(x=>x.id===S.recoId);
+  if(!r)return `<div class="page">${ariane()}<p class="vide">Cette recommandation n'est plus disponible.</p></div>`;
+  return `<div class="page">${ariane()}${carteReco(r,r.a===S.moi.id)}</div>`;
+}
+
+/* ---------- Mes recommandations : regroupées par état, le détail s'ouvre au clic ---------- */
+function recoLigne(r,recue){
+  const autre=membre(recue?r.de:r.a),noteEquipe=r.contact_nom===NON_COMM;
+  const titre=r.objet||(noteEquipe?"Affaire notée en réunion":r.contact_nom)||"Recommandation";
+  const sous=(recue?"De ":"Pour ")+(autre?.nom||"un membre")+" · "+new Date(r.cree_le).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+  const etat=`<em class="chip-st ${r.statut}">${esc(LIB_RECO[r.statut]||r.statut)}${r.statut==="signee"&&r.montant!=null?" · "+esc(mad(r.montant)):""}</em>`;
+  return ligneAct(`data-reco-ouvrir="${r.id}"`,esc(titre),etat+" "+esc(sous),{fort:recue&&r.statut==="envoyee"});
+}
+function vueRecos(){
+  if(S.recoForm)return vueDonnerReco();
+  const tab=S.recoTab||"recues",mes=S.recos||[],recue=tab==="recues";
+  const l=mes.filter(r=>recue?r.a===S.moi.id:r.de===S.moi.id);
+  const nr=mes.filter(r=>r.a===S.moi.id).length,nd=mes.filter(r=>r.de===S.moi.id).length;
+  const grp=recue?[["r-atraiter","À traiter : rappelle le contact",["envoyee"],true],["r-encours","En cours",["contact","devis"],true],["r-signees","Signées",["signee"],false],["r-sanssuite","Sans suite",["sans_suite"],false]]
+    :[["d-encours","En cours chez le membre",["envoyee","contact","devis"],true],["d-signees","Signées",["signee"],false],["d-sanssuite","Sans suite",["sans_suite"],false]];
+  const blocs=grp.map(([id,t,st,o])=>{const x=l.filter(r=>st.includes(r.statut));return x.length?volet(id,t,x.length,`<div class="la-l">${x.map(r=>recoLigne(r,recue)).join("")}</div>`,{ouvert:o}):""}).join("");
+  return `<div class="page">${ariane()}
+    <div class="head"><div><h1>Mes recommandations</h1><p class="sub">${recue?"Celles que les membres t'ont passées : tu les fais avancer et tu saisis le montant signé.":"Celles que tu as passées : elles sont à ton actif."}</p></div></div>
+    <button class="btn" data-rdonner="">Recommander quelqu'un</button>
+    <div class="seg" role="tablist"><button role="tab" aria-selected="${recue}" class="${recue?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${!recue}" class="${!recue?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
+    ${blocs||`<p class="vide" style="padding:12px">${recue?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
+  </div>`;
+}
+
 function demoGv(){const a=S.annuaire||[];return{club:{id:"c1",nom:S.moi.club,ville:"Rabat",animateur:"Jean-Baptiste Chiotti",rythme_jour:4,rythme_rang:2,heure:"11:00",lieu:"Le Limonadier",metiers_recherches:["Notaire","Agent immobilier","Banquier"]},
-  prochaine:{date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),heure:"11:00",type:"SI",lieu:"Le Limonadier",ville:"Rabat",invites:2},reunions:{faites_annee:14},
+  prochaine:{id:"r-demo",date:new Date(Date.now()+3*864e5).toISOString().slice(0,10),heure:"11:00",type:"SI",format:"business",lieu:"Le Limonadier",ville:"Rabat",invites:2,ma_reponse:null,viennent:4,absents:1},reunions:{faites_annee:14},
   membres:a.filter(m=>m.club===S.moi.club).map(m=>({id:m.id,nom:m.nom,metier:m.metier,entreprise:m.entreprise,photo:m.photo,moi:!!m.moi})),
   invites:[{id:"ig1",nom:"Hicham Berrada",entreprise:"Berrada Immobilier",metier:"Promoteur",tel:"0662112233",email:"h.berrada@exemple.ma",statut:"Intéressé",invite_par:"Nawal Mansouri"},{id:"ig3",nom:"Sara Lahlou",entreprise:"SL Conseil",metier:"Consultante RH",statut:"À confirmer",invite_par:"Lien du national"}],
   recos:[{de_nom:"Nawal Mansouri",a_nom:"Tarek Amar",statut:"envoyee"},{de_nom:"Tarek Amar",a_nom:"Nawal Mansouri",statut:"devis"},{de_nom:"Tarek Amar",a_nom:"Youssef Alami",statut:"signee",montant:18000}],
@@ -411,7 +613,7 @@ function vueAnnuaire(){
   const nClub=autres.filter(m=>m.club===S.moi.club).length;
   const chip=(k,l)=>`<button class="chip ${S.filtre===k?"on":""}" data-filtre="${esc(k)}">${esc(l)}</button>`;
   return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Bonjour ${esc(String(S.moi.nom).split(/\s+/)[0])}</h1></div></div>
+    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Le réseau</h1><p class="sub">Tous les membres Protéine : cherche un métier, un nom, une ville.</p></div></div>
     <label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Un métier, un nom, une ville…" aria-label="Chercher un membre" value="${esc(S.q)}"></label>
     <div class="chips">${chip("tous","Tous · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${villes.map(v=>chip(v,v)).join("")}</div>
     <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):"Le réseau"}</div>
@@ -423,7 +625,7 @@ function vueFiche(){
   const m=membre(S.fiche);if(!m)return vueAnnuaire();
   const tel=m.telephone?String(m.telephone).replace(/[^\d+]/g,""):"";
   return `<div class="page">
-    <div class="fiche-top"><button class="retour" data-aller="${S.ficheDe||"annuaire"}">${ICO.retour}${S.ficheDe==="accueil"?(S.eq?"Le groupe":"Mon groupe"):"Annuaire"}</button>
+    <div class="fiche-top"><button class="retour" data-retour>${ICO.retour}${esc(S.pile.length?libPage(S.pile[S.pile.length-1].o,S.pile[S.pile.length-1].ex):LIB_PAGE[racine()])}</button>
       <div style="display:flex;align-items:center;gap:16px">${av(m)}<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><h2>${esc(m.nom)}</h2><span style="color:var(--tint);font-size:14px">${esc(m.metier||"Membre du réseau")}</span>${m.club?`<span class="pill-or">Membre · ${esc(m.club.replace(/^CAP\s+/,""))}</span>`:""}</div></div></div>
     <div style="display:flex;gap:10px">
       <button class="btn" style="flex:1" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"}>${ICO.envoi}${m.inscrit?"Écrire un message":"Pas encore inscrit"}</button>
@@ -457,7 +659,7 @@ function vueGroupe(){
     const moi=x.membre_id===S.moi.id;const anim=!x.membre_id;
     h+=`<div class="bulle ${moi?"moi":""}"><span class="aut">${esc(x.auteur_nom)}${anim?" · animateur":""}</span>${esc(x.texte)}</div><span class="heure ${moi?"moi":""}">${d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>`}
   return `<div class="page" style="padding-bottom:0">
-    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="${S.eq?"accueil":"messages"}" aria-label="Retour">${ICO.retour}</button>
+    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-retour aria-label="Fermer le fil et revenir">${ICO.retour}</button>
       <span class="who">${av({id:"g",nom:nomC||"Groupe"})}<span class="t" style="display:flex;flex-direction:column;min-width:0"><b style="font-size:15px">${esc(nomC||"Mon groupe")}</b><span style="font-size:12px;color:var(--muted)">Tous les membres du groupe et l'animateur</span></span></span></div>
     <div class="fil">${h||`<p class="vide">Le fil du groupe est vide. Lance la discussion : une question, une info, un merci.</p>`}</div></div>
     <div class="saisie"><form id="f-grp"><textarea id="g-txt" rows="1" placeholder="Écrire au groupe…" aria-label="Message au groupe" maxlength="2000"></textarea><button type="submit" aria-label="Envoyer">${ICO.envoi}</button></form></div>`;
@@ -501,7 +703,7 @@ function vueConv(){
     const moi=x.de===S.moi.id;
     h+=`<div class="bulle ${moi?"moi":""}">${esc(x.texte)}</div><span class="heure ${moi?"moi":""}">${d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}${moi&&x.lu_le?" · Lu":""}</span>`}
   return `<div class="page" style="padding-bottom:0">
-    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-aller="messages" aria-label="Retour aux messages">${ICO.retour}</button>
+    <div class="conv-top"><button class="retour" style="color:var(--ink);width:44px;justify-content:center" data-retour aria-label="Fermer la conversation et revenir">${ICO.retour}</button>
       <button class="who" data-fiche="${m.id}">${av(m)}<span class="t" style="display:flex;flex-direction:column;min-width:0"><b style="font-size:15px">${esc(m.nom)}</b><span style="font-size:12px;color:var(--muted)">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</span></span></button></div>
     <div class="fil">${h||`<p class="vide">Premier message à ${esc(m.nom)}. Présente-toi et dis ce qui t'amène.</p>`}</div></div>
     <div class="saisie"><form id="f-msg"><textarea id="m-txt" rows="1" placeholder="Écrire à ${esc(String(m.nom).split(/\s+/)[0])}…" aria-label="Message" maxlength="4000"></textarea><button type="submit" aria-label="Envoyer">${ICO.envoi}</button></form></div>`;
@@ -526,7 +728,7 @@ async function marquerLus(avec){
 function vueProfil(){
   const m=S.moi;
   return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Mon profil</h1></div></div>
+    ${ariane()}<div class="head"><div><h1>Ma fiche et mes réglages</h1></div></div>
     <div class="card" style="display:flex;align-items:center;gap:14px">${av(m)}<div style="min-width:0"><b class="bri" style="font-size:18px">${esc(m.nom)}</b><p class="sub">${esc([m.metier,m.club&&m.club.replace(/^CAP\s+/,"")].filter(Boolean).join(" · "))}</p></div></div>
     ${carteNotif()}
     ${ficheForm()}
@@ -543,7 +745,7 @@ function vueProfil(){
       <button class="btn ghost" type="submit">Changer mon code</button>
     </form>
     <p class="note">Ton nom, ton métier et le nom de ton entreprise viennent de ta fiche membre : pour les corriger, demande à ton animateur.</p>
-    ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}</div>`;
+</div>`;
 }
 async function enregistrerProfil(){
   const v={p_cherche:$("p-cherche").value,p_tel_visible:$("p-tel").checked,p_annuaire:$("p-annu").checked};
@@ -653,7 +855,7 @@ function vueInviter(){
   if(S.prochaine===undefined){chargerInviter().then(()=>{if(S.onglet==="inviter")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
   const r=S.prochaine;
   return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au club : ton animateur le reçoit tout de suite.</p></div></div>
+    ${ariane()}<div class="head"><div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au club : ton animateur le reçoit tout de suite.</p></div></div>
     ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--deep);color:#fff;border-color:transparent"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
       <b class="bri" style="font-size:20px">${esc(dateReu(r.date,r.heure))}</b><span style="color:var(--tint);font-size:14px">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span></div>
     <form id="f-inv" class="card" style="display:flex;flex-direction:column;gap:12px">
@@ -764,19 +966,6 @@ function carteReco(r,recue){
       <div class="montant-in" id="ss-${r.id}" hidden><input class="champ1" maxlength="1000" placeholder="Pourquoi ? (annulée, pas de budget, injoignable…)" aria-label="Raison" data-note><button class="btn mini" data-ravance="${r.id}" data-st="sans_suite_ok">Valider</button></div>`:""}
   </div>`;
 }
-function vueRecos(){
-  if(S.recosClub===undefined){chargerRecosClub().then(()=>{if(S.onglet==="recos")rendu(true)});}
-  if(S.recoForm)return vueDonnerReco();
-  const tab=S.recoTab||"recues",l=(S.recos||[]).filter(r=>tab==="recues"?r.a===S.moi.id:r.de===S.moi.id);
-  const nr=(S.recos||[]).filter(r=>r.a===S.moi.id).length,nd=(S.recos||[]).filter(r=>r.de===S.moi.id).length;
-    return `<div class="page">
-    <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Recos et chiffres</h1><p class="sub">Tu donnes une reco : elle est à ton actif (CA transmis). Le membre qui la reçoit la fait avancer et saisit le montant signé (son CA reçu).</p></div></div>
-    ${tableauHTML()}
-    <button class="btn" data-rdonner="">Donner une recommandation</button>
-    <div class="seg" role="tablist"><button role="tab" aria-selected="${tab==="recues"}" class="${tab==="recues"?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${tab==="donnees"}" class="${tab==="donnees"?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
-    ${l.length?l.map(r=>carteReco(r,tab==="recues")).join(""):`<p class="vide" style="padding:12px">${tab==="recues"?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
-  </div>`;
-}
 function listeDestinataires(){
   const mots=norm(S.recoQ||"").split(/\s+/).filter(Boolean);
   const l=S.annuaire.filter(m=>!m.moi).filter(m=>{const t=norm([m.nom,m.metier,m.entreprise,m.club,m.ville].join(" "));return mots.every(w=>t.includes(w))}).slice(0,40);
@@ -786,7 +975,7 @@ function brancherDest(){const z=$("r-liste");if(!z)return;z.querySelectorAll("[d
 function vueDonnerReco(){
   const p=membre(S.recoPour);
   return `<div class="page">
-    <button class="retour" data-rannuler style="color:var(--crimson)">‹ Recommandations</button>
+    ${ariane()}
     <div class="head"><div><h1>Donner une recommandation</h1><p class="sub">Le membre reçoit le contact et une notification. Tu suis l'avancement dans « Données ».</p></div></div>
     <form id="f-reco" class="card" style="display:flex;flex-direction:column;gap:12px">
       <div style="display:flex;flex-direction:column;gap:6px"><span class="label">Pour quel membre ? * <b id="r-sel" style="color:var(--crimson);text-transform:none;letter-spacing:0">${esc(p?.nom||"")}</b></span>
@@ -834,7 +1023,7 @@ async function donnerReco(){
   if(DEMO){(S.recos=S.recos||[]).unshift({id:"r"+Date.now(),de:S.moi.id,a:v.a,contact_nom:nom,contact_tel:v.tel,contact_entreprise:v.entreprise,contact_email:v.email,contact_fonction:v.fonction,contact_ville:v.ville,chaleur:v.chaleur,contact_prevenu:v.prevenu,besoin:v.besoin,type_reco:v.type_reco,objet:v.objet,origine:v.origine,budget:v.budget,date_limite:v.date_limite,appel_offre:v.appel_offre,entreprises_consultees:v.entreprises_consultees,contact_civilite:v.civilite,contact_tel2:v.tel2,contact_adresse:v.adresse,statut:"envoyee",montant:null,cree_le:new Date().toISOString()})}
   else{const {error}=await sb.rpc("cap_membre_reco_donner_fiche",{p:v});if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyée : "+error.message);return}await chargerRecos()}
   toast("Recommandation envoyée à "+(membre(S.recoPour)?.nom||"ce membre"));S.recosClub=undefined;
-  aller("recos",{recoForm:false,recoTab:"donnees",recoPour:"",recoQ:""});
+  Object.assign(S,{recoForm:false,recoTab:"donnees",recoPour:"",recoQ:""});S.anim="sort";window.scrollTo(0,0);rendu();
 }
 async function relancerReco(id,date){
   const r=(S.recos||[]).find(x=>x.id===id);if(!r)return;
@@ -868,7 +1057,7 @@ async function pointer(reunion,code){
 function vuePresence(){
   const p=S.presence||{};
   if(p.etat==="en_cours")return `<div class="page"><p class="vide" style="margin-top:30vh">Pointage en cours…</p></div>`;
-  if(p.etat==="erreur")return `<div class="page"><div class="card presence ko"><span class="ico" aria-hidden="true">!</span><b class="bri">Pointage impossible</b><p>${esc(p.t||"")}</p><p class="sub">Montre ce message à ton animateur : il te coche dans la liste.</p></div><button class="btn ghost" data-aller="annuaire">Aller à l'annuaire</button></div>`;
+  if(p.etat==="erreur")return `<div class="page"><div class="card presence ko"><span class="ico" aria-hidden="true">!</span><b class="bri">Pointage impossible</b><p>${esc(p.t||"")}</p><p class="sub">Montre ce message à ton animateur : il te coche dans la liste.</p></div><button class="btn ghost" data-aller="accueil">Revenir à l'accueil</button></div>`;
   return `<div class="page"><div class="card presence"><span class="ico" aria-hidden="true">✓</span><b class="bri">${p.deja?"Tu es déjà pointé":"Présence enregistrée"}</b>
     <p>${esc(String(p.club||"").replace(/^CAP\s+/,""))}${p.date?" · "+esc(dateReu(p.date,p.heure)):""}</p><p class="sub">Bonne réunion ! Pense à donner tes recommandations.</p></div>
     <button class="btn" data-aller="recos">Donner une recommandation</button></div>`;
@@ -877,7 +1066,12 @@ function vuePresence(){
 /* ---------- Écouteurs ---------- */
 function brancher(){
   const app=$("app");
-  app.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche,ficheDe:S.onglet==="accueil"?"accueil":"annuaire"}));
+  app.querySelectorAll("[data-fiche]").forEach(b=>b.onclick=()=>aller("fiche",{fiche:b.dataset.fiche}));
+  app.querySelectorAll("[data-retour]").forEach(b=>b.onclick=()=>retour());
+  app.querySelectorAll("[data-ariane]").forEach(b=>b.onclick=()=>revenirA(Number(b.dataset.ariane)));
+  app.querySelectorAll("[data-reco-ouvrir]").forEach(b=>b.onclick=()=>aller("reco",{recoId:b.dataset.recoOuvrir}));
+  app.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>repondre(b.dataset.rep));
+  app.querySelectorAll("details[data-volet]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-volet-"+d.dataset.volet,d.open?"1":"0")}catch(e){}});
   app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
   app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));
@@ -896,7 +1090,6 @@ function brancher(){
   app.querySelectorAll("[data-tbvue]").forEach(b=>b.onclick=()=>{S.tbVue=b.dataset.tbvue;rendu(true)});
   app.querySelectorAll("[data-rtab]").forEach(b=>b.onclick=()=>{S.recoTab=b.dataset.rtab;rendu(true)});
   app.querySelectorAll("[data-rdonner]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:true,recoPour:b.dataset.rdonner||""}));
-  app.querySelectorAll("[data-rannuler]").forEach(b=>b.onclick=()=>aller("recos",{recoForm:false}));
   app.querySelectorAll("[data-ravance]").forEach(b=>b.onclick=()=>avancerReco(b.dataset.ravance,b.dataset.st));
   app.querySelectorAll("[data-rrelance]").forEach(i=>i.onchange=()=>relancerReco(i.dataset.rrelance,i.value));
   const ao=$("r-ao");if(ao)ao.onchange=()=>{$("r-ao-f").hidden=!ao.checked};
@@ -942,7 +1135,7 @@ async function demarrerEquipe(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   const {data:{session}}=await sb.auth.getSession();
   if(!session){$("app").innerHTML=`<div class="page"><div class="card"><b>Connecte-toi d'abord au CRM.</b><p class="sub">La vue membre s'ouvre depuis l'espace Groupe du CRM, avec ta session d'animateur ou de direction.</p></div></div>`;return}
-  S.eq=true;S.moi={id:null,nom:"Équipe",club:""};S.onglet="accueil";
+  S.eq=true;S.moi={id:null,nom:"Équipe",club:""};S.onglet="mongroupe";
   await chargerGv();if(S.gv&&S.gv.club)S.moi.club=S.gv.club.nom;
   await Promise.all([chargerAnnuaire(),chargerGroupe()]);ecouter();rendu();
 }

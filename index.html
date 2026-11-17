@@ -2086,6 +2086,19 @@ html{scrollbar-gutter:stable}
 html :is(.rail-date,.reu-d,.rl-date,.mtg-date){min-width:52px;min-height:52px;border-radius:14px;border:1px solid #3A3C40!important;box-shadow:0 1px 3px -1px rgba(0,0,0,.3)}
 html.dark :is(.rail-date,.reu-d,.rl-date,.mtg-date){border-color:#4A4C51!important}
 html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0}
+/*v1.19 leads vues*/.ld-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.ld-modes{flex:none}
+.ld-fil{list-style:none;margin:0;padding:0;display:grid;gap:6px}.ld-fil li{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4}
+.ld-fil i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;background:var(--line);color:var(--ink)}
+.ld-fil li.ok i{background:rgba(61,170,116,.2);color:#3DAA74}.ld-fil li.b i{background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold)}.ld-fil li.w i{background:color-mix(in srgb,var(--crimson) 18%,transparent);color:var(--crimson-txt,var(--crimson))}
+.ld-fil small,.ld-cel small{display:block;color:var(--muted);font-size:11.5px}.ld-sheet{color:#3DAA74;font-size:11.5px}
+.ld-tab-w{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}.ld-tab{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}
+.ld-tab th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line)}
+.ld-tab td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}.ld-tab tr:last-child td{border-bottom:0}.ld-tab td>b{display:block}.ld-tab td>small{color:var(--muted)}
+.ld-tab .ld-st{display:inline-block;margin:0 4px 4px 0}.ld-cel{display:block}.ld-cel.w{color:var(--crimson-txt,var(--crimson))}.ld-vide{color:var(--muted)}.ld-tact{white-space:nowrap}.ld-tact .btn{margin:0 4px 4px 0}
+.ld-kb{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}.ld-col{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;display:grid;gap:8px;align-content:start;min-width:170px}
+.ld-col h4{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;justify-content:space-between}.ld-col h4 em{font-style:normal;color:var(--ink)}
+.ld-mini{all:unset;cursor:pointer;display:grid;gap:3px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg,transparent);font-size:12.5px}.ld-mini:hover{border-color:var(--crimson)}.ld-mini small{color:var(--muted)}.ld-mini span{font-size:11.5px}.ld-mini i{font-style:normal;color:var(--muted)}
+@media(max-width:899px){.ld-kb{grid-template-columns:repeat(6,minmax(200px,82vw));scroll-snap-type:x mandatory}.ld-col{scroll-snap-align:start}}
 /*v1.18 leads*/.ld{display:grid;gap:12px}.ld-tete{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.ld-tete h3{margin:0 0 4px}
 .ld-reu{display:grid;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.ld-reu label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.ld-warn{color:var(--gold)}
 .ld-chips{display:flex;gap:6px;flex-wrap:wrap}.ld-liste{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
@@ -2195,8 +2208,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.18.1";
+const APP_VERSION="1.19.0";
 const CHANGELOG=[
+  {v:"1.19.0",date:"17 novembre 2026",notes:{"Ajouté":["Leads : trois affichages (cartes, liste, suivi en colonnes).","Chaque lead montre son fil : qui l'a contacté et quand, qui a envoyé l'invitation, quand et pour quelle réunion, s'il est inscrit, s'il est venu.","Les inscriptions par le lien national sont rapprochées des leads (même mobile ou même nom) : le lead passe en « Inscrit » tout seul. Après la réunion, « Venu ? Oui / Non »."]}},
   {v:"1.18.1",date:"17 novembre 2026",notes:{"Amélioré":["Pastille de date presque carrée, coins arrondis, fin cadre anthracite."]}},
   {v:"1.18.0",date:"17 novembre 2026",notes:{
     "Ajouté":["Leads nationaux (Adhésions → Leads nationaux, ou l'onglet 📇 Leads) : les contacts transmis par le national, avec leur état (à contacter, message envoyé, contacté, inscrit, pas intéressé) et « à rappeler ».","Invitation WhatsApp prête pour chaque lead : la prochaine réunion, son lien d'inscription suivi, la question « souhaitez-vous que je vous appelle avant ? » et le numéro de celui qui envoie. Texte modifiable et gardé comme modèle.","« ✓ Contacté » et « Suivi… » notent qui a contacté et quand ; l'état part aussi dans le Google Sheet des leads une fois le lien installé."]}},
@@ -2735,7 +2749,7 @@ function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse
 function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
-function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null}}
+function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||""}}
 function mapMembre(r){return{id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
@@ -7487,25 +7501,68 @@ function leadVals(l,m){const dt=dObj(m.date),lu=m.lieuId?lieu(m.lieuId):null;ret
 function leadMonTel(){const an=SESSION.animId&&DB.animateurs.find(a=>a.id===SESSION.animId),t=(an&&an.tel)||SESSION.tel||"";return t?fmtTelAff("+"+mbWa(t)):"(votre numéro)"}
 function leadMessage(l,m){if(!m)return"";const v=leadVals(l,m);
   return leadModele().replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x)}
-function leadsHTML(){const L=(DB.leads||[]).slice(),f=window._leadF||"tous",m=leadReunion(),RE=leadReunions();
-  const cnt=k=>L.filter(l=>l.statut===k).length,list=L.filter(l=>f==="tous"||(f==="rappel"?l.a_rappeler:l.statut===f));
+function leadsHTML(){leadsAuto();const L=(DB.leads||[]).slice(),f=window._leadF||"tous",m=leadReunion(),RE=leadReunions();
+  const cnt=k=>L.filter(l=>l.statut===k).length,list=L.filter(l=>f==="tous"||(f==="rappel"?l.a_rappeler:f==="venu"?l.venu===true:l.statut===f));
   const ordre={a_contacter:0,message_envoye:1,contacte:2,inscrit:3,pas_interesse:4};list.sort((a,b)=>(ordre[a.statut]-ordre[b.statut])||a.nom.localeCompare(b.nom));
   const chip=(k,l,n)=>`<button class="chip ${f===k?"on":""}" onclick="window._leadF='${k}';render()">${l}${n!=null?`<em>${n}</em>`:""}</button>`;
   return `<section class="ld"><div class="ld-tete"><div><h3>📇 Leads nationaux</h3><p class="fh-note">Liste « Leads CAP Maroc ». Invite par WhatsApp à la prochaine réunion, puis note qui a été contacté : le Google Sheet est mis à jour.</p></div>
     <button class="btn ghost mini" onclick="leadForm()">＋ Ajouter un lead</button></div>
     <div class="ld-reu"><label>Réunion de l'invitation</label><select onchange="window._leadReu=this.value;render()">${RE.slice(0,12).map(x=>{const d=dObj(x.date),c=club(x.clubId)||{};return `<option value="${x.id}" ${m&&m.id===x.id?"selected":""}>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} · ${x.heure?x.heure.slice(0,5):""} · ${esc((c.nom||"").replace(/^CAP\s+/,""))}${x.nat&&x.nat.invitation_id?" · lien national":""}</option>`}).join("")||`<option>Aucune réunion à venir</option>`}</select>
       ${m&&!(m.nat&&m.nat.invitation_id)?`<small class="ld-warn">Cette réunion n'a pas encore d'invitation au national : le message enverra le lien d'adhésion du groupe.</small>`:""}</div>
-    <div class="ld-chips">${chip("tous","Tous",L.length)}${chip("a_contacter","À contacter",cnt("a_contacter"))}${chip("message_envoye","Message envoyé",cnt("message_envoye"))}${chip("contacte","Contactés",cnt("contacte"))}${chip("rappel","📞 À rappeler",L.filter(l=>l.a_rappeler).length)}</div>
-    <div class="ld-liste">${list.map(leadCarte).join("")||`<p class="fh-empty">Aucun lead dans ce filtre.</p>`}</div></section>`}
+    <div class="ld-bar"><div class="ld-chips">${chip("tous","Tous",L.length)}${chip("a_contacter","À contacter",cnt("a_contacter"))}${chip("message_envoye","Message envoyé",cnt("message_envoye"))}${chip("contacte","Contactés",cnt("contacte"))}${chip("inscrit","✓ Inscrits",cnt("inscrit"))}${chip("venu","★ Venus",L.filter(l=>l.venu===true).length)}${chip("rappel","📞 À rappeler",L.filter(l=>l.a_rappeler).length)}</div>
+      <div class="seg ld-modes">${LD_MODES.map(([k,lb])=>`<button class="${ldVue()===k?"on":""}" onclick="ldChoisirVue('${k}')">${lb}</button>`).join("")}</div></div>
+    ${ldVue()==="liste"?leadListe(list):ldVue()==="suivi"?leadSuiviVue(L):`<div class="ld-liste">${list.map(leadCarte).join("")||`<p class="fh-empty">Aucun lead dans ce filtre.</p>`}</div>`}</section>`}
+/*v1.19 leads : modes d'affichage, fil de suivi (qui, quand, quelle réunion), inscription rapprochée, présence*/
+const LD_MODES=[["cartes","▦ Cartes"],["liste","☰ Liste"],["suivi","➜ Suivi"]];
+function ldVue(){try{const v=localStorage.getItem("cap-ldvue");return LD_MODES.some(x=>x[0]===v)?v:"cartes"}catch(e){return "cartes"}}
+function ldChoisirVue(v){try{localStorage.setItem("cap-ldvue",v)}catch(e){}render()}
+function ldNom(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim().split(" ").filter(w=>w.length>1).sort().join(" ")}
+function ldTel(t){const d=String(t||"").replace(/\D/g,"");return d.length>=9?d.slice(-9):""}
+function ldReu(id){return id?DB.reunions.find(m=>m.id===id):null}
+function ldReuLib(m){if(!m)return"";const d=dObj(m.date);return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}${m.heure?" · "+m.heure.slice(0,5):""}`}
+function ldDate(iso){if(!iso)return"";const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+(d.getHours()||d.getMinutes()?" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"")}
+/* Inscription : le lead figure parmi les invités d'une réunion (inscrits par le lien national, ou ajoutés à la main) — même mobile ou même nom */
+function leadInscription(l){const t=ldTel(l.telephone),n=ldNom(l.nom);if(!t&&!n)return null;
+  const R=DB.reunions.slice().sort((a,b)=>(a.id===l.reunion_id?-1:b.id===l.reunion_id?1:0)||b.date.localeCompare(a.date));
+  for(const m of R){if(l.message_le&&m.date<String(l.message_le).slice(0,10)&&m.id!==l.reunion_id)continue;
+    const g=(m.guests||[]).find(g=>g._id===l.invite_id||(t&&ldTel(g.tel)===t)||(n&&ldNom(g.nom)===n));if(g)return{m,g}}return null}
+function leadsAuto(){const fait=window._ldAuto||(window._ldAuto=new Set());
+  if((DB.reglages||{}).leads_sheet_url&&!window._ldSheetRattrape){window._ldSheetRattrape=1;(DB.leads||[]).filter(l=>(l.message_le||l.contacte_par===SESSION.id)&&!l.sheet_le&&l.feuille).forEach((l,i)=>setTimeout(()=>leadSheet(l),400*i))}
+  (DB.leads||[]).forEach(l=>{if(fait.has(l.id)||l.statut==="pas_interesse")return;const x=leadInscription(l);if(!x)return;
+    if(l.invite_id===x.g._id&&l.statut==="inscrit")return;fait.add(l.id);
+    setTimeout(()=>leadMaj(l.id,{statut:"inscrit",invite_id:x.g._id,reunion_id:x.m.id,inscrit_le:l.inscrit_le||new Date().toISOString()},l.invite_id?"":`${l.nom} est inscrit à la réunion du ${ldReuLib(x.m)}`),0)})}
+/* Le fil d'un lead : chaque étape avec qui et quand */
+function leadEtapes(l){const E=[],m=ldReu(l.reunion_id),x=leadInscription(l),passee=m&&m.date<isoJour(TODAY);
+  if(l.contacte_le||l.contacte_par_nom)E.push(["ok","📞",`Contacté${l.contacte_par_nom?" par <b>"+esc(l.contacte_par_nom)+"</b>":""}`,ldDate(l.contacte_le)]);
+  if(l.message_le)E.push(["b","💬",`Invitation WhatsApp envoyée${l.message_par_nom?" par <b>"+esc(l.message_par_nom)+"</b>":""}${m?" · réunion du "+esc(ldReuLib(m)):""}`,ldDate(l.message_le)]);
+  if(x)E.push(["ok","✓",`Inscrit à la réunion du <b>${esc(ldReuLib(x.m))}</b>${x.g.par?" · "+esc(x.g.par):""}`,ldDate(l.inscrit_le)]);
+  else if(l.message_le)E.push(["w","…","Pas encore inscrit",""]);
+  if(l.venu===true)E.push(["ok","★","Venu à la réunion",ldDate(l.venu_note_le)]);
+  else if(l.venu===false)E.push(["off","✕","Pas venu à la réunion",ldDate(l.venu_note_le)]);
+  else if(passee&&(x||l.statut==="inscrit"))E.push(["w","?",`Venu le ${esc(ldReuLib(m))} ? <button class="btn ghost mini" onclick="leadVenu('${l.id}',true)">Oui</button> <button class="btn ghost mini" onclick="leadVenu('${l.id}',false)">Non</button>`,""]);
+  return E}
+function leadFil(l){const E=leadEtapes(l);return E.length?`<ol class="ld-fil">${E.map(([c,i,t,d])=>`<li class="${c}"><i>${i}</i><span>${t}${d?` <small>${esc(d)}</small>`:""}</span></li>`).join("")}</ol>`:`<p class="fh-note">Pas encore contacté.</p>`}
+function leadVenu(id,oui){leadMaj(id,{venu:oui,venu_note_le:new Date().toISOString()},oui?"Noté : venu":"Noté : pas venu")}
+function leadActions(l,mini){const tel=l.telephone;return `${tel?`<button class="btn mini" onclick="leadWa('${l.id}')">💬 ${mini?"WhatsApp":"Inviter par WhatsApp"}</button><a class="btn ghost mini" href="tel:+${esc(mbWa(tel))}">📞 ${esc(fmtTelAff("+"+mbWa(tel)))}</a>`:l.linkedin?`<a class="btn ghost mini" href="${esc(l.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:`<span class="fh-note">Pas de numéro</span>`}
+      ${l.statut==="a_contacter"||l.statut==="message_envoye"?`<button class="btn ghost mini" onclick="leadContacte('${l.id}')">✓ Contacté</button>`:""}<button class="btn ghost mini" onclick="leadSuivi('${l.id}')">Suivi…</button>`}
+function leadListe(list){if(!list.length)return `<p class="fh-empty">Aucun lead dans ce filtre.</p>`;
+  const cel=(E,k)=>{const e=E.find(x=>x[1]===k);return e?`<span class="ld-cel ${e[0]}">${e[2]}${e[3]?`<small>${esc(e[3])}</small>`:""}</span>`:`<span class="ld-vide">—</span>`};
+  return `<div class="ld-tab-w"><table class="ld-tab"><thead><tr><th>Lead</th><th>État</th><th>Contacté</th><th>Invitation</th><th>Inscription</th><th>Présence</th><th></th></tr></thead><tbody>${list.map(l=>{const E=leadEtapes(l),[lib,cl]=LEAD_ST[l.statut]||[l.statut,""];
+    const pres=E.find(x=>["★","✕","?"].includes(x[1]));const ins=E.find(x=>x[1]==="✓"||x[1]==="…");
+    return `<tr class="${cl}"><td><b>${esc(l.nom)}</b><small>${esc(l.specialite||"")}${l.telephone?" · "+esc(fmtTelAff("+"+mbWa(l.telephone))):""}</small></td>
+      <td><span class="ld-st ${cl}">${lib}</span>${l.a_rappeler?`<span class="ld-st w">📞 À rappeler</span>`:""}</td>
+      <td>${cel(E,"📞")}</td><td>${cel(E,"💬")}</td><td>${ins?`<span class="ld-cel ${ins[0]}">${ins[2]}${ins[3]?`<small>${esc(ins[3])}</small>`:""}</span>`:`<span class="ld-vide">—</span>`}</td>
+      <td>${pres?`<span class="ld-cel ${pres[0]}">${pres[2]}</span>`:`<span class="ld-vide">—</span>`}</td><td class="ld-tact">${leadActions(l,true)}</td></tr>`}).join("")}</tbody></table></div>`}
+function leadSuiviVue(L){const C=[["a_contacter","À contacter",l=>l.statut==="a_contacter"],["message_envoye","Message envoyé",l=>l.statut==="message_envoye"],["contacte","Contacté",l=>l.statut==="contacte"],["inscrit","Inscrit",l=>l.statut==="inscrit"&&l.venu!==true],["venu","Venu",l=>l.venu===true],["pas_interesse","Pas intéressé",l=>l.statut==="pas_interesse"]];
+  return `<div class="ld-kb">${C.map(([k,lb,f])=>{const it=L.filter(f);return `<div class="ld-col ${k}"><h4>${lb}<em>${it.length}</em></h4>${it.map(l=>{const E=leadEtapes(l),last=E.filter(e=>e[3]).pop();
+    return `<button class="ld-mini" onclick="leadSuivi('${l.id}')"><b>${esc(l.nom)}</b><small>${esc(l.specialite||"")}</small>${last?`<span>${last[1]} ${last[2].replace(/<button[\s\S]*$/,"")} <i>${esc(last[3])}</i></span>`:""}${l.a_rappeler?`<span class="ld-st w">📞 À rappeler</span>`:""}</button>`}).join("")||`<p class="ld-vide">—</p>`}</div>`}).join("")}</div>`}
 function leadCarte(l){const [lib,cl]=LEAD_ST[l.statut]||[l.statut,""],tel=l.telephone;
   const qui=l.statut==="contacte"||l.statut==="inscrit"?`Contacté${l.contacte_par_nom?" par "+esc(l.contacte_par_nom):""}${l.contacte_le?" le "+esc(adhDate(l.contacte_le)):""}`:l.message_le?`Message envoyé${l.message_par_nom?" par "+esc(l.message_par_nom):""} le ${esc(adhDate(l.message_le))}`:"";
   return `<article class="ld-c ${cl}"><div class="ld-h"><div class="ld-n"><b>${esc(l.nom)}</b><small>${esc(l.specialite||"")}${l.ville?" · "+esc(l.ville):""}${l.source?" · source "+esc(l.source):""}</small></div>
       <span class="ld-st ${cl}">${lib}</span>${l.a_rappeler?`<span class="ld-st w">📞 À rappeler</span>`:""}</div>
     ${l.commentaire||l.notes?`<p class="ld-com">${esc([l.commentaire,l.notes].filter(Boolean).join(" · "))}</p>`:""}
-    ${qui?`<p class="ld-qui">${qui}${l.sheet_le?` · <span title="Écrit dans le Google Sheet">✓ Sheet</span>`:""}</p>`:""}
-    <div class="ld-act">${tel?`<button class="btn mini" onclick="leadWa('${l.id}')">💬 Inviter par WhatsApp</button><a class="btn ghost mini" href="tel:${esc(mbWa(tel).replace(/^/,"+"))}">📞 ${esc(fmtTelAff("+"+mbWa(tel)))}</a>`:l.linkedin?`<a class="btn ghost mini" href="${esc(l.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:`<span class="fh-note">Pas de numéro</span>`}
-      ${l.statut!=="contacte"&&l.statut!=="inscrit"?`<button class="btn ghost mini" onclick="leadContacte('${l.id}')">✓ Contacté</button>`:""}
-      <button class="btn ghost mini" onclick="leadSuivi('${l.id}')">Suivi…</button></div></article>`}
+    ${leadFil(l)}${l.sheet_le?`<small class="ld-sheet">✓ Écrit dans le Google Sheet</small>`:""}
+    <div class="ld-act">${leadActions(l)}</div></article>`}
 function leadMaj(id,patch,msg){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;Object.assign(l,patch);render();
   sb.from("leads").update(patch).eq("id",id).then(({error})=>{if(error){toast(rlsMsg(error),"e");return}if(msg)toast(msg);leadSheet(l)})}
 function leadWa(id){const l=(DB.leads||[]).find(x=>x.id===id),m=leadReunion();if(!l)return;if(!m){toast("Aucune réunion à venir","w");return}
@@ -7529,10 +7586,12 @@ function leadSuivi(id){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;
     <div class="field"><label>État</label><select id="ld-st">${Object.entries(LEAD_ST).map(([k,[lb]])=>`<option value="${k}" ${l.statut===k?"selected":""}>${lb}</option>`).join("")}</select></div>
     <label class="ld-cb"><input type="checkbox" id="ld-rap" ${l.a_rappeler?"checked":""}> Souhaite être appelé avant la réunion</label>
     <div class="field"><label>Téléphone</label><input id="ld-tel" value="${esc(l.telephone||"")}" inputmode="tel"></div>
+    <div class="field"><label>Venu à la réunion</label><select id="ld-venu"><option value="">Pas encore noté</option><option value="1" ${l.venu===true?"selected":""}>Oui, venu</option><option value="0" ${l.venu===false?"selected":""}>Non, pas venu</option></select></div>
+    ${leadFil(l)}
     <div class="field"><label>Notes</label><textarea id="ld-notes" rows="4">${esc(l.notes||"")}</textarea></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" onclick="leadSuiviSauver('${id}')">Enregistrer</button></div>`;openSheet()}
 function leadSuiviSauver(id){const l=(DB.leads||[]).find(x=>x.id===id);if(!l)return;const st=document.getElementById("ld-st").value;
-  const p={statut:st,a_rappeler:document.getElementById("ld-rap").checked,telephone:document.getElementById("ld-tel").value.trim()||null,notes:document.getElementById("ld-notes").value.trim()||null};
+  const p={statut:st,a_rappeler:document.getElementById("ld-rap").checked,telephone:document.getElementById("ld-tel").value.trim()||null,notes:document.getElementById("ld-notes").value.trim()||null};const vn=document.getElementById("ld-venu").value,vb=vn===""?null:vn==="1";if(vb!==(l.venu??null))Object.assign(p,{venu:vb,venu_note_le:new Date().toISOString()});
   if((st==="contacte"||st==="inscrit")&&!l.contacte_le)Object.assign(p,{contacte_le:new Date().toISOString(),contacte_par:SESSION.id,contacte_par_nom:SESSION.name});
   closeSheet();leadMaj(id,p,"Suivi enregistré")}
 function leadForm(){document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"＋",title:"Ajouter un lead",sub:"Il rejoint la liste des leads nationaux"})}
@@ -7545,9 +7604,14 @@ async function leadAjouter(){const g=i=>(document.getElementById(i).value||"").t
   if(error){toast(rlsMsg(error),"e");return}(DB.leads=DB.leads||[]).push(data);closeSheet();window._dmVue="leads";render();toast("Lead ajouté")}
 /* Écriture dans le Google Sheet : POST vers le script Apps Script (texte brut, sans pré-vol). La réponse n'est pas lisible
    (no-cors) : on note l'envoi dans leads.sheet_le. */
+/* Texte écrit dans la colonne « Suivi CRM » : qui a contacté, quand, par quel moyen, puis inscription et présence */
+function leadSheetTexte(l){const P=[],m=ldReu(l.reunion_id),x=leadInscription(l),d=iso=>iso?adhDate(iso):"";
+  if(l.message_le)P.push(`Contacté par ${l.message_par_nom||"l'équipe"} (WhatsApp) le ${d(l.message_le)}${m?" · invité à la réunion du "+ldReuLib(m):""}`);
+  if(l.contacte_le&&(!l.message_le||String(l.contacte_le)>String(l.message_le)))P.push(`Contacté par ${l.contacte_par_nom||"l'équipe"} le ${d(l.contacte_le)}`);
+  if(x)P.push("Inscrit à la réunion du "+ldReuLib(x.m));if(l.venu===true)P.push("Venu");else if(l.venu===false)P.push("Pas venu");
+  if(l.statut==="pas_interesse")P.push("Pas intéressé");return P.join(" · ")||(LEAD_ST[l.statut]||[l.statut])[0]}
 function leadSheet(l){const u=(DB.reglages||{}).leads_sheet_url;if(!u||!l.feuille)return;
-  const [lib]=LEAD_ST[l.statut]||[l.statut];
-  const txt=l.statut==="contacte"||l.statut==="inscrit"?`${lib} par ${l.contacte_par_nom||"l'équipe"} le ${adhDate(l.contacte_le||new Date().toISOString())}`:l.statut==="message_envoye"?`Invitation WhatsApp envoyée par ${l.message_par_nom||"l'équipe"} le ${adhDate(l.message_le||new Date().toISOString())}`:lib;
+  const txt=leadSheetTexte(l);
   fetch(u,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({jeton:(DB.reglages||{}).leads_sheet_jeton||"",feuille:l.feuille,nom:l.nom,suivi:txt+(l.a_rappeler?" · à rappeler":"")+(l.notes?" · "+l.notes:"")})})
     .then(()=>{const t=new Date().toISOString();l.sheet_le=t;sb.from("leads").update({sheet_le:t,sheet_err:null}).eq("id",l.id).then(()=>{})})
     .catch(e=>{sb.from("leads").update({sheet_err:String(e&&e.message||e)}).eq("id",l.id).then(()=>{})})}

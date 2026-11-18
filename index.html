@@ -1253,7 +1253,7 @@ button.cel{cursor:pointer;transition:transform .15s}button.cel:hover{transform:s
 .cst-cn{fill:#fff;font:800 30px "Bricolage Grotesque",sans-serif;text-anchor:middle}.cst-cs{fill:#F2DCE1;font:600 11px Inter,sans-serif;text-anchor:middle}
 .cst-a{cursor:pointer;outline:none;animation:cstVol .9s cubic-bezier(.2,.9,.3,1.2) var(--d) both;transition:opacity .3s}
 @keyframes cstVol{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
-.cst-fl{animation:cstFlotte 5s ease-in-out var(--f) infinite}
+.cst-fl{animation:cstFlotte 5s ease-in-out var(--f,0s) infinite}
 @keyframes cstFlotte{50%{transform:translateY(-4px)}}
 .cst-sl{stroke:rgba(233,207,142,.14);stroke-width:1;transition:stroke .3s,stroke-width .3s}
 .cst-halo{opacity:.22;transform-box:fill-box;transform-origin:center;animation:cstSouffle 3.2s ease-in-out infinite}
@@ -1289,7 +1289,8 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 .cst-back{border:0;background:none;color:#A9C2DA;font-weight:700;cursor:pointer;padding:4px}
 .cst-leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:#E9D5DA}.cst-leg span{display:flex;align-items:center;gap:6px}
 .cst-leg i{width:12px;height:12px;border-radius:50%;display:inline-block}.cst-leg i.pip{background:#D81B3F;box-shadow:0 0 0 2px #1A060C}
-@media (prefers-reduced-motion:reduce){.cst-o *,.cst-o{animation:none!important;transition:none!important}.cst-l{stroke-dashoffset:0}}
+/* v1.75 : en mouvement réduit, on coupe les entrées et les déplacements vifs, on garde le souffle, le scintillement et la rotation lente (JB les veut au téléphone) */
+@media (prefers-reduced-motion:reduce){.cst-o,.cst-a,.cst-c,.cst-l,.cst-sub,.cst-onde{animation:none!important}.cst-l{stroke-dashoffset:0}}
 /*v0291 — notifications en bas à droite (pile commune) */
 #notifs{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(84px + env(safe-area-inset-bottom));z-index:75;width:min(400px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px;align-items:stretch;pointer-events:none}
 #notifs>*{pointer-events:auto}
@@ -1894,7 +1895,7 @@ html.dark .map-embed{background:var(--soft)}
 html.dark .tbl .act,html.dark .ck-act.urgent{background:#4A2128;color:#F6DDE0;border-color:#64303A}
 #cst-o .cst-gn{font-size:14px}#cst-o .cst-a.hov .cst-gn{font-size:15.5px}
 #cst-o .cst-subt{font-size:16px}#cst-o .cst-rt{font-size:24px}#cst-o .cst-rs{font-size:14px}#cst-o .cst-n{font-size:15px}
-#cst-o svg.pose .cst-a,#cst-o svg.pose .cst-a *{animation-name:none}#cst-o svg.pose .cst-a.hov .cst-onde,#cst-o svg.pose .cst-a.tap .cst-onde{animation-name:cstOnde}#cst-o svg.pose .cst-halo{animation-name:cstSouffle}
+#cst-o svg.pose .cst-a,#cst-o svg.pose .cst-a *{animation-name:none}#cst-o svg.pose .cst-a.hov .cst-onde,#cst-o svg.pose .cst-a.tap .cst-onde{animation-name:cstOnde}#cst-o svg.pose .cst-halo{animation-name:cstSouffle}#cst-o svg.pose .cst-fl{animation-name:cstFlotte}
 #cst-o .cst-a.hov .cst-corps,#cst-o .cst-a:focus-visible .cst-corps{transform:scale(1.5);stroke:rgba(255,255,255,.3);stroke-width:1.5;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}#cst-o .cst-a.hov .cst-gn{fill:#F6E9EC}
 .cf-h{padding-right:34px}
 @media (max-width:899px){
@@ -2525,8 +2526,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.74.0";
+const APP_VERSION="1.75.0";
 const CHANGELOG=[
+  {v:"1.75.0",date:"19 novembre 2026",notes:{"Modifié":["Constellation : les groupes tournent de nouveau autour de leur ville, lentement, et s'arrêtent quand tu en touches un. Ils ne suivent ni le doigt ni la souris."]}},
   {v:"1.74.0",date:"19 novembre 2026",notes:{"Ajouté":["Documents du réseau : « 🚀 Kit de départ », avec les deux vidéos « Installer l'appli » (iPhone et Android), le guide animé et l'envoi par WhatsApp à un membre ou à un animateur. Ouvert à toute l'équipe et aux membres.","Inscrit à la réunion d'un autre groupe : un toucher sur une personne ouvre sa fiche de base, et « Voir le groupe » ouvre la page du groupe avec tous ses membres."],"Modifié":["Un document déposé par le bureau national est visible des animateurs d'office (la case se décoche au besoin)."]}},
   {v:"1.73.0",date:"19 novembre 2026",notes:{"Ajouté":["« Comment installer l'appli sur mon téléphone » : un guide animé montre les gestes, pour iPhone et pour Android. Il s'ouvre depuis l'écran de connexion (CRM et espace membre), depuis Paramètres → Aide et depuis « Moi » dans l'espace membre.","Le lien du guide part tout seul dans les messages d'accès : code de l'espace membre, accès au CRM d'un animateur."]}},
   {v:"1.72.1",date:"19 novembre 2026",notes:{"Modifié":["Fiche réunion : le texte d'explication de l'invitation nationale est replié sous « Comment ça marche », et le bouton devient « Actualiser ». La lecture automatique des inscrits démarre à 7 h."]}},
@@ -8064,7 +8066,7 @@ function cstRender(){
       const alerte=g.e==="sans"||g.e==="bil";
       astres+=`<line class="cst-sl" data-sl="${i}" x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${hx}" y2="${hy}"/>
       <g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} membre${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--d:${(d0+gi*.06).toFixed(2)}s">
-        <g class="cst-pl"><g class="cst-fl"><circle class="cst-halo" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" r="${sz.toFixed(1)}" stroke="${c}"/>
+        <g class="cst-pl"><g class="cst-fl" style="--f:-${((gi||0)*1.3%5).toFixed(1)}s"><circle class="cst-halo" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" r="${sz.toFixed(1)}" stroke="${c}"/>
         <circle class="cst-corps" r="${sz.toFixed(1)}" fill="${g.e==="sans"?"#2A0C14":c}" stroke="${g.e==="sans"?"#F2E5E8":"rgba(255,255,255,.25)"}"${g.e==="sans"?' stroke-dasharray="3 3"':""}/>
         <circle class="cst-reflet" cx="${(-sz*.35).toFixed(1)}" cy="${(-sz*.38).toFixed(1)}" r="${(sz*.38).toFixed(1)}"/>
         ${g.nb?`<text class="cst-n" y="4.5">${g.nb}</text>`:""}
@@ -8077,7 +8079,7 @@ function cstRender(){
     const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);r.x=x;r.y=y;
     const ux=nR<=1?0:Math.cos(a),uy=nR<=1?-1:Math.sin(a),L=Math.hypot(x-cx,y-cy),d0=.45+ri*.12;
     liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
-    if(!calme&&r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
+    if(r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
     const villes=[...new Set(r.g.map(g=>g.c.ville||"—"))];let ext;
     if(villes.length>=1){
       const RR=villes.length>1?270:170;ext=0;
@@ -8112,8 +8114,11 @@ function cstRender(){
   const ells=orbites.map((_,oi)=>o.querySelector(`ellipse[data-o="${oi}"]`));
   let t0=performance.now(),acc=0,last=t0,ordrePrec="";
   const place=now=>{
-    const dt=Math.min(64,now-last);last=now; // v1.12.1 (JB) : plus de rotation, la constellation reste en place
-    const ts=acc/1000,rot=ts*(2*Math.PI/70),ordre=[];
+    const dt=Math.min(64,now-last);last=now;
+    // v1.75 (JB : « plus de rotation, plus de micro-animations ») : les groupes tournent de nouveau, LENTEMENT (un tour en 2 min 30),
+    // sans jamais suivre le doigt ni la souris ; la rotation s'arrête pendant qu'on regarde un groupe.
+    if(!_cst.pause&&now-t0>1800)acc+=dt;
+    const ts=acc/1000,rot=ts*(2*Math.PI/150),ordre=[];
     orbites.forEach((ob,oi)=>{
       const tilt=TILT,psi=0,cs=Math.cos(psi),sn=Math.sin(psi);
       const el=ells[oi];if(el){el.setAttribute("ry",(ob.R*tilt).toFixed(1));el.setAttribute("transform",`rotate(${(psi*180/Math.PI).toFixed(2)} ${ob.hx.toFixed(1)} ${ob.hy.toFixed(1)})`)}

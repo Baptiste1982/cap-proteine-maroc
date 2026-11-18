@@ -2281,6 +2281,26 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
 .ld-st{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--soft);white-space:nowrap}.ld-st.w{background:var(--crimson-tint);color:var(--crimson-txt,var(--crimson))}.ld-st.b{background:var(--gold-tint);color:var(--gold)}.ld-st.ok{background:rgba(61,170,116,.15);color:#3DAA74}
 .ld-com,.ld-qui{margin:0;font-size:13px;color:var(--muted)}.ld-qui{color:var(--ink)}.ld-act{display:flex;gap:6px;flex-wrap:wrap}.ld-cb{display:flex;gap:8px;align-items:center;margin:6px 0 10px;font-size:14px}
 
+/*v1.49 passe esthétique*/
+a.btn,a.btn:hover,a.btn:focus{text-decoration:none}
+h1.lien-d,h2.lien-d,h3.lien-d,h4.lien-d{text-decoration:none}h1.lien-d:hover,h2.lien-d:hover,h3.lien-d:hover,h4.lien-d:hover{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px}
+.tag.manq{background:var(--warn-tint);color:var(--warn);border-color:transparent}
+.mon-fil[hidden]{display:none}.mon-courbe{max-height:250px}
+a[href^="tel:"]{white-space:nowrap}
+.dm-2 .btn{font-size:13.5px;padding:11px 8px;min-height:0;line-height:1.2}
+.dm-id b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
+.mb-t b.mb-nl{display:flex;align-items:center;gap:6px;overflow:visible}.mb-nom{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mb-nl .mb-anim,.mb-nl .mb-acc{flex:none;margin-left:0}.mb-nl .mb-acc{font-size:11px;color:var(--muted)}.mb-nl .mb-acc.on{color:#3DAA74}
+.rank-plus summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:13px;font-weight:700;color:var(--crimson-txt,var(--crimson))}.rank-plus summary::-webkit-details-marker{display:none}.rank-plus summary::after{content:" ›"}.rank-plus[open] summary{display:none}.rank-plus summary:hover{background:var(--crimson-tint)}
+@media(min-width:900px){.dm-cols:has(.dm-col.vide):has(.dm-col:not(.vide)){display:flex}.dm-cols:has(.dm-col.vide):has(.dm-col:not(.vide))>.dm-col{flex:1 1 0}.dm-cols:has(.dm-col.vide):has(.dm-col:not(.vide))>.dm-col.vide{flex:.5 1 0}}
+@media(max-width:899px){
+  html.th-graphite .nav button.on{box-shadow:none}
+  .grp-raccourcis{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px 2px}.grp-raccourcis::-webkit-scrollbar{display:none}.grp-raccourcis>*{flex:none;white-space:nowrap}
+  .fil .fil-l>*{display:none}.fil .fil-l>*:nth-last-child(-n+3){display:inline-block}.fil .fil-l>.fil-c{max-width:22ch}
+}
+@media(max-width:600px){
+  .page-head{flex-wrap:wrap;align-items:flex-start}.page-head:has(.btn + .btn)>div:first-child{flex:1 1 100%}
+  .mon .page-head .mon-act{width:100%;justify-content:flex-start}
+}
 </style>
 </head>
 <body>
@@ -2386,8 +2406,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.48.0";
+const APP_VERSION="1.49.0";
 const CHANGELOG=[
+  {v:"1.49.0",date:"18 novembre 2026",notes:{"Modifié":["Passe de finition sur tous les écrans. Au téléphone : le titre d'une page ne se serre plus contre ses boutons, le fil d'Ariane ne garde que la page d'avant, les raccourcis du groupe tiennent sur une ligne à faire défiler, l'onglet actif n'a plus de liseré rouge.","Statistiques : en vue régionale, l'écran s'ouvre sur ta région et non plus sur tout le réseau.","Adhésions : les colonnes vides se resserrent, les noms et les groupes ne sont plus coupés. Membres : le nom, l'étiquette Animateur et le point « espace membre » restent lisibles.","Lieux : la pastille « À localiser » reprend sa taille, une adresse qui n'est qu'un lien n'est plus affichée. Synthèse : la liste « À relancer » montre cinq lignes, le reste se déplie."],"Corrigé":["Boutons soulignés (« Mon espace membre », « Vue membre ») et titre du groupe souligné en pointillés.","Agenda : la tuile « Villes actives » n'est plus encadrée en rouge sans raison."]}},
   {v:"1.48.0",date:"18 novembre 2026",notes:{"Modifié":["« Villes » (ou « Zones ») et « Rapport du mois » ouvrent maintenant l'écran des statistiques, au bon niveau : un seul endroit pour les chiffres, avec le choix de la période, la comparaison, l'export Excel et le PDF.","Le tableau des statistiques se lit « Par ville » (ou « Par région ») ou « Par groupe » : tous les groupes à plat, comme l'ancien rapport. Une colonne Adhésions et une ligne Total s'ajoutent. Un toucher sur un groupe ouvre ses chiffres et ses membres."]}},
   {v:"1.47.0",date:"18 novembre 2026",notes:{"Ajouté":["Pièces en lot (Membres → « 🧾 Pièces en lot », ou menu Réseau) : plusieurs factures, reçus ou attestations déposés d'un coup. Chaque fichier va chez le membre dont le nom figure dans le nom du fichier ; chaque ligne se corrige avant l'envoi.","Un fichier dont le nom n'est pas reconnu, ou qui correspond à une personne présente dans plusieurs groupes, attend que tu choisisses le membre.","Mêmes règles qu'à l'unité : la pièce est visible du membre, une facture seulement une fois son paiement coché, et il est prévenu sur son téléphone."]}},
   {v:"1.46.0",date:"18 novembre 2026",notes:{"Modifié":["L'annonce d'une nouvelle version est une carte blanche, rangée avec les notifications : en bas à droite sur ordinateur, juste au-dessus de la barre du bas au téléphone. Elle ne flotte plus en rouge au milieu de la page."]}},
@@ -3582,7 +3603,7 @@ function mbCarte(m,i){
   const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
   return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <span class="mb-av">${esc(initiales(m.nom))}</span>
-    <span class="mb-t"><b>${esc(m.nom)}${mbAnim(m)?` <span class="mb-anim">Animateur</span>`:""}${m.inscrit?` <span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"● espace membre":"○ code envoyé"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    <span class="mb-t"><b class="mb-nl"><span class="mb-nom">${esc(m.nom)}</span>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}${m.inscrit?`<span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}" aria-label="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"●":"○"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
     ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
   </div>`;
 }
@@ -4241,7 +4262,7 @@ function viewAgenda(){
       ${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div>
     <div class="stats">
       <div class="stat link ${filter==="up"?"on":""}" onclick="filter='up';render()"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
-      <div class="stat link ${filter==="all"?"on":""}" onclick="filter='all';render()"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
+      <div class="stat link" onclick="filter='all';render()"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
       <div class="stat link ${filter==="tbd"?"on":""}" onclick="filter='tbd';render()"><div class="n">${tbd}</div><div class="l">Lieux à définir</div></div>
     </div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -4525,8 +4546,8 @@ function viewLieux(){
         ${l.capacite?`<span class="cap-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${l.capacite}</span>`:""}
         <div class="lieu-name">${esc(l.nom)}</div></div>
       <div class="lieu-info">
-        <div class="sub"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.adresse?` <span class="dot"></span> ${esc(l.adresse.length>32?l.adresse.slice(0,32)+"…":l.adresse)}`:""}</div>
-        <div class="foot"><span class="tag ${nbR?"crim":""}">${nbR} réunion${nbR>1?"s":""} à venir</span>${l.lat?`<span class="tag ok">📍 Géolocalisé</span>`:`<span class="tag empty">Géoloc manquante</span>`}</div>
+        <div class="sub"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.adresse&&!/^https?:/i.test(l.adresse.trim())?` <span class="dot"></span> ${esc(l.adresse.length>32?l.adresse.slice(0,32)+"…":l.adresse)}`:""}</div>
+        <div class="foot"><span class="tag ${nbR?"crim":""}">${nbR} réunion${nbR>1?"s":""} à venir</span>${l.lat?`<span class="tag ok">📍 Géolocalisé</span>`:`<span class="tag manq">📍 À localiser</span>`}</div>
       </div></div>`;
   }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""}</p></div></div>
@@ -5171,9 +5192,9 @@ function dashRelancer(clubs){
     const manque=flag.filter(f=>!m[f[0]]).map(f=>f[1]).join(", ");
     return `<div class="rank-row link" onclick="memberSheet('${m.clubId}','${m.id}')"><div class="rn">${esc(m.nom)}<small>${esc(club(m.clubId).nom.replace("CAP ",""))} · manque : ${esc(manque)}</small></div>
       <span class="gstat" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${4-flag.filter(f=>!m[f[0]]).length}/4</span></div>`;
-  }).join("");
+  });
   return `<div class="dash-h">À relancer <span style="color:var(--warn);font-weight:700">${list.length}</span></div>
-    <div class="rank">${rows}</div>`;
+    <div class="rank">${rows.slice(0,5).join("")}${rows.length>5?`<details class="rank-plus"><summary>Voir les ${rows.length-5} autres</summary>${rows.slice(5).join("")}</details>`:""}</div>`;
 }
 function dashDrill(kind,sc){
   const ids=new Set(_dashScope[sc]||DB.clubs.map(c=>c.id));
@@ -7988,7 +8009,7 @@ function natCarte(a,i,col){
 function natPipeHTML(){
   const cols=natCols(),sel=window._natCol||"envoyer";
   return `<div class="dm-seg" role="tablist">${cols.map(c=>`<button role="tab" aria-selected="${sel===c.k}" class="${sel===c.k?"on":""}" onclick="window._natCol='${c.k}';dmChercher(window._dmQ||'')">${c.ico} ${c.t}<em>${c.l.length}</em></button>`).join("")}</div>
-    <div class="dm-cols">${cols.map(c=>`<section class="dm-col nat-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
+    <div class="dm-cols">${cols.map(c=>`<section class="dm-col nat-${c.k}${sel===c.k?" on":""}${c.l.length?"":" vide"}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
       <div class="dm-list">${c.l.length?c.l.map((a,i)=>natCarte(a,i,c.k)).join(""):`<p class="dm-vide">${window._dmQ?"Aucun résultat":c.k==="envoyer"?"Rien à envoyer ✓":c.k==="attente"?"Aucun contrat en attente":"Aucune pour l'instant"}</p>`}</div></section>`).join("")}</div>`;
 }
 function natEnvoyer(id){adhDetail(id);setTimeout(()=>adhNational(id),30)}
@@ -8008,7 +8029,7 @@ function dmPipeHTML(){
   if(window._dmVue==="nat")return natPipeHTML();
   const cols=dmCols(),sel=window._dmCol||"todo";
   return `<div class="dm-seg" role="tablist">${cols.map(c=>`<button role="tab" aria-selected="${sel===c.k}" class="${sel===c.k?"on":""}" onclick="window._dmCol='${c.k}';dmChercher(window._dmQ||'')">${c.ico} ${c.t}<em>${c.l.length}</em></button>`).join("")}</div>
-    <div class="dm-cols">${cols.map(c=>`<section class="dm-col dm-${c.k}${sel===c.k?" on":""}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
+    <div class="dm-cols">${cols.map(c=>`<section class="dm-col dm-${c.k}${sel===c.k?" on":""}${c.l.length?"":" vide"}"><header><span>${c.ico}</span><div><b>${c.t}</b><small>${c.s}</small></div><em>${c.l.length}</em></header>
       <div class="dm-list">${c.l.length?(c.k==="fini"?c.l.slice(0,12):c.l).map((a,i)=>dmCarte(a,i,c.k)).join(""):`<p class="dm-vide">${window._dmQ?"Aucun résultat":c.k==="todo"?"Rien à intégrer ✓":c.k==="saisie"?"Rien à saisir ✓":"Aucune pour l'instant"}</p>`}</div></section>`).join("")}</div>`;
 }
 /* ---------- v1.18.0 : LEADS NATIONAUX ----------
@@ -8440,6 +8461,11 @@ function monZone(c){return c.zone||c.ville}
 /* v1.48 — « Villes / Zones » et « Rapport du mois » sont des entrées de cet écran : même niveau que la vue affichée,
    tableau par ville (ou par région) pour l'un, tous les groupes à plat sur le mois pour l'autre. Le visiteur, qui n'a pas
    les statistiques, garde les anciennes fenêtres. */
+function monVueSync(){if(!_mon.data||monPortee()!=="reseau"||!(vuePeutBasculer()||vueChoixRegion()))return;
+  const k=vueMode()==="reg"?"reg|"+vueRegion().nom:"nat";if(_mon.vueK===k)return;const avant=_mon.vueK;_mon.vueK=k;
+  if(vueMode()==="reg"){_mon.racine="region";if(avant!==undefined||_mon.niv==="reseau"){_mon.niv="region";_mon.cle=vueRegion().nom}
+    if(!monClubs().length){_mon.racine="reseau";_mon.niv="reseau";_mon.cle=null}}
+  else{_mon.racine="reseau";if(avant!==undefined){_mon.niv="reseau";_mon.cle=null}}}
 function monValide(){if(_mon.data&&_mon.niv!=="reseau"&&!monClubs().length){_mon.niv="reseau";_mon.cle=null;monCaler()}}
 function monOuvrir(mode){
   if(!monPeut()){return mode==="rapport"?openRapport():openZones()}
@@ -8518,6 +8544,7 @@ function monPresenter(){const v=document.getElementById("view");if(document.full
 function viewMonitoring(){
   if(!monPeut())return `<div class="page">${emptyState("Statistiques réservées","Cet écran est ouvert à l'équipe : direction, directeurs de région et responsables de groupe.")}</div>`;
   if(!_mon.data){if(!_mon.err)monCharger();return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">Direction</div><h2>Monitoring</h2></div></div>${_mon.err?`<p class="fh-empty">${esc(_mon.err)}</p><button class="btn ghost mini" onclick="_mon.err=null;render()">Réessayer</button>`:skLignes(6)}</div>`}
+  monVueSync();
   const cl=monClubs(),ids=cl.map(c=>c.id),k=perChoix(),b=perBornes(k,_mon.decal),p=perBornes(k,_mon.decal+monCmpPas()),T=monSomme(ids,monMoisDe(b)),P=monSomme(ids,monMoisDe(p));
   const C=_mon.data.clubs,c0=cl[0]||{},po=monPortee(),fil=[];
   if(_mon.racine==="reseau")fil.push(["reseau",null,po==="animateur"?"Mes groupes":"Réseau"]);
@@ -8556,7 +8583,7 @@ function viewMonitoring(){
       ${_mon.niv==="groupe"?"":`<div><h4>Groupes · ${esc(metLib.toLowerCase())} · ${esc(b.lib)}</h4>${rang(topG.map(x=>`<li><button type="button" onclick="monAller('groupe','${x.c.id}')"><b>${esc(x.c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(x.c.ville||"")}</small><span>${esc(monVal(_mon.met,x.v))}</span></button></li>`),"Aucun groupe n'a de chiffre sur cette période.")}</div>`}
       <div><h4>Membres · affaires apportées · depuis l'origine</h4>${rang(topM.map(x=>`<li><button type="button" onclick="monAller('groupe','${x.club}')"><b>${esc(x.nom)}</b><small>${x.donnees} reco${x.donnees>1?"s":""} donnée${x.donnees>1?"s":""} · ${x.recues} reçue${x.recues>1?"s":""}</small><span>${esc(madFmt(x.ca_transmis))}</span></button></li>`),"Aucune recommandation pour l'instant.")}</div></div></section>`;
   const V=monPrevision(ids,cl),h=monHyp(),champ=(key,lib,u)=>`<label class="mon-hy"><span>${lib}</span><span><input type="number" inputmode="decimal" min="0" value="${h[key]}" onchange="monHypMaj('${key}',this.value)" aria-label="${lib}">${u}</span></label>`;
-  return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">${po==="reseau"?"Direction · monitoring":po==="directeur"?"Ma région · statistiques":"Mon groupe · statistiques"}</div><h2>${esc(monTitre().replace(/^CAP\s+/,""))}</h2><p>${cl.length} groupe${cl.length>1?"s":""} · ${monPersonnes(cl)} membre${monPersonnes(cl)>1?"s":""}${pres!=null?` · ${pres} présents en moyenne par réunion`:""}</p></div>
+  return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">${po==="animateur"?"Mon groupe · statistiques":po==="directeur"||_mon.racine==="region"?"Ma région · statistiques":"Direction · monitoring"}</div><h2>${esc(monTitre().replace(/^CAP\s+/,""))}</h2><p>${cl.length} groupe${cl.length>1?"s":""} · ${monPersonnes(cl)} membre${monPersonnes(cl)>1?"s":""}${pres!=null?` · ${pres} présents en moyenne par réunion`:""}</p></div>
       <div class="mon-act"><button class="btn ghost mini" onclick="monPresenter()">⤢ Présenter</button><button class="btn ghost mini" onclick="monExport()">⬇ Excel</button><button class="btn ghost mini" onclick="window.print()">🖨 PDF</button><button class="btn ghost mini" onclick="monCharger(true)" aria-label="Actualiser">🔄</button></div></div>
     <nav class="mon-fil" aria-label="Niveau"${fil.length<2?" hidden":""}>${fil.map(([n,c,l],i)=>i<fil.length-1?`<button type="button" onclick="monAller('${n}',${c==null?"null":"'"+String(c).replace(/'/g,"\\'")+"'"})">${esc(l)}</button><span aria-hidden="true">›</span>`:`<b aria-current="page">${esc(l)}</b>`).join("")}</nav>
     <section class="per"><div class="per-h"><div class="mon-per"><button type="button" class="mon-nav" onclick="_mon.decal--;render()" aria-label="Période précédente">‹</button><div><small>Période</small><b>${esc(b.lib)}</b></div><button type="button" class="mon-nav" onclick="_mon.decal=Math.min(0,_mon.decal+1);render()" ${_mon.decal>=0?"disabled":""} aria-label="Période suivante">›</button></div>${perSeg()}</div>

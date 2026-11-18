@@ -2310,6 +2310,22 @@ html.th-graphite .sheet-x,html.th-graphite .sheet-max{background:#26282C;box-sha
 .sec-h .btn,.mb-add .btn,.mb-add label{white-space:nowrap}
 @media(max-width:600px){.mb-add select{max-width:38vw;min-width:0}}
 /*v1.57 bouton de mise à jour en rouge vif*/.maj-carte .maj-go{background:#D81B3F;border-color:#D81B3F;color:#fff}.maj-carte .maj-go:hover{background:#E32349}.maj-carte .maj-ic{color:#D81B3F}
+/*v1.61 plus de rouge sur rouge dans le CRM (JB : « ça pique les yeux », « rouge sur rouge, ça va pas »).
+  Thèmes sombres : les fonds teintés de rouge deviennent gris neutre, le rouge de texte est adouci, les boutons secondaires passent en texte clair.
+  Tous thèmes : une action rouge = rouge plein, texte blanc. */
+html.dark{--crimson-tint:rgba(255,255,255,.07);--crimson-txt:#EC7682}
+html.dark .btn.ghost{color:var(--ink);border-color:#484A50}
+@media (hover:hover){html.dark .btn.ghost:hover{border-color:#6A6D75;background:rgba(255,255,255,.05)}}
+html.dark .nat-t{color:var(--muted)}html.dark .ni-lien{color:var(--ink)}html.dark .drow a{color:var(--ink);text-decoration:underline;text-decoration-color:#5A5D64;text-underline-offset:3px}
+html.dark .drow .ic,html.dark .ck-act .ic{color:#B9BCC4}
+html .tbl .act:not(.todo):not(.ok),html:root .ck-act.urgent,html .dm-go:not(.nat-ghost),html .vr-etat.r,html .k-plan{background:var(--crimson);color:#fff;border-color:var(--crimson)}
+html .ck-act.urgent .ic,html .ck-act.urgent .go{color:#fff;opacity:1}
+@media (hover:hover){html .dm-card:hover .dm-go:not(.nat-ghost){background:#E32349}}
+html .dash-recos{background:var(--crimson)}
+/* bandeau « Vue régionale » : anthracite avec un filet rouge (deux bandeaux rouges l'un sous l'autre, c'était trop) */
+html .vn-band.reg{background:#2B2D32;color:#F1F1F2;border:1px solid #3C3F45;border-bottom:3px solid var(--crimson)}html .vn-band.reg small{color:#B9BCC4}html .vn-band.reg .btn{border-color:#55585F;color:#F1F1F2}
+/* pastille de date en tête de fiche : même dessin que les autres (bande rouge pleine largeur, filet) */
+html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
 </head>
@@ -2416,8 +2432,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.60.0";
+const APP_VERSION="1.61.0";
 const CHANGELOG=[
+  {v:"1.61.0",date:"19 novembre 2026",notes:{"Modifié":["Thèmes sombres : plus de rouge sur rouge dans le CRM. Les fonds teintés de rouge passent en gris neutre, le rouge des textes est adouci, les boutons secondaires (Copier le lien, Ouvrir, Je ne viens plus…) sont en texte clair.","Une action rouge est maintenant un vrai bouton rouge à texte blanc : « Voir » sur les demandes, « Planifier une réunion » dans les tableaux et sur les cartes des groupes.","Bandeau « Vue régionale » en anthracite avec un filet rouge, pour ne plus avoir deux bandeaux rouges l'un sous l'autre."],"Corrigé":["Pastille de date en tête d'une fiche de réunion : même dessin que partout ailleurs (bande rouge sur toute la largeur, filet autour)."]}},
   {v:"1.60.0",date:"19 novembre 2026",notes:{"Modifié":["Rouge vif partout : le CRM, l'espace membre, les documents et le formulaire d'adhésion utilisent maintenant le même rouge vif, dans tous les thèmes. Les anciens rouges plus sombres et les bordeaux (bandeau d'accueil, bandeau de la vue régionale ou nationale, carte des affaires générées, boutons, pastilles) disparaissent."]}},
   {v:"1.59.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre, onglet Réseau : classement « Par groupe » ou « De A à Z ». Par groupe, chaque groupe est un volet à déplier, avec sa couleur, sa ville et son nombre de membres ; le tien est en premier et ouvert. De A à Z, chaque membre porte l'étiquette de couleur de son groupe.","Pendant une recherche, les groupes qui contiennent un résultat s'ouvrent tout seuls."],"Modifié":["Barre du bas de l'espace membre : les icônes sont plus grandes et descendent dans la zone du bas, qui était vide ; le bouton Reco est plus gros."]}},
   {v:"1.58.0",date:"19 novembre 2026",notes:{"Modifié":["Espace membre, carte de la prochaine réunion : le lieu, les trois repères et la liste des invités sont dans des encadrés blancs, avec le texte en noir et les chiffres en rouge. Plus de rouge sur rouge."]}},

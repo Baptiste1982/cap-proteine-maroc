@@ -2534,8 +2534,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.82.0";
+const APP_VERSION="1.82.1";
 const CHANGELOG=[
+  {v:"1.82.1",date:"18 novembre 2026",notes:{"Modifié":["On parle de « membres » partout : le mot « pairs » disparaît de la constellation, des cartes et des fiches de groupe. Le nombre de membres d'un groupe reprend celui du bureau national tant que ses fiches ne sont pas saisies."]}},
   {v:"1.82.0",date:"18 novembre 2026",notes:{"Modifié":["Constellation mise à l'échelle du réseau d'aujourd'hui (16 groupes, 4 régions) : les groupes d'une même ville ne se chevauchent plus, le nom court est écrit sous chaque groupe, et sur un téléphone le réseau se déploie en hauteur.","Constellation : le total se lit en « pairs » (animateurs compris, d'après le bureau national) tant que des effectifs sont déclarés."]}},
   {v:"1.81.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau → « Régions et villes » : créer une région, lui ajouter des villes, la renommer. Une ville ajoutée est aussitôt proposée pour un nouveau groupe, un lieu ou un animateur.","Réseau → « Nouveau groupe ». Créer une région ou un groupe est réservé au super admin, à la direction nationale et aux comptes à qui ce droit est donné.","Équipe → fiche d'accès : « Droits en plus » à cocher pour un compte (créer des régions et des groupes, gérer les documents, voir le monitoring national)."],"Modifié":["Un directeur de région modifie toujours ses groupes, mais ne crée plus de groupe lui-même."]}},
   {v:"1.80.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau national mis à jour d'après le tableau du bureau national : 16 groupes, nouvelle région Tanger, six nouveaux animateurs.","« Pairs déclarés par le national » : l'effectif d'un groupe dont les fiches ne sont pas saisies ici s'affiche sur sa carte, sa fiche et dans la constellation. La direction nationale le modifie dans la fiche du groupe."]}},
@@ -4867,10 +4868,10 @@ function clubFiches(c){return (window._DBvrai||DB).membres.filter(m=>m.clubId===
 function clubDecl(c){const f=clubFiches(c);return c&&c.pairs>f?c.pairs:0}
 function clubNb(c){return Math.max(clubFiches(c),c&&c.pairs||0)}
 function clubDeclNote(c){const d=clubDecl(c);if(!d)return"";const f=clubFiches(c);
-  return `<div class="ck-decl" title="Effectif donné par le bureau national${c.pairsLe?" le "+c.pairsLe.split("-").reverse().join("/"):""}, animateur inclus"><b>${d}</b> pair${d>1?"s":""} déclaré${d>1?"s":""} par le national · ${f?f+" fiche"+(f>1?"s":"")+" saisie"+(f>1?"s":""):"aucune fiche saisie"}</div>`}
+  return `<div class="ck-decl" title="Effectif donné par le bureau national${c.pairsLe?" le "+c.pairsLe.split("-").reverse().join("/"):""}, animateur inclus"><b>${d}</b> membre${d>1?"s":""} d'après le national · ${f?f+" fiche"+(f>1?"s":"")+" saisie"+(f>1?"s":""):"aucune fiche saisie"}</div>`}
 function clubTile(c,i){
   const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date));
-  const a=anim(c.animId);const nbM=DB.membres.filter(m=>m.clubId===c.id).length;const h=clubHealth(c);const na=clubNextAction(c);
+  const a=anim(c.animId);const nbM=clubNb(c);const h=clubHealth(c);const na=clubNextAction(c);
   const fill=c.objectif?Math.min(100,Math.round(nbM/c.objectif*100)):0;
   const nom=c.nom.replace(/^CAP\s+/,"");
   const prochaine=up[0]?(()=>{const d=dObj(up[0].date);return `${d.getDate()} ${MOIS[d.getMonth()]}`})():"";
@@ -6790,7 +6791,7 @@ function clubForm(id){
     <div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div>
     <div class="field"><label>Statut</label><p class="c-stat"><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
       <label class="c-fixe"><input type="checkbox" id="c-fixe" ${c.statutFixe?"checked":""}> Groupe déjà actif, dont la vie n'est pas saisie ici : le garder « Actif »</label></div>
-    ${vuePeutBasculer()?`<div class="field"><label for="c-pairs">Pairs déclarés par le national (animateur inclus)</label><input id="c-pairs" type="number" min="0" max="99" inputmode="numeric" value="${c.pairs??""}" placeholder="Vide si les fiches sont saisies ici"></div>`:""}
+    ${vuePeutBasculer()?`<div class="field"><label for="c-pairs">Nombre de membres d'après le national (animateur inclus)</label><input id="c-pairs" type="number" min="0" max="99" inputmode="numeric" value="${c.pairs??""}" placeholder="Vide si les fiches sont saisies ici"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce groupe</div>`:""}`;
   openSheet();
@@ -8161,7 +8162,7 @@ function cstRender(){
   // v1.82 : le réseau a grandi (16 groupes, 4 régions). Astres un peu plus petits, orbite calculée sur la place qu'ils prennent,
   // nom court sous l'astre (la ville est déjà écrite au-dessus), et disposition en hauteur sur un téléphone tenu droit.
   const SZ=n=>13+Math.min(n,12)*2,portrait=innerWidth<700&&innerHeight>innerWidth;
-  const mot=regs.some(r=>r.g.some(g=>g.decl))?"pair":"membre",iGros=regs.reduce((b,r,i)=>r.g.length>regs[b].g.length?i:b,0);
+  const mot="membre",iGros=regs.reduce((b,r,i)=>r.g.length>regs[b].g.length?i:b,0);
   const court=g=>{const v=String(g.c.ville||""),cle=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();let n=g.nom;
     for(const p of [v,v.slice(0,4)]){if(p&&cle(n).startsWith(cle(p)+" ")){n=n.slice(p.length+1);break}}return n||g.nom};
   const tot=regs.reduce((a,r)=>a+r.nb,0),nG=regs.reduce((a,r)=>a+r.g.length,0);
@@ -8264,7 +8265,7 @@ function cstRender(){
     // v1.1.1 : la cible est VERROUILLÉE. Quand l'orbite tourne pour amener le groupe devant, un voisin passe sous la souris
     // immobile : il ne doit pas voler la cible (sinon l'orbite repart dans l'autre sens, en boucle). On change de cible
     // seulement sur un vrai mouvement de souris, et on lâche quand la souris sort de la zone de l'orbite.
-    const viser=()=>{clearTimeout(_cst.lache);_cst.lache=null;_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} ${g.decl?"pair"+(g.nb>1?"s":"")+" déclaré"+(g.nb>1?"s":""):"membre"+(g.nb>1?"s":"")} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false};
+    const viser=()=>{clearTimeout(_cst.lache);_cst.lache=null;_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} ${"membre"+(g.nb>1?"s":"")} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false};
     a.addEventListener("pointerenter",()=>{const h=_cst.hov;if(h==null||pos[h].oi!==g.oi)viser()});
     a.addEventListener("pointermove",e=>{if(_cst.hov!==i&&(e.movementX||e.movementY))viser();if(_cst.hov===i){const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"}});
     a.addEventListener("pointerleave",()=>{if(_cst.hov===i)tip.hidden=true});
@@ -8294,7 +8295,7 @@ function cstFiche(g){
     <div class="cf-h"><svg class="cf-ring" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="${R}" class="cf-rt"/><circle cx="42" cy="42" r="${R}" class="cf-rv" style="stroke-dasharray:${C.toFixed(1)};--off:${(C*(1-pct)).toFixed(1)};--full:${C.toFixed(1)}"/><text x="42" y="47">${g.nb}</text></svg>
       <div><small>${esc(c.ville||"")} · ${esc(CST_LIB[g.e])}</small><h3>${esc(g.nom)}</h3><span>${c.animId?"Animé par "+esc(animNom(c.animId)):"Animateur à nommer"}</span></div></div>
     <div class="cf-k">
-      <div style="--i:0"><b>${g.nb}${c.objectif?"<i>/"+c.objectif+"</i>":""}</b><span>${g.decl?"pairs déclarés":"membres"}</span></div>
+      <div style="--i:0"><b>${g.nb}${c.objectif?"<i>/"+c.objectif+"</i>":""}</b><span>membre${g.nb>1?"s":""}</span></div>
       <div style="--i:1"><b>${g.bil.length}</b><span>bilan${g.bil.length>1?"s":""} en attente</span></div>
       <div style="--i:2"><b>${sign.length}</b><span>affaire${sign.length>1?"s":""} signée${sign.length>1?"s":""}${ca?" · "+ca.toLocaleString("fr-FR")+" dh":""}</span></div>
     </div>
@@ -8308,7 +8309,7 @@ function cstFiche(g){
 function cstFicheFermer(){const f=document.getElementById("cst-fiche");if(f){f.hidden=true;f.classList.remove("on")}if(_cst){_cst.sel=null;_cst.pause=false;const o=document.getElementById("cst-o");if(o){o.querySelector("svg")?.classList.remove("focus");o.querySelectorAll(".lit,.hov").forEach(e=>e.classList.remove("lit","hov"))}}}
 function cstPanneau(g,t){
   if(!g)return `<h3>Ce que le réseau demande</h3><p>Passe sur un groupe pour le voir, touche-le pour sa fiche.</p>
-    <div class="cst-k"><b>${t.tot}</b><span>${t.mot||"membre"}${t.tot>1?"s":""} dans ${t.nG} groupe${t.nG>1?"s":""} et ${t.nR} région${t.nR>1?"s":""}${t.mot==="pair"?"<small> · animateurs compris, d'après le bureau national</small>":""}</span></div>
+    <div class="cst-k"><b>${t.tot}</b><span>${t.mot||"membre"}${t.tot>1?"s":""} dans ${t.nG} groupe${t.nG>1?"s":""} et ${t.nR} région${t.nR>1?"s":""}</span></div>
     <div class="cst-k w"><b>${t.nBil}</b><span>bilan${t.nBil>1?"s":""} à saisir</span></div>
     <div class="cst-k w"><b>${t.nPlan}</b><span>groupe${t.nPlan>1?"s":""} sans prochaine réunion</span></div>
     <div class="cst-k r"><b>${t.nSans}</b><span>groupe${t.nSans>1?"s":""} sans animateur</span></div>`;
@@ -8316,7 +8317,7 @@ function cstPanneau(g,t){
   const act=g.anim?"Nommer un animateur":g.bil.length?"Saisir les bilans":g.plan?"Planifier la prochaine réunion":"Ouvrir le groupe";
   return `<div class="cst-gh"><i style="background:${CST_COUL[g.e]}"></i><h3>${esc(g.nom)}</h3></div><p>${esc(g.c.ville)} · ${esc(CST_LIB[g.e])}</p>
     <div class="cst-r"><span>Animateur</span><b>${g.c.animId?esc(animNom(g.c.animId)):"à nommer"}</b></div>
-    <div class="cst-r"><span>${g.decl?"Pairs déclarés":"Membres"}</span><b>${g.nb}${g.c.objectif?" / "+g.c.objectif:""}</b></div>
+    <div class="cst-r"><span>Membres</span><b>${g.nb}${g.c.objectif?" / "+g.c.objectif:""}</b></div>
     <div class="cst-r"><span>Bilans en attente</span><b>${g.bil.length}</b></div>
     <div class="cst-r"><span>Dernière réunion</span><b>${der?esc(dObj(der.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})):"aucune"}</b></div>
     <div class="cst-r"><span>Prochaine réunion</span><b>${g.plan?"à planifier":"prévue"}</b></div>

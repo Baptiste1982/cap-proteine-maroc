@@ -2216,6 +2216,8 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .mb-edit{border:1px solid var(--line);border-radius:14px;margin:12px 0;background:var(--card)}.mb-edit>summary{list-style:none;cursor:pointer;padding:12px 14px;min-height:48px;display:flex;align-items:center;justify-content:space-between;font:700 14px Inter,sans-serif}.mb-edit>summary::-webkit-details-marker{display:none}.mb-edit>summary::after{content:"›";color:var(--muted);font-size:20px;transition:transform .2s}.mb-edit[open]>summary::after{transform:rotate(90deg)}.mb-edit>.mb-edit-c{padding:0 14px 14px}
 .sec-h.repl{cursor:pointer;min-height:44px;padding:0 4px;margin:6px 0 0;border-top:1px solid var(--line)}.sec-h.repl>span:first-child::before{content:"▸";display:inline-block;margin-right:8px;transition:transform .2s}.sec-h.repl.ouv>span:first-child::before{transform:rotate(90deg)}.repl-cache{display:none!important}
 .pc-cons{text-align:center;padding:8px 4px}.pc-cons .ic{font-size:44px}.pc-cons p{color:var(--muted);margin:8px 0 18px;line-height:1.5}
+@media(max-width:600px){.mb-doc{flex-wrap:wrap}.mb-doc-t{flex:1 1 60%}}.mb-add select{max-width:170px}
+.mb-doc-v{font-weight:700}.mb-doc-v.oui{color:#2E8B57}.mb-doc-v.att{color:var(--gold)}.mb-doc-v.non{color:var(--muted);font-weight:500}.mb-doc-n{margin:0 0 8px}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2371,8 +2373,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.43.0";
+const APP_VERSION="1.44.0";
 const CHANGELOG=[
+  {v:"1.44.0",date:"18 novembre 2026",notes:{"Ajouté":["« Mes documents » dans l'espace de chaque membre : sa facture, son reçu de paiement, ses attestations (régularité fiscale…), à ouvrir ou à envoyer à son comptable. Lui seul les voit.","Dans la fiche d'un membre, section Documents : on choisit « Facture », « Reçu de paiement » ou « Attestation » et le membre retrouve la pièce dans son espace. Chaque document se partage ou se retire d'un clic.","Une facture n'apparaît chez le membre qu'une fois l'étape « Paiement » cochée.","Le membre est prévenu sur son accueil quand une nouvelle pièce l'attend.","Documents du réseau : une catégorie « Comptabilité et attestations » pour les pièces communes à tous les membres."]}},
   {v:"1.43.0",date:"18 novembre 2026",notes:{"Modifié":["L'espace membre fait partie de l'appli : il occupe tout l'écran sous la barre du haut, sans titre, pastilles ni cadre. Au téléphone, sa barre du bas (Accueil, Groupe, Reco, Réseau, Messages, Moi) remplace celle du CRM ; on revient par le sélecteur d'espace ou le menu du haut.","Les documents du réseau s'ouvrent dans l'appli, plus dans un nouvel onglet, et suivent le thème choisi."]}},
   {v:"1.42.0",date:"18 novembre 2026",notes:{"Modifié":["Au téléphone, la fiche d'un membre tient sur un écran : Appeler, WhatsApp et E-mail en tête, la saisie du suivi dans un volet, et chaque section (informations, documents, abonnement…) se déplie au toucher.","Au téléphone, les Paramètres commencent par le compte ; le thème et les réglages d'affichage sont rangés dans un volet.","Au téléphone, Mon groupe affiche ses six onglets sans défilement, et le choix du groupe se fait par le sélecteur du haut.","Le bouton « + » flottant ne ressemble plus au bouton Reco.","Planifier en série, le classeur et l'embarquement de l'équipe préviennent, au téléphone, qu'ils sont plus à l'aise sur ordinateur (une seule fois)."]}},
   {v:"1.41.0",date:"18 novembre 2026",notes:{"Ajouté":["Une réunion passée peut être archivée sans bilan : elle reste dans l'historique du groupe et sort des bilans à saisir. Choix « Archiver sans bilan » dans l'écran du bilan.","Depuis ce même écran, les réunions de plus de 60 jours sans bilan s'archivent d'un coup, en deux clics.","Une réunion archivée se rouvre pour saisir son bilan plus tard."]}},
@@ -5926,7 +5929,7 @@ function mbDossierHTML(m,canEd){
     ${mbFicheHTML(m,d,canEd)}
     ${secHead("Informations",undefined,canEd?`<button class="btn ghost mini" onclick="mbInfosForm('${m.clubId}','${m.id}')">${vide?"+ Saisir":"Modifier"}</button>`:"")}
     ${vide?`<p class="fh-empty">Aucune information. ${canEd?"Elles se remplissent toutes seules quand le membre vient du formulaire d'adhésion, ou à la main.":""}</p>`:mbInfosHTML(d)}
-    ${secHead("Documents",undefined,canEd?`<span class="mb-add"><select id="mb-doc-type"><option value="contrat_signe">Contrat signé</option><option value="contrat">Contrat</option><option value="formulaire">Formulaire</option><option value="autre" selected>Autre pièce</option></select><label class="btn ghost mini">+ Ajouter<input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp" onchange="mbDocAjouter('${m.clubId}','${m.id}',this)"></label></span>`:"")}
+    ${secHead("Documents",undefined,canEd?`<span class="mb-add"><select id="mb-doc-type" aria-label="Type de document"><optgroup label="Remis au membre (il le voit dans son espace)"><option value="n:facture">Facture</option><option value="n:recu">Reçu de paiement</option><option value="n:attestation">Attestation</option><option value="n:autre">Autre pièce pour lui</option></optgroup><optgroup label="Dossier interne"><option value="contrat_signe">Contrat signé</option><option value="contrat">Contrat</option><option value="formulaire">Formulaire</option><option value="autre" selected>Autre pièce</option></optgroup></select><label class="btn ghost mini">+ Ajouter<input type="file" hidden accept="application/pdf,image/jpeg,image/png,image/webp" onchange="mbDocAjouter('${m.clubId}','${m.id}',this)"></label></span>`:"")}
     <div id="mb-docs">${skLignes(2)}</div>
     ${mbEspaceHTML(m,d,canEd)}
     ${mbAbonnementHTML(m,d,canEd)}
@@ -6058,12 +6061,21 @@ async function mbDocsCharger(m,canEd){
   const docs=(data||[]).map(x=>({...x,bucket:"membres"}));
   if(a&&a.pdf_path)docs.push({id:"",type:"formulaire",nom:"Formulaire d'adhésion signé en ligne",chemin:a.pdf_path,bucket:"adhesions",cree_le:a.created_at,fixe:true});
   if(error){el.innerHTML=`<p class="fh-empty">Documents indisponibles : ${esc(rlsMsg(error))}</p>`;return}
-  el.innerHTML=docs.length?`<div class="mb-docs">${docs.map(x=>`<div class="mb-doc"><span class="mb-doc-ic">${x.type==="contrat_signe"?"✅":x.type==="contrat"?"✍️":x.type==="formulaire"?"📝":"📎"}</span>
-    <span class="mb-doc-t"><b>${esc(x.nom)}</b><small>${esc(DOC_TYPES[x.type]||"Document")} · ${esc(adhDate(x.cree_le))}</small></span>
+  window._mbDocs=docs;
+  el.innerHTML=(docs.some(x=>x.nature==="facture"&&x.visible_membre)&&!m.paiement?`<p class="fh-note mb-doc-n">🧾 La facture sera visible du membre dès que l'étape « Paiement » est cochée.</p>`:"")+(docs.length?`<div class="mb-docs">${docs.map(x=>`<div class="mb-doc"><span class="mb-doc-ic">${x.nature?DOC_NATURES[x.nature].ic:x.type==="contrat_signe"?"✅":x.type==="contrat"?"✍️":x.type==="formulaire"?"📝":"📎"}</span>
+    <span class="mb-doc-t"><b>${esc(x.nom)}</b><small>${esc(x.nature?DOC_NATURES[x.nature].lib:DOC_TYPES[x.type]||"Document")} · ${esc(adhDate(x.cree_le))}${x.fixe?"":` · <span class="mb-doc-v ${x.visible_membre?(x.nature==="facture"&&!m.paiement?"att":"oui"):"non"}">${x.visible_membre?(x.nature==="facture"&&!m.paiement?"en attente du paiement":"visible du membre"):"interne"}</span>`}</small></span>
     <button class="btn ghost mini" onclick="mbDocOuvrir('${x.bucket}','${esc(x.chemin)}')">Ouvrir</button>
+    ${canEd&&!x.fixe?`<button class="btn ghost mini" onclick="mbDocPartager('${m.clubId}','${m.id}','${x.id}',${!x.visible_membre})" title="${x.visible_membre?"Le membre ne le verra plus dans son espace":"Le membre le verra dans son espace, rubrique Mes documents"}">${x.visible_membre?"Ne plus partager":"Partager"}</button>`:""}
     ${canEd&&!x.fixe?`<button class="btn ghost mini" onclick="mbDocRetirer('${m.clubId}','${m.id}','${x.id}','${esc(x.chemin)}')">Retirer</button>`:""}</div>`).join("")}</div>`
-    :`<p class="fh-empty">Aucun document pour l'instant.</p>`;
+    :`<p class="fh-empty">Aucun document pour l'instant.${canEd?" Ajoute sa facture ou une attestation : il la retrouvera dans son espace membre.":""}</p>`);
 }
+/* v1.44 — pièces remises au membre (facture, reçu, attestation) : il les voit dans son espace, « Mes documents ».
+   Une facture ne lui apparaît qu'une fois son paiement coché (règle tenue par la base). */
+const DOC_NATURES={facture:{ic:"🧾",lib:"Facture"},recu:{ic:"💳",lib:"Reçu de paiement"},attestation:{ic:"📜",lib:"Attestation"},autre:{ic:"📎",lib:"Pièce remise au membre"}};
+async function mbDocPartager(clubId,id,docId,oui){
+  const {error}=await sb.from("membre_documents").update({visible_membre:!!oui,partage_le:oui?new Date().toISOString():null}).eq("id",docId);
+  if(error){toast(rlsMsg(error),"e");return}
+  toast(oui?"Partagé : le membre le voit dans son espace":"Ce document n'est plus visible du membre","s");const m=DB.membres.find(x=>x.id===id);if(m)mbDocsCharger(m,true)}
 async function mbDocOuvrir(bucket,chemin){
   if(bucket==="adhesions"){const a=(DB.adhesions||[]).find(x=>x.pdf_path===chemin);if(a)return adhPdf(a.id)}
   const w=window.open("","_blank"); // ouvert avant l'attente réseau, sinon le téléphone bloque la fenêtre
@@ -6074,16 +6086,16 @@ async function mbDocOuvrir(bucket,chemin){
 async function mbDocAjouter(clubId,id,input){
   const f=input.files&&input.files[0];if(!f)return;
   if(f.size>20*1024*1024){toast("Fichier trop lourd (20 Mo au plus)");input.value="";return}
-  const type=(document.getElementById("mb-doc-type")||{}).value||"autre";
+  const choix=(document.getElementById("mb-doc-type")||{}).value||"autre",nature=/^n:/.test(choix)?choix.slice(2):null,type=nature?"autre":choix;
   const propre=f.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9._-]+/g,"_").slice(-80);
   const chemin=`${id}/${Date.now()}-${propre}`;
   toast("Envoi du document…","s");
   const up=await sb.storage.from("membres").upload(chemin,f,{contentType:f.type||"application/pdf"});
   if(up.error){toast("Envoi impossible : "+rlsMsg(up.error));input.value="";return}
-  const {error}=await sb.from("membre_documents").insert({membre_id:id,type,nom:f.name,chemin});
+  const {error}=await sb.from("membre_documents").insert({membre_id:id,type,nom:f.name,chemin,...(nature?{nature,visible_membre:true,partage_le:new Date().toISOString()}:{})});
   if(error){await sb.storage.from("membres").remove([chemin]);toast("Envoi impossible : "+rlsMsg(error));input.value="";return}
   if(type==="contrat_signe"){const m=DB.membres.find(x=>x.id===id);if(m&&!m.contrat){const r=await sb.from("membres").update({contrat:true}).eq("id",id);if(!r.error){m.contrat=true}}}
-  toast("Document ajouté au dossier");memberSheet(clubId,id);
+  {const mm=DB.membres.find(x=>x.id===id);toast(nature?(nature==="facture"&&mm&&!mm.paiement?"Facture ajoutée : le membre la verra dès que le paiement est coché":"Ajouté : le membre le retrouve dans son espace"):"Document ajouté au dossier","s")}memberSheet(clubId,id);
 }
 async function mbDocRetirer(clubId,id,docId,chemin){
   const rm=await sb.storage.from("membres").remove([chemin]);

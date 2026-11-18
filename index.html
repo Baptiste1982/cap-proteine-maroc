@@ -1741,6 +1741,9 @@ body.vue-change .page{animation:vueFlash .6s ease}
 .vr-todo button:hover{border-color:var(--crimson);transform:translateX(3px)}.vr-todo button span{color:var(--crimson-txt,var(--crimson));font-size:17px}
 .vr-tab{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-width:0}
 .vr-tw{overflow-x:auto}
+.vr-tab tr.vr-vh{animation:none}.vr-tab tr.vr-vh td{padding:14px 8px 7px;border-bottom:2px solid var(--vc);background:none!important;white-space:nowrap}.vr-tab tr.vr-vh:first-child td{padding-top:4px}
+.vr-vh i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--vc);margin-right:8px}.vr-vh b{font:800 15px 'Bricolage Grotesque',sans-serif;margin-right:10px}.vr-vh span{color:var(--muted);font-size:12.5px}.vr-vh em{float:right;font-style:normal;font:700 12px Inter,sans-serif;color:var(--crimson-txt,var(--crimson))}
+@media(max-width:600px){.vr-vh em{display:none}}
 .vr-tab table{width:100%;border-collapse:collapse}
 .vr-tab th{font:600 11px Inter,sans-serif;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
 .vr-tab td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
@@ -2165,6 +2168,16 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 @keyframes tirIn{from{opacity:0;transform:translateX(-10px)}}
 @media(prefers-reduced-motion:reduce){.tiroir-p,.tiroir-fond{transition:none}.tiroir .np-it{animation:none}}
 /*v1.23*/.viens{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-weight:600}.viens.on{border-style:solid;border-color:#3DAA74;color:#3DAA74}
+/*v1.39 sélecteur d'espace*/.esp-sel{display:inline-flex;align-items:center;gap:8px;min-height:40px;max-width:260px;padding:4px 10px 4px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
+.esp-sel.hidden{display:none}.esp-sel:hover,.esp-sel[aria-expanded=true]{border-color:var(--crimson);box-shadow:0 0 0 3px var(--crimson-tint)}.esp-sel[data-g="Direction"]{border-color:var(--gold)}
+.es-ic{font-size:17px;flex:none}.es-t{display:flex;flex-direction:column;min-width:0;line-height:1.15}.es-t small{font:600 10px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.es-t b{font:700 13px Inter,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.es-fl{flex:none;color:var(--muted);font-size:11px;transition:transform .2s}.esp-sel[aria-expanded=true] .es-fl{transform:rotate(180deg)}
+.esp-menu{position:fixed;z-index:1200;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:espIn .18s ease}
+@keyframes espIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.em-g{font:700 10.5px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 10px 4px}
+.em-i{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:6px 10px;border-radius:11px;text-align:left;color:var(--ink);font:inherit}.em-i:hover,.em-i:focus-visible{background:var(--crimson-tint);outline:none}.em-i.on{background:var(--soft)}
+.em-i .es-t b{font-size:14px}.em-i .es-t small{text-transform:none;letter-spacing:0;font:500 11.5px Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.em-ok{margin-left:auto;color:var(--crimson-txt,var(--crimson));font-weight:800}
+@media(max-width:600px){.esp-sel{max-width:200px;min-height:36px;padding:3px 7px 3px 6px;gap:5px}.esp-sel .es-t small{display:none}.esp-sel:not(.hidden)~.tb-clock{display:none}}
+@media(prefers-reduced-motion:reduce){.esp-menu{animation:none}}
 /*v1.22*/.vue-reg-sel{height:32px;max-width:200px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px var(--f,inherit);padding:0 10px;cursor:pointer}
 @media(max-width:600px){.vue-reg-sel{max-width:118px;font-size:11.5px;padding:0 6px}}
 /*v1.34 suivi des invités*/.sv-l{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px}
@@ -2277,7 +2290,7 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
+      <button type="button" id="esp-sel" class="esp-sel hidden" onclick="espMenu()" aria-haspopup="menu" aria-expanded="false"></button><div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -2350,8 +2363,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.38.0";
+const APP_VERSION="1.39.0";
 const CHANGELOG=[
+  {v:"1.39.0",date:"18 novembre 2026",notes:{"Ajouté":["Un sélecteur d'espace en haut : un seul bouton pour passer du réseau national à une région, à l'un de ses groupes ou à son espace membre. Il remplace la bascule National / Région et la liste des régions."],"Modifié":["L'accueil d'une région range ses groupes ville par ville (Rabat, Salé, Kénitra), du plus urgent au plus calme dans chaque ville. L'en-tête d'une ville ouvre ses statistiques.","Au téléphone, l'heure de la barre du haut laisse sa place au sélecteur d'espace."]}},
   {v:"1.38.0",date:"17 novembre 2026",notes:{"Modifié":["Le statut d'un groupe se calcule tout seul : « Actif » dès 5 membres, ou dès qu'une réunion de lancement ou du cycle est tenue ; sinon « En création ». Il se met à jour à chaque membre ajouté ou retiré et à chaque bilan.","Dans la fiche d'un groupe, une case permet de garder « Actif » un groupe dont la vie n'est pas saisie dans le CRM."]}},
   {v:"1.37.0",date:"17 novembre 2026",notes:{"Ajouté":["Au téléphone, un bouton « Reco » au centre de la barre du bas : un toucher ouvre le formulaire de recommandation, sans passer par un menu. Dans l'espace membre comme dans le CRM (pour qui a une fiche membre)."],"Corrigé":["Espace membre en thème sombre : le lieu de la prochaine réunion et la ligne « À faire » en rouge étaient illisibles."]}},
   {v:"1.36.0",date:"17 novembre 2026",notes:{"Ajouté":["Statistiques : taux de transformation (invités devenus membres, invités venus, recommandations signées), assiduité des membres et montant moyen d'une affaire, avec l'écart en points par rapport à la période de comparaison.","Comparaison au choix : période précédente, même période l'an dernier, ou une période passée prise dans la liste.","Portefeuille des membres : cotisations payées, dossiers complets, renouvellements dépassés, à renouveler sous 30 et 90 jours.","Classements : les groupes sur l'indicateur affiché, et les membres par affaires apportées. Un clic ouvre le groupe.","Dans un groupe, chaque membre a son assiduité, son dossier, son paiement et sa date de renouvellement.","L'export Excel reprend tous ces chiffres, la période de comparaison et le classement des membres."],"Modifié":["Les nouveaux membres sont comptés par personne : quelqu'un inscrit dans plusieurs groupes ne compte qu'une fois."]}},
@@ -3299,15 +3313,42 @@ function vueChoisir(m){if(!vuePeutBasculer()||m===vueMode())return;try{localStor
   render();toast(m==="reg"?"Vue régionale · "+vueRegion().nom:"Vue nationale · tout le réseau")}
 function vueAppliquer(){if(!SESSION)return;const m=vueMode();
   document.body.classList.toggle("vue-reg",m==="reg");document.body.classList.toggle("vue-nat",m!=="reg");
-  const b=document.getElementById("vue-bascule");
-  if(b){b.classList.toggle("hidden",!vuePeutBasculer());if(vuePeutBasculer()){const r=vueRegion().nom;
+  const b=document.getElementById("vue-bascule");espSync();
+  if(b){b.classList.toggle("hidden",true);if(vuePeutBasculer()){const r=vueRegion().nom;
     const h=`<button role="tab" aria-selected="${m==="nat"}" aria-label="Vue nationale" title="Vue nationale" class="${m==="nat"?"on":""}" onclick="vueChoisir('nat')">🌍<span> National</span></button><button role="tab" aria-selected="${m==="reg"}" aria-label="Vue régionale · ${esc(r)}" title="Vue régionale · ${esc(r)}" class="${m==="reg"?"on":""}" onclick="vueChoisir('reg')">📍<span class="vb-long"> ${esc(r)}</span><span class="vb-court"> Ma région</span></button>`;
     if(b.dataset.h!==h){b.innerHTML=h;b.dataset.h=h}}}
   let sr=document.getElementById("vue-region");const zs=vueZonesChoix(),voir=vueChoixRegion()&&(m==="reg"||!vuePeutBasculer())&&zs.length>1;
   if(!sr&&b){sr=document.createElement("select");sr.id="vue-region";sr.className="vue-reg-sel";sr.setAttribute("aria-label","Région affichée");sr.onchange=()=>vueRegionChoisir(sr.value);b.after(sr)}
-  if(sr){sr.classList.toggle("hidden",!voir);if(voir){const nom=vueRegion().nom,o=zs.map(z=>`<option value="${z.id}" ${z.nom===nom?"selected":""}>📍 ${esc(z.nom)}</option>`).join("");if(sr.dataset.h!==o){sr.innerHTML=o;sr.dataset.h=o}}}
+  if(sr){sr.classList.toggle("hidden",true);if(voir){const nom=vueRegion().nom,o=zs.map(z=>`<option value="${z.id}" ${z.nom===nom?"selected":""}>📍 ${esc(z.nom)}</option>`).join("");if(sr.dataset.h!==o){sr.innerHTML=o;sr.dataset.h=o}}}
   const d=document.querySelector('.nav button[data-tab="dash"]');
   if(d){const t=[...d.childNodes].reverse().find(n=>n.nodeType===3);const lib=SESSION.role==="animateur"?"Mes groupes":m==="reg"&&SESSION.role!=="visiteur"?"Ma région":"Synthèse";if(t&&t.textContent!==lib)t.textContent=lib}}
+/* v1.39 — SÉLECTEUR D'ESPACE (plan B2) : un seul bouton en haut pour passer d'une casquette à l'autre — réseau national,
+   région, un de ses groupes, son espace membre. Il remplace la bascule National / Région et la liste des régions
+   (gardées dans la page, masquées). N'apparaît que s'il y a au moins deux espaces. */
+function espEntrees(){if(!SESSION||!DB||SESSION.role==="visiteur")return[];const g=DB;let mesG=[],fiches=[];
+  try{if(window._DBvrai)DB=window._DBvrai;mesG=reuMesClubs().slice().sort((a,b)=>a.nom.localeCompare(b.nom));fiches=SESSION._voir?[]:mesFiches()}finally{DB=g}
+  const E=[],m=vueMode(),rn=vueRegion().nom,surG=tab==="reunions",surE=tab==="espace"&&/#moi=/.test(window._espUrl||""),gc=surG?(()=>{try{return grpClub()}catch(e){return null}})():null,libre=!surG&&!surE;
+  if(vuePeutBasculer())E.push({g:"Direction",ic:"🌍",lb:"Réseau national",sous:"Tous les groupes",on:libre&&m==="nat",act:"espVue('nat')"});
+  if(vueChoixRegion())vueZonesChoix().forEach(z=>E.push({g:"Régions",ic:"📍",lb:z.nom,sous:z.villes.join(" · "),on:libre&&m==="reg"&&z.nom===rn,act:`espRegion('${z.id}')`}));
+  else if(SESSION.role==="directeur")E.push({g:"Régions",ic:"📍",lb:rn,sous:"Ma région",on:libre,act:"go('dash')"});
+  else if(SESSION.role==="animateur"&&mesG.length>1)E.push({g:"Mes groupes",ic:"🗂",lb:"Tous mes groupes",sous:mesG.length+" groupes",on:libre,act:"go('dash')"});
+  mesG.forEach(c=>E.push({g:"Mes groupes",ic:"👥",lb:c.nom.replace(/^CAP\s+/,""),sous:"Animateur · "+c.ville,on:surG&&gc&&gc.id===c.id,act:`grpAller('${c.id}','bord')`}));
+  fiches.forEach(f=>{const c=DB.clubs.find(x=>x.id===f.clubId)||(window._DBvrai||DB).clubs.find(x=>x.id===f.clubId);E.push({g:"Mon espace membre",ic:"🪪",lb:c?c.nom.replace(/^CAP\s+/,""):"Espace membre",sous:"Membre",on:surE&&(window._espUrl||"").includes(f.id),act:`espaceOuvrir('membre.html#moi=${f.id}')`})});
+  return E}
+function espSync(){const b=document.getElementById("esp-sel");if(!b)return;const E=espEntrees();b.classList.toggle("hidden",E.length<2);if(E.length<2){espFermer();return}
+  const c=E.find(x=>x.on)||E[0],h=`<span class="es-ic" aria-hidden="true">${c.ic}</span><span class="es-t"><small>${esc(c.g==="Direction"?"Vue nationale":c.g==="Régions"?"Vue régionale":c.g==="Mes groupes"?"Mon groupe":"Espace membre")}</small><b>${esc(c.lb)}</b></span><span class="es-fl" aria-hidden="true">▾</span>`;
+  if(b.dataset.h!==h){b.innerHTML=h;b.dataset.h=h}b.setAttribute("aria-label","Changer d'espace · "+c.lb);b.dataset.g=c.g}
+function espMenu(){const b=document.getElementById("esp-sel");let m=document.getElementById("esp-menu");if(m){espFermer();return}
+  const E=espEntrees();let g=null;m=document.createElement("div");m.id="esp-menu";m.className="esp-menu";m.setAttribute("role","menu");
+  m.innerHTML=E.map(x=>(x.g!==g?(g=x.g,`<div class="em-g">${esc(g)}</div>`):"")+`<button type="button" role="menuitem" class="em-i${x.on?" on":""}" onclick="espFermer();${x.act}"><span class="es-ic" aria-hidden="true">${x.ic}</span><span class="es-t"><b>${esc(x.lb)}</b><small>${esc(x.sous)}</small></span>${x.on?`<span class="em-ok" aria-hidden="true">✓</span>`:""}</button>`).join("");
+  document.body.appendChild(m);const r=b.getBoundingClientRect(),w=Math.min(330,innerWidth-16);m.style.width=w+"px";m.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+"px";m.style.top=(r.bottom+6)+"px";m.style.maxHeight=(innerHeight-r.bottom-20)+"px";
+  b.setAttribute("aria-expanded","true");setTimeout(()=>{document.addEventListener("pointerdown",_espDehors,true);document.addEventListener("keydown",_espEchap,true)},0);(m.querySelector(".em-i.on")||m.querySelector(".em-i")).focus()}
+function _espDehors(e){if(!e.target.closest("#esp-menu,#esp-sel"))espFermer()}
+function _espEchap(e){if(e.key==="Escape"){e.stopPropagation();espFermer();const b=document.getElementById("esp-sel");b&&b.focus()}
+  else if(e.key==="ArrowDown"||e.key==="ArrowUp"){const l=[...document.querySelectorAll("#esp-menu .em-i")],i=l.indexOf(document.activeElement);if(l.length){e.preventDefault();l[(i+(e.key==="ArrowDown"?1:-1)+l.length)%l.length].focus()}}}
+function espFermer(){const m=document.getElementById("esp-menu");if(m)m.remove();document.removeEventListener("pointerdown",_espDehors,true);document.removeEventListener("keydown",_espEchap,true);const b=document.getElementById("esp-sel");if(b)b.setAttribute("aria-expanded","false")}
+function espVue(m){if(tab!=="dash")go("dash");if(vueMode()!==m)vueChoisir(m);else render()}
+function espRegion(id){if(tab!=="dash")go("dash");let k=null;try{k=localStorage.getItem("cap-region")}catch(e){}if(vueMode()==="reg"&&k===id){render();return}vueRegionChoisir(id)}
 function vuePortee(){if(!DB||vueMode()!=="reg")return null;const {villes}=vueRegion();
   /* v1.29 : un animateur travaille sur ses groupes ; seul l'agenda lui montre tout le réseau (il peut s'inscrire à n'importe quelle réunion) */
   const anim=SESSION.role==="animateur";if(anim&&tab==="agenda")return null;
@@ -3327,6 +3368,7 @@ function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB,av=window
 const VILLE_TEINTE={Rabat:"#B0122E","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
 function vrTeinte(v){return VILLE_TEINTE[v]||villeColor(v)}
 function vrMois(){const l=[];for(let i=-6;i<=3;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()+i,1);l.push({k:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),lab:MOIS[d.getMonth()],an:d.getFullYear(),auj:i===0,futur:i>0})}return l}
+function vrVille(v){if(typeof monPeut==="function"&&monPeut()){_mon.niv="ville";_mon.cle=v;go("monitoring")}else go("clubs")}
 function viewRegion(){
   const R=vueRegion(),cl=DB.clubs.slice(),ids=new Set(cl.map(c=>c.id));
   const aVenir=DB.reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee");
@@ -3336,7 +3378,12 @@ function viewRegion(){
   const incomp=DB.membres.filter(m=>!membreAJour(m)),renouv=typeof renouvAFaire==="function"?renouvAFaire(ids):[];
   const actifs=cl.filter(c=>c.statut==="actif").length,peut=!readOnly();
   const rangDe=c=>clubTone(c)==="urgent"?0:sansBil.some(r=>r.clubId===c.id)?1:clubTone(c)==="todo"?2:3;
-  const tri=cl.slice().sort((a,b)=>(rangDe(a)-rangDe(b))||a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  /* v1.39 : rangé par ville (dans l'ordre de la région), puis du plus urgent au plus calme */
+  const nv=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),ordV=R.villes.map(nv),rv=c=>{const i=ordV.indexOf(nv(c.ville));return i<0?99:i};
+  const tri=cl.slice().sort((a,b)=>(rv(a)-rv(b))||a.ville.localeCompare(b.ville)||(rangDe(a)-rangDe(b))||a.nom.localeCompare(b.nom));
+  const villeTete=(v)=>{const g=cl.filter(c=>c.ville===v),nb=nbPersonnes(DB.membres.filter(m=>g.some(c=>c.id===m.clubId))),at=g.filter(c=>clubTone(c)!=="ok").length,va=String(v).replace(/'/g,"\\'");
+    return `<tr class="vr-vh" style="--vc:${vrTeinte(v)}" tabindex="0" onclick="vrVille('${va}')" onkeydown="if(event.key==='Enter')vrVille('${va}')"><td colspan="5"><i></i><b>${esc(v)}</b><span>${g.length} groupe${g.length>1?"s":""} · ${nb} membre${nb>1?"s":""}${at?` · ${at} à traiter`:""}</span><em>Statistiques ›</em></td></tr>`};
+  const lignesVille=()=>{let v=null,i=0;return tri.map(c=>{const t=c.ville!==v?(v=c.ville,villeTete(v)):"";return t+ligne(c,i++)}).join("")};
   const todo=[
     sansDate.length&&peut&&[`📅 Planifier les réunions de ${sansDate.length} groupe${sansDate.length>1?"s":""}`,`openPlanSerie()`],
     sansBil.length&&peut&&[`📊 ${sansBil.length} bilan${sansBil.length>1?"s":""} à saisir`,`openBilan('${sansBil.sort((a,b)=>a.date.localeCompare(b.date))[0].id}')`],
@@ -3367,8 +3414,8 @@ function viewRegion(){
      plus ce qui n'a de sens qu'à l'échelle régionale : le tableau des groupes et le planning. */
   const nbV=new Set(cl.map(c=>c.ville)).size,nbA=new Set(cl.map(c=>c.animId).filter(Boolean)).size;
   const band=`<div class="vn-band reg"><small>Vue régionale</small><b>${esc(R.nom)}</b><span>${nbV} ville${nbV>1?"s":""} · ${cl.length} groupe${cl.length>1?"s":""} (${actifs} actif${actifs>1?"s":""}) · ${nbA} animateur${nbA>1?"s":""} · ${nbPersonnes(DB.membres)} membre${nbPersonnes(DB.membres)>1?"s":""}</span>${vuePeutBasculer()?`<button class="btn ghost mini" onclick="vueChoisir('nat')">🌍 Passer à la vue nationale</button>`:""}</div>`;
-  const groupes=dashSec("groupes","🏛","Les groupes de la région","Du plus urgent au plus calme · touche une ligne pour ouvrir le groupe",
-    `${todo.length?`<div class="vr-todo in">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:""}<div class="vr-tab in"><div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${tri.map(ligne).join("")}</tbody></table></div></div>`);
+  const groupes=dashSec("groupes","🏛","Les groupes de la région","Ville par ville, du plus urgent au plus calme · touche une ligne pour ouvrir le groupe",
+    `${todo.length?`<div class="vr-todo in">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:""}<div class="vr-tab in"><div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${lignesVille()}</tbody></table></div></div>`);
   const plan=dashSec("plan","📆","Planning de la région","Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir ou planifier",
     `${peut?`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>`:""}
     ${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}

@@ -309,9 +309,23 @@ html.th-verreclair{--paper:#EEEAEA;--card:#FFFFFF}
 html.dark .ac-rep button.on.non{background:var(--surf);border-color:var(--line);color:var(--ink)}
 html.dark input,html.dark textarea,html.dark select{background:var(--card);color:var(--ink);border-color:var(--line)}
 html.dark .logo-ent{background:#fff}
+/*v1.55 un seul rouge : celui du bouton « Écrire un message », avec du texte blanc*/
+.fiche-top,.ac-reu,.gv-reu,.tb-gros,.club-tot{background:var(--crimson)!important;color:#fff;border-color:transparent}
+html.dark .ac-reu{color:#fff}
+.ac-reu .label,.gv-reu .label,.tb-gros span,.fiche-top .retour{color:rgba(255,255,255,.88)}
+.ac-lt small,.ac-t small,.ac-sem,.ac-il small,.ac-plus,.ac-ok,.gv-reu-b span,.tb-gros small,.club-tot small{color:rgba(255,255,255,.88)}
+a.ac-lieu,span.ac-lieu{background:rgba(255,255,255,.16);color:#fff}.ac-ico{background:rgba(255,255,255,.2)}
+.ac-t{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26);color:#fff}.ac-t[aria-expanded=true]{background:rgba(255,255,255,.26)}
+.ac-inv{background:rgba(0,0,0,.2)}.ac-j{background:rgba(255,255,255,.22)}
+.ac-rep button{border-color:rgba(255,255,255,.6)}
+.ac-rep button.on.oui,.ac-rep button.on.non,html.dark .ac-rep button.on.non{background:#fff;border-color:#fff;color:var(--crimson)}
+.fiche-top .av{border-color:rgba(255,255,255,.7)}.pill-or{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
+.chip-st.envoyee,html.dark .chip-st.envoyee{background:var(--crimson);color:#fff}
+.chx input:checked+span,html.dark .chx input:checked+span{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.gv-theme{color:#fff}
 /*v1.54 étiquettes : jamais rouge sur rouge*/
 .pill-or{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.28)}
-.fiche-top{background:linear-gradient(155deg,#6B0C1C,#4A0813 75%)}.fiche-top .av{border-color:rgba(255,255,255,.55)}
+
 .liens a{display:inline-flex;align-items:center;gap:6px;background:var(--crimson);color:#fff;font-weight:700;transition:transform .15s}.liens a:active{transform:scale(.96)}
 html.dark .ico,html.dark .presence.ko .ico{background:#2F3238;color:#F1F1F2}
 html.dark .chip-st.envoyee{background:var(--crimson);color:#fff}
@@ -323,7 +337,7 @@ html.dark .grp-row{background:#2A2023!important}html.dark .msg{background:#2F323
 html.dark .tb-k.in,html.dark .eq-band,html.dark .chip-st.contact,html.dark .chip-st.devis{background:#1C2836;color:#9DB7D1}html.dark .tb-k.in span{color:#9DB7D1}html.dark .tb-k.in b,html.dark .tb-k.in .bri{color:#F1F1F2}
 html.dark .chip-st.signee{background:#16301F;color:#7FD6A6}html.dark .pct{color:#7FD6A6}html.dark .pct.bas{color:var(--crimson-txt)}
 html.dark .logo-ent{color:#5B5F68}
-html.dark .ac-reu{color:#F3DDE1}html.dark .la.fort .la-t b{color:var(--ink)}html.dark .la.fort .la-t span{color:var(--muted)} /* v1.37 : textes illisibles en sombre (rouge foncé sur rouge foncé) */
+html.dark .ac-reu{color:#fff}html.dark .la.fort .la-t b{color:var(--ink)}html.dark .la.fort .la-t span{color:var(--muted)} /* v1.37 : textes illisibles en sombre (rouge foncé sur rouge foncé) */
 </style>
 </head>
 <body>
@@ -1027,7 +1041,7 @@ function vueInviter(){
   const r=S.prochaine;
   return `<div class="page">
     ${ariane()}<div class="head"><div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au club : ton animateur le reçoit tout de suite.</p></div></div>
-    ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--deep);color:#fff;border-color:transparent"><span class="label" style="color:var(--or)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
+    ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--crimson);color:#fff;border-color:transparent"><span class="label" style="color:rgba(255,255,255,.85)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
       <b class="bri" style="font-size:20px">${esc(dateReu(r.date,r.heure))}</b><span style="color:#F3DDE1;font-size:14px">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span></div>
     <form id="f-inv" class="card" style="display:flex;flex-direction:column;gap:12px">
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son nom *</span><input class="champ1" id="i-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>

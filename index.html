@@ -2326,6 +2326,7 @@ html .dash-recos{background:var(--crimson)}html .dash-recos small,html .dash-rec
 html .vn-band.reg{background:#2B2D32;color:#F1F1F2;border:1px solid #3C3F45;border-bottom:3px solid var(--crimson)}html .vn-band.reg small{color:#B9BCC4}html .vn-band.reg .btn{border-color:#55585F;color:#F1F1F2}
 /* pastille de date en tête de fiche : même dessin que les autres (bande rouge pleine largeur, filet) */
 html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
+.mb-rap a.acc{flex:1 1 100%}.mb-rap a.acc.fort{background:var(--crimson);border-color:var(--crimson);color:#fff}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
 </head>
@@ -2432,8 +2433,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.62.0";
+const APP_VERSION="1.62.1";
 const CHANGELOG=[
+  {v:"1.62.1",date:"19 novembre 2026",notes:{"Ajouté":["Au téléphone, fiche d'un membre : un bouton « 🔑 Donner l'accès à l'espace membre » en tête de fiche, sous Appeler / WhatsApp / E-mail. Il crée le code et prépare le message WhatsApp. Avant, il fallait déplier la section « Espace membre » tout en bas."]}},
   {v:"1.62.0",date:"19 novembre 2026",notes:{"Ajouté":["Visite guidée refaite sur l'appli d'aujourd'hui. À la première connexion : « L'essentiel », deux minutes. Dans Paramètres → Aide : l'essentiel, la visite complète (cinq minutes) ou une partie seulement — accueil et chiffres, Mon groupe, agenda, groupes et membres, recommandations, adhésions, équipe, ressources.","La visite s'adapte au rôle (animateur, directeur, direction nationale, lecture seule) et à l'écran : sur téléphone elle montre la barre du bas, le bouton Reco et le menu ☰."],"Modifié":["Un seul mot partout : « groupe ». Les écrans, les filtres, les tableaux et les messages qui disaient encore « club » disent « groupe » (le « Club d'Affaires Protéine » garde son nom).","Sur une grande zone, la visite n'éclaire que le haut et garde sa bulle lisible en dessous."],"Corrigé":["Carte « Affaires générées par les recos » : petit titre en blanc (il était bleu sur rouge).","Un lien de document partagé part toujours de l'adresse publique du site."]}},
   {v:"1.61.0",date:"19 novembre 2026",notes:{"Modifié":["Thèmes sombres : plus de rouge sur rouge dans le CRM. Les fonds teintés de rouge passent en gris neutre, le rouge des textes est adouci, les boutons secondaires (Copier le lien, Ouvrir, Je ne viens plus…) sont en texte clair.","Une action rouge est maintenant un vrai bouton rouge à texte blanc : « Voir » sur les demandes, « Planifier une réunion » dans les tableaux et sur les cartes des groupes.","Bandeau « Vue régionale » en anthracite avec un filet rouge, pour ne plus avoir deux bandeaux rouges l'un sous l'autre."],"Corrigé":["Pastille de date en tête d'une fiche de réunion : même dessin que partout ailleurs (bande rouge sur toute la largeur, filet autour)."]}},
   {v:"1.60.0",date:"19 novembre 2026",notes:{"Modifié":["Rouge vif partout : le CRM, l'espace membre, les documents et le formulaire d'adhésion utilisent maintenant le même rouge vif, dans tous les thèmes. Les anciens rouges plus sombres et les bordeaux (bandeau d'accueil, bandeau de la vue régionale ou nationale, carte des affaires générées, boutons, pastilles) disparaissent."]}},
@@ -6025,8 +6027,11 @@ function memberSheet(clubId,id){
 const DOC_TYPES={formulaire:"Formulaire d'adhésion",contrat:"Contrat",contrat_signe:"Contrat signé",autre:"Autre pièce"};
 /* v1.42 — fiche membre au téléphone : lecture et gestes rapides d'abord. Appeler / WhatsApp / E-mail en tête,
    la saisie du suivi dans un volet, et chaque section du dossier repliable (état gardé le temps de la session). */
-function mbRapides(m){const d=mbInfos(m),tel=String(d.m_tel||"").trim(),mail=String(d.m_email||"").trim();if(!tel&&!mail)return"";
-  return `<div class="mb-rap">${tel?`<a href="tel:${esc(telE164(tel)||tel)}">📞 Appeler</a><a class="wa" href="https://wa.me/${mbWa(tel)}" target="_blank" rel="noopener">WhatsApp</a>`:""}${mail?`<a href="mailto:${esc(mail)}">✉ E-mail</a>`:""}</div>`}
+function mbRapides(m){const d=mbInfos(m),tel=String(d.m_tel||"").trim(),mail=String(d.m_email||"").trim();
+  // v1.62.1 : au téléphone, l'accès à l'espace membre est un bouton en tête de fiche (il était au fond d'une section repliée)
+  let acc="";try{if(canEditClubId(m.clubId)&&!readOnly()&&!(SESSION&&SESSION._voir))acc=`<a href="#" class="acc${m.inscrit?"":" fort"}" onclick="mbAccesFiche('${m.id}');return false">🔑 ${m.inscrit?"Renvoyer un code d'accès":"Donner l'accès à l'espace membre"}</a>`}catch(e){}
+  if(!tel&&!mail&&!acc)return"";
+  return `<div class="mb-rap">${tel?`<a href="tel:${esc(telE164(tel)||tel)}">📞 Appeler</a><a class="wa" href="https://wa.me/${mbWa(tel)}" target="_blank" rel="noopener">WhatsApp</a>`:""}${mail?`<a href="mailto:${esc(mail)}">✉ E-mail</a>`:""}${acc}</div>`}
 function sheetReplier(){if(isWide())return;const z=document.querySelector("#sheet-content .mb-dossier");if(!z)return;let ouv={};try{ouv=JSON.parse(sessionStorage.getItem("cap-mb-sec")||"{}")}catch(e){}
   const tetes=[...z.querySelectorAll(":scope > .sec-h")];
   tetes.forEach((h,i)=>{const cle=(h.querySelector("span")||h).textContent.trim().replace(/\s+\d+$/,""),suite=[];let n=h.nextElementSibling;while(n&&!n.classList.contains("sec-h")){suite.push(n);n=n.nextElementSibling}

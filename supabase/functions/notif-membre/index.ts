@@ -5,6 +5,9 @@
 //   type "reco_suivi" : la recommandation avance (contact, devis, signée…) → appareils de celui qui l'a donnée.
 //   type "groupe" : message dans le fil d'un groupe (v1.4.0) → membres du groupe ayant un compte + animateur du groupe,
 //                   jamais l'auteur ; même étiquette par groupe : le dernier message remplace le précédent.
+//   type "doc"    : une pièce est remise à un membre dans « Mes documents » (v1.45.0) → ses appareils. Une facture
+//                   n'est annoncée qu'une fois son paiement coché.
+//   type "lead"   : un contact est confié à un animateur (v1.45.0) → appareils des comptes de cet animateur.
 // verify_jwt:false — la fonction ne fait confiance qu'à la base : la ligne doit exister, dater de moins de
 // 15 min et ne pas avoir été notifiée (réservation atomique de notifie_le).
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -74,7 +77,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "methode" }, 405);
   let type = "", id = "";
   try { const b = await req.json(); type = String(b.type || ""); id = String(b.id || ""); } catch { return json({ error: "corps" }, 400); }
-  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite", "reco", "reco_suivi", "groupe"].includes(type)) return json({ error: "parametres" }, 400);
+  if (!/^[0-9a-f-]{36}$/.test(id) || !["message", "invite", "reco", "reco_suivi", "groupe", "doc", "lead"].includes(type)) return json({ error: "parametres" }, 400);
   const depuis = new Date(Date.now() - 15 * 60e3).toISOString();
   try {
     if (type === "message") {
@@ -95,6 +98,36 @@ Deno.serve(async (req) => {
       return json({ ok: true, envoyes: n });
     }
     if (type === "reco" || type === "reco_suivi") return json(await reco(type, id, depuis));
+    if (type === "doc") {
+      const { data: d0 } = await sb.from("membre_documents").select("id, membre_id, nom, nature, visible_membre, notifie_le").eq("id", id).maybeSingle();
+      if (!d0 || !d0.visible_membre || d0.notifie_le || !d0.membre_id) return json({ ok: true, envoyes: 0, raison: "rien_a_annoncer" });
+      const { data: mb } = await sb.from("membres").select("user_id, paiement").eq("id", d0.membre_id).maybeSingle();
+      if (d0.nature === "facture" && !mb?.paiement) return json({ ok: true, envoyes: 0, raison: "paiement_non_coche" });
+      const { data: rows, error } = await sb.from("membre_documents").update({ notifie_le: new Date().toISOString() })
+        .eq("id", id).is("notifie_le", null).eq("visible_membre", true).select("id");
+      if (error) return json({ error: error.message }, 500);
+      if (!rows?.length) return json({ ok: true, envoyes: 0, raison: "deja_notifie" });
+      if (!mb?.user_id) return json({ ok: true, envoyes: 0, raison: "pas_de_compte" });
+      const titre = d0.nature === "facture" ? "🧾 Ta facture est disponible" : d0.nature === "recu" ? "💳 Ton reçu de paiement est disponible"
+        : d0.nature === "attestation" ? "📜 Une attestation t'attend" : "📎 Un nouveau document pour toi";
+      const n = await envoyer([mb.user_id], { title: titre, body: court(String(d0.nom || "").replace(/\.[a-z0-9]{2,5}$/i, ""), 120) + " — dans « Mes documents ».", url: "/membre.html#d", tag: "doc-" + d0.id });
+      return json({ ok: true, envoyes: n });
+    }
+    if (type === "lead") {
+      const { data: l0 } = await sb.from("leads").select("id, nom, ville, feuille, attribue_a, attribue_par, attribue_par_nom, attribue_le, attribue_notifie_le").eq("id", id).maybeSingle();
+      const quand = l0?.attribue_le ? new Date(l0.attribue_le).getTime() : 0;
+      if (!l0 || !l0.attribue_a || !quand || quand < Date.now() - 15 * 60e3) return json({ ok: true, envoyes: 0, raison: "rien_a_annoncer" });
+      if (l0.attribue_notifie_le && new Date(l0.attribue_notifie_le).getTime() >= quand) return json({ ok: true, envoyes: 0, raison: "deja_notifie" });
+      let q = sb.from("leads").update({ attribue_notifie_le: new Date().toISOString() }).eq("id", id).eq("attribue_a", l0.attribue_a);
+      q = l0.attribue_notifie_le ? q.eq("attribue_notifie_le", l0.attribue_notifie_le) : q.is("attribue_notifie_le", null);
+      const { data: rows, error } = await q.select("id");
+      if (error) return json({ error: error.message }, 500);
+      if (!rows?.length) return json({ ok: true, envoyes: 0, raison: "deja_notifie" });
+      const { data: profs } = await sb.from("profiles").select("id").eq("animateur_id", l0.attribue_a);
+      const ids = (profs || []).map((p) => p.id as string).filter((u) => u !== l0.attribue_par);
+      const n = await envoyer(ids, { title: "📬 Contact confié : " + (l0.nom || "un contact"), body: [l0.attribue_par_nom ? "Par " + l0.attribue_par_nom : "", l0.ville || l0.feuille || ""].filter(Boolean).join(" · ") + ". Invite-le à ta prochaine réunion.", url: "/?boite=1", tag: "lead-" + l0.id });
+      return json({ ok: true, envoyes: n });
+    }
     if (type === "groupe") {
       const { data: rows, error } = await sb.from("messages_groupe")
         .update({ notifie_le: new Date().toISOString() })

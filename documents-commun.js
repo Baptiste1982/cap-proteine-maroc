@@ -58,3 +58,10 @@ const DOC_CSS=`
 .ap-i{width:100%;height:100%;object-fit:contain;background:#1B1416;display:block}
 .ap-t{margin:0;width:100%;height:100%;overflow:auto;background:#fff;color:#1B1416;font:12.5px/1.5 ui-monospace,Menlo,monospace;padding:14px;white-space:pre-wrap;box-sizing:border-box}
 .ap-v{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;color:#5E5054;font-size:14px;background:#FAF6F4;padding:20px;box-sizing:border-box}`;
+
+/* v1.74 : kit de départ — guides fournis avec l'appli (fichiers du site, pas des dépôts), visibles de toute l'équipe et des membres. */
+const KIT_GUIDES=[
+  {os:"ios",titre:"Installer l'appli sur un iPhone",sous:"Vidéo de 15 secondes · les gestes dans Safari",video:"guides/installer-iphone.mp4",affiche:"guides/installer-iphone.jpg"},
+  {os:"and",titre:"Installer l'appli sur un Android",sous:"Vidéo de 15 secondes · les gestes dans Chrome",video:"guides/installer-android.mp4",affiche:"guides/installer-android.jpg"}];
+const kitLien=crm=>DOC_SITE+(crm?"/?installer":"/membre.html#installer");
+const kitMessage=crm=>"Pour avoir "+(crm?"le CRM":"ton espace membre")+" Protéine comme une appli sur ton téléphone, en 30 secondes : "+kitLien(crm);

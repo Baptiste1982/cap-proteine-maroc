@@ -15,6 +15,7 @@
 if({sombre:1,verre:1,bordeaux:1,graphite:1}[t])document.documentElement.classList.add("dark")}catch(e){}})();
 addEventListener("storage",function(e){if(e.key==="cap-theme")location.reload()});</script>
 <script src="documents-commun.js"></script>
+<script src="installer.js"></script>
 <style>
 /* Documents du réseau (v1.10.0) : l'espace où le bureau national dépose et partage les documents des groupes. */
 :root{--crimson:#D81B3F;--deep:#B5142F;--tint:#F8E9EC;--or:#C8A24C;--ink:#1B1416;--muted:#5E5054;--soft:#7A6A6E;--paper:#FAF6F4;--card:#FFFFFF;--line:#EADDE0;--line2:#EFE5E7;--ardoise:#3B5B7A}
@@ -70,6 +71,7 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 .liste .doc{flex-direction:row;align-items:center;padding:10px 14px}.liste .doc .desc{display:none}.liste .doc .haut{flex:1;align-items:center}.liste .doc .vis{flex-wrap:nowrap}
 .epingle{position:absolute;top:10px;right:10px;color:var(--or);font-size:15px;z-index:1}
 .vide{text-align:center;color:var(--muted);padding:30px 14px}
+.kit-n{margin:0 0 10px;font-size:13px;color:var(--muted)}.doc.kit{cursor:default}.kit-v{border-radius:10px;overflow:hidden;background:#0B0C0E;aspect-ratio:9/14;max-height:420px;margin:0 auto;width:100%}.kit-v video{width:100%;height:100%;object-fit:contain;display:block}.kit-a{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.kit-a button,.kit-a a{border:1px solid var(--line);background:transparent;color:inherit;border-radius:999px;padding:7px 11px;font:600 12px Inter,sans-serif;cursor:pointer;text-decoration:none}.kit-a button:first-child{background:#D81B3F;border-color:#D81B3F;color:#fff}
 .vid-v{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#1B1416}.vid-v video{width:100%;height:100%;object-fit:cover;display:block}
 .vid-p{position:absolute;inset:0;margin:auto;width:48px;height:48px;border-radius:50%;background:rgba(216,27,63,.9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;padding-left:3px;transition:opacity .2s}
 .doc.vid:hover .vid-p{opacity:0}
@@ -231,6 +233,11 @@ function rendu(){
   $("main").innerHTML=`${depot}
     <div class="resume"><span>${l.length} document${l.length>1?"s":""}${S.q||S.type!=="tous"?" trouvé"+(l.length>1?"s":""):""}</span>
       <div class="vue" role="group" aria-label="Affichage"><button class="${S.vue==="grille"?"on":""}" data-vue="grille">Cartes</button><button class="${S.vue==="liste"?"on":""}" data-vue="liste">Liste</button></div></div>
+    ${!S.q&&(S.type==="tous"||S.type==="video")?`<details class="volet" data-v="kit" ${voletOuvert("kit")?"open":""}><summary><span class="v-t">🚀 Kit de départ</span><span class="v-n">${KIT_GUIDES.length}</span>${CHEV}</summary>
+      <p class="kit-n">Les guides de base, à voir et à transmettre : ils sont ouverts à toute l'équipe, animateurs compris.</p>
+      <div class="grille">${KIT_GUIDES.map((g,i)=>`<div class="doc kit"><div class="kit-v"><video src="${g.video}" poster="${g.affiche}" controls playsinline preload="none"></video></div>
+        <span class="t"><b>${esc(g.titre)}</b><small>${esc(g.sous)}</small></span>
+        <div class="kit-a"><button type="button" data-kit-guide="${g.os}">Guide animé</button><a href="https://wa.me/?text=${encodeURIComponent(kitMessage(false))}" target="_blank" rel="noopener">Envoyer à un membre</a><a href="https://wa.me/?text=${encodeURIComponent(kitMessage(true))}" target="_blank" rel="noopener">Envoyer à un animateur</a><button type="button" data-kit-copie="${i}">Copier le lien</button></div></div>`).join("")}</div></details>`:""}
     ${une.length&&!S.q?`<details class="volet" data-v="une" ${voletOuvert("une")?"open":""}><summary><span class="v-t">★ À la une</span><span class="v-n">${une.length}</span>${CHEV}</summary><div class="grille">${une.map(carte).join("")}</div></details>`:""}
     ${cats.length?cats.map(c=>`<details class="volet" data-v="${esc(c)}" ${voletOuvert(c)?"open":""}><summary><span class="v-t">${esc(c)}</span><span class="v-n">${parCat[c].length}</span>${CHEV}</summary><div class="grille">${parCat[c].map(c===VID_CAT?carteVideo:carte).join("")}</div></details>`).join("")
       :`<p class="vide">${S.docs.length?"Aucun document ne correspond.":S.gere?"Aucun document pour l'instant. Dépose le premier ci-dessus.":"Aucun document partagé pour l'instant."}</p>`}`;
@@ -242,7 +249,9 @@ function brancher(){
   document.querySelectorAll("[data-vue]").forEach(b=>b.onclick=()=>{S.vue=b.dataset.vue;try{localStorage.setItem("cap-docs-vue",S.vue)}catch(e){}rendu()});
   document.querySelectorAll("details[data-v]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-docs-v-"+d.dataset.v,d.open?"1":"0")}catch(e){}});
   document.querySelectorAll("[data-ouvrir]").forEach(b=>b.onclick=()=>ouvrir(b.dataset.ouvrir));
-  document.querySelectorAll(".doc:not(.vid)").forEach(c=>{c.onmouseenter=()=>survolDebut(c);c.onmouseleave=survolFin});
+  document.querySelectorAll("[data-kit-guide]").forEach(b=>b.onclick=()=>Installer.ouvrir(b.dataset.kitGuide));
+  document.querySelectorAll("[data-kit-copie]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(kitLien(false));toast("Lien du guide copié")}catch(e){toast(kitLien(false))}});
+  document.querySelectorAll(".doc:not(.vid):not(.kit)").forEach(c=>{c.onmouseenter=()=>survolDebut(c);c.onmouseleave=survolFin});
   document.querySelectorAll(".doc.vid").forEach(c=>{const v=c.querySelector("video");c.onmouseenter=()=>{v.play().catch(()=>{})};c.onmouseleave=()=>{v.pause()}});
   const f=$("fichiers");if(f)f.onchange=()=>{deposer([...f.files]);f.value=""};
   const z=$("depot");if(z){["dragenter","dragover"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add("survol")}));
@@ -328,7 +337,7 @@ async function deposer(fichiers){
     const up=await sb.storage.from(DOC_BUCKET).upload(chemin,f,{contentType:f.type||undefined,upsert:false});clearInterval(t);
     if(up.error){e.etat="Échec : "+up.error.message;e.pct=0;rendu();continue}
     const titre=f.name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim()||f.name;
-    const ins=await sb.from("documents_reseau").insert({titre,chemin,nom_fichier:f.name,type_mime:f.type||null,taille:f.size,categorie:docType(f.name,f.type)==="video"?VID_CAT:"Autres",cree_par:user&&user.id}).select().single();
+    const ins=await sb.from("documents_reseau").insert({titre,chemin,nom_fichier:f.name,type_mime:f.type||null,taille:f.size,categorie:docType(f.name,f.type)==="video"?VID_CAT:"Autres",visible_animateurs:true,cree_par:user&&user.id}).select().single();
     if(ins.error){e.etat="Échec : "+ins.error.message;e.pct=0;rendu();continue}
     S.docs.unshift(ins.data);e.pct=100;e.etat="✓ Déposé";rendu();
   }

@@ -478,7 +478,7 @@ async function demarrer(){
   if(error){await sb.auth.signOut({scope:"local"});return vueLogin({t:"Connexion impossible pour l'instant ("+error.message+")."})}
   if(moi.statut!=="ok"){
     await sb.auth.signOut({scope:"local"});
-    return vueLogin({t:moi.statut==="en_cours"?"Ta demande d'adhésion est bien reçue. Ton espace s'ouvrira dès que ton animateur t'aura intégré à ton club : tu pourras alors te connecter avec ce même numéro."
+    return vueLogin({t:moi.statut==="en_cours"?"Ta demande d'adhésion est bien reçue. Ton espace s'ouvrira dès que ton animateur t'aura intégré à ton groupe : tu pourras alors te connecter avec ce même numéro."
       :moi.statut==="ambigu"?"Ce numéro est inscrit sur plusieurs fiches. Ton animateur doit corriger la fiche en double avant que tu puisses entrer."
       :"Ce numéro n'est relié à aucune fiche membre. Demande à ton animateur de l'ajouter dans ta fiche (mobile), puis réessaie."});
   }
@@ -776,7 +776,7 @@ function vueRecos(){
     <div class="head"><div><h1>Mes recommandations</h1><p class="sub">${recue?"Celles que les membres t'ont passées : tu les fais avancer et tu saisis le montant signé.":"Celles que tu as passées : elles sont à ton actif."}</p></div></div>
     <button class="btn" data-rdonner="">Recommander quelqu'un</button>
     <div class="seg" role="tablist"><button role="tab" aria-selected="${recue}" class="${recue?"on":""}" data-rtab="recues">Reçues · ${nr}</button><button role="tab" aria-selected="${!recue}" class="${!recue?"on":""}" data-rtab="donnees">Données · ${nd}</button></div>
-    ${blocs||`<p class="vide" style="padding:12px">${recue?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du club ? C'est ici."}</p>`}
+    ${blocs||`<p class="vide" style="padding:12px">${recue?"Aucune recommandation reçue pour l'instant.":"Tu n'as encore recommandé personne. Un contact qui a besoin d'un métier du groupe ? C'est ici."}</p>`}
   </div>`;
 }
 
@@ -835,9 +835,9 @@ function vueAnnuaire(){
     <div class="head"><div><div class="eyebrow">Protéine · Espace membre</div><h1>Le réseau</h1><p class="sub">Cherche un membre par son nom, son métier ou son activité : les propositions arrivent dès les premières lettres.</p></div></div>
     ${S.maRegion?`<div class="seg ann-seg" role="tablist"><button role="tab" data-portee="region" class="${S.portee==="region"?"on":""}" aria-selected="${S.portee==="region"}">📍 Ma région · ${nReg}</button><button role="tab" data-portee="national" class="${S.portee==="national"?"on":""}" aria-selected="${S.portee==="national"}">🌍 Tout le réseau · ${tous.length}</button></div>`:""}
     <div class="ann-q"><label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Nom, prénom, métier, activité…" aria-label="Chercher un membre" autocomplete="off" value="${esc(S.q)}"></label><div id="sugg" class="sugg" role="listbox" hidden></div></div>
-    <div class="chips">${chip("tous",(S.portee==="region"&&S.maRegion?"Toute la région":"Toutes les régions")+" · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${S.portee==="national"?regs.map(r=>chip("r:"+r,r)).join(""):villes.length>1?villes.map(v=>chip(v,v)).join(""):""}</div>
+    <div class="chips">${chip("tous",(S.portee==="region"&&S.maRegion?"Toute la région":"Toutes les régions")+" · "+autres.length)}${S.moi.club?chip("club","Mon groupe · "+nClub):""}${S.portee==="national"?regs.map(r=>chip("r:"+r,r)).join(""):villes.length>1?villes.map(v=>chip(v,v)).join(""):""}</div>
     <div class="ann-barre"><div class="seg ann-tri" role="tablist" aria-label="Classement"><button role="tab" data-anntri="groupe" class="${annTri()==="groupe"?"on":""}" aria-selected="${annTri()==="groupe"}">Par groupe</button><button role="tab" data-anntri="az" class="${annTri()==="az"?"on":""}" aria-selected="${annTri()==="az"}">De A à Z</button></div></div>
-    <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):S.filtre.startsWith("r:")?esc(S.filtre.slice(2)):S.portee==="region"&&S.maRegion?esc(S.maRegion):"Tout le réseau"}</div>
+    <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon groupe · ")):S.filtre.startsWith("r:")?esc(S.filtre.slice(2)):S.portee==="region"&&S.maRegion?esc(S.maRegion):"Tout le réseau"}</div>
     <div id="res" style="display:flex;flex-direction:column;gap:10px">${listeAnnuaire()}</div></div>`;
 }
 
@@ -1079,7 +1079,7 @@ function vueInviter(){
   if(S.prochaine===undefined){chargerInviter().then(()=>{if(S.onglet==="inviter")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
   const r=S.prochaine;
   return `<div class="page">
-    ${ariane()}<div class="head"><div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au club : ton animateur le reçoit tout de suite.</p></div></div>
+    ${ariane()}<div class="head"><div><h1>Inviter quelqu'un</h1><p class="sub">Un chef d'entreprise que tu veux faire découvrir au groupe : ton animateur le reçoit tout de suite.</p></div></div>
     ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--crimson);color:#fff;border-color:transparent"><span class="label" style="color:rgba(255,255,255,.85)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
       <b class="bri" style="font-size:20px">${esc(dateReu(r.date,r.heure))}</b><span style="color:#F3DDE1;font-size:14px">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span></div>
     <form id="f-inv" class="card" style="display:flex;flex-direction:column;gap:12px">
@@ -1087,10 +1087,10 @@ function vueInviter(){
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son entreprise</span><input class="champ1" id="i-ent" maxlength="120"></label>
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son métier</span><input class="champ1" id="i-met" maxlength="120"></label>
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son mobile</span><input class="champ1" id="i-tel" type="tel" inputmode="tel" maxlength="40" placeholder="06…"></label>
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Un mot pour l'animateur</span><textarea class="champ" id="i-note" maxlength="600" placeholder="Comment tu le connais, pourquoi il serait bien dans le club…"></textarea></label>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Un mot pour l'animateur</span><textarea class="champ" id="i-note" maxlength="600" placeholder="Comment tu le connais, pourquoi il serait bien dans le groupe…"></textarea></label>
       <button class="btn" type="submit">Proposer pour le ${esc(new Date(r.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}</button>
     </form>`
-    :`<div class="card"><b>Pas de réunion planifiée pour ton club en ce moment.</b><p class="sub">Dès que ton animateur en aura programmé une, tu pourras proposer tes invités ici.</p></div>`}
+    :`<div class="card"><b>Pas de réunion planifiée pour ton groupe en ce moment.</b><p class="sub">Dès que ton animateur en aura programmé une, tu pourras proposer tes invités ici.</p></div>`}
     <div class="label">Mes invités${S.mesInvites.length?" · "+S.mesInvites.length:""}</div>
     ${S.mesInvites.length?S.mesInvites.map((x,i)=>{const [l,c]=STATUT_INV[x.statut]||[x.statut,_SOMBRE?"#A9ABB3":"#7A6A6E"];return `<div class="row" style="--i:${Math.min(i,14)}">${av({id:x.id,nom:x.nom})}<span class="t" style="flex:1"><b>${esc(x.nom)}</b><span>${esc([x.entreprise,x.metier].filter(Boolean).join(" · ")||"—")}</span><small>Réunion du ${esc(new Date(x.date+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}))}</small></span><span style="font-size:12px;font-weight:700;color:${c};text-align:right">${esc(l)}</span></div>`}).join("")
       :`<p class="vide" style="padding:12px">Tu n'as encore proposé personne.</p>`}
@@ -1229,7 +1229,7 @@ function vueDonnerReco(){
     <form id="f-reco" class="card" style="display:flex;flex-direction:column;gap:12px">
       <div style="display:flex;flex-direction:column;gap:6px"><span class="label">Pour quel membre ? * <b id="r-sel" style="color:var(--crimson-txt,var(--crimson));text-transform:none;letter-spacing:0">${esc(p?.nom||"")}</b></span>
         <div id="r-paliers">${recoPaliers()}</div>
-        <input class="champ1" id="r-q" placeholder="Nom, métier, club, ville…" value="${esc(S.recoQ||"")}" autocomplete="off" aria-label="Chercher un membre"${recoPortee()==="inter"?" hidden":""}>
+        <input class="champ1" id="r-q" placeholder="Nom, métier, groupe, ville…" value="${esc(S.recoQ||"")}" autocomplete="off" aria-label="Chercher un membre"${recoPortee()==="inter"?" hidden":""}>
         <div class="dests" id="r-liste">${listeDestinataires()}</div></div>
       <div class="r-sec"><span class="r-sec-t">L'affaire</span>
       <div class="types-r" role="radiogroup">${TYPES_RECO.map(([k,l,d],i)=>`<label class="tyx"><input type="radio" name="r-type" value="${k}" ${i===0?"checked":""}><span><b>${esc(l)}</b><small>${esc(d)}</small></span></label>`).join("")}</div>

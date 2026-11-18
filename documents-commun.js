@@ -29,7 +29,8 @@ function docType(nom,mime){
 const docExt=n=>{const p=String(n||"").split(".");return p.length>1?p.pop().toUpperCase().slice(0,4):""};
 function docTaille(o){o=Number(o)||0;if(o<1024)return o+" o";if(o<1048576)return Math.round(o/1024)+" Ko";return (o/1048576).toFixed(o<10485760?1:0).replace(".",",")+" Mo"}
 const docUrl=chemin=>DOC_SB_URL+"/storage/v1/object/public/"+DOC_BUCKET+"/"+String(chemin).split("/").map(encodeURIComponent).join("/");
-const docLien=id=>location.origin+"/doc.html?d="+id;
+const DOC_SITE=/^(localhost|127\.|192\.168\.)/.test(location.hostname)?location.origin:"https://cap-proteine-maroc.vercel.app"; // un lien partagé part toujours du site public
+const docLien=id=>DOC_SITE+"/doc.html?d="+id;
 const docEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 /* Pastille de type : le format en lettres sur la couleur du type, comme une étiquette de fichier. */
 function docPastille(d,taille){

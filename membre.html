@@ -372,6 +372,9 @@ nav.bas .badge{top:-2px;right:calc(50% - 26px)}
 .rr-ps{display:flex;flex-direction:column}.rr-p{display:flex;align-items:center;gap:10px;padding:10px 4px;border:0;border-bottom:1px solid var(--line2);background:none;color:inherit;font:inherit;text-align:left;width:100%}.rr-p:last-child{border-bottom:0}button.rr-p{cursor:pointer}
 .rr-pt{display:flex;flex-direction:column;min-width:0;flex:1}.rr-pt b{font-size:14.5px}.rr-pt small{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
 .rr-v{font-style:normal;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:#1E8E5A;color:#fff;white-space:nowrap}.rr-v.n{background:var(--surf2);color:var(--muted);border:1px solid var(--line)}
+/*v1.71 page de groupe*/
+button.rr-v{border:0;cursor:pointer;font-family:inherit}.gp-n{border:0;background:none;color:inherit;font:inherit;text-align:left;padding:0}button.gp-n{cursor:pointer}
+.gp-dem{flex:none;border:1px solid var(--line);background:transparent;color:inherit;border-radius:999px;padding:7px 11px;font:600 12px Inter,sans-serif;cursor:pointer;white-space:nowrap}
 /*v1.70 inscrits en couleurs*/
 .rr-p.q-groupe{box-shadow:inset 4px 0 0 #3F7FD1;background:rgba(63,127,209,.10);padding-left:10px}.rr-p.q-reseau{box-shadow:inset 4px 0 0 #1E9E63;background:rgba(30,158,99,.11);padding-left:10px}
 .rr-v.qg{background:#3F7FD1}.rr-v.qr{background:#1E9E63}
@@ -560,8 +563,8 @@ const membre=id=>S.annuaire.find(m=>m.id===id);
    ✕ pour revenir où l'on était. S.pile garde le chemin parcouru depuis l'onglet. */
 const ONGLETS_NAV=["accueil","mongroupe","annuaire","messages","moi"];
 const LIB_PAGE={accueil:"Accueil",mongroupe:"Mon groupe",annuaire:"Réseau",messages:"Messages",moi:"Moi",recos:"Mes recommandations",profil:"Ma fiche et mes réglages",
-  inviter:"Inviter à la réunion",docs:"Documents du réseau",mesdocs:"Mes documents",reunions:"Réunions du réseau",reunion:"Réunion",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
-const ETAT_PAGE=["fiche","conv","recoForm","recoTab","recoId","reuId"];
+  inviter:"Inviter à la réunion",docs:"Documents du réseau",mesdocs:"Mes documents",reunions:"Réunions du réseau",reunion:"Réunion",gpage:"Groupe",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
+const ETAT_PAGE=["fiche","conv","recoForm","recoTab","recoId","reuId","gpId"];
 S.pile=[];
 const racine=()=>S.eq?"mongroupe":"accueil";
 function snap(){const e={};ETAT_PAGE.forEach(k=>e[k]=S[k]);return e}
@@ -569,6 +572,7 @@ function libPage(o,ex){ex=ex||{};
   if(o==="fiche")return (membre(ex.fiche)||{}).nom||"Fiche";
   if(o==="conv")return (membre(ex.conv)||{}).nom||"Conversation";
   if(o==="recos"&&ex.recoForm)return "Recommander quelqu'un";
+  if(o==="gpage")return S.gp&&S.gp.id===ex.gpId&&S.gp.d?capNom(S.gp.d.nom):"Groupe";
   if(o==="reunion"){const r=(S.reseauReu||[]).find(x=>x.id===ex.reuId);return r?String(r.club||"Réunion").replace(/^CAP\s+/,""):"Réunion"}
   if(o==="reco"){const r=(S.recos||[]).find(x=>x.id===ex.recoId);return r&&r.objet?r.objet:"Recommandation"}
   return LIB_PAGE[o]||o}
@@ -595,7 +599,7 @@ function rendu(garderDefilement){
   $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe"||!!S.eq;
   const rc=aTraiterRecos().length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
   const v={accueil:vueAccueil,mongroupe:vueMonGroupe,annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,moi:vueMoi,profil:vueProfil,inviter:vueInviter,
-    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,mesdocs:vueMesDocs,reunions:vueReunions,reunion:vueReunion,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
+    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,mesdocs:vueMesDocs,reunions:vueReunions,reunion:vueReunion,gpage:vueGroupePage,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
   $("app").innerHTML=v();
   const pg=$("app").querySelector(".page");
   if(pg&&S.anim&&!garderDefilement)pg.classList.add(S.anim);
@@ -683,7 +687,7 @@ function demoReseau(){const j=n=>new Date(Date.now()+n*864e5).toISOString().slic
     {id:"r2",date:j(16),heure:"08:30",type:"SI",format:"business",club:"CAP Marrakech Synergie",ville:"Marrakech",lieu:"Es Saadi",mon_groupe:false,ma_reponse:null,viennent:7}]}
 function demoPrevus(r){return {acces:r.mon_groupe||r.ma_reponse==="oui",invites:[{nom:"Salma Bennis",metier:"Notaire",entreprise:"Étude Bennis",par:"Lien du national"},{nom:"Omar Tazi",metier:"Expert-comptable",entreprise:"Tazi Conseil",par:"Karim"}],
   groupe:[{nom:"Leïla Amrani",metier:"Avocate d'affaires",entreprise:"Cabinet Amrani",vient:"oui"},{nom:"Youssef Idrissi",metier:"Assurances",entreprise:"Idrissi Assur",vient:null},{nom:"Hind Lahlou",metier:"Agence de communication",entreprise:"Studio HL",vient:"oui"}],
-  qualites:[{nom:"Omar Tazi",q:"reseau",groupe:"CAP Casablanca Anfa"},{nom:"Salma Bennis",q:"groupe",groupe:r.club}],
+  qualites:[{nom:"Omar Tazi",q:"reseau",groupe:"CAP Casablanca Anfa",club_id:"k1"},{nom:"Salma Bennis",q:"groupe",groupe:r.club,club_id:"k0"}],
   visiteurs:r.mon_groupe?[]:[{nom:S.moi.nom,groupe:S.moi.club}],quinzaine:{du:new Date(Date.now()-12*864e5).toISOString().slice(0,10),depuis_reunion:true,recos:6,affaires:2,ca:185000}}}
 async function chargerReseauReu(){
   if(DEMO){if(!S.reseauReu)S.reseauReu=demoReseau();return}
@@ -727,7 +731,7 @@ function vueReunion(){
   const d=S.reuPrev&&S.reuPrev.id===r.id?S.reuPrev.d:null,h=r.heure?String(r.heure).slice(0,5):"",carte=lieuCarte({lieu:r.lieu,adresse:r.lien_carte||r.adresse,ville:r.ville}),nom=String(r.club||"").replace(/^CAP\s+/,"");
   const q=d&&d.quinzaine,I=(d&&d.invites)||[],G=(d&&d.groupe)||[],V=(d&&d.visiteurs)||[];
   const cle=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z]/g,""),QL={};((d&&d.qualites)||[]).forEach(x=>QL[cle(x.nom)]=x);
-  const qual=n=>{const x=QL[cle(n)];return x?{c:x.q==="groupe"?" q-groupe":" q-reseau",t:`<em class="rr-v ${x.q==="groupe"?"qg":"qr"}">${x.q==="groupe"?"Membre du groupe":"Membre · "+esc(String(x.groupe||"autre groupe").replace(/^CAP\s+/,""))}</em>`}:{c:"",t:""}};
+  const qual=n=>{const x=QL[cle(n)];return x?{c:x.q==="groupe"?" q-groupe":" q-reseau",t:`<button type="button" class="rr-v ${x.q==="groupe"?"qg":"qr"}" data-gp="${esc(x.club_id||"")}">${x.q==="groupe"?"Membre du groupe":esc(capNom(x.groupe))} ›</button>`}:{c:"",t:""}};
   const ligne=(t,s,fin,id,cl)=>`<${id&&membre(id)?`button type="button" data-fiche="${id}"`:"span"} class="rr-p${cl||""}"><span class="rr-pt"><b>${esc(t)}</b><small>${esc(s)}</small></span>${fin||""}</${id&&membre(id)?"button":"span"}>`;
   return `<div class="page">${ariane()}
     <div class="card rr mien"><div class="rr-h"><em class="ann-tag" style="--g:${coulGroupe(r.club)}">${esc(nom)}</em><small class="rr-ty">${esc(typeReu(r))}</small></div>
@@ -739,8 +743,28 @@ function vueReunion(){
     ${q?`<div class="card rr-q"><span class="label">${esc(quinzLib(q))} · la quinzaine du groupe</span><div class="rr-q3"><span><b class="bri">${Number(q.recos)||0}</b><small>recommandation${q.recos>1?"s":""}</small></span><span><b class="bri">${Number(q.affaires)||0}</b><small>affaire${q.affaires>1?"s":""} signée${q.affaires>1?"s":""}</small></span><span><b class="bri">${esc(madCourt(Number(q.ca)||0))}</b><small>de chiffre d'affaires</small></span></div></div>`:""}
     ${volet("rr-inv","Invités prévus",I.length,I.length?`<div class="rr-ps">${I.map(i=>{const q=qual(i.nom);return ligne(i.nom||"Invité",[i.metier,i.entreprise].filter(Boolean).join(" · ")||"Métier non précisé",q.t,null,q.c)}).join("")}</div>${Object.keys(QL).length?`<div class="rr-leg"><span class="qg">Membre du groupe</span><span class="qr">Membre d'un autre groupe</span><span>Invité extérieur</span></div>`:""}`:`<p class="vide" style="padding:10px">Aucun invité inscrit pour l'instant.</p>`,{ouvert:true})}
     ${volet("rr-grp","Membres du groupe",G.length,`<div class="rr-ps">${G.map(m=>ligne(m.nom,[m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du groupe",m.vient==="oui"?`<em class="rr-v">Vient</em>`:m.vient==="non"?`<em class="rr-v n">Excusé</em>`:"",m.id)).join("")}</div>`,{ouvert:true})}
-    ${V.length?volet("rr-vis","Viennent d'autres groupes",V.length,`<div class="rr-ps">${V.map(m=>ligne(m.nom,String(m.groupe||"").replace(/^CAP\s+/,""))).join("")}</div>`,{ouvert:true}):""}
+    ${V.length?volet("rr-vis","Viennent d'autres groupes",V.length,`<div class="rr-ps">${V.map(m=>ligne(m.nom,capNom(m.groupe))).join("")}</div>`,{ouvert:true}):""}
     <p class="sub" style="margin-top:12px">Les coordonnées des invités restent avec l'animateur du groupe.</p>`}</div>`}
+/* ---------- Page d'un groupe (v1.71.0) : ses membres en consultation, et le numéro à demander à son animateur ---------- */
+function capNom(n){const t=String(n||"").trim().replace(/^cap\s+/i,"");return t?"CAP "+t:"CAP"}
+async function chargerGroupePage(id){
+  if(DEMO){S.gp={id,d:{id,nom:"CAP Casablanca Anfa",ville:"Casablanca",animateur:"Karim Bennani",animateur_tel:"0661000000",membres:[{id:"x1",nom:"Leïla Amrani",metier:"Avocate d'affaires",entreprise:"Cabinet Amrani"},{id:"x2",nom:"Omar Tazi",metier:"Expert-comptable",entreprise:"Tazi Conseil"},{id:"x3",nom:"Hind Lahlou",metier:"Communication",entreprise:"Studio HL"}]}};return}
+  const {data,error}=await sb.rpc("cap_groupe_page",{p_club:id});S.gp={id,d:error?null:data,err:error?error.message:""};
+}
+function vueGroupePage(){
+  if(!S.gp||S.gp.id!==S.gpId){chargerGroupePage(S.gpId).then(()=>{if(S.onglet==="gpage")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
+  const g=S.gp.d;if(!g)return `<div class="page">${ariane()}<div class="card"><b>Groupe indisponible.</b><p class="sub">${esc(S.gp.err||"")}</p></div></div>`;
+  const M=g.membres||[],pr=String(g.animateur||"").split(/\s+/)[0];
+  return `<div class="page">${ariane()}<div class="head"><div><h1>${esc(capNom(g.nom))}</h1><p class="sub">${esc([g.ville,g.animateur?"animé par "+g.animateur:"",M.length+" membre"+(M.length>1?"s":"")].filter(Boolean).join(" · "))}</p></div></div>
+    <p class="sub" style="margin:-4px 0 12px">Les membres du groupe, en consultation. Pour joindre l'un d'eux, demande son numéro à l'animateur du groupe.</p>
+    <div class="card" style="padding:6px 12px"><div class="rr-ps">${M.length?M.map((x,i)=>`<span class="rr-p"><${membre(x.id)?`button type="button" data-fiche="${x.id}"`:"span"} class="rr-pt gp-n"><b>${esc(x.nom)}</b><small>${esc([x.metier,x.entreprise].filter(Boolean).join(" · ")||"Membre du groupe")}</small></${membre(x.id)?"button":"span"}><button type="button" class="gp-dem" data-gpdem="${i}">Demander son numéro</button></span>`).join(""):`<p class="vide" style="padding:10px">Les fiches de ce groupe ne sont pas encore saisies.</p>`}</div></div>
+    ${g.animateur_tel?`<a class="btn" style="margin-top:14px;display:inline-flex" href="https://wa.me/${telWa(g.animateur_tel)}" target="_blank" rel="noopener">Écrire à ${esc(pr||"l'animateur")}</a>`:""}</div>`}
+async function groupeDemander(i){
+  const g=S.gp&&S.gp.d,x=g&&(g.membres||[])[i];if(!x)return;const pr=String(g.animateur||"").split(/\s+/)[0];
+  const msg=`Bonjour${pr?" "+pr:""}, c'est ${S.moi.nom}, membre de ${capNom(S.moi.club)}. Peux-tu me transmettre le numéro de ${x.nom}, membre de ${capNom(g.nom)} ? Je souhaite le contacter. Merci.`;
+  if(g.animateur_tel){window.open("https://wa.me/"+telWa(g.animateur_tel)+"?text="+encodeURIComponent(msg),"_blank","noopener");return}
+  try{await navigator.clipboard.writeText(msg);toast("Message copié : envoie-le à l'animateur du groupe")}catch(e){toast("Demande-le à l'animateur du groupe"+(g.animateur?" : "+g.animateur:""),"info")}
+}
 function vueAccueil(){
   const g=S.gv;
   if(g===undefined){chargerGv().then(()=>{if(S.onglet==="accueil")rendu(true)});return `<div class="page"><p class="vide" style="margin-top:30vh">Chargement…</p></div>`}
@@ -1468,6 +1492,8 @@ function brancher(){
   app.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>repondre(b.dataset.rep));
   app.querySelectorAll("[data-rrep]").forEach(b=>b.onclick=()=>{const [i,r]=b.dataset.rrep.split(":");repondreReseau(i,r)});
   app.querySelectorAll("[data-reu]").forEach(b=>b.onclick=()=>aller("reunion",{reuId:b.dataset.reu}));
+  app.querySelectorAll("[data-gp]").forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.gp)aller("gpage",{gpId:b.dataset.gp})});
+  app.querySelectorAll("[data-gpdem]").forEach(b=>b.onclick=()=>groupeDemander(Number(b.dataset.gpdem)));
   app.querySelectorAll("details[data-volet]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-volet-"+d.dataset.volet,d.open?"1":"0")}catch(e){}});
   app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));

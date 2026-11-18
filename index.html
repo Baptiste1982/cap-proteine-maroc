@@ -2516,8 +2516,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.65.0";
+const APP_VERSION="1.66.0";
 const CHANGELOG=[
+  {v:"1.66.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion d'un autre groupe : dès que tu t'inscris avec « Je viens », tu vois qui est prévu — les invités avec leur métier, leur entreprise et leur statut, et les membres qui ont répondu présent. Avant, la fiche affichait « Invités (0) ».","Les coordonnées des invités (téléphone, e-mail) restent réservées à l'animateur du groupe et à la direction."]}},
   {v:"1.65.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : les fiches « Membre fondateur ». Dans « Ajouter », « 🌟 Membres fondateurs » pose une slide par membre du groupe (nom, fonction, entreprise, métier, ville, site), tirée de sa fiche membre ; sa photo et son logo s'affichent dès qu'ils sont dans sa fiche. Une fiche se retire ou se rajoute seule.","Présentations, slide « L'adhésion en ligne » : le QR code du formulaire d'adhésion du groupe, à scanner pendant la réunion. La demande arrive directement dans le CRM, rattachée au groupe."]}},
   {v:"1.64.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : un paquet « 💻 Le CRM et l'espace membre » de cinq slides à ajouter d'un geste — titre, « Un CRM pensé pour les groupes », « Votre espace membre » (avec deux écrans de l'appli), « L'adhésion en ligne » et « Déjà disponible, et bientôt ».","Présentations : la slide « ✦ Le réseau en constellation » dessine le réseau à partir du CRM (régions, groupes, le groupe de la réunion mis en avant). En projection, un bouton ouvre la constellation animée par-dessus, Échap revient à la slide.","Ces slides se placent après les acteurs et les membres du groupe, juste avant « L'adhésion » ; chacune se déplace, se masque ou se retire comme les autres."],"Modifié":["Projection : la barre de commandes ne s'affiche que lorsque la souris bouge ou qu'on touche l'écran, pour ne plus recouvrir le bas de la slide."],"Corrigé":["Espace membre, carte de la prochaine réunion : le mot « recommandation » ne déborde plus de sa case."]}},
   {v:"1.63.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : dans la fiche d'une réunion et dans Mon groupe, « 🎬 Présentation » monte la présentation à partir de la trame nationale de la réunion d'information (32 slides). La couverture prend la date, la ville et le groupe ; la slide « Qui suis-je ? » reprend la photo et les activités de l'animateur.","Le montage : masquer une slide, la déplacer, passer en version courte, ajouter un co-animateur ou une slide — invités du jour, membres du groupe, nouveaux membres, renouvellements, métiers recherchés, prochaine réunion, QR code du formulaire d'adhésion du groupe, ou une slide libre avec un titre et quelques lignes.","Projection en plein écran (flèches, clic, balayage au téléphone, Échap) et sortie PDF, une slide par page.","Un second modèle, « Réunion du groupe », pour les réunions de membres : couverture, invités, nouveaux membres, renouvellements, métiers recherchés, prochaine réunion.","Le montage est gardé sur la réunion ; la slide « Qui suis-je ? » est gardée sur l'animateur et sert à toutes ses présentations."]}},
@@ -5721,7 +5722,7 @@ function meetingDetail(m,editable){
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
       ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson-txt,var(--crimson));font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
       ${editable?invRelanceBtn(m,g,i):""}
-    </div>`).join(""):`<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
+    </div>`).join(""):`<p class="g-vide" style="color:var(--muted);font-size:13px;text-align:center;padding:14px 0">Aucun invité pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${dt.getDate()}</b><small>${MOIS[dt.getMonth()]}</small></span>`,title:(c.nom||"—").replace(/^CAP\s+/,""),sub:`<span class="rl-type ${m.type==="RL"?"rl":""}${m.format?" fmt":""}">${typeCourt(m)}</span>${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()]}${m.heure?" · "+m.heure:""}`,right:`<span class="st ${m.statut}">${STATUTS[m.statut]}</span>`})}
     ${guests.length?`<div class="fh-funnel">${GUEST_STATUTS.map(s=>{const n=guests.filter(g=>g.statut===s).length;return n?`<span class="rl-fact ${s==="Membre"?"g":s==="Non intéressé"?"":"y"}">${esc(s)} · ${n}</span>`:""}).join("")}</div>`:""}
@@ -5740,13 +5741,29 @@ function meetingDetail(m,editable){
     ${crBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>${guests.length?`<div class="gv-seg"><button class="${gvl?"":"on"}" onclick="guestVueChoisir('det','${m.id}')">Détaillé</button><button class="${gvl?"on":""}" onclick="guestVueChoisir('liste','${m.id}')">Liste</button></div>`:""}
+      <h3 style="font-size:16px">Invités <span id="inv-n" style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>${guests.length?`<div class="gv-seg"><button class="${gvl?"":"on"}" onclick="guestVueChoisir('det','${m.id}')">Détaillé</button><button class="${gvl?"on":""}" onclick="guestVueChoisir('liste','${m.id}')">Liste</button></div>`:""}
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
+    <div id="prev-bloc" data-reunion="${m.id}"></div>
     <div class="sheet-actions">${SESSION&&SESSION.role!=="visiteur"?`<button class="btn ghost" onclick="presOuvrir('${m.id}')">🎬 Présentation</button>`:""}${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
-  ficheOpen();natInvQr();repCharger(m);natClicsCharger(m);
+  ficheOpen();natInvQr();repCharger(m);natClicsCharger(m);prevusCharger(m);
 }
 /* v1.9.0 : réponses des membres à la réunion (« Je viens » / « Je ne viens pas » dans l'espace membre). */
+/* v1.66 : qui est prévu à la réunion, pour quelqu'un de l'équipe qui ne voit pas ce groupe (un animateur d'un autre groupe).
+   La base ne lui donne pas les invités ; la RPC cap_reunion_prevus les rend, sans coordonnées, dès qu'il est inscrit (« Je viens »). */
+async function prevusCharger(m){
+  if(!SESSION||SESSION.role==="visiteur"||SESSION._voir||(m.guests||[]).length||canEditClubId(m.clubId))return;
+  const {data,error}=await sb.rpc("cap_reunion_prevus",{p_reunion:m.id});
+  const z=document.getElementById("prev-bloc");if(!z||z.dataset.reunion!==m.id||error||!data)return;
+  const vide=document.querySelector("#sheet-content .g-vide"),avenir=m.date>=isoJour(TODAY);
+  if(!data.acces){if(vide&&avenir)vide.textContent="Inscris-toi avec « Je viens » pour voir qui est prévu à cette réunion.";return}
+  const I=data.invites||[],M=data.membres||[],E=data.equipe||[];if(!I.length&&!M.length)return;
+  if(vide)vide.remove();const n=document.getElementById("inv-n");if(n)n.textContent="("+I.length+")";
+  const tag=s=>`<span class="tag ${s==="Membre"||s==="À intégrer"?"ok":s==="Non intéressé"?"":"y"}">${esc(s)}</span>`;
+  z.innerHTML=`${I.length?`<div class="gl">${I.map(g=>`<div class="gl-r"><span class="gl-n"><b>${esc(g.nom)}</b><small>${esc([g.metier,g.entreprise].filter(Boolean).join(" · "))}</small></span>${tag(g.statut)}</div>`).join("")}</div>`:""}
+    ${M.length?`<div class="viens-eq" style="margin-top:10px"><b>Membres qui viennent · ${M.length}</b> ${M.map(x=>esc(x.nom)).join(", ")}</div>`:""}
+    <p class="fh-note">Tu vois cette liste parce que tu es inscrit à cette réunion. Les coordonnées des invités restent avec l'animateur du groupe${E.length?" · équipe présente : "+E.map(esc).join(", "):""}.</p>`;
+}
 async function repCharger(m){
   const z=document.getElementById("rep-bloc");if(!z)return;
   const {data,error}=await sb.from("reunion_reponses").select("reponse,maj_le,membre_id").eq("reunion_id",m.id);

@@ -342,6 +342,25 @@ html.dark .tb-k.in,html.dark .eq-band,html.dark .chip-st.contact,html.dark .chip
 html.dark .chip-st.signee{background:#16301F;color:#7FD6A6}html.dark .pct{color:#7FD6A6}html.dark .pct.bas{color:var(--crimson-txt)}
 html.dark .logo-ent{color:#5B5F68}
 html.dark .ac-reu{color:#fff}html.dark .la.fort .la-t b{color:var(--ink)}html.dark .la.fort .la-t span{color:var(--muted)} /* v1.37 : textes illisibles en sombre (rouge foncé sur rouge foncé) */
+/*v1.59 barre du bas plus basse et plus grande ; réseau par groupe*/
+nav.bas{padding:8px 8px calc(4px + min(var(--safe-b),12px))}
+nav.bas button{gap:4px;font-size:11.5px;padding:4px 0 5px}
+nav.bas button>svg{width:27px;height:27px}
+nav.bas .nav-reco .nr-b{width:54px;height:54px;margin-top:-22px;background:#D81B3F;box-shadow:0 6px 16px rgba(216,27,63,.42),0 0 0 4px var(--card)}nav.bas .nav-reco .nr-b svg{width:27px;height:27px}
+nav.bas .badge{top:-2px;right:calc(50% - 26px)}
+.page{padding-bottom:calc(100px + min(var(--safe-b),12px))}
+.ann-barre{display:flex}.ann-tri{flex:1}.ann-tri button{height:36px;font-size:13.5px}
+.ann-tl{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ann-tag{font-style:normal;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff;background:var(--g,#5B7FA3);white-space:nowrap}
+.ann-grp{border:1px solid var(--line2);border-radius:16px;background:var(--surf2);overflow:hidden}
+.ann-grp summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;min-height:56px}.ann-grp summary::-webkit-details-marker{display:none}
+.ann-grp summary>i{flex:none;width:6px;align-self:stretch;border-radius:3px;background:var(--g)}
+.ag-t{display:flex;flex-direction:column;min-width:0;flex:1}.ag-t b{font-size:15.5px;color:var(--ink)}.ag-t small{font-size:12.5px;color:var(--muted)}
+.ag-moi{font-style:normal;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--g);color:#fff;vertical-align:middle}
+.ag-n{flex:none;min-width:28px;height:28px;padding:0 8px;border-radius:14px;display:grid;place-items:center;background:var(--g);color:#fff;font-size:13px;font-weight:800}
+.ag-fl{flex:none;font-size:20px;color:var(--muted);transition:transform .2s}.ann-grp[open] .ag-fl{transform:rotate(90deg)}
+.ag-l{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}.ann-grp[open] .ag-l{animation:acDeplie .26s ease}
+.ag-l .ann-tag{display:none}
 /*v1.58 carte de la réunion : encadrés blancs sur le rouge*/
 a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(60,0,10,.18)}
 .ac-reu .ac-lt b{color:#1B1416}.ac-lt small{color:#6B5F62}.ac-ico{background:#FBE9EC;color:#C21835}.ac-go{color:#C21835}
@@ -787,19 +806,25 @@ function suggHTML(){const L=annSuggestions();if(!L.length)return"";
     :`<button type="button" class="sg" data-fiche="${x.m.id}" role="option">${av(x.m,"sm")}<span><b>${esc(x.m.nom)}</b><small>${esc([x.m.metier,x.m.region].filter(Boolean).join(" · "))}</small></span></button>`).join("")}
 function carteMembre(m,i){
   return `<div class="row" style="--i:${Math.min(i,14)}">
-    <button class="who" data-fiche="${m.id}">${av(m)}<span class="t"><b>${esc(m.nom)}</b><span>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</span><small>${esc([m.club&&m.club.replace(/^CAP\s+/,""),m.ville].filter(Boolean).join(" · "))}</small></span></button>
+    <button class="who" data-fiche="${m.id}">${av(m)}<span class="t"><b>${esc(m.nom)}</b><span>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</span><small class="ann-tl">${m.club?`<em class="ann-tag" style="--g:${coulGroupe(m.club)}">${esc(m.club.replace(/^CAP\s+/,""))}</em>`:""}${esc(m.ville||"")}</small></span></button>
     <button class="ico" data-ecrire="${m.id}" ${m.inscrit?"":"disabled"} aria-label="${m.inscrit?"Écrire à "+esc(m.nom):esc(m.nom)+" n'a pas encore activé son espace"}" title="${m.inscrit?"Écrire":"Pas encore inscrit à l'espace membre"}">${ICO.envoi}</button></div>`;
 }
 function annAilleurs(){const mots=norm(S.q).split(/[^a-z0-9]+/i).map(norm).filter(Boolean);if(!mots.length||S.portee!=="region"||!S.maRegion||S.filtre!=="tous")return[];
   return S.annuaire.filter(m=>!m.moi&&m.region!==S.maRegion&&annMatch(m,mots))}
+/* v1.59 — le réseau rangé par groupe (volets) ou de A à Z ; chaque membre porte l'étiquette de couleur de son groupe. */
+const GRP_COUL=["#C21835","#2E7DB8","#2E9E68","#B8862E","#7A52B8","#B84E8C","#2E9A9E","#C4622D","#5B7FA3","#6E8B2E"];
+function coulGroupe(nom){let h=0;const t=String(nom||"");for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return GRP_COUL[h%GRP_COUL.length]}
+function annTri(){let v=null;try{v=localStorage.getItem("cap-anntri")}catch(e){}return v==="az"?"az":"groupe"}
+function annGroupes(l,i0){const g=new Map();l.forEach(m=>{const k=m.club||"Sans groupe";(g.get(k)||g.set(k,[]).get(k)).push(m)});
+  const reg=k=>(g.get(k)[0].region||""),ord=[...g.keys()].sort((a,b)=>(b===S.moi.club)-(a===S.moi.club)||(reg(b)===S.maRegion)-(reg(a)===S.maRegion)||reg(a).localeCompare(reg(b))||a.localeCompare(b));
+  let i=i0||0;const O=S.annOuv||(S.annOuv={});
+  return ord.map(k=>{const mm=g.get(k).sort((a,b)=>a.nom.localeCompare(b.nom,"fr")),ouv=O[k]!==undefined?O[k]:(!!S.q.trim()||k===S.moi.club||ord.length<=2),v=mm[0].ville||"",r=mm[0].region||"";
+    return `<details class="ann-grp" data-g="${esc(k)}" style="--g:${coulGroupe(k)}"${ouv?" open":""} ontoggle="(S.annOuv||(S.annOuv={}))[this.dataset.g]=this.open"><summary><i aria-hidden="true"></i><span class="ag-t"><b>${esc(k.replace(/^CAP\s+/,""))}${k===S.moi.club?` <em class="ag-moi">mon groupe</em>`:""}</b><small>${esc([v,r&&r!==v?r:""].filter(Boolean).join(" · "))}</small></span><span class="ag-n">${mm.length}</span><span class="ag-fl" aria-hidden="true">›</span></summary><div class="ag-l">${mm.map(m=>carteMembre(m,i++)).join("")}</div></details>`}).join("")}
 function listeAnnuaire(){const l=filtrer(),ail=annAilleurs(),i0=l.length;
   const plus=ail.length?`<div class="label ann-reg">Dans les autres régions · ${ail.length}</div>${ail.map((m,i)=>carteMembre(m,i0+i)).join("")}`:"";
   if(!l.length)return (ail.length?`<p class="vide">Personne dans ta région.</p>`:`<p class="vide">Aucun membre ne correspond.${S.q?" Essaie un autre mot.":""}</p>`)+plus;
-  if(plus)return l.map(carteMembre).join("")+plus;
-  if(S.portee==="national"&&S.filtre==="tous"){const g=new Map();l.forEach(m=>{(g.get(m.region)||g.set(m.region,[]).get(m.region)).push(m)});
-    const ord=[...g.keys()].sort((a,b)=>(b===S.maRegion)-(a===S.maRegion)||a.localeCompare(b));let i=0;
-    return ord.map(r=>`<div class="label ann-reg">${esc(r)} · ${g.get(r).length}</div>${g.get(r).map(m=>carteMembre(m,i++)).join("")}`).join("")}
-  return l.map(carteMembre).join("")}
+  if(annTri()==="az")return [...l].sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(carteMembre).join("")+plus;
+  return annGroupes(l)+plus}
 function vueAnnuaire(){
   annPortee();const tous=S.annuaire.filter(m=>!m.moi),autres=annPortee(),nClub=tous.filter(m=>m.club===S.moi.club).length;
   const chip=(k,l)=>`<button class="chip ${S.filtre===k?"on":""}" data-filtre="${esc(k)}">${esc(l)}</button>`;
@@ -811,6 +836,7 @@ function vueAnnuaire(){
     ${S.maRegion?`<div class="seg ann-seg" role="tablist"><button role="tab" data-portee="region" class="${S.portee==="region"?"on":""}" aria-selected="${S.portee==="region"}">📍 Ma région · ${nReg}</button><button role="tab" data-portee="national" class="${S.portee==="national"?"on":""}" aria-selected="${S.portee==="national"}">🌍 Tout le réseau · ${tous.length}</button></div>`:""}
     <div class="ann-q"><label class="search">${ICO.loupe}<input id="q" type="search" placeholder="Nom, prénom, métier, activité…" aria-label="Chercher un membre" autocomplete="off" value="${esc(S.q)}"></label><div id="sugg" class="sugg" role="listbox" hidden></div></div>
     <div class="chips">${chip("tous",(S.portee==="region"&&S.maRegion?"Toute la région":"Toutes les régions")+" · "+autres.length)}${S.moi.club?chip("club","Mon club · "+nClub):""}${S.portee==="national"?regs.map(r=>chip("r:"+r,r)).join(""):villes.length>1?villes.map(v=>chip(v,v)).join(""):""}</div>
+    <div class="ann-barre"><div class="seg ann-tri" role="tablist" aria-label="Classement"><button role="tab" data-anntri="groupe" class="${annTri()==="groupe"?"on":""}" aria-selected="${annTri()==="groupe"}">Par groupe</button><button role="tab" data-anntri="az" class="${annTri()==="az"?"on":""}" aria-selected="${annTri()==="az"}">De A à Z</button></div></div>
     <div class="label">${S.filtre==="club"?esc(String(S.moi.club||"").replace(/^CAP\s+/,"Mon club · ")):S.filtre.startsWith("r:")?esc(S.filtre.slice(2)):S.portee==="region"&&S.maRegion?esc(S.maRegion):"Tout le réseau"}</div>
     <div id="res" style="display:flex;flex-direction:column;gap:10px">${listeAnnuaire()}</div></div>`;
 }
@@ -1360,6 +1386,7 @@ function brancher(){
   app.querySelectorAll("[data-mondoc]").forEach(b=>b.onclick=()=>mesDocOuvrir(b.dataset.mondoc));
   app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
   app.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});
+  app.querySelectorAll("[data-anntri]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cap-anntri",b.dataset.anntri)}catch(e){}rendu(true)});
   const q=$("q");if(q){const sg=$("sugg");
     const majS=()=>{const h=suggHTML();sg.innerHTML=h;sg.hidden=!h||document.activeElement!==q;sg.querySelectorAll("[data-sgq]").forEach(b=>b.onmousedown=e=>{e.preventDefault();S.q=b.dataset.sgq;q.value=S.q;sg.hidden=true;$("res").innerHTML=listeAnnuaire();brancherRes()});
       sg.querySelectorAll("[data-fiche]").forEach(b=>b.onmousedown=e=>{e.preventDefault();aller("fiche",{fiche:b.dataset.fiche})})};

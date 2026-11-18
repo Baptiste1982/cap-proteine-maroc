@@ -2224,6 +2224,11 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .sec-h.repl{cursor:pointer;min-height:44px;padding:0 4px;margin:6px 0 0;border-top:1px solid var(--line)}.sec-h.repl>span:first-child::before{content:"▸";display:inline-block;margin-right:8px;transition:transform .2s}.sec-h.repl.ouv>span:first-child::before{transform:rotate(90deg)}.repl-cache{display:none!important}
 .pc-cons{text-align:center;padding:8px 4px}.pc-cons .ic{font-size:44px}.pc-cons p{color:var(--muted);margin:8px 0 18px;line-height:1.5}
 @media(max-width:600px){.mb-doc{flex-wrap:wrap}.mb-doc-t{flex:1 1 60%}}.mb-add select{max-width:170px}
+.lot-zone{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:22px 14px;border:2px dashed var(--line);border-radius:16px;cursor:pointer;margin:6px 0 10px;transition:border-color .2s,background .2s}.lot-zone:hover,.lot-zone.sur{border-color:var(--crimson);background:var(--crimson-tint)}.lot-zone.off{opacity:.5;pointer-events:none}.lot-zone b{font-size:15px}.lot-zone span{font-size:12.5px;color:var(--muted)}
+.lot-l{display:grid;gap:8px;margin:10px 0}.lot-r{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:6px 8px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.lot-r.fait{opacity:.7}
+.lot-n{display:flex;flex-direction:column;min-width:0;gap:2px}.lot-n b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lot-e{font-size:12px;font-weight:700}.lot-e.l-ok{color:#2E8B57}.lot-e.l-av{color:var(--gold)}.lot-e.l-ko{color:var(--crimson-txt,var(--crimson))}
+.lot-r select{min-height:42px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:0 8px;font:600 13px Inter,sans-serif;min-width:0;width:100%}.lot-x{width:40px;height:40px;border-radius:50%;color:var(--muted)}.lot-x:hover{background:var(--line)}
+.lot-r select{grid-column:1/-1;grid-row:2}
 .mb-doc-v{font-weight:700}.mb-doc-v.oui{color:#2E8B57}.mb-doc-v.att{color:var(--gold)}.mb-doc-v.non{color:var(--muted);font-weight:500}.mb-doc-n{margin:0 0 8px}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
@@ -2380,8 +2385,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.46.0";
+const APP_VERSION="1.47.0";
 const CHANGELOG=[
+  {v:"1.47.0",date:"18 novembre 2026",notes:{"Ajouté":["Pièces en lot (Membres → « 🧾 Pièces en lot », ou menu Réseau) : plusieurs factures, reçus ou attestations déposés d'un coup. Chaque fichier va chez le membre dont le nom figure dans le nom du fichier ; chaque ligne se corrige avant l'envoi.","Un fichier dont le nom n'est pas reconnu, ou qui correspond à une personne présente dans plusieurs groupes, attend que tu choisisses le membre.","Mêmes règles qu'à l'unité : la pièce est visible du membre, une facture seulement une fois son paiement coché, et il est prévenu sur son téléphone."]}},
   {v:"1.46.0",date:"18 novembre 2026",notes:{"Modifié":["L'annonce d'une nouvelle version est une carte blanche, rangée avec les notifications : en bas à droite sur ordinateur, juste au-dessus de la barre du bas au téléphone. Elle ne flotte plus en rouge au milieu de la page."]}},
   {v:"1.45.0",date:"18 novembre 2026",notes:{"Ajouté":["Le membre reçoit une notification sur son téléphone quand une pièce arrive dans « Mes documents » : sa facture dès que le paiement est coché, un reçu, une attestation. Un toucher ouvre la page.","L'animateur reçoit une notification quand un contact lui est confié. Un toucher ouvre sa boîte « Contacts confiés »."]}},
   {v:"1.44.0",date:"18 novembre 2026",notes:{"Ajouté":["« Mes documents » dans l'espace de chaque membre : sa facture, son reçu de paiement, ses attestations (régularité fiscale…), à ouvrir ou à envoyer à son comptable. Lui seul les voit.","Dans la fiche d'un membre, section Documents : on choisit « Facture », « Reçu de paiement » ou « Attestation » et le membre retrouve la pièce dans son espace. Chaque document se partage ou se retire d'un clic.","Une facture n'apparaît chez le membre qu'une fois l'étape « Paiement » cochée.","Le membre est prévenu sur son accueil quand une nouvelle pièce l'attend.","Documents du réseau : une catégorie « Comptabilité et attestations » pour les pièces communes à tous les membres."]}},
@@ -3601,7 +3607,7 @@ function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=
 function viewMembres(){
   const ids=new Set(scopedClubIds());const tous=DB.membres.filter(m=>ids.has(m.clubId));
   const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
-  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} ${vueMode()==="reg"?"dans la région "+esc(vueRegion().nom):"dans tout le réseau"}</p></div></div>
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} ${vueMode()==="reg"?"dans la région "+esc(vueRegion().nom):"dans tout le réseau"}</p></div>${lotPeut()?`<button class="btn mini" onclick="openLot()" title="Déposer plusieurs factures, reçus ou attestations d'un coup">🧾 Pièces en lot</button>`:""}</div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="mb-q" type="search" data-pred="membres" placeholder="Tape les premières lettres : nom, entreprise, métier, club…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
     <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
@@ -5011,7 +5017,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="res")return[lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -6081,6 +6087,53 @@ async function mbDocsCharger(m,canEd){
     ${canEd&&!x.fixe?`<button class="btn ghost mini" onclick="mbDocRetirer('${m.clubId}','${m.id}','${x.id}','${esc(x.chemin)}')">Retirer</button>`:""}</div>`).join("")}</div>`
     :`<p class="fh-empty">Aucun document pour l'instant.${canEd?" Ajoute sa facture ou une attestation : il la retrouvera dans son espace membre.":""}</p>`);
 }
+/* ============================================================
+   v1.47.0 — PIÈCES EN LOT. Plusieurs factures, reçus ou attestations déposés d'un coup : chaque fichier est rangé
+   chez le membre dont le nom figure dans le nom du fichier (sans accents ni majuscules), à corriger avant l'envoi.
+   Mêmes règles que le dépôt à l'unité : pièce visible du membre, une facture seulement une fois le paiement coché.
+   ============================================================ */
+var _lot={nature:"facture",fichiers:[],envoi:null};
+function lotMembres(){return avecVue(()=>DB.membres.filter(m=>canEditClubId(m.clubId)))} // la vue régionale borne la liste
+function lotPeut(){return !!SESSION&&!readOnly()&&!SESSION._voir&&lotMembres().length>0}
+function lotNorm(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+/* Le membre d'un fichier : celui dont tous les mots du nom (2 lettres et plus) sont dans le nom du fichier.
+   Plusieurs candidats : le nom le plus long gagne ; à égalité (une personne dans plusieurs groupes) c'est « à choisir ». */
+function lotTrouver(nomFichier,M){const mots=new Set(lotNorm(nomFichier.replace(/\.[a-z0-9]{2,5}$/i,"")).split(" "));
+  const C=M.map(m=>({m,t:lotNorm(m.nom).split(" ").filter(x=>x.length>1)})).filter(x=>x.t.length>=2&&x.t.every(w=>mots.has(w)));
+  if(!C.length)return{id:"",etat:"inconnu"};const mx=Math.max(...C.map(x=>x.t.join("").length)),G=C.filter(x=>x.t.join("").length===mx);
+  return G.length===1?{id:G[0].m.id,etat:"ok"}:{id:"",etat:"plusieurs",choix:G.map(x=>x.m.id)}}
+function openLot(){_lot={nature:_lot.nature||"facture",fichiers:[],envoi:null};lotRendu();openSheet()}
+function lotAjouter(liste){const M=lotMembres();[...liste].forEach(f=>{if(_lot.fichiers.some(x=>x.f.name===f.name&&x.f.size===f.size))return;
+    const trop=f.size>20*1024*1024,ok=/^(application\/pdf|image\/(jpeg|png|webp))$/.test(f.type||"")||/\.(pdf|jpe?g|png|webp)$/i.test(f.name),t=lotTrouver(f.name,M);
+    _lot.fichiers.push({f,membre:t.id,etat:trop?"lourd":!ok?"format":t.etat,choix:t.choix||null,fait:null})});lotRendu()}
+function lotChoisir(i,id){const x=_lot.fichiers[i];if(!x)return;x.membre=id;if(x.etat==="inconnu"||x.etat==="plusieurs"||x.etat==="ok")x.etat=id?"ok":"inconnu";lotRendu()}
+function lotRetirer(i){_lot.fichiers.splice(i,1);lotRendu()}
+function lotPrets(){return _lot.fichiers.filter(x=>x.membre&&x.etat==="ok"&&x.fait!==true)}
+function lotRendu(){const M=lotMembres().slice().sort((a,b)=>a.nom.localeCompare(b.nom)),g=window._DBvrai||DB,cl=id=>((g.clubs.find(c=>c.id===id)||{}).nom||"").replace(/^CAP\s+/,""),F=_lot.fichiers,P=lotPrets(),E=_lot.envoi;
+  const doublons=new Set(M.map(m=>lotNorm(m.nom)).filter((n,i,a)=>a.indexOf(n)!==i));
+  const opt=(x)=>`<option value="">— choisir le membre —</option>`+M.map(m=>`<option value="${m.id}"${m.id===x.membre?" selected":""}>${esc(m.nom)}${doublons.has(lotNorm(m.nom))||x.choix?" · "+esc(cl(m.clubId)):""}</option>`).join("");
+  const etat=x=>x.fait===true?`<span class="lot-e l-ok">✓ déposé</span>`:x.fait?`<span class="lot-e l-ko">${esc(x.fait)}</span>`:x.etat==="lourd"?`<span class="lot-e l-ko">trop lourd (20 Mo au plus)</span>`:x.etat==="format"?`<span class="lot-e l-ko">PDF ou image seulement</span>`:x.etat==="plusieurs"?`<span class="lot-e l-av">plusieurs fiches : choisis le groupe</span>`:x.etat==="inconnu"?`<span class="lot-e l-av">nom non reconnu : choisis le membre</span>`:(()=>{const m=M.find(y=>y.id===x.membre);return _lot.nature==="facture"&&m&&!m.paiement?`<span class="lot-e l-av">visible dès le paiement coché</span>`:`<span class="lot-e l-ok">prêt</span>`})();
+  document.getElementById("sheet-content").innerHTML=`
+    ${ficheHead({ini:"🧾",title:"Pièces en lot",sub:"Dépose plusieurs fichiers d'un coup : chacun va dans l'espace du bon membre"})}
+    <div class="field"><label>Ce que tu déposes</label><div class="pills" role="radiogroup">${Object.entries(DOC_NATURES).map(([k,v])=>`<button type="button" class="pill ${_lot.nature===k?"on":""}" role="radio" aria-checked="${_lot.nature===k}" ${E?"disabled":""} onclick="_lot.nature='${k}';lotRendu()">${v.ic} ${k==="autre"?"Autre pièce":v.lib}</button>`).join("")}</div></div>
+    <label class="lot-zone${E?" off":""}" ondragover="event.preventDefault();this.classList.add('sur')" ondragleave="this.classList.remove('sur')" ondrop="event.preventDefault();this.classList.remove('sur');lotAjouter(event.dataTransfer.files)">
+      <input type="file" multiple hidden accept="application/pdf,image/jpeg,image/png,image/webp" ${E?"disabled":""} onchange="lotAjouter(this.files);this.value=''">
+      <b>Glisse les fichiers ici</b><span>ou touche pour les choisir · PDF ou image, 20 Mo au plus par fichier</span></label>
+    <p class="fh-note">Le membre est reconnu dans le nom du fichier : « Facture 2026 - <b>Abderrazak Dinia</b>.pdf ». Tu peux corriger chaque ligne avant d'envoyer.${_lot.nature==="facture"?" Une facture n'apparaît chez le membre qu'une fois son paiement coché.":""}</p>
+    ${F.length?`<div class="lot-l">${F.map((x,i)=>`<div class="lot-r${x.fait===true?" fait":""}"><span class="lot-n"><b>${esc(x.f.name)}</b>${etat(x)}</span>
+        <select aria-label="Membre pour ${esc(x.f.name)}" ${E||x.fait===true||x.etat==="lourd"||x.etat==="format"?"disabled":""} onchange="lotChoisir(${i},this.value)">${opt(x)}</select>
+        <button type="button" class="lot-x" ${E?"disabled":""} onclick="lotRetirer(${i})" aria-label="Retirer ${esc(x.f.name)}">✕</button></div>`).join("")}</div>`:""}
+    ${E?`<div class="bil-prog"><i style="width:${Math.round(E.fait/Math.max(1,E.total)*100)}%"></i></div><p class="fh-note">Envoi en cours : ${E.fait} sur ${E.total}…</p>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()" ${E?"disabled":""}>${F.some(x=>x.fait===true)?"Fermer":"Annuler"}</button><button class="btn" id="lot-go" onclick="lotEnvoyer()" ${!P.length||E?"disabled":""}>${P.length?`Déposer ${P.length} pièce${P.length>1?"s":""}`:"Rien à déposer"}</button></div>`}
+async function lotEnvoyer(){const P=lotPrets();if(!P.length||_lot.envoi)return;_lot.envoi={fait:0,total:P.length};lotRendu();let ok=0;const nature=_lot.nature;
+  for(const x of P){const propre=x.f.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9._-]+/g,"_").slice(-80),chemin=`${x.membre}/${Date.now()}-${propre}`;
+    const up=await sb.storage.from("membres").upload(chemin,x.f,{contentType:x.f.type||"application/pdf"});
+    if(up.error){x.fait="envoi refusé : "+rlsMsg(up.error)}
+    else{const {error}=await sb.from("membre_documents").insert({membre_id:x.membre,type:"autre",nom:x.f.name,chemin,nature,visible_membre:true,partage_le:new Date().toISOString()});
+      if(error){await sb.storage.from("membres").remove([chemin]);x.fait="envoi refusé : "+rlsMsg(error)}else{x.fait=true;ok++}}
+    _lot.envoi.fait++;lotRendu()}
+  _lot.envoi=null;lotRendu();const ko=P.length-ok;
+  toast(ok?`${ok} pièce${ok>1?"s":""} déposée${ok>1?"s":""}${ko?` · ${ko} en échec`:""} : chaque membre la retrouve dans son espace`:"Aucune pièce n'a pu être déposée",ok?"s":"e")}
 /* v1.44 — pièces remises au membre (facture, reçu, attestation) : il les voit dans son espace, « Mes documents ».
    Une facture ne lui apparaît qu'une fois son paiement coché (règle tenue par la base). */
 const DOC_NATURES={facture:{ic:"🧾",lib:"Facture"},recu:{ic:"💳",lib:"Reçu de paiement"},attestation:{ic:"📜",lib:"Attestation"},autre:{ic:"📎",lib:"Pièce remise au membre"}};
@@ -8233,7 +8286,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -8297,7 +8350,7 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 /* v1.42 : écrans lourds — au téléphone, un mot avant d'ouvrir (une fois par écran). */
-[["openPlanSerie","Planifier en série"],["openClasseur","Classeur des adhésions"],["openEmbarquer","Embarquer l'équipe"]].forEach(([n,t])=>{
+[["openPlanSerie","Planifier en série"],["openClasseur","Classeur des adhésions"],["openEmbarquer","Embarquer l'équipe"],["openLot","Pièces en lot"]].forEach(([n,t])=>{
   const f=window[n];if(typeof f!=="function"||f._pc)return;const g=function(...a){return pcConseil(n,t,()=>f.apply(this,a))};g._pc=true;window[n]=g});
 
 /* ============================================================

@@ -2301,6 +2301,14 @@ a[href^="tel:"]{white-space:nowrap}
   .page-head{flex-wrap:wrap;align-items:flex-start}.page-head:has(.btn + .btn)>div:first-child{flex:1 1 100%}
   .mon .page-head .mon-act{width:100%;justify-content:flex-start}
 }
+/*v1.50 fiches en Graphite*/
+.stp.on::after,.stp:has(input:checked)::after{content:"✓";margin-left:auto;font-weight:800;font-size:13px}
+html.dark .stp.on,html.dark .stp:has(input:checked){background-color:color-mix(in srgb,#3DAA74 14%,var(--card));border-color:color-mix(in srgb,#3DAA74 55%,transparent);color:#7FD6A6}
+html.dark .stp.on .stp-ic,html.dark .stp:has(input:checked) .stp-ic{background:color-mix(in srgb,#3DAA74 24%,transparent)}
+.sheet-x,.sheet-max{box-shadow:0 0 0 6px var(--card),0 0 14px 8px var(--card)}
+html.th-graphite .sheet-x,html.th-graphite .sheet-max{background:#26282C;box-shadow:0 0 0 6px #212327,0 0 14px 8px #212327}
+.sec-h .btn,.mb-add .btn,.mb-add label{white-space:nowrap}
+@media(max-width:600px){.mb-add select{max-width:38vw;min-width:0}}
 </style>
 </head>
 <body>
@@ -2406,8 +2414,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.49.0";
+const APP_VERSION="1.50.0";
 const CHANGELOG=[
+  {v:"1.50.0",date:"18 novembre 2026",notes:{"Modifié":["Fiches en thème Graphite : dans la fiche d'un membre, une étape faite (formulaire, contrat, facture, paiement) est encadrée en vert avec une coche, au lieu d'un simple texte vert.","Une fiche s'ouvre toujours en haut, même si la précédente avait été descendue.","Les boutons Fermer et Plein écran ne mordent plus sur le contenu qui défile dessous."],"Corrigé":["Paramètres : « Mon rendement » n'apparaît plus deux fois.","Fiche membre au téléphone : le bouton « + Ajouter » des documents ne se coupe plus en deux lignes."]}},
   {v:"1.49.0",date:"18 novembre 2026",notes:{"Modifié":["Passe de finition sur tous les écrans. Au téléphone : le titre d'une page ne se serre plus contre ses boutons, le fil d'Ariane ne garde que la page d'avant, les raccourcis du groupe tiennent sur une ligne à faire défiler, l'onglet actif n'a plus de liseré rouge.","Statistiques : en vue régionale, l'écran s'ouvre sur ta région et non plus sur tout le réseau.","Adhésions : les colonnes vides se resserrent, les noms et les groupes ne sont plus coupés. Membres : le nom, l'étiquette Animateur et le point « espace membre » restent lisibles.","Lieux : la pastille « À localiser » reprend sa taille, une adresse qui n'est qu'un lien n'est plus affichée. Synthèse : la liste « À relancer » montre cinq lignes, le reste se déplie."],"Corrigé":["Boutons soulignés (« Mon espace membre », « Vue membre ») et titre du groupe souligné en pointillés.","Agenda : la tuile « Villes actives » n'est plus encadrée en rouge sans raison."]}},
   {v:"1.48.0",date:"18 novembre 2026",notes:{"Modifié":["« Villes » (ou « Zones ») et « Rapport du mois » ouvrent maintenant l'écran des statistiques, au bon niveau : un seul endroit pour les chiffres, avec le choix de la période, la comparaison, l'export Excel et le PDF.","Le tableau des statistiques se lit « Par ville » (ou « Par région ») ou « Par groupe » : tous les groupes à plat, comme l'ancien rapport. Une colonne Adhésions et une ligne Total s'ajoutent. Un toucher sur un groupe ouvre ses chiffres et ses membres."]}},
   {v:"1.47.0",date:"18 novembre 2026",notes:{"Ajouté":["Pièces en lot (Membres → « 🧾 Pièces en lot », ou menu Réseau) : plusieurs factures, reçus ou attestations déposés d'un coup. Chaque fichier va chez le membre dont le nom figure dans le nom du fichier ; chaque ligne se corrige avant l'envoi.","Un fichier dont le nom n'est pas reconnu, ou qui correspond à une personne présente dans plusieurs groupes, attend que tu choisisses le membre.","Mêmes règles qu'à l'unité : la pièce est visible du membre, une facture seulement une fois son paiement coché, et il est prévenu sur son téléphone."]}},
@@ -7098,7 +7107,7 @@ function showUpdateBar(v){
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
-function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");try{if(sessionStorage.getItem("cap-plein")&&!w.classList.contains("plein"))sheetPlein(true)}catch(e){}if(!w.classList.contains("plein"))morphOuvrir(w);filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
+function openSheet(){pillify(document.getElementById("sheet-content"));const w=document.getElementById("sheet"),deja=w.classList.contains("open");w.classList.toggle("force",!!_mdpForce);w.classList.add("open");if(!deja){const sh=w.querySelector(".sheet");if(sh)sh.scrollTop=0}try{if(sessionStorage.getItem("cap-plein")&&!w.classList.contains("plein"))sheetPlein(true)}catch(e){}if(!w.classList.contains("plein"))morphOuvrir(w);filFicheRendu();if(isRail())w.querySelector(".sheet").scrollTop=0}
 function closeSheet(){if(_mdpForce){toast("Choisis d'abord ton nouveau mot de passe");return}document.getElementById("sheet").classList.remove("open");_photoBuffer=null;_fil=[];filFicheRendu()}
 
 
@@ -7832,7 +7841,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>

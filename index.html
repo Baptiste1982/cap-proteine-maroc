@@ -2309,6 +2309,7 @@ html.dark .stp.on .stp-ic,html.dark .stp:has(input:checked) .stp-ic{background:c
 html.th-graphite .sheet-x,html.th-graphite .sheet-max{background:#26282C;box-shadow:0 0 0 6px #212327,0 0 14px 8px #212327}
 .sec-h .btn,.mb-add .btn,.mb-add label{white-space:nowrap}
 @media(max-width:600px){.mb-add select{max-width:38vw;min-width:0}}
+/*v1.57 bouton de mise à jour en rouge vif*/.maj-carte .maj-go{background:#D81B3F;border-color:#D81B3F;color:#fff}.maj-carte .maj-go:hover{background:#E32349}.maj-carte .maj-ic{color:#D81B3F}
 </style>
 </head>
 <body>
@@ -2414,8 +2415,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.56.0";
+const APP_VERSION="1.57.0";
 const CHANGELOG=[
+  {v:"1.57.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre, donner une recommandation : trois paliers pour choisir le membre — « Ma région », « Maroc » (tout le réseau) et « International » (France, Espagne). Si la recherche ne trouve personne dans la région, un toucher l'élargit au reste du Maroc.","International : les annuaires France et Espagne ne sont pas encore reliés ; en attendant, un bouton écrit à l'animateur, qui transmet."],"Modifié":["Le bouton « Mettre à jour » passe en rouge vif."]}},
   {v:"1.56.0",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une région dépliée (« Membres par région », « À traiter ») se refermait toute seule au bout de quelques secondes, même pendant qu'on la lisait. Elle reste maintenant ouverte tant qu'on est dessus."],"Modifié":["Le délai de repli ne démarre que quand on sort du bloc : un toucher ailleurs, ou le bloc qui quitte l'écran en faisant défiler. Si on y revient avant la fin du délai, il reste ouvert. Sur ordinateur, rien ne change : il se replie quand la souris en sort."]}},
   {v:"1.55.0",date:"19 novembre 2026",notes:{"Modifié":["Espace membre : un seul rouge, celui du bouton « Écrire un message », toujours avec du texte blanc. L'en-tête de la fiche d'un membre, la carte de la prochaine réunion, le total du groupe et les pastilles rouges quittent le bordeaux sombre.","Sur la carte de la réunion, la réponse choisie (« Je viens » ou « Je ne viens pas ») passe en blanc pour ressortir sur le rouge."]}},
   {v:"1.54.0",date:"19 novembre 2026",notes:{"Corrigé":["Espace membre, fiche d'un membre : plus de rouge sur rouge. Les liens Site, LinkedIn et autres réseaux sont des boutons rouges à texte blanc ; l'étiquette du groupe est blanche sur l'en-tête ; le retour et le métier sont clairs.","Même traitement pour les autres pastilles et encadrés qui posaient du rouge sur un fond rouge sombre (recommandation envoyée, choix cochés, lignes à traiter)."]}},

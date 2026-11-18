@@ -95,8 +95,8 @@
   function caler(){const o=document.getElementById("ins-o");if(!o)return;const k=Math.max(.5,Math.min(1,(innerHeight-330)/500,innerWidth*.7/250));o.style.setProperty("--k",k.toFixed(3))}
   function fermer(){window.removeEventListener("resize",caler);clearTimeout(min);const o=document.getElementById("ins-o");if(o)o.remove();document.removeEventListener("keydown",touche)}
   function touche(e){if(e.key==="Escape")fermer()}
-  function ouvrir(){
-    fermer();if(!document.getElementById("ins-css")){const s=document.createElement("style");s.id="ins-css";s.textContent=CSS;document.head.appendChild(s)}
+  function ouvrir(force){
+    fermer();if(force==="ios"||force==="and")os=force;if(!document.getElementById("ins-css")){const s=document.createElement("style");s.id="ins-css";s.textContent=CSS;document.head.appendChild(s)}
     const d=document.createElement("div");d.id="ins-o";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label","Installer l'appli sur mon téléphone");
     const ordi=!iOS&&!android;
     d.innerHTML='<div class="ins-b"><div class="ins-tete"><div><h2>'+(deja()?"L'appli est déjà installée":"Installer l'appli sur ton téléphone")+'</h2><p>'+(deja()?"Tu l'as ouverte depuis ton écran d'accueil. Voici les gestes, pour les montrer à quelqu'un.":ordi?"Ouvre cette page sur ton téléphone, puis suis les gestes ci-dessous.":"30 secondes, une seule fois. Ensuite tu l'ouvres comme une appli.")+'</p></div><button type="button" class="ins-x" aria-label="Fermer">✕</button></div>'+

@@ -1426,6 +1426,7 @@ function vueDocs(){
   if(S.docs===undefined){chargerDocs().then(()=>{if(S.onglet==="docs")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
   const parCat={};S.docs.forEach(d=>(parCat[d.categorie||"Autres"]=parCat[d.categorie||"Autres"]||[]).push(d));
   return `<div class="page">${ariane()}<div class="head"><div><h1>Documents du réseau</h1><p class="sub">Mis à disposition par le bureau national. Touche un document pour l'ouvrir.</p></div></div>
+    ${volet("doc-kit","Kit de départ",KIT_GUIDES.length,`<div class="la-l">${KIT_GUIDES.map(g=>`<a class="la" href="${g.video}" target="_blank" rel="noopener"><span class="la-pt" aria-hidden="true"></span><span class="la-t"><b>${esc(g.titre)}</b><span>${esc(g.sous)}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}${ligneAct(`data-installer=""`,"Le guide animé, pas à pas","Il reconnaît ton téléphone")}</div>`,{ouvert:true})}
     ${Object.keys(parCat).length?Object.entries(parCat).map(([c,l])=>volet("doc-"+c,esc(c),l.length,`<div class="la-l">${l.map(d=>`<a class="la" href="${esc(d.lien_public?docLien(d.id):docUrl(d.chemin))}" target="_blank" rel="noopener">${docPastille(d,34)}<span class="la-t"><b>${esc(d.titre)}</b><span>${esc(DOC_TYPES[docType(d.nom_fichier,d.type_mime)].lib)} · ${esc(docTaille(d.taille))}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}</div>`,{ouvert:true})).join("")
       :`<p class="vide">Aucun document partagé avec les membres pour l'instant.</p>`}</div>`;
 }

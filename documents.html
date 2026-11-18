@@ -162,7 +162,7 @@ html.dark .acc-a{background:#223042;color:#C9D8E8}html.dark .toast{background:#F
 const sb=window.supabase.createClient(DOC_SB_URL,"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7");
 const EMAIL_DOMAIN="cap-proteine.ma";
 const VID_CAT="Vidéos de prise en main";
-const CATS=[VID_CAT,"Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Communication","Formation","Autres"];
+const CATS=[VID_CAT,"Kit animateur","Kit membre","Formulaires","Présentations","Règlement et charte","Comptabilité et attestations","Communication","Formation","Autres"];
 const S={docs:[],gere:false,q:"",type:"tous",vue:"grille",envois:[],acces:[],personnes:null};
 try{S.vue=localStorage.getItem("cap-docs-vue")||"grille"}catch(e){}
 const $=id=>document.getElementById(id),esc=docEsc;

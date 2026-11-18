@@ -22,7 +22,7 @@ main{max-width:520px;margin:0 auto;display:grid;gap:12px}
 main>*{animation:monte .5s cubic-bezier(.2,.8,.2,1) both}main>*:nth-child(2){animation-delay:.06s}main>*:nth-child(3){animation-delay:.12s}main>*:nth-child(4){animation-delay:.18s}main>*:nth-child(5){animation-delay:.24s}
 @keyframes monte{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
 .tete{background:#D81B3F;color:#fff;border-radius:24px;padding:22px 20px}
-.tete img{height:34px;display:block;margin-bottom:16px;filter:brightness(0) invert(1)}
+.tete img{height:46px;width:auto;display:block;margin-bottom:16px}
 .tete small{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;opacity:.92}
 h1{margin:4px 0 14px;font:800 28px/1.12 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em}
 .quand{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -68,7 +68,7 @@ ul li{padding-left:16px;position:relative}ul li::before{content:"";position:abso
     const ini=String(d.animateur||"").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase();
     const info=!d.format&&d.type!=="RL";
     M.innerHTML=`
-      <section class="tete"><img src="logo-proteine.png" alt="Club d'Affaires Protéine"><small>Vous êtes invité · ${esc(d.format?FORMATS[d.format]||"Réunion du groupe":TYPES[d.type]||"Réunion")}</small>
+      <section class="tete"><img src="logo-proteine-blanc.png" alt="Club d'Affaires Protéine"><small>Vous êtes invité · ${esc(d.format?FORMATS[d.format]||"Réunion du groupe":TYPES[d.type]||"Réunion")}</small>
         <h1>${esc(d.groupe||"Club d'Affaires Protéine")}</h1>
         <div class="quand"><div><small>Le</small><b>${esc(jour.charAt(0).toUpperCase()+jour.slice(1))}</b></div><div><small>À</small><b>${esc(h||"Heure à venir")}</b></div></div>
         ${d.lieu||d.adresse?`<a class="ou" ${carte?`href="${esc(carte)}" target="_blank" rel="noopener"`:""}><span><small>Où</small><b>${esc(d.lieu||d.adresse)}</b>${d.lieu&&d.adresse?`<small>${esc(d.adresse)}</small>`:""}</span>${carte?"<i>Itinéraire ›</i>":""}</a>`:`<div class="ou"><span><small>Où</small><b>Lieu communiqué à l'inscription</b></span></div>`}

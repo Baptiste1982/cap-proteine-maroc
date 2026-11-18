@@ -2412,7 +2412,7 @@ html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 html.pres-on,html.pres-on body{overflow:hidden}
 .prev-h{margin:16px 0 8px;font:700 13px/1.2 "Bricolage Grotesque",sans-serif;color:var(--ink);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.prev-h small{font:500 11.5px Inter,sans-serif;color:var(--muted)}.prev-q{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.prev-q span{border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;min-width:0}.prev-q b{display:block;font:800 18px/1.15 "Bricolage Grotesque",sans-serif;color:var(--ink);overflow-wrap:anywhere}.prev-q small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
 .gl-r.q-groupe,.guest.q-groupe{box-shadow:inset 4px 0 0 #3F7FD1;background:rgba(63,127,209,.09)}.gl-r.q-reseau,.guest.q-reseau{box-shadow:inset 4px 0 0 #1E9E63;background:rgba(30,158,99,.10)}
-.q-tag{font-style:normal;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;color:#fff;white-space:nowrap;vertical-align:middle}.q-groupe .q-tag{background:#3F7FD1}.q-reseau .q-tag{background:#1E9E63}
+button.q-tag{border:0;cursor:pointer;font-family:inherit}button.q-nom{border:0;background:none;padding:0;cursor:pointer;font:inherit;font-weight:700;text-decoration:underline dotted}.gp-r .btn{white-space:nowrap}.q-tag{font-style:normal;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;color:#fff;white-space:nowrap;vertical-align:middle}.q-groupe .q-tag{background:#3F7FD1}.q-reseau .q-tag{background:#1E9E63}
 .q-nom{font-weight:700}.q-nom.q-groupe{color:#5C9AE6}.q-nom.q-reseau{color:#2FB877}html:not(.dark) .q-nom.q-groupe{color:#2C66B5}html:not(.dark) .q-nom.q-reseau{color:#167A4B}
 .q-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 2px;font-size:11.5px;color:var(--muted)}.q-leg span{display:inline-flex;align-items:center;gap:6px}.q-leg span::before{content:"";width:10px;height:10px;border-radius:3px;border:1px solid var(--line)}.q-leg .q-groupe::before{background:#3F7FD1;border-color:#3F7FD1}.q-leg .q-reseau::before{background:#1E9E63;border-color:#1E9E63}
 .ctc-btn{width:100%;margin:0 0 6px}.ctc-aide{margin:0 0 12px}.pr-phb{display:inline-grid;place-items:center;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px}.pr-phb:hover{border-color:var(--crimson)}.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
@@ -2523,8 +2523,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.70.0";
+const APP_VERSION="1.71.0";
 const CHANGELOG=[
+  {v:"1.71.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit membre d'un autre groupe : son nom est suivi de « CAP » et du nom de son groupe. Un toucher ouvre la page du groupe : ses membres en consultation (métier, entreprise), et « Demander son numéro » qui prépare le message à l'animateur du groupe.","Même page de groupe dans l'espace membre."]}},
   {v:"1.70.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrits d'une réunion en couleurs : les membres du groupe en bleu, les membres d'un autre groupe en vert (avec le nom de leur groupe), les invités extérieurs au réseau inchangés. Dans le CRM et dans l'espace membre."]}},
   {v:"1.69.0",date:"19 novembre 2026",notes:{"Ajouté":["Plus de doublon dans une réunion : une personne inscrite par le lien du national, par « Je viens » ou ajoutée à la main n'apparaît qu'une fois. Le CRM et l'espace membre le disent : « déjà inscrit par le lien », « déjà inscrit depuis le CRM ».","Présentation : sur la fiche d'un membre, le bouton 📷 va chercher sa photo dans le téléphone (elle est rangée sur sa fiche).","Inviter quelqu'un (CRM et espace membre) : bouton pour reprendre une personne du carnet d'adresses du téléphone."]}},
   {v:"1.68.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre : « Les réunions du réseau ». Un membre peut s'inscrire à la réunion de n'importe quel groupe, dans toutes les villes. Inscrit, il voit les invités prévus, les membres du groupe et la quinzaine du groupe (jamais de coordonnées d'invités).","Membres : pour un animateur ou un directeur de région, « Tout le réseau » ouvre l'annuaire de tous les groupes, avec la fiche de base de chaque membre (métier, entreprise, contact partagé).","Fiche réunion : les membres d'un autre groupe qui viennent apparaissent avec le nom de leur groupe."],"Modifié":["La quinzaine d'un groupe se compte depuis sa dernière réunion (sinon sur 15 jours).","Présentations : « Futur membre fondateur » tant que le contrat n'est pas signé au national, « Membre fondateur » ensuite."]}},
@@ -5820,6 +5821,25 @@ async function prevusCharger(m){
     <p class="fh-note">Tu vois cette liste parce que tu es inscrit à cette réunion. Les coordonnées des invités restent avec l'animateur du groupe${E.length?" · équipe présente : "+E.map(esc).join(", "):""}.</p>`;
 }
 /* v1.70 : couleur des inscrits — membre du groupe (bleu), membre d'un autre groupe (vert), invité extérieur (inchangé). */
+/* v1.71 : page d'un groupe en consultation — ses membres (sans coordonnées) et son animateur, à qui demander un numéro. */
+function capNom(n){const t=String(n||"").trim().replace(/^cap\s+/i,"");return t?"CAP "+t:"CAP"}
+let _gp=null;
+async function groupePage(id){
+  if(!id)return;const z=document.getElementById("sheet-content");z.innerHTML=`<h3>Groupe</h3>${skLignes(5)}`;openSheet();
+  const {data,error}=await sb.rpc("cap_groupe_page",{p_club:id});
+  if(error||!data){z.innerHTML=`<h3>Groupe</h3>${emptyState("Groupe indisponible",esc(error?rlsMsg(error):"Ce groupe n'existe plus."))}`;return}
+  _gp=data;const M=data.membres||[],voit=(()=>{try{return canEditClubId(id)||((window._DBvrai||DB).membres||[]).some(x=>x.clubId===id)}catch(e){return false}})();
+  z.innerHTML=ficheHead({vc:villeColor(data.ville),ini:"👥",title:capNom(data.nom),sub:esc([data.ville,data.animateur?"animé par "+data.animateur:"sans animateur",M.length+" membre"+(M.length>1?"s":"")].filter(Boolean).join(" · "))})+
+    `<p class="fh-note">Les membres du groupe, en consultation. Pour joindre l'un d'eux, demande son numéro à l'animateur du groupe.</p>
+    ${M.length?`<div class="gl">${M.map((x,i)=>`<div class="gl-r gp-r"><span class="gl-n"><b>${esc(x.nom)}${x.animateur?` <em class="mb-anim">Animateur</em>`:""}</b><small>${esc([x.metier,x.entreprise].filter(Boolean).join(" · ")||"Métier à renseigner")}</small></span>${voit&&((window._DBvrai||DB).membres||[]).some(y=>y.id===x.id)?`<button class="btn ghost mini" onclick="memberSheet('${id}','${x.id}')">Sa fiche</button>`:`<button class="btn ghost mini" onclick="groupeDemander(${i})">Demander son numéro</button>`}</div>`).join("")}</div>`:emptyState("Aucun membre","Les fiches de ce groupe ne sont pas encore saisies.")}
+    <div class="sheet-actions">${data.animateur_tel?`<a class="btn" href="https://wa.me/${mbWa(data.animateur_tel)}" target="_blank" rel="noopener">Écrire à ${esc(String(data.animateur||"l'animateur").split(/\s+/)[0])}</a>`:""}${voit?`<button class="btn ghost" onclick="openClub('${id}')">Fiche du groupe</button>`:""}</div>`;
+}
+async function groupeDemander(i){
+  const g=_gp,x=g&&(g.membres||[])[i];if(!x)return;const pr=String(g.animateur||"").split(/\s+/)[0];
+  const msg=`Bonjour${pr?" "+pr:""}, c'est ${SESSION.name} (Club d'Affaires Protéine). Peux-tu me transmettre le numéro de ${x.nom}, membre de ${capNom(g.nom)} ? Je souhaite le contacter. Merci.`;
+  if(g.animateur_tel){window.open("https://wa.me/"+mbWa(g.animateur_tel)+"?text="+encodeURIComponent(msg),"_blank","noopener");return}
+  try{await navigator.clipboard.writeText(msg);toast("Ce groupe n'a pas de mobile d'animateur en base : message copié, à lui envoyer","s")}catch(e){prompt("Message à envoyer à l'animateur :",msg)}
+}
 async function qualCharger(m){
   if(!SESSION||SESSION.role==="visiteur")return;
   let Q;try{const r=await sb.rpc("cap_reunion_qualites",{p_reunion:m.id});if(r.error||!Array.isArray(r.data))return;Q=r.data}catch(e){return}
@@ -5827,9 +5847,9 @@ async function qualCharger(m){
   let ng=0,nr=0;
   Q.forEach(x=>{const el=z.querySelector(`[data-gi="${x.id}"]`)||z.querySelector(`[data-gn="${invCle(x.nom)}"]`);if(!el||el.classList.contains("q-groupe")||el.classList.contains("q-reseau"))return;
     el.classList.add(x.q==="groupe"?"q-groupe":"q-reseau");x.q==="groupe"?ng++:nr++;
-    const b=el.querySelector("b");if(b)b.insertAdjacentHTML("beforeend",` <em class="q-tag">${x.q==="groupe"?"Membre du groupe":"Membre · "+esc(String(x.groupe||"autre groupe").replace(/^CAP\s+/,""))}</em>`)});
+    const b=el.querySelector("b");if(b)b.insertAdjacentHTML("beforeend",` <button type="button" class="q-tag" onclick="event.stopPropagation();groupePage('${x.club_id||""}')" title="Voir les membres de ce groupe">${x.q==="groupe"?"Membre du groupe":esc(capNom(x.groupe))} ›</button>`)});
   const eq=z.querySelector(".viens-eq");if(eq&&(m.equipe||[]).length&&!eq.dataset.q){eq.dataset.q=1;const parNom={};Q.forEach(x=>parNom[invCle(x.nom)]=x);
-    eq.innerHTML=`<b>Équipe présente · ${m.equipe.length}</b> `+m.equipe.map(g=>{const x=Q.find(y=>y.id===g._id)||parNom[invCle(g.nom)];return x?`<span class="q-nom ${x.q==="groupe"?"q-groupe":"q-reseau"}" title="${x.q==="groupe"?"Membre du groupe":"Membre de "+esc(String(x.groupe||"").replace(/^CAP\s+/,""))}">${esc(g.nom)}</span>`:esc(g.nom)}).join(", ")}
+    eq.innerHTML=`<b>Équipe présente · ${m.equipe.length}</b> `+m.equipe.map(g=>{const x=Q.find(y=>y.id===g._id)||parNom[invCle(g.nom)];return x?`<button type="button" class="q-nom ${x.q==="groupe"?"q-groupe":"q-reseau"}" onclick="groupePage('${x.club_id||""}')" title="Voir les membres de ce groupe">${esc(g.nom)} · ${esc(capNom(x.groupe))}</button>`:esc(g.nom)}).join(", ")}
   if((ng||nr)&&!z.querySelector(".q-leg")){const l=z.querySelector(".gl,.guest");if(l)l.insertAdjacentHTML("beforebegin",`<div class="q-leg"><span class="q-groupe">Membre du groupe${ng?" · "+ng:""}</span><span class="q-reseau">Membre d'un autre groupe${nr?" · "+nr:""}</span><span>Invité extérieur</span></div>`)}
 }
 async function repCharger(m){
@@ -5839,7 +5859,7 @@ async function repCharger(m){
   if(error||!data||!data.length){if(m.date>=isoJour(TODAY)&&!error){z2.hidden=false;z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres</div><div class="v" style="color:var(--muted)">Personne n'a encore répondu depuis l'espace membre.</div></div></div>`}return}
   let noms=null;try{const r=await sb.rpc("cap_reunion_reponses",{p_reunion:m.id});if(!r.error&&Array.isArray(r.data)&&r.data.length)noms=r.data}catch(e){}
   const z3=document.getElementById("rep-bloc");if(!z3||z3.dataset.reunion!==m.id)return;
-  const nom=id=>(DB.membres.find(x=>x.id===id)||{}).nom||"Membre",lib=x=>x.nom+(x.autre_groupe&&x.groupe?" ("+String(x.groupe).replace(/^CAP\s+/,"")+")":"");
+  const nom=id=>(DB.membres.find(x=>x.id===id)||{}).nom||"Membre",lib=x=>x.nom+(x.autre_groupe&&x.groupe?" · "+capNom(x.groupe):"");
   const oui=noms?noms.filter(x=>x.reponse==="oui").map(lib):data.filter(x=>x.reponse==="oui").map(x=>nom(x.membre_id)),non=noms?noms.filter(x=>x.reponse==="non").map(lib):data.filter(x=>x.reponse==="non").map(x=>nom(x.membre_id));
   z2.hidden=false;
   z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres · ${oui.length} vien${oui.length>1?"nent":"t"}${non.length?` · ${non.length} excusé${non.length>1?"s":""}`:""}</div>
@@ -8760,7 +8780,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

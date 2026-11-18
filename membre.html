@@ -557,7 +557,7 @@ function vueAccueil(){
   const etapes=[["Me connecter avec mon code",true],...ficheEtapes().slice(0,3).map(e=>[e[1],e[2]]),["Recevoir les notifications",S.notif==="actif"]];
   const faites=etapes.filter(e=>e[1]).length;
   return `<div class="page">
-    ${S.viaCrm&&!S.voir?`<div class="eq-band">🪪 Ton espace membre, ouvert depuis le CRM<a class="btn mini ghost" href="/">↩ CRM</a></div>`:""}
+    ${S.viaCrm&&!S.voir&&!DANS_CRM?`<div class="eq-band">🪪 Ton espace membre, ouvert depuis le CRM<a class="btn mini ghost" href="/">↩ CRM</a></div>`:""}
     <div class="ac-tete">${av({id:S.moi.id,nom:S.moi.nom,photo:moiFiche().photo})}<div><h1>Bonjour ${esc(prenom)}</h1><p class="sub">${esc(nom)}${c.animateur?" · animé par "+esc(String(c.animateur).split(/\s+/)[0]):""}</p></div></div>
     ${carteReunion(p,true)}
     ${volet("afaire","À faire",todo.length||"0",todo.length?`<div class="la-l">${todo.join("")}</div>`:`<p class="vide" style="padding:10px">Rien à faire pour l'instant. Tout est à jour.</p>`,{ouvert:true})}

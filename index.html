@@ -2415,8 +2415,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.57.0";
+const APP_VERSION="1.58.0";
 const CHANGELOG=[
+  {v:"1.58.0",date:"19 novembre 2026",notes:{"Modifié":["Espace membre, carte de la prochaine réunion : le lieu, les trois repères et la liste des invités sont dans des encadrés blancs, avec le texte en noir et les chiffres en rouge. Plus de rouge sur rouge."]}},
   {v:"1.57.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre, donner une recommandation : trois paliers pour choisir le membre — « Ma région », « Maroc » (tout le réseau) et « International » (France, Espagne). Si la recherche ne trouve personne dans la région, un toucher l'élargit au reste du Maroc.","International : les annuaires France et Espagne ne sont pas encore reliés ; en attendant, un bouton écrit à l'animateur, qui transmet."],"Modifié":["Le bouton « Mettre à jour » passe en rouge vif."]}},
   {v:"1.56.0",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une région dépliée (« Membres par région », « À traiter ») se refermait toute seule au bout de quelques secondes, même pendant qu'on la lisait. Elle reste maintenant ouverte tant qu'on est dessus."],"Modifié":["Le délai de repli ne démarre que quand on sort du bloc : un toucher ailleurs, ou le bloc qui quitte l'écran en faisant défiler. Si on y revient avant la fin du délai, il reste ouvert. Sur ordinateur, rien ne change : il se replie quand la souris en sort."]}},
   {v:"1.55.0",date:"19 novembre 2026",notes:{"Modifié":["Espace membre : un seul rouge, celui du bouton « Écrire un message », toujours avec du texte blanc. L'en-tête de la fiche d'un membre, la carte de la prochaine réunion, le total du groupe et les pastilles rouges quittent le bordeaux sombre.","Sur la carte de la réunion, la réponse choisie (« Je viens » ou « Je ne viens pas ») passe en blanc pour ressortir sur le rouge."]}},

@@ -2411,6 +2411,8 @@ html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 #pres-print{display:none}
 html.pres-on,html.pres-on body{overflow:hidden}
 .prev-h{margin:16px 0 8px;font:700 13px/1.2 "Bricolage Grotesque",sans-serif;color:var(--ink);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.prev-h small{font:500 11.5px Inter,sans-serif;color:var(--muted)}.prev-q{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.prev-q span{border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;min-width:0}.prev-q b{display:block;font:800 18px/1.15 "Bricolage Grotesque",sans-serif;color:var(--ink);overflow-wrap:anywhere}.prev-q small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
+.ar-c{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}.ar-c:hover{border-color:var(--crimson)}.ar-c i,.ar-c img{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:13px;background:var(--crimson);color:#fff}.ar-c span{display:flex;flex-direction:column;min-width:0}.ar-c b{font-size:14px}.ar-c small{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}.ar-ph{width:54px;height:54px;border-radius:50%;object-fit:cover;flex:none}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
 </head>
@@ -2517,8 +2519,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.67.0";
+const APP_VERSION="1.68.0";
 const CHANGELOG=[
+  {v:"1.68.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre : « Les réunions du réseau ». Un membre peut s'inscrire à la réunion de n'importe quel groupe, dans toutes les villes. Inscrit, il voit les invités prévus, les membres du groupe et la quinzaine du groupe (jamais de coordonnées d'invités).","Membres : pour un animateur ou un directeur de région, « Tout le réseau » ouvre l'annuaire de tous les groupes, avec la fiche de base de chaque membre (métier, entreprise, contact partagé).","Fiche réunion : les membres d'un autre groupe qui viennent apparaissent avec le nom de leur groupe."],"Modifié":["La quinzaine d'un groupe se compte depuis sa dernière réunion (sinon sur 15 jours).","Présentations : « Futur membre fondateur » tant que le contrat n'est pas signé au national, « Membre fondateur » ensuite."]}},
   {v:"1.67.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit à la réunion d'un autre groupe, tu vois aussi les membres du groupe (métier, entreprise, qui vient) et la quinzaine du groupe : recommandations, affaires signées et chiffre d'affaires des 15 derniers jours."],"Modifié":["Espace membre : les chiffres récents du groupe portent sur la quinzaine (15 jours), plus sur la semaine."]}},
   {v:"1.66.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion d'un autre groupe : dès que tu t'inscris avec « Je viens », tu vois qui est prévu — les invités avec leur métier, leur entreprise et leur statut, et les membres qui ont répondu présent. Avant, la fiche affichait « Invités (0) ».","Les coordonnées des invités (téléphone, e-mail) restent réservées à l'animateur du groupe et à la direction."]}},
   {v:"1.65.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : les fiches « Membre fondateur ». Dans « Ajouter », « 🌟 Membres fondateurs » pose une slide par membre du groupe (nom, fonction, entreprise, métier, ville, site), tirée de sa fiche membre ; sa photo et son logo s'affichent dès qu'ils sont dans sa fiche. Une fiche se retire ou se rajoute seule.","Présentations, slide « L'adhésion en ligne » : le QR code du formulaire d'adhésion du groupe, à scanner pendant la réunion. La demande arrive directement dans le CRM, rattachée au groupe."]}},
@@ -3349,7 +3352,7 @@ function presSlide(k,m,st){
     const nz=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""),redite=met&&act&&(nz(met).includes(nz(act).slice(0,6))||act.length>60);
     const actL=!act||redite?"":act.length<=4?act.toUpperCase():act.length>110?act.slice(0,107).replace(/\s+\S*$/,"")+"…":act;
     const L=[met,actL&&actL!==met?actL:"",i.ent_ville?"Basé à "+i.ent_ville:"",web].filter(Boolean).slice(0,4);
-    return `<div class="pr-s pr-anim pr-mb"><div class="pr-ag">${x.photo?`<img class="ph" src="${esc(x.photo)}" alt="">`:`<i>${esc(initiales(x.nom))}</i>`}${x.logo?`<img class="lg" src="${esc(x.logo)}" alt="">`:""}</div><div class="pr-ad"><img class="pr-globe" src="logo-globe-192.png" alt=""><div class="pr-q">MEMBRE FONDATEUR</div><div class="pr-carte"><div class="pr-pil">${prNom(x.nom)}</div><div class="pr-role">${esc(i.m_fonction||"")}${i.m_fonction&&i.ent_nom?"<br>":""}${esc(i.ent_nom||"")}<br><small>${esc(g)}</small></div></div><ul class="pr-coches">${L.map(l=>`<li>${esc(l)}</li>`).join("")}</ul></div>${prBas(m,st)}</div>`}
+    return `<div class="pr-s pr-anim pr-mb"><div class="pr-ag">${x.photo?`<img class="ph" src="${esc(x.photo)}" alt="">`:`<i>${esc(initiales(x.nom))}</i>`}${x.logo?`<img class="lg" src="${esc(x.logo)}" alt="">`:""}</div><div class="pr-ad"><img class="pr-globe" src="logo-globe-192.png" alt=""><div class="pr-q">${presFutur(x)?"FUTUR MEMBRE FONDATEUR":"MEMBRE FONDATEUR"}</div><div class="pr-carte"><div class="pr-pil">${prNom(x.nom)}</div><div class="pr-role">${esc(i.m_fonction||"")}${i.m_fonction&&i.ent_nom?"<br>":""}${esc(i.ent_nom||"")}<br><small>${esc(g)}</small></div></div><ul class="pr-coches">${L.map(l=>`<li>${esc(l)}</li>`).join("")}</ul></div>${prBas(m,st)}</div>`}
   if(k==="reseau")return presReseau(m,st);
   if(k==="crm1")return `<div class="pr-s pr-sec"><img class="pr-sl" src="presentations/commun/logo-blanc.png" alt=""><div class="pr-sf">Le nouveau<br>CRM</div><div class="pr-st">LE NOUVEAU<br>CRM</div><div class="pr-sb"><span>Club d'Affaires Protéine Maroc</span><span>${esc(st.modele==="si"?"Réunion d'information":typeLib(m))}</span></div></div>`;
   if(k==="crm2")return `<div class="pr-s pr-liste">${prTete("Le nouveau CRM","Un CRM pensé pour les groupes")}<div class="pr-ronds">${["Agenda et réunions du groupe","Invités suivis jusqu'à l'adhésion","Adhésion en ligne depuis le téléphone","Recommandations et affaires tracées","Chiffres du groupe et de la région en direct"].map(x=>`<span>${esc(x)}</span>`).join("")}</div><div class="pr-note">Relié au CRM national Protéine : une seule saisie.</div>${prBas(m,st)}</div>`;
@@ -3459,6 +3462,36 @@ async function presImprimer(){const K=presVisibles(),m=presReunion(_pres.id),st=
   css.textContent="@page{size:1600px 900px;margin:0}@media print{html,body{background:#fff!important;margin:0!important;padding:0!important}body>*:not(#pres-print){display:none!important}#pres-print{display:block!important}#pres-print .pr-s{break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}}";
   const fin=()=>{css.textContent="";z.innerHTML="";window.removeEventListener("afterprint",fin)};window.addEventListener("afterprint",fin);
   const t=document.title;document.title="Présentation "+presGroupeNom(m)+" "+m.date;setTimeout(()=>{window.print();document.title=t},150)}
+/* v1.68 : « Futur membre fondateur » tant que le contrat de sa demande d'adhésion n'est pas signé au national. */
+function presFutur(x){try{const a=((window._DBvrai||DB).adhesions||[]).find(a=>a.membre_id===x.id&&a.statut!=="rejetee");return !!a&&!((a.national||{}).signe_le)}catch(e){return false}}
+/* v1.68 : annuaire du réseau pour un animateur ou un directeur de zone — la fiche de base de tous les membres
+   (ce qu'un membre voit dans son espace : métier, entreprise, groupe, contact partagé). Jamais le dossier. */
+function annResPeut(){return !!SESSION&&["animateur","directeur"].includes(SESSION.role)&&!SESSION._voir}
+async function annResCharger(){
+  const [f,c,r]=await Promise.all([sb.rpc("cap_annuaire_fiche"),sb.rpc("cap_annuaire_contacts"),sb.rpc("cap_annuaire_regions")]);
+  const C={};(c.data||[]).forEach(x=>C[x.id]=x);const R={};(r.data||[]).forEach(x=>R[x.club_id]=x.region);
+  window._annRes=f.error?[]:(f.data||[]).map(m=>Object.assign({},m,{email:(C[m.id]||{}).email||"",telephone:(C[m.id]||{}).telephone||m.telephone||"",region:R[m.club_id]||m.ville||""}));
+  window._annResErr=f.error?f.error.message:"";
+  if(tab==="membres"&&window._mbRes)mbFiltrer();
+}
+function annResHTML(){
+  const L=window._annRes;if(!L){annResCharger();return skLignes(6)}
+  if(window._annResErr)return emptyState("Annuaire indisponible",esc(window._annResErr));
+  const q=predMots(window._q4||""),ok=m=>{if(!q.length)return true;const W=predMots([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.region,m.fonction].join(" "));return q.every(t=>W.some(w=>w.startsWith(t)))};
+  const l=L.filter(ok);if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"L'annuaire est vide.");
+  const G={};l.forEach(m=>{const k=m.club||"Sans groupe";(G[k]=G[k]||[]).push(m)});
+  const mien=new Set(scopedClubIds()),cles=Object.keys(G).sort((a,b)=>(mien.has(G[b][0].club_id)-mien.has(G[a][0].club_id))||a.localeCompare(b));
+  return `<div class="mb-n">${l.length} membre${l.length>1?"s":""} dans ${cles.length} groupe${cles.length>1?"s":""}</div>`+cles.map(k=>{const g=G[k];
+    return `<details class="ar-g" ${q.length||mien.has(g[0].club_id)||cles.length<4?"open":""}><summary><b>${esc(k.replace(/^CAP\s+/,""))}</b><small>${esc(g[0].region||g[0].ville||"")}</small><em>${g.length}</em></summary><div class="mb-grid">${g.map(m=>`<button type="button" class="ar-c" onclick="annResFiche('${m.id}')">${m.photo?`<img src="${esc(m.photo)}" alt="" loading="lazy">`:`<i>${esc(initiales(m.nom))}</i>`}<span><b>${esc(m.nom)}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</small></span></button>`).join("")}</div></details>`}).join("")}
+function annResFiche(id){
+  const m=(window._annRes||[]).find(x=>x.id===id);if(!m)return;const tel=String(m.telephone||"").trim(),mail=String(m.email||"").trim(),site=String(m.site||"").trim();
+  const l=(k,v)=>v?`<div class="drow"><div class="tx"><div class="k">${k}</div><div class="v">${v}</div></div></div>`:"";
+  document.getElementById("sheet-content").innerHTML=ficheHead({title:m.nom,ini:initiales(m.nom),round:true,sub:esc([m.fonction,m.entreprise].filter(Boolean).join(" · ")),lead:m.photo?`<img class="ar-ph" src="${esc(m.photo)}" alt="">`:""})+
+    `<div class="sheet-actions">${tel?`<a class="btn" href="tel:${esc(telE164(tel)||tel)}">📞 Appeler</a><a class="btn ghost" href="https://wa.me/${mbWa(tel)}" target="_blank" rel="noopener">WhatsApp</a>`:""}${mail?`<a class="btn ghost" href="mailto:${esc(mail)}">✉ E-mail</a>`:""}</div>
+    ${l("Métier",esc(m.metier||""))}${l("Groupe",esc(String(m.club||"").replace(/^CAP\s+/,"")+(m.ville?" · "+m.ville:"")))}${l("Téléphone",tel?esc(telAff(tel)):"")}${l("Présentation",esc(m.presentation||m.activite||""))}${l("Ce qu'il recherche",esc(m.cherche||""))}${l("Site",site?`<a href="${esc(/^https?:/i.test(site)?site:"https://"+site)}" target="_blank" rel="noopener">${esc(site.replace(/^https?:\/\//i,""))}</a>`:"")}
+    <p class="fh-note">Fiche de l'annuaire du réseau : ce que le membre partage avec les autres membres. Son dossier reste avec l'animateur de son groupe.</p>`;
+  openSheet();
+}
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
 const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Accueil et chiffres"],["groupe","👥","Mon groupe"],["agenda","📅","Agenda et réunions"],["reseau","🌐","Groupes, membres, lieux"],["recos","🤝","Recommandations"],["adhesions","📝","Adhésions"],["equipe","🧑‍💼","Équipe"],["reglages","⚙️","Ressources et paramètres"]];
 /* v1.62 : visite guidée refaite sur l'appli d'aujourd'hui. Elle s'adapte au rôle (visiteur, animateur, directeur, direction nationale, super admin)
@@ -3969,15 +4002,16 @@ function mbResultats(){
   if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k);
   return n+`<div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
 }
-function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=mbResultats()}
+function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=window._mbRes&&annResPeut()?annResHTML():mbResultats()}
 function viewMembres(){
   const ids=new Set(scopedClubIds());const tous=DB.membres.filter(m=>ids.has(m.clubId));
   const villes=[...new Set(tous.map(m=>club(m.clubId).ville).filter(Boolean))].sort();
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Annuaire</div><h2>Membres</h2><p>${tous.length} membre${tous.length>1?"s":""} ${vueMode()==="reg"?"dans la région "+esc(vueRegion().nom):"dans tout le réseau"}</p></div>${lotPeut()?`<button class="btn mini" onclick="openLot()" title="Déposer plusieurs factures, reçus ou attestations d'un coup">🧾 Pièces en lot</button>`:""}</div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="mb-q" type="search" data-pred="membres" placeholder="Tape les premières lettres : nom, entreprise, métier, groupe…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
-    <div class="mb-bar"><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
-    <div id="mb-res">${mbResultats()}</div><div style="height:8px"></div></div>`;
+      <input id="mb-q" type="search" ${window._mbRes&&annResPeut()?"":`data-pred="membres"`} placeholder="Tape les premières lettres : nom, entreprise, métier, groupe…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
+    ${annResPeut()?`<div class="mon-seg ar-seg" role="group" aria-label="Périmètre de l'annuaire"><button type="button" class="${window._mbRes?"":"on"}" onclick="window._mbRes=0;render()">${SESSION.role==="animateur"?"Mes groupes":"Ma région"}</button><button type="button" class="${window._mbRes?"on":""}" onclick="window._mbRes=1;render()">Tout le réseau</button></div>`:""}
+    <div class="mb-bar"${window._mbRes&&annResPeut()?" hidden":""}><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
+    <div id="mb-res">${window._mbRes&&annResPeut()?annResHTML():mbResultats()}</div><div style="height:8px"></div></div>`;
 }
 
 /* ============================================================
@@ -5764,7 +5798,7 @@ async function prevusCharger(m){
   const tag=s=>`<span class="tag ${s==="Membre"||s==="À intégrer"?"ok":s==="Non intéressé"?"":"y"}">${esc(s)}</span>`;
   z.innerHTML=`${I.length?`<div class="gl">${I.map(g=>`<div class="gl-r"><span class="gl-n"><b>${esc(g.nom)}</b><small>${esc([g.metier,g.entreprise].filter(Boolean).join(" · "))}</small></span>${tag(g.statut)}</div>`).join("")}</div>`:""}
     ${G.length?`<div class="prev-h">Les membres du groupe · ${G.length}${M.length?` <small>${M.length} ${M.length>1?"ont":"a"} répondu présent</small>`:""}</div><div class="gl">${G.map(x=>`<div class="gl-r"><span class="gl-n"><b>${esc(x.nom)}</b><small>${esc([x.metier,x.entreprise].filter(Boolean).join(" · "))}</small></span>${x.vient==="oui"?`<span class="tag ok">Vient</span>`:x.vient==="non"?`<span class="tag">Absent</span>`:""}</div>`).join("")}</div>`:M.length?`<div class="viens-eq" style="margin-top:10px"><b>Membres qui viennent · ${M.length}</b> ${M.map(x=>esc(x.nom)).join(", ")}</div>`:""}
-    ${Q?`<div class="prev-h">La quinzaine du groupe <small>15 derniers jours</small></div><div class="prev-q"><span><b>${Number(Q.recos)||0}</b><small>recommandation${Q.recos>1?"s":""}</small></span><span><b>${Number(Q.affaires)||0}</b><small>affaire${Q.affaires>1?"s":""} signée${Q.affaires>1?"s":""}</small></span><span><b>${fmtMAD(Number(Q.ca)||0)}</b><small>chiffre d'affaires</small></span></div>`:""}
+    ${Q?`<div class="prev-h">La quinzaine du groupe <small>${Q.depuis_reunion&&Q.du?"depuis la réunion du "+esc(new Date(Q.du+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"})):"15 derniers jours"}</small></div><div class="prev-q"><span><b>${Number(Q.recos)||0}</b><small>recommandation${Q.recos>1?"s":""}</small></span><span><b>${Number(Q.affaires)||0}</b><small>affaire${Q.affaires>1?"s":""} signée${Q.affaires>1?"s":""}</small></span><span><b>${fmtMAD(Number(Q.ca)||0)}</b><small>chiffre d'affaires</small></span></div>`:""}
     <p class="fh-note">Tu vois cette liste parce que tu es inscrit à cette réunion. Les coordonnées des invités restent avec l'animateur du groupe${E.length?" · équipe présente : "+E.map(esc).join(", "):""}.</p>`;
 }
 async function repCharger(m){
@@ -5772,8 +5806,10 @@ async function repCharger(m){
   const {data,error}=await sb.from("reunion_reponses").select("reponse,maj_le,membre_id").eq("reunion_id",m.id);
   const z2=document.getElementById("rep-bloc");if(!z2||z2.dataset.reunion!==m.id)return;
   if(error||!data||!data.length){if(m.date>=isoJour(TODAY)&&!error){z2.hidden=false;z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres</div><div class="v" style="color:var(--muted)">Personne n'a encore répondu depuis l'espace membre.</div></div></div>`}return}
-  const nom=id=>(DB.membres.find(x=>x.id===id)||{}).nom||"Membre";
-  const oui=data.filter(x=>x.reponse==="oui").map(x=>nom(x.membre_id)),non=data.filter(x=>x.reponse==="non").map(x=>nom(x.membre_id));
+  let noms=null;try{const r=await sb.rpc("cap_reunion_reponses",{p_reunion:m.id});if(!r.error&&Array.isArray(r.data)&&r.data.length)noms=r.data}catch(e){}
+  const z3=document.getElementById("rep-bloc");if(!z3||z3.dataset.reunion!==m.id)return;
+  const nom=id=>(DB.membres.find(x=>x.id===id)||{}).nom||"Membre",lib=x=>x.nom+(x.autre_groupe&&x.groupe?" ("+String(x.groupe).replace(/^CAP\s+/,"")+")":"");
+  const oui=noms?noms.filter(x=>x.reponse==="oui").map(lib):data.filter(x=>x.reponse==="oui").map(x=>nom(x.membre_id)),non=noms?noms.filter(x=>x.reponse==="non").map(lib):data.filter(x=>x.reponse==="non").map(x=>nom(x.membre_id));
   z2.hidden=false;
   z2.innerHTML=`<div class="drow"><div class="ic">✋</div><div class="tx"><div class="k">Réponses des membres · ${oui.length} vien${oui.length>1?"nent":"t"}${non.length?` · ${non.length} excusé${non.length>1?"s":""}`:""}</div>
     <div class="v rep-noms">${oui.map(n=>`<span class="rep-o">${esc(n)}</span>`).join("")}${non.map(n=>`<span class="rep-n">${esc(n)}</span>`).join("")}</div></div></div>`;
@@ -8683,7 +8719,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

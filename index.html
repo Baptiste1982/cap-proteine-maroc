@@ -2199,6 +2199,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .sv-ap{white-space:pre-wrap;font:13px/1.5 Inter,sans-serif;margin:12px 0 0;padding:12px;border-radius:10px;border:1px dashed var(--line);background:var(--paper);overflow-wrap:anywhere}
 /*v1.33 bilan + compte rendu*/.bil-cr>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.bil-cr>summary::-webkit-details-marker{display:none}.bil-cr>summary::after{content:"›";margin-left:auto;transition:transform .15s}.bil-cr[open]>summary::after{transform:rotate(90deg)}.bil-cr>summary small{font-weight:500;color:var(--muted);font-size:11.5px}.bil-cr .field{margin-top:10px}
 /*v1.32 monitoring*/.mon .mon-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.mon-th{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:10px}.mon-th h3{margin:0}.mon-seg{margin:0}.mon-tab tfoot td{padding:11px 10px;text-align:right;font-weight:700;border-top:2px solid var(--line);white-space:nowrap}.mon-tab tfoot td:first-child{text-align:left}#mon-table{scroll-margin-top:76px}.mon-tab.plat th:nth-child(2),.mon-tab.plat td:nth-child(2){display:none}
 .mon-fil{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 14px;font-size:13.5px;font-weight:600}.mon-fil button{color:var(--crimson-txt,var(--crimson));padding:8px 2px;font:inherit}.mon-fil button:hover{text-decoration:underline}.mon-fil span{color:var(--muted)}
 .mon-per{display:flex;align-items:center;gap:10px}.mon-nav{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;line-height:1}.mon-nav:disabled{opacity:.35;cursor:default}
 .per-g.mon-g{grid-template-columns:repeat(7,minmax(0,1fr))}.per-t.sel{border-color:var(--crimson);box-shadow:inset 0 0 0 1px var(--crimson)}
@@ -2385,8 +2386,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.47.0";
+const APP_VERSION="1.48.0";
 const CHANGELOG=[
+  {v:"1.48.0",date:"18 novembre 2026",notes:{"Modifié":["« Villes » (ou « Zones ») et « Rapport du mois » ouvrent maintenant l'écran des statistiques, au bon niveau : un seul endroit pour les chiffres, avec le choix de la période, la comparaison, l'export Excel et le PDF.","Le tableau des statistiques se lit « Par ville » (ou « Par région ») ou « Par groupe » : tous les groupes à plat, comme l'ancien rapport. Une colonne Adhésions et une ligne Total s'ajoutent. Un toucher sur un groupe ouvre ses chiffres et ses membres."]}},
   {v:"1.47.0",date:"18 novembre 2026",notes:{"Ajouté":["Pièces en lot (Membres → « 🧾 Pièces en lot », ou menu Réseau) : plusieurs factures, reçus ou attestations déposés d'un coup. Chaque fichier va chez le membre dont le nom figure dans le nom du fichier ; chaque ligne se corrige avant l'envoi.","Un fichier dont le nom n'est pas reconnu, ou qui correspond à une personne présente dans plusieurs groupes, attend que tu choisisses le membre.","Mêmes règles qu'à l'unité : la pièce est visible du membre, une facture seulement une fois son paiement coché, et il est prévenu sur son téléphone."]}},
   {v:"1.46.0",date:"18 novembre 2026",notes:{"Modifié":["L'annonce d'une nouvelle version est une carte blanche, rangée avec les notifications : en bas à droite sur ordinateur, juste au-dessus de la barre du bas au téléphone. Elle ne flotte plus en rouge au milieu de la page."]}},
   {v:"1.45.0",date:"18 novembre 2026",notes:{"Ajouté":["Le membre reçoit une notification sur son téléphone quand une pièce arrive dans « Mes documents » : sa facture dès que le paiement est coché, un reçu, une attestation. Un toucher ouvre la page.","L'animateur reçoit une notification quand un contact lui est confié. Un toucher ouvre sa boîte « Contacts confiés »."]}},
@@ -3492,6 +3494,7 @@ function render(){const v=document.getElementById("view");
   {const eh=document.getElementById("esp-host");if(eh)eh.hidden=tab!=="espace"||!window._espUrl}
   if(_navDir){const pg=v.querySelector(".page");if(pg){pg.classList.add("slide-"+_navDir)}_navDir=null}
   if(tab==="dash"){dashCountUp(v);dashFete();vbBrancher(v);helloPoints(v)}
+  if(tab==="monitoring")monAncre();
   const dj=v.querySelector(".week .day.on");if(dj)dj.scrollIntoView({block:"nearest",inline:"center"});
   animateRings(v);avecVue(navBadges);avecVue(demBadge);avecVue(navSous);avecVue(railRender);filPageRendu(v);navPill();repliRearmer(v);const tc=document.getElementById("tb-clock");if(tc)tc.hidden=tab==="dash";
   if(_afId){const n=document.getElementById(_afId);if(n){n.focus();try{n.setSelectionRange(_afPos,_afPos)}catch(e){}predMaj(n)}}}
@@ -5008,7 +5011,7 @@ var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
-    monPeut()&&it(vuePeutBasculer()||SESSION.monitoring?"Monitoring":"Statistiques","navVers('monitoring')",{on:tab==="monitoring"}),!ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","openRapport()"),it("Présenter","openPresentation()")].filter(Boolean);
+    monPeut()&&it(vuePeutBasculer()||SESSION.monitoring?"Monitoring":"Statistiques","navVers('monitoring')",{on:tab==="monitoring"}),!ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","monOuvrir('rapport')"),it("Présenter","openPresentation()")].filter(Boolean);
   if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
     return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
@@ -5017,7 +5020,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="res")return[lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -7221,7 +7224,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","openRapport()")}</div>`; // v1.27 : le reste est dans le menu
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","monOuvrir('rapport')")}</div>`; // v1.27 : le reste est dans le menu
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
@@ -8423,17 +8426,31 @@ function monPortee(){return (_mon.data&&_mon.data.portee)||"reseau"}
 function monCaler(){const C=(_mon.data&&_mon.data.clubs)||[],p=monPortee();_mon.racine="reseau";
   if(p==="directeur"){const z=[...new Set(C.map(monZone))];if(z.length===1){_mon.racine="region";if(_mon.niv==="reseau"){_mon.niv="region";_mon.cle=z[0]}}}
   if(p==="animateur"){if(C.length===1){_mon.racine="groupe";_mon.niv="groupe";_mon.cle=C[0].id}else if(_mon.niv!=="groupe"){_mon.niv="reseau";_mon.cle=null}}}
-var _mon={niv:"reseau",cle:null,met:"ca",decal:0,cmp:"prec",data:null,err:null,charge:false,grp:{}};
+var _mon={niv:"reseau",cle:null,met:"ca",decal:0,cmp:"prec",data:null,err:null,charge:false,grp:{},plat:false};
 const MON_MET=[["ca","Affaires signées",1],["recos","Recommandations"],["affaires","Affaires conclues"],["membres","Nouveaux membres"],["adh","Adhésions reçues"],["tenues","Réunions tenues"],["invites","Invités"]];
 const MON_HYP_DEF={cible:12,adh:1,recos:1,taux:30,panier:50000};
 function monHyp(){let h={};try{h=JSON.parse(localStorage.getItem("cap-mon-hyp")||"{}")}catch(e){}return Object.assign({},MON_HYP_DEF,h)}
 function monHypMaj(k,v){const h=monHyp();h[k]=Math.max(0,Number(String(v).replace(",","."))||0);try{localStorage.setItem("cap-mon-hyp",JSON.stringify(h))}catch(e){}render()}
 async function monCharger(force){if(_mon.charge||(_mon.data&&!force))return;_mon.charge=true;_mon.err=null;
   const {data,error}=await sb.rpc("cap_monitoring");_mon.charge=false;
-  if(error||!data){_mon.err=(error&&error.message)||"Données indisponibles"}else{_mon.data=data;_mon.grp={};monCaler()}
+  if(error||!data){_mon.err=(error&&error.message)||"Données indisponibles"}else{_mon.data=data;_mon.grp={};monCaler();monValide()}
   if(tab==="monitoring")render()}
 function monAller(niv,cle){_mon.niv=niv;_mon.cle=cle||null;render();window.scrollTo({top:0,behavior:"smooth"})}
 function monZone(c){return c.zone||c.ville}
+/* v1.48 — « Villes / Zones » et « Rapport du mois » sont des entrées de cet écran : même niveau que la vue affichée,
+   tableau par ville (ou par région) pour l'un, tous les groupes à plat sur le mois pour l'autre. Le visiteur, qui n'a pas
+   les statistiques, garde les anciennes fenêtres. */
+function monValide(){if(_mon.data&&_mon.niv!=="reseau"&&!monClubs().length){_mon.niv="reseau";_mon.cle=null;monCaler()}}
+function monOuvrir(mode){
+  if(!monPeut()){return mode==="rapport"?openRapport():openZones()}
+  try{closeSheet()}catch(e){}
+  if(monPortee()!=="animateur"||!_mon.data){if(vueMode()==="reg"){_mon.niv="region";_mon.cle=vueRegion().nom}else{_mon.niv="reseau";_mon.cle=null}}
+  _mon.plat=mode==="rapport";
+  if(mode==="rapport"){_mon.decal=0;try{localStorage.setItem("cap-periode","mois")}catch(e){}}
+  if(_mon.data){monCaler();monValide()}
+  _mon.ancre=true;go("monitoring")}
+function monAncre(){if(!_mon.ancre||!_mon.data)return;_mon.ancre=false;setTimeout(()=>{const e=document.getElementById("mon-table");if(e)e.scrollIntoView({behavior:"smooth",block:"start"})},120)}
+function monPlat(v){_mon.plat=!!v;render()}
 function monClubs(){const C=(_mon.data&&_mon.data.clubs)||[];
   return _mon.niv==="region"?C.filter(c=>monZone(c)===_mon.cle):_mon.niv==="ville"?C.filter(c=>c.ville===_mon.cle):_mon.niv==="groupe"?C.filter(c=>c.id===_mon.cle):C}
 function monMoisDe(b){const l=[];let [y,m]=b.debut.split("-").map(Number);const [fy,fm]=b.fin.split("-").map(Number);
@@ -8479,6 +8496,8 @@ function monPrevision(ids,cl){const mois=monDerniers(12),S=mois.map(m=>monSomme(
   return{mode:"hypotheses",actifs,lignes,panierReel:reel?panier:null,base:`Historique trop court (${actifs} mois avec de l'activité sur 12) : projection sur les hypothèses ci-dessous, pour ${g} groupe${g>1?"s":""} et ${membres} membre${membres>1?"s":""} aujourd'hui.`}}
 function monEnfants(cl){const par=(f,niv)=>{const G={};cl.forEach(c=>{const k=f(c);(G[k]=G[k]||[]).push(c)});return Object.keys(G).sort((a,b)=>a.localeCompare(b)).map(k=>({nom:k,niv,cle:k,clubs:G[k]}))};
   if(_mon.niv==="reseau"&&monPortee()==="animateur")return{titre:"Les groupes",l:cl.map(c=>({nom:c.nom.replace(/^CAP\s+/,""),niv:"groupe",cle:c.id,clubs:[c],sous:c.ville}))};
+  const grp=c=>({nom:c.nom.replace(/^CAP\s+/,""),niv:"groupe",cle:c.id,clubs:[c],sous:[c.ville,c.animateur||"sans animateur"].filter(Boolean).join(" · ")});
+  if(_mon.plat&&(_mon.niv==="reseau"||_mon.niv==="region"))return{titre:"Les groupes",plat:true,l:[...cl].sort((a,b)=>String(a.ville||"").localeCompare(String(b.ville||""))||a.nom.localeCompare(b.nom)).map(grp)};
   if(_mon.niv==="reseau")return{titre:"Les régions",l:par(monZone,"region")};
   if(_mon.niv==="region")return{titre:"Les villes",l:par(c=>c.ville,"ville")};
   if(_mon.niv==="ville")return{titre:"Les groupes",l:cl.map(c=>({nom:c.nom.replace(/^CAP\s+/,""),niv:"groupe",cle:c.id,clubs:[c],sous:c.animateur||"sans animateur"}))};
@@ -8507,8 +8526,10 @@ function viewMonitoring(){
     if(_mon.niv==="groupe")fil.push(["groupe",c0.id,(c0.nom||"").replace(/^CAP\s+/,"")])}
   const tuile=(key,lib)=>{const v=T[key],e=v-P[key],cls=e>0?"up":e<0?"down":"eq";return `<button type="button" class="per-t${_mon.met===key?" sel":""}" onclick="_mon.met='${key}';render()" aria-pressed="${_mon.met===key}"><b>${key==="ca"?esc(madFmt(v)).replace(" MAD","<small> MAD</small>"):v}</b><span>${lib}</span><em class="${cls}" title="Écart avec ${esc(p.lib)}">${e===0?"=":(e>0?"+":"−")+(key==="ca"?madFmt(Math.abs(e)):Math.abs(e))}</em></button>`};
   const pres=T.presents_n?Math.round(T.presents/T.presents_n):null,E=monEnfants(cl),mois12=monDerniers(12),metLib=(MON_MET.find(x=>x[0]===_mon.met)||MON_MET[0])[1];
-  const table=E?`<section class="mon-bloc"><h3>${E.titre} <em>${E.l.length}</em></h3><div class="mon-tw"><table class="mon-tab"><thead><tr><th>${E.titre.replace("Les ","").replace(/^./,x=>x.toUpperCase())}</th><th>Groupes</th><th>Membres</th><th>Affaires signées</th><th>Recos</th><th>Nouveaux</th><th>Réunions</th><th>Invités</th><th>12 mois · ${esc(metLib.toLowerCase())}</th></tr></thead><tbody>
-      ${E.l.map(e=>{const i=e.clubs.map(c=>c.id),t=monSomme(i,monMoisDe(b));return `<tr tabindex="0" role="link" onclick="monAller('${e.niv}','${String(e.cle).replace(/'/g,"\\'")}')" onkeydown="if(event.key==='Enter')this.click()"><td><b>${esc(e.nom)}</b>${e.sous?`<small>${esc(e.sous)}</small>`:""}</td><td>${e.clubs.length}</td><td>${e.clubs.reduce((a,c)=>a+Number(c.membres||0),0)}</td><td>${esc(madFmt(t.ca))}</td><td>${t.recos}</td><td>${t.membres}</td><td>${t.tenues}</td><td>${t.invites}</td><td>${monEtin(mois12.map(m=>monSomme(i,[m])[_mon.met]))}</td></tr>`}).join("")}</tbody></table></div><p class="per-n">Touche une ligne pour descendre d'un niveau.</p></section>`
+  const segOk=po!=="animateur"&&(_mon.niv==="reseau"||_mon.niv==="region"),segLib=_mon.niv==="reseau"?"Par région":"Par ville";
+  const seg=segOk?`<div class="zseg mon-seg" role="tablist" aria-label="Découpage du tableau"><button type="button" role="tab" aria-selected="${!_mon.plat}" class="${_mon.plat?"":"on"}" onclick="monPlat(0)">${segLib}</button><button type="button" role="tab" aria-selected="${!!_mon.plat}" class="${_mon.plat?"on":""}" onclick="monPlat(1)">Par groupe</button></div>`:"";
+  const table=E?`<section class="mon-bloc" id="mon-table"><div class="mon-th"><h3>${E.titre} <em>${E.l.length}</em> <em>${esc(b.lib)}</em></h3>${seg}</div><div class="mon-tw"><table class="mon-tab${E.plat?" plat":""}"><thead><tr><th>${E.titre.replace("Les ","").replace(/^./,x=>x.toUpperCase())}</th><th>Groupes</th><th>Membres</th><th>Affaires signées</th><th>Recos</th><th>Nouveaux</th><th>Adhésions</th><th>Réunions</th><th>Invités</th><th>12 mois · ${esc(metLib.toLowerCase())}</th></tr></thead><tbody>
+      ${E.l.map(e=>{const i=e.clubs.map(c=>c.id),t=monSomme(i,monMoisDe(b));return `<tr tabindex="0" role="link" onclick="monAller('${e.niv}','${String(e.cle).replace(/'/g,"\\'")}')" onkeydown="if(event.key==='Enter')this.click()"><td><b>${esc(e.nom)}</b>${e.sous?`<small>${esc(e.sous)}</small>`:""}</td><td>${e.clubs.length}</td><td>${e.clubs.reduce((a,c)=>a+Number(c.membres||0),0)}</td><td>${esc(madFmt(t.ca))}</td><td>${t.recos}</td><td>${t.membres}</td><td>${t.adh}</td><td>${t.tenues}</td><td>${t.invites}</td><td>${monEtin(mois12.map(m=>monSomme(i,[m])[_mon.met]))}</td></tr>`}).join("")}</tbody>${E.l.length>1?`<tfoot><tr><td><b>Total</b></td><td>${cl.length}</td><td>${cl.reduce((a,c)=>a+Number(c.membres||0),0)}</td><td>${esc(madFmt(T.ca))}</td><td>${T.recos}</td><td>${T.membres}</td><td>${T.adh}</td><td>${T.tenues}</td><td>${T.invites}</td><td></td></tr></tfoot>`:""}</table></div><p class="per-n">${E.plat?"Touche un groupe pour ouvrir ses chiffres et ses membres.":"Touche une ligne pour descendre d'un niveau."} Chiffres de ${esc(b.lib)} ; change la période en haut de l'écran.</p></section>`
     :(()=>{const g=_mon.grp[c0.id];if(!g){monGroupeCharger(c0.id);return `<section class="mon-bloc"><h3>Les membres</h3>${skLignes(3)}</section>`}if(g==="…")return `<section class="mon-bloc"><h3>Les membres</h3>${skLignes(3)}</section>`;
       return `<section class="mon-bloc"><h3>Les membres <em>${g.length}</em></h3><div class="mon-tw"><table class="mon-tab"><thead><tr><th>Membre</th><th>Entré le</th><th>Assiduité</th><th>Recos données</th><th>Recos reçues</th><th>Affaires apportées</th><th>Affaires reçues</th><th>Dossier</th><th>Payé</th><th>Renouvellement</th></tr></thead><tbody>${g.map(m=>{const ech=m.echeance?new Date(m.echeance+"T00:00:00"):null,j=ech?Math.round((ech-TODAY)/864e5):null,as=m.reunions&&m.presences!=null?monPct(m.presences,m.reunions):null;
         return `<tr><td><b>${esc(m.nom)}</b><small>${esc(m.metier||"")}</small></td><td>${m.entree?new Date(m.entree).toLocaleDateString("fr-FR"):""}</td><td title="${m.presences||0} présence${m.presences>1?"s":""} pointée${m.presences>1?"s":""} sur ${m.reunions||0} réunion${m.reunions>1?"s":""} tenue${m.reunions>1?"s":""} depuis son entrée">${as==null?"—":as+" %"}<small>${m.presences||0} / ${m.reunions||0}</small></td><td>${m.donnees}</td><td>${m.recues}</td><td>${esc(madFmt(Number(m.ca_transmis||0)))}</td><td>${esc(madFmt(Number(m.ca_recu||0)))}</td><td>${m.dossier==null?"":m.dossier+" / 4"}</td><td>${m.paiement?`<span class="mon-ok">Oui</span>`:`<span class="mon-ko">Non</span>`}</td><td>${ech?`<span class="${j<0?"mon-ko":j<=30?"mon-av":""}">${ech.toLocaleDateString("fr-FR")}</span><small>${j<0?"dépassé de "+(-j)+" j":"dans "+j+" j"}</small>`:""}</td></tr>`}).join("")||`<tr><td colspan="10">Aucun membre pour l'instant.</td></tr>`}</tbody></table></div><p class="per-n">Totaux depuis l'entrée du membre · assiduité = présences pointées sur les réunions tenues depuis son entrée · renouvellement = un an après le début d'abonnement${canEditClubId(c0.id)?` · <button type="button" class="lien-b" onclick="grpAller('${c0.id}','bord')">Ouvrir l'espace du groupe</button>`:""}</p></section>`})();

@@ -145,6 +145,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .st.confirmee{background:var(--ok-tint);color:var(--ok)}
 .st.realisee{background:var(--info-tint);color:var(--info)}
 .st.annulee{background:var(--crimson-tint);color:var(--crimson-txt,var(--crimson))}
+.st.archivee{background:var(--line);color:var(--muted)}.bil-arch{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);text-align:center;font-size:13.5px}.bil-arch small{display:block;color:var(--muted);margin-top:3px}
 .guest-count{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--crimson-txt,var(--crimson));font-weight:600;margin-top:8px;background:var(--crimson-tint);padding:3px 9px;border-radius:20px}
 
 /* tiles */
@@ -2359,12 +2360,13 @@ function typeCourt(m){return m&&m.format?FORMAT_ICO[m.format]+" "+({business:"Bu
 function typeLib(m){return m&&m.format?FORMATS[m.format]:(TYPES[m&&m.type]||(m&&m.type)||"")}
 /* Position dans le cycle : nombre de réunions du cycle (non annulées) avant la date donnée, modulo 4. */
 function cyclePos(clubId,avant){return DB.reunions.filter(r=>r.clubId===clubId&&r.format&&r.statut!=="annulee"&&r.date<avant).length%CYCLE.length}
-const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée"};
+const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisée",annulee:"Annulée",archivee:"Archivée sans bilan"};
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.40.0";
+const APP_VERSION="1.41.0";
 const CHANGELOG=[
+  {v:"1.41.0",date:"18 novembre 2026",notes:{"Ajouté":["Une réunion passée peut être archivée sans bilan : elle reste dans l'historique du groupe et sort des bilans à saisir. Choix « Archiver sans bilan » dans l'écran du bilan.","Depuis ce même écran, les réunions de plus de 60 jours sans bilan s'archivent d'un coup, en deux clics.","Une réunion archivée se rouvre pour saisir son bilan plus tard."]}},
   {v:"1.40.0",date:"18 novembre 2026",notes:{"Modifié":["Une seule page de connexion : l'équipe entre son prénom et son mot de passe, un membre son mobile et le code donné par son animateur. Le membre arrive directement dans son espace.","Un membre déjà connecté qui ouvre l'adresse du CRM est conduit à son espace. La page de l'espace membre garde un lien « Connexion avec ton prénom » pour l'équipe."]}},
   {v:"1.39.0",date:"18 novembre 2026",notes:{"Ajouté":["Un sélecteur d'espace en haut : un seul bouton pour passer du réseau national à une région, à l'un de ses groupes ou à son espace membre. Il remplace la bascule National / Région et la liste des régions."],"Modifié":["L'accueil d'une région range ses groupes ville par ville (Rabat, Salé, Kénitra), du plus urgent au plus calme dans chaque ville. L'en-tête d'une ville ouvre ses statistiques.","Au téléphone, l'heure de la barre du haut laisse sa place au sélecteur d'espace."]}},
   {v:"1.38.0",date:"17 novembre 2026",notes:{"Modifié":["Le statut d'un groupe se calcule tout seul : « Actif » dès 5 membres, ou dès qu'une réunion de lancement ou du cycle est tenue ; sinon « En création ». Il se met à jour à chaque membre ajouté ou retiré et à chaque bilan.","Dans la fiche d'un groupe, une case permet de garder « Actif » un groupe dont la vie n'est pas saisie dans le CRM."]}},
@@ -2931,7 +2933,7 @@ const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.statut,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
+function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.archivee_le&&(r.statut==="planifiee"||r.statut==="confirmee")?"archivee":r.statut,statutBase:r.statut,archiveeLe:r.archivee_le||null,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
@@ -3415,7 +3417,7 @@ function viewRegion(){
   const cellule=(c,mo)=>{const l=DB.reunions.filter(r=>r.clubId===c.id&&r.date.startsWith(mo.k)).sort((a,b)=>a.date.localeCompare(b.date));
     if(!l.length)return mo.futur||mo.auj?(peut&&canEditClubId(c.id)?`<button class="vr-pt p" title="Planifier une réunion" aria-label="Planifier une réunion de ${esc(c.nom)}" onclick="planifierSuivante('${c.id}')">+</button>`:""):"";
     const r=l[0],passe=isPast(r.date),j=dObj(r.date).getDate();
-    const cls=r.statut==="annulee"?"x":r.statut==="realisee"?"f":passe?"b":"v";
+    const cls=r.statut==="annulee"||r.statut==="archivee"?"x":r.statut==="realisee"?"f":passe?"b":"v";
     const sym=cls==="f"?"✓":cls==="b"?"!":cls==="x"?"✕":j;
     return `<button class="vr-pt ${cls}" title="${esc(dateLongue(dObj(r.date)))} · ${esc(STATUTS[r.statut]||"")}${cls==="b"?" · bilan à saisir":""}${l.length>1?" · "+l.length+" réunions ce mois":""}" onclick="${cls==="b"&&peut?`openBilan('${r.id}')`:`openMeeting('${r.id}')`}">${sym}${l.length>1?`<sup>${l.length}</sup>`:""}</button>`};
   const grille=`<div class="vr-pl" style="--cols:${M.length}"><div class="vr-ph"></div>${M.map(m=>`<div class="vr-ph ${m.auj?"auj":""}">${m.lab}${m.lab==="janv."?`<small>${m.an}</small>`:""}</div>`).join("")}
@@ -5596,7 +5598,7 @@ function meetingForm(id,presetClub){
     <div class="field"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field"><label>Heure</label>${heureChamp("f-heure",m.heure||(club(m.clubId)||{}).heureHab||HEURE_DEF)}</div>
     <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="f-anim"><option value="">— choisir —</option>${animOpt}</select></div>
-    <div class="field"><label>Statut</label><select data-pills id="f-statut">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
+    <div class="field"><label>Statut</label><select data-pills id="f-statut">${Object.keys(STATUTS).filter(s=>s!=="archivee").map(s=>`<option value="${s}" ${(m.statutBase||m.statut)===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
     </div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`meetingDetail(DB.reunions.find(x=>x.id==='${id}'),true)`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveMeeting('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delMeeting('${id}')">Supprimer cette réunion</div>`:""}`;
@@ -5611,7 +5613,7 @@ async function saveMeeting(id){
     const {error}=await sb.from("reunions").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}
     const m=DB.reunions.find(x=>x.id===id);
-    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:row.statut,format:row.format,theme:row.theme||""});
+    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:m.archiveeLe&&(row.statut==="planifiee"||row.statut==="confirmee")?"archivee":row.statut,statutBase:row.statut,format:row.format,theme:row.theme||""});
     toast("Réunion mise à jour");
   }else{
     const {data,error}=await sb.from("reunions").insert(row).select().single();
@@ -7138,7 +7140,7 @@ function renderBilan(){
     <div class="bil-grp" style="--vc:${villeColor(c.ville)}"><span class="bil-grp-l">Groupe</span><b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${esc(c.ville||"")}${c.animId?" · animé par "+esc(animNom(c.animId)):""}</small></div>
     <h3>Comment s'est passée la réunion ?</h3>
     <div class="sheet-sub">${typeLib(m)} du ${JOURS[d.getDay()]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} · ${esc(lieuNom(m.lieuId))}</div>
-    <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}</div></div>
+    <div class="field"><label>La réunion a eu lieu ?</label><div class="pills" role="radiogroup">${st("realisee","Réalisée")}${st("reportee","Reportée")}${st("annulee","Annulée")}${st("archivee","Archiver sans bilan")}</div>${_bil.statut==="archivee"?`<p class="fh-note">La réunion reste dans l'historique du groupe, sans chiffres, et sort des bilans à saisir. Tu pourras la rouvrir pour saisir son bilan.</p>`:""}</div>
     ${_bil.statut==="realisee"?`<div class="bsteps">${step("presents","Présents")}${step("inv","Invités venus")}${step("adh","Adhésions")}</div><p class="bconv" id="bil-conv">${bilConv()}</p>
       <div class="bil-sec"><div class="bil-sec-t">🤝 Recommandations passées pendant la réunion</div>
         <div class="bsteps">${step("recos","Recos passées")}<div class="bstep"><small>Montant annoncé (MAD)</small><div><input class="bil-in" style="width:100%" id="bil-montant" type="number" inputmode="numeric" min="0" step="1000" value="${_bil.montant||""}" placeholder="0" oninput="_bil.montant=Math.max(0,parseInt(this.value,10)||0)" aria-label="Montant annoncé"></div></div></div>
@@ -7149,8 +7151,17 @@ function renderBilan(){
         ${crChamps(m).map(([k,l,ph])=>`<div class="field"><label for="bcr-${k}">${l}</label><textarea id="bcr-${k}" rows="${k==="intervenant"||k==="entreprise"?2:3}" placeholder="${esc(ph)}" oninput="_bil.cr['${k}']=this.value">${esc((_bil.cr||{})[k]||((k==="intervenant"||k==="entreprise")&&m.theme?m.theme:""))}</textarea></div>`).join("")}</details>`:""}
     ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer"}</button></div>
-    ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}`;
+    ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}
+    ${(()=>{const v=bilVieilles();return v.length>1?`<div class="bil-arch"><button type="button" class="lien-b" onclick="bilArchiverLot(this)">Archiver d'un coup les ${v.length} réunions de plus de ${BIL_VIEUX_JOURS} jours</button><small>Elles restent dans l'historique, sans bilan.</small></div>`:""})()}`;
 }
+/* v1.41 — réunions passées depuis longtemps sans bilan : rangées d'un coup (deux clics), hors des compteurs. */
+const BIL_VIEUX_JOURS=60;
+function bilVieilles(){const lim=isoJour(new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()-BIL_VIEUX_JOURS));return reunionsSansBilan().filter(r=>r.date<lim)}
+async function bilArchiverLot(b){const v=bilVieilles();if(!v.length)return;if(!b.dataset.sur){b.dataset.sur="1";b.textContent="Confirmer : archiver "+v.length+" réunions sans bilan";return}
+  b.disabled=true;const quand=new Date().toISOString(),{error}=await sb.from("reunions").update({archivee_le:quand,archivee_par:SESSION.id}).in("id",v.map(r=>r.id));
+  if(error){toast(rlsMsg(error),"e");b.disabled=false;return}
+  v.forEach(r=>Object.assign(r,{statut:"archivee",archiveeLe:quand}));toast(v.length+" réunions archivées sans bilan","s");render();
+  const n=reunionsSansBilan().find(x=>!_bilSerie.passes.has(x.id));if(n)openBilan(n.id);else closeSheet()}
 function bilConv(){const c=pct(_bil.adh,_bil.inv);return c==null?"Ajoute les invités venus pour voir le taux de conversion":`Invités devenus membres : <b>${c} %</b>`}
 function bilStatut(k){_bil.statut=k;renderBilan()}
 function bilSaisie(k,v){_bil[k]=Math.max(0,parseInt(v,10)||0);const cv=document.getElementById("bil-conv");if(cv)cv.innerHTML=bilConv()}
@@ -7161,17 +7172,19 @@ async function saveBilan(){
   if(_bil.statut==="reportee"){
     if(!_bil.date||_bil.date<isoJour(TODAY)){toast("Choisis une nouvelle date à venir","w");return}
     row={date:_bil.date,statut:"planifiee"};
-  }else{row={statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+  }else if(_bil.statut==="archivee"){row={archivee_le:new Date().toISOString(),archivee_par:SESSION.id}; // v1.41 : rangée sans bilan
+  }else{row={archivee_le:null,statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
     if(_bil.statut==="realisee"){const txt=Object.fromEntries(Object.entries(_bil.cr||{}).map(([k,v])=>[k,String(v||"").trim()]).filter(([,v])=>v));
       row.compte_rendu={...Object.fromEntries(Object.entries(m.cr||{}).filter(([k])=>k==="bilan"||!(k in (_bil.cr||{})))),...txt,bilan:{recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}};
       if(Object.keys(txt).length){row.cr_le=new Date().toISOString();row.cr_par=SESSION.id}}} // v1.33 : bilan et compte rendu sur le même écran
   const {error}=await sb.from("reunions").update(row).eq("id",m.id);
   if(error){toast(rlsMsg(error));return}
-  Object.assign(m,{statut:row.statut,date:row.date||m.date});
-  if(_bil.statut!=="reportee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
+  if(_bil.statut==="archivee")Object.assign(m,{statut:"archivee",archiveeLe:row.archivee_le});
+  else Object.assign(m,{statut:row.statut,statutBase:row.statut,archiveeLe:null,date:row.date||m.date});
+  if(_bil.statut!=="reportee"&&_bil.statut!=="archivee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
   if(row.compte_rendu)m.cr=row.compte_rendu;if(row.cr_le)m.crLe=row.cr_le;
   await okPuis();
-  toast(_bil.statut==="reportee"?"Réunion reportée":"Bilan enregistré");
+  toast(_bil.statut==="reportee"?"Réunion reportée":_bil.statut==="archivee"?"Réunion archivée sans bilan":"Bilan enregistré");
   _bilSerie.faits++;
   const next=reunionsSansBilan().find(x=>!_bilSerie.passes.has(x.id));
   render();

@@ -17,3 +17,24 @@
     return `+${d.slice(0,3)} ${grp(d.slice(3),[2,2,2,2,2])}`.trim()}
   window.telAff=telAff;window.telE164=telE164;
 })();
+
+/* v1.69 : aller chercher une personne dans le carnet d'adresses du téléphone.
+   Android (Chrome) : le sélecteur de contacts du téléphone s'ouvre. iPhone : Safari ne donne pas accès au carnet ;
+   on importe alors une fiche contact (.vcf) partagée depuis l'appli Contacts.
+   contactChoisir(cb) appelle cb({nom, tel, email, entreprise, fonction}) ; rien si la personne annule. */
+(function(){
+  const direct=()=>{try{return "contacts" in navigator&&"select" in navigator.contacts}catch(e){return false}};
+  function vcf(t){const o={nom:"",tel:"",email:"",entreprise:"",fonction:""};
+    String(t||"").replace(/\r\n[ \t]/g,"").split(/\r?\n/).forEach(l=>{const i=l.indexOf(":");if(i<0)return;const k=l.slice(0,i).toUpperCase().split(";")[0].replace(/^ITEM\d+\./,""),v=l.slice(i+1).replace(/\\,/g,",").replace(/\\n/gi," ").trim();if(!v)return;
+      if(k==="FN")o.nom=v;else if(k==="N"&&!o.nom){const p=v.split(";");o.nom=[p[1],p[0]].filter(Boolean).join(" ").trim()}
+      else if(k==="TEL"&&!o.tel)o.tel=v;else if(k==="EMAIL"&&!o.email)o.email=v;else if(k==="ORG"&&!o.entreprise)o.entreprise=v.split(";")[0];else if(k==="TITLE"&&!o.fonction)o.fonction=v});
+    return o}
+  async function contactChoisir(cb){
+    if(direct()){try{const r=await navigator.contacts.select(["name","tel","email"],{multiple:false});const c=r&&r[0];if(c)cb({nom:(c.name&&c.name[0])||"",tel:(c.tel&&c.tel[0])||"",email:(c.email&&c.email[0])||"",entreprise:"",fonction:""})}catch(e){}return}
+    const i=document.createElement("input");i.type="file";i.accept=".vcf,text/vcard,text/x-vcard,text/directory";i.style.display="none";
+    i.onchange=async()=>{const f=i.files&&i.files[0];i.remove();if(!f)return;try{const o=vcf(await f.text());if(o.nom||o.tel)cb(o);else cb(null)}catch(e){cb(null)}};
+    document.body.appendChild(i);i.click()}
+  window.contactChoisir=contactChoisir;window.contactDirect=direct;window.contactVcf=vcf;
+  window.contactLib=()=>direct()?"Choisir dans mes contacts":"Importer une fiche contact";
+  window.contactAide=()=>direct()?"":"Sur iPhone : ouvre Contacts, « Partager le contact », « Enregistrer dans Fichiers », puis choisis la fiche ici.";
+})();

@@ -665,6 +665,7 @@ async function repondre(rep){
   const avant=p.ma_reponse;if(avant===rep)return;
   if(DEMO){if(avant==="oui")p.viennent--;if(avant==="non")p.absents--;if(rep==="oui")p.viennent++;else p.absents++;p.ma_reponse=rep}
   else{const {data,error}=await sb.rpc("cap_membre_repondre",{p_reunion:p.id,p_reponse:rep});if(error){toast("Réponse non enregistrée : "+error.message);return}Object.assign(p,data)}
+  if(rep==="oui"&&p.deja_lien){toast("C'est noté. Tu étais déjà inscrit par le lien d'invitation : pas besoin de le refaire.");rendu(true);return}
   toast(rep==="oui"?"À "+(dateReu(p.date,"").split(" ")[0])+" !":"Ton absence est notée");rendu(true);
 }
 /* ---------- Réunions du réseau (v1.68.0) : un membre s'inscrit à la réunion de n'importe quel groupe ; inscrit, il voit
@@ -703,10 +704,10 @@ async function repondreReseau(id,rep){
   const r=(S.reseauReu||[]).find(x=>x.id===id);if(!r||r.ma_reponse===rep)return;
   if(VOIR){toast("Aperçu : rien n'est enregistré","info");return}
   if(DEMO){if(r.ma_reponse==="oui")r.viennent--;if(rep==="oui")r.viennent++;r.ma_reponse=rep}
-  else{const {data,error}=await sb.rpc("cap_membre_repondre",{p_reunion:id,p_reponse:rep});if(error){toast("Réponse non enregistrée : "+error.message,"ko");return}r.ma_reponse=data.ma_reponse;r.viennent=data.viennent}
+  else{const {data,error}=await sb.rpc("cap_membre_repondre",{p_reunion:id,p_reponse:rep});if(error){toast("Réponse non enregistrée : "+error.message,"ko");return}r.ma_reponse=data.ma_reponse;r.viennent=data.viennent;r.deja_lien=data.deja_lien}
   const p=S.gv&&S.gv.prochaine;if(p&&p.id===id){p.ma_reponse=r.ma_reponse;p.viennent=r.viennent}
   if(S.reuPrev&&S.reuPrev.id===id)S.reuPrev=null;
-  toast(rep==="oui"?"Inscription notée : l'animateur du groupe est prévenu":"Ton absence est notée");rendu(true);
+  toast(rep==="oui"?(r.deja_lien?"C'est noté. Tu étais déjà inscrit par le lien d'invitation.":"Inscription notée : l'animateur la voit dans sa réunion"):"Ton absence est notée");rendu(true);
 }
 async function chargerPrevus(id){
   const r=(S.reseauReu||[]).find(x=>x.id===id);
@@ -1161,6 +1162,7 @@ function vueInviter(){
     ${r?`<div class="card" style="display:flex;flex-direction:column;gap:4px;background:var(--crimson);color:#fff;border-color:transparent"><span class="label" style="color:rgba(255,255,255,.85)">Prochaine réunion · ${esc(String(r.club||"").replace(/^CAP\s+/,""))}</span>
       <b class="bri" style="font-size:20px">${esc(dateReu(r.date,r.heure))}</b><span style="color:#F3DDE1;font-size:14px">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span></div>
     <form id="f-inv" class="card" style="display:flex;flex-direction:column;gap:12px">
+      <button type="button" class="btn ghost" data-contact="" style="align-self:flex-start">📇 ${contactLib()}</button>${contactAide()?`<small class="sub" style="margin-top:-6px">${contactAide()}</small>`:""}
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son nom *</span><input class="champ1" id="i-nom" required maxlength="120" placeholder="Prénom Nom" autocomplete="off"></label>
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son entreprise</span><input class="champ1" id="i-ent" maxlength="120"></label>
       <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Son métier</span><input class="champ1" id="i-met" maxlength="120"></label>
@@ -1177,10 +1179,10 @@ function vueInviter(){
 }
 async function proposerInvite(){
   const g=id=>$(id).value.trim(),nom=g("i-nom");if(!nom){toast("Indique au moins son nom");return}
-  const b=$("f-inv").querySelector("button");b.disabled=true;b.textContent="Envoi…";
+  const b=$("f-inv").querySelector("button[type=submit]");b.disabled=true;b.textContent="Envoi…";
   const v={p_nom:nom,p_entreprise:g("i-ent"),p_metier:g("i-met"),p_tel:g("i-tel"),p_note:g("i-note")};
   if(DEMO){S.mesInvites.unshift({id:"i"+Date.now(),nom,entreprise:v.p_entreprise,metier:v.p_metier,statut:"À confirmer",date:S.prochaine.date})}
-  else{const {error}=await sb.rpc("cap_membre_proposer_invite",v);if(error){b.disabled=false;b.textContent="Réessayer";toast("Non envoyé : "+error.message);return}
+  else{const {error}=await sb.rpc("cap_membre_proposer_invite",v);if(error){b.disabled=false;b.textContent="Réessayer";toast(/déjà inscrit/.test(error.message||"")?error.message:"Non envoyé : "+error.message,"ko");return}
     await chargerInviter()}
   toast("Invité proposé : ton animateur est prévenu");rendu();
 }
@@ -1484,6 +1486,7 @@ function brancher(){
   const p=$("f-profil");if(p)p.onsubmit=e=>{e.preventDefault();enregistrerProfil()};
   app.querySelectorAll("[data-notif]").forEach(b=>b.onclick=()=>b.dataset.notif==="on"?notifActiver():notifCouper());
   const fi=$("f-inv");if(fi)fi.onsubmit=e=>{e.preventDefault();proposerInvite()};
+  app.querySelectorAll("[data-contact]").forEach(b=>b.onclick=()=>contactChoisir(c=>{if(!c){toast("Fiche contact illisible","ko");return}const v=(id,x)=>{const e=$(id);if(e&&x)e.value=x};v("i-nom",c.nom);v("i-tel",c.tel);v("i-ent",c.entreprise);v("i-met",c.fonction);toast("Contact repris : vérifie puis envoie")}));
   app.querySelectorAll("[data-tbvue]").forEach(b=>b.onclick=()=>{S.tbVue=b.dataset.tbvue;rendu(true)});
   app.querySelectorAll("[data-tbper]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cap-periode",b.dataset.tbper)}catch(e){}rendu(true)});
   app.querySelectorAll("[data-rtab]").forEach(b=>b.onclick=()=>{S.recoTab=b.dataset.rtab;rendu(true)});

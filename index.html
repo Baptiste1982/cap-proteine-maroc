@@ -2411,7 +2411,7 @@ html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 #pres-print{display:none}
 html.pres-on,html.pres-on body{overflow:hidden}
 .prev-h{margin:16px 0 8px;font:700 13px/1.2 "Bricolage Grotesque",sans-serif;color:var(--ink);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.prev-h small{font:500 11.5px Inter,sans-serif;color:var(--muted)}.prev-q{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.prev-q span{border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;min-width:0}.prev-q b{display:block;font:800 18px/1.15 "Bricolage Grotesque",sans-serif;color:var(--ink);overflow-wrap:anywhere}.prev-q small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
-.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
+.ctc-btn{width:100%;margin:0 0 6px}.ctc-aide{margin:0 0 12px}.pr-phb{display:inline-grid;place-items:center;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px}.pr-phb:hover{border-color:var(--crimson)}.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
 .ar-c{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}.ar-c:hover{border-color:var(--crimson)}.ar-c i,.ar-c img{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:13px;background:var(--crimson);color:#fff}.ar-c span{display:flex;flex-direction:column;min-width:0}.ar-c b{font-size:14px}.ar-c small{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}.ar-ph{width:54px;height:54px;border-radius:50%;object-fit:cover;flex:none}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
@@ -2519,8 +2519,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.68.0";
+const APP_VERSION="1.69.0";
 const CHANGELOG=[
+  {v:"1.69.0",date:"19 novembre 2026",notes:{"Ajouté":["Plus de doublon dans une réunion : une personne inscrite par le lien du national, par « Je viens » ou ajoutée à la main n'apparaît qu'une fois. Le CRM et l'espace membre le disent : « déjà inscrit par le lien », « déjà inscrit depuis le CRM ».","Présentation : sur la fiche d'un membre, le bouton 📷 va chercher sa photo dans le téléphone (elle est rangée sur sa fiche).","Inviter quelqu'un (CRM et espace membre) : bouton pour reprendre une personne du carnet d'adresses du téléphone."]}},
   {v:"1.68.0",date:"19 novembre 2026",notes:{"Ajouté":["Espace membre : « Les réunions du réseau ». Un membre peut s'inscrire à la réunion de n'importe quel groupe, dans toutes les villes. Inscrit, il voit les invités prévus, les membres du groupe et la quinzaine du groupe (jamais de coordonnées d'invités).","Membres : pour un animateur ou un directeur de région, « Tout le réseau » ouvre l'annuaire de tous les groupes, avec la fiche de base de chaque membre (métier, entreprise, contact partagé).","Fiche réunion : les membres d'un autre groupe qui viennent apparaissent avec le nom de leur groupe."],"Modifié":["La quinzaine d'un groupe se compte depuis sa dernière réunion (sinon sur 15 jours).","Présentations : « Futur membre fondateur » tant que le contrat n'est pas signé au national, « Membre fondateur » ensuite."]}},
   {v:"1.67.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit à la réunion d'un autre groupe, tu vois aussi les membres du groupe (métier, entreprise, qui vient) et la quinzaine du groupe : recommandations, affaires signées et chiffre d'affaires des 15 derniers jours."],"Modifié":["Espace membre : les chiffres récents du groupe portent sur la quinzaine (15 jours), plus sur la semaine."]}},
   {v:"1.66.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion d'un autre groupe : dès que tu t'inscris avec « Je viens », tu vois qui est prévu — les invités avec leur métier, leur entreprise et leur statut, et les membres qui ont répondu présent. Avant, la fiche affichait « Invités (0) ».","Les coordonnées des invités (téléphone, e-mail) restent réservées à l'animateur du groupe et à la direction."]}},
@@ -3393,8 +3394,8 @@ function presRendu(){
   const ligne=(k,i)=>{const masq=st.masque.includes(k),vide=presVide(k,m),edit=peut&&(k.startsWith("anim:")||k.startsWith("libre:")),sup=peut&&(k.startsWith("anim:")||k.startsWith("libre:")||k.startsWith("mb:")||PRES_DYN[k]);
     const mini=/^p\d+$/.test(k)?`<img loading="lazy" src="presentations/si/${String(k.slice(1)).padStart(2,"0")}.jpg" alt="">`:presSlide(k,m,st);
     return `<div class="pr-l${masq||vide?" off":""}${presSection(k)?" sec":""}" data-k="${esc(k)}"><button class="pr-mini" onclick="presProjeter('${esc(k)}')" title="Voir cette slide">${mini}</button>
-      <span class="pr-lt"><b>${esc(presTitre(k,m,st))}</b><small>${vide?"rien à afficher : elle sera sautée":masq?"masquée":/^p\d+$/.test(k)?"trame nationale":k==="couv"?"date, ville et groupe de la réunion":k.startsWith("mb:")?"tirée de sa fiche membre":"remplie par le CRM"}</small></span>
-      ${peut?`<span class="pr-la">${edit?`<button onclick="${k.startsWith("anim:")?`presAnimForm('${k.slice(5)}')`:`presLibreForm('${k.slice(6)}')`}" title="Modifier" aria-label="Modifier">✎</button>`:""}<button onclick="presMonter('${esc(k)}',-1)" ${i?"":"disabled"} title="Monter" aria-label="Monter">↑</button><button onclick="presMonter('${esc(k)}',1)" ${i<K.length-1?"":"disabled"} title="Descendre" aria-label="Descendre">↓</button>${sup?`<button onclick="presRetirer('${esc(k)}')" title="Retirer" aria-label="Retirer">✕</button>`:`<button onclick="presMasquer('${esc(k)}')" title="${masq?"Afficher":"Masquer"}" aria-label="${masq?"Afficher":"Masquer"}">${masq?"🚫":"👁"}</button>`}</span>`:""}</div>`};
+      <span class="pr-lt"><b>${esc(presTitre(k,m,st))}</b><small>${vide?"rien à afficher : elle sera sautée":masq?"masquée":/^p\d+$/.test(k)?"trame nationale":k==="couv"?"date, ville et groupe de la réunion":k.startsWith("mb:")?(presMembrePhoto(k.slice(3))?"tirée de sa fiche membre":"touche 📷 pour choisir sa photo"):"remplie par le CRM"}</small></span>
+      ${peut?`<span class="pr-la">${k.startsWith("mb:")&&canEditClubId(m.clubId)?`<label class="pr-phb" title="Choisir sa photo dans le téléphone" aria-label="Choisir sa photo">📷<input type="file" accept="image/*" hidden onchange="presPhoto(this,'${esc(k.slice(3))}')"></label>`:""}${edit?`<button onclick="${k.startsWith("anim:")?`presAnimForm('${k.slice(5)}')`:`presLibreForm('${k.slice(6)}')`}" title="Modifier" aria-label="Modifier">✎</button>`:""}<button onclick="presMonter('${esc(k)}',-1)" ${i?"":"disabled"} title="Monter" aria-label="Monter">↑</button><button onclick="presMonter('${esc(k)}',1)" ${i<K.length-1?"":"disabled"} title="Descendre" aria-label="Descendre">↓</button>${sup?`<button onclick="presRetirer('${esc(k)}')" title="Retirer" aria-label="Retirer">✕</button>`:`<button onclick="presMasquer('${esc(k)}')" title="${masq?"Afficher":"Masquer"}" aria-label="${masq?"Afficher":"Masquer"}">${masq?"🚫":"👁"}</button>`}</span>`:""}</div>`};
   document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),ini:"🎬",title:"Présentation",sub:`${esc(presGroupeNom(m))} · ${esc(typeLib(m))} du ${dateLongue(d)}`})}
     <div class="pr-act"><button class="btn" onclick="presProjeter()">▶ Projeter</button><button class="btn ghost" onclick="presImprimer()">🖨 PDF</button><span class="pr-n">${vis} slide${vis>1?"s":""}</span></div>
     ${peut?`<div class="pr-reg"><div class="gv-seg">${Object.entries(PRES_MODELES).map(([k,l])=>`<button class="${st.modele===k?"on":""}" onclick="presModele('${k}')">${esc(l)}</button>`).join("")}</div>
@@ -3463,6 +3464,18 @@ async function presImprimer(){const K=presVisibles(),m=presReunion(_pres.id),st=
   const fin=()=>{css.textContent="";z.innerHTML="";window.removeEventListener("afterprint",fin)};window.addEventListener("afterprint",fin);
   const t=document.title;document.title="Présentation "+presGroupeNom(m)+" "+m.date;setTimeout(()=>{window.print();document.title=t},150)}
 /* v1.68 : « Futur membre fondateur » tant que le contrat de sa demande d'adhésion n'est pas signé au national. */
+/* v1.69 : la photo d'un membre choisie dans le téléphone, depuis le montage de la présentation (elle va sur sa fiche). */
+function presMembrePhoto(id){const x=((window._DBvrai||DB).membres||[]).find(y=>y.id===id);return x&&x.photo}
+async function presPhoto(input,id){
+  const f=input.files&&input.files[0];input.value="";if(!f)return;
+  try{toast("Envoi de la photo…");const b=await mbfReduire(f,640),chemin=`${id}/photo-${Date.now()}.jpg`;
+    const up=await sb.storage.from("profils").upload(chemin,b,{contentType:"image/jpeg",upsert:true});if(up.error)throw up.error;
+    const url=sb.storage.from("profils").getPublicUrl(chemin).data.publicUrl;
+    const {error}=await sb.from("membres").update({photo_url:url}).eq("id",id);if(error)throw error;
+    [window._DBvrai,DB].forEach(D=>{const x=D&&(D.membres||[]).find(y=>y.id===id);if(x)x.photo=url});
+    toast("Photo enregistrée sur sa fiche","s");presRendu();
+  }catch(e){toast("Photo non enregistrée : "+rlsMsg(e),"e")}
+}
 function presFutur(x){try{const a=((window._DBvrai||DB).adhesions||[]).find(a=>a.membre_id===x.id&&a.statut!=="rejetee");return !!a&&!((a.national||{}).signe_le)}catch(e){return false}}
 /* v1.68 : annuaire du réseau pour un animateur ou un directeur de zone — la fiche de base de tous les membres
    (ce qu'un membre voit dans son espace : métier, entreprise, groupe, contact partagé). Jamais le dossier. */
@@ -5952,8 +5965,10 @@ async function equipeViens(id,oui,btn){const m=DB.reunions.find(x=>x.id===id);if
   const {data,error}=await sb.rpc("cap_equipe_inscrire",{p_reunion:id,p_viens:oui});
   if(error){if(btn)btn.disabled=false;toast(rlsMsg(error),"e");return}
   m.equipe=(m.equipe||[]).filter(g=>g.profilId!==SESSION.id);
+  const deja=oui&&!data.invite_id; // la base a relié ton compte à une inscription déjà présente (lien du national, ajout à la main)
+  if(deja){const t=invTel9(leadMonTel()),k=invCle(SESSION.name);m.guests=(m.guests||[]).filter(g=>!((t&&invTel9(g.tel)===t)||(k.length>=6&&invCle(g.nom)===k)))}
   if(oui)m.equipe.push({_id:data.invite_id,nom:SESSION.name,tel:"",par:"Équipe CAP",statut:"Intéressé",entreprise:"",metier:"",note:"Inscrit lui-même depuis le CRM",profilId:SESSION.id});
-  toast(oui?"Tu es inscrit · "+ldReuLib(m):"Inscription retirée","s");meetingDetail(m,canEditReunion(m));render()}
+  toast(deja?"Tu étais déjà inscrit par le lien : ton inscription est reliée à ton compte, sans doublon.":oui?"Tu es inscrit · "+ldReuLib(m):"Inscription retirée","s");meetingDetail(m,canEditReunion(m));render()}
 function natInvBloc(m){
   const su=SESSION&&(SESSION.role==="superadmin"||(!readOnly()&&canEditReunion(m))),n=m.nat,avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";
   if(!n){if(!su||!avenir)return"";
@@ -6099,6 +6114,7 @@ async function setReunionStatut(id,s){
 function addGuest(mid){
   document.getElementById("sheet-content").innerHTML=`
     <h3>Nouvel invité</h3><div class="sheet-sub">Ajoute un visiteur à cette réunion.</div>
+    <button type="button" class="btn ghost ctc-btn" onclick="guestContact()">📇 ${contactLib()}</button>${contactAide()?`<p class="fh-note ctc-aide">${contactAide()}</p>`:""}
     <div class="field"><label>Nom complet</label><input id="g-nom" placeholder="Prénom Nom"></div>
     <div class="field"><label>Téléphone</label><input id="g-tel" type="tel" placeholder="06 …"></div>
     <div class="field"><label>Invité par</label><input id="g-par" placeholder="Membre référent"></div>
@@ -6106,11 +6122,18 @@ function addGuest(mid){
     <div class="sheet-actions"><button class="btn ghost" onclick="openMeeting('${mid}')">Retour</button><button class="btn" onclick="saveGuest('${mid}')">Ajouter</button></div>`;
   pillify(document.getElementById("sheet-content"));
 }
+function guestContact(){contactChoisir(c=>{if(!c){toast("Fiche contact illisible","e");return}const n=document.getElementById("g-nom"),t=document.getElementById("g-tel");if(n&&c.nom)n.value=c.nom;if(t&&c.tel)t.value=c.tel;toast("Contact repris : vérifie puis ajoute","s")})}
+/* v1.69 : la même personne déjà dans la réunion (même mobile sur 9 chiffres, ou même nom sans accents ni espaces). */
+function invCle(n){return mbNorm(n).replace(/[^a-z]/g,"")}
+function invTel9(t){const d=String(t||"").replace(/\D/g,"");return d.length>=9?d.slice(-9):""}
+function invMeme(m,nom,tel){const k=invCle(nom),t=invTel9(tel);return [...(m.guests||[]),...(m.equipe||[])].find(g=>(t&&invTel9(g.tel)===t)||(k.length>=6&&invCle(g.nom)===k))}
+function invSource(g){return g.nationalId||/lien du national/i.test(g.par||"")?"par le lien du national":g.profilId?"depuis le CRM (« Je viens »)":g.parMembre?"par un membre, depuis l'espace membre":"dans le CRM"}
 async function saveGuest(mid){
   const nom=document.getElementById("g-nom").value.trim();if(!nom){toast("Nom requis");return}
+  {const m0=DB.reunions.find(x=>x.id===mid),d=m0&&invMeme(m0,nom,document.getElementById("g-tel").value);if(d){toast(d.nom+" est déjà inscrit à cette réunion "+invSource(d)+".","e");return}}
   const row={reunion_id:mid,nom,tel:document.getElementById("g-tel").value.trim(),invite_par:document.getElementById("g-par").value.trim(),statut:document.getElementById("g-statut").value};
   const {data,error}=await sb.from("invites").insert(row).select().single();
-  if(error){toast(rlsMsg(error));return}
+  if(error){toast(/déjà inscrit/.test(error.message||"")?error.message:rlsMsg(error),"e");return}
   const m=DB.reunions.find(x=>x.id===mid);m.guests=m.guests||[];m.guests.push(mapGuest(data));
   await okPuis();toast("Invité ajouté");meetingDetail(m,true);
 }

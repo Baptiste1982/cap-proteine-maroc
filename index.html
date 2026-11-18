@@ -2234,6 +2234,12 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .lot-r select{grid-column:1/-1;grid-row:2}
 .mb-doc-v{font-weight:700}.mb-doc-v.oui{color:#2E8B57}.mb-doc-v.att{color:var(--gold)}.mb-doc-v.non{color:var(--muted);font-weight:500}.mb-doc-n{margin:0 0 8px}
 .ck-decl{margin:8px 0 0;padding:7px 10px;border-radius:10px;border:1px dashed var(--line);font-size:12.5px;color:var(--muted);line-height:1.4}.ck-decl b{color:var(--ink);font-size:14px}
+.lien-b{background:none;border:0;padding:8px 0 0;color:var(--crimson-txt,var(--crimson));font:600 13px Inter,sans-serif;cursor:pointer;text-align:left}
+.reg-l{display:grid;gap:8px;margin:12px 0}.reg-c{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font:inherit}
+.reg-c:hover{border-color:var(--crimson)}.reg-n b{display:block;font-size:15.5px}.reg-n small{color:var(--muted);font-size:12.5px}.reg-v{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.reg-c .rl-chev{grid-row:1;grid-column:2}
+.reg-v i,.rg-c{font-style:normal;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600}.reg-v i::before,.rg-c::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vc,#8C8085)}.reg-v i.vide::before{display:none}.reg-v i.vide{color:var(--muted);font-weight:500}
+.rg-v{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;min-height:30px;align-items:center}.rg-c{font-size:13.5px;padding:6px 6px 6px 12px}.rg-c small{color:var(--muted);font-weight:500;padding-right:6px}.rg-c button{width:26px;height:26px;border-radius:50%;border:0;background:var(--line);color:var(--ink);cursor:pointer;font-size:12px}
+.rg-aj{display:flex;gap:8px}.rg-aj input{flex:1;min-width:0}.acc-dr .c-fixe span{display:grid}.acc-dr .c-fixe small{color:var(--muted);font-size:12px}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2528,8 +2534,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.80.0";
+const APP_VERSION="1.81.0";
 const CHANGELOG=[
+  {v:"1.81.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau → « Régions et villes » : créer une région, lui ajouter des villes, la renommer. Une ville ajoutée est aussitôt proposée pour un nouveau groupe, un lieu ou un animateur.","Réseau → « Nouveau groupe ». Créer une région ou un groupe est réservé au super admin, à la direction nationale et aux comptes à qui ce droit est donné.","Équipe → fiche d'accès : « Droits en plus » à cocher pour un compte (créer des régions et des groupes, gérer les documents, voir le monitoring national)."],"Modifié":["Un directeur de région modifie toujours ses groupes, mais ne crée plus de groupe lui-même."]}},
   {v:"1.80.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau national mis à jour d'après le tableau du bureau national : 16 groupes, nouvelle région Tanger, six nouveaux animateurs.","« Pairs déclarés par le national » : l'effectif d'un groupe dont les fiches ne sont pas saisies ici s'affiche sur sa carte, sa fiche et dans la constellation. La direction nationale le modifie dans la fiche du groupe."]}},
   {v:"1.79.1",date:"18 novembre 2026",notes:{"Corrigé":["Kit de l'invité : le logo Protéine en tête de page est net (il était pixelisé)."]}},
   {v:"1.79.0",date:"18 novembre 2026",notes:{"Ajouté":["Chaque membre a sa carte de visite et son QR code dès que sa fiche est créée, sans rien faire. Dans la fiche du membre : le QR, « Envoyer par WhatsApp », « Copier le lien », « Voir »."]}},
@@ -3176,7 +3183,7 @@ async function loadDB(){
   DB.aEmbarquer=0; // v0.33.0 : comptes d'équipe à embarquer (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
-  if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[]}catch(e){console.warn(e)}
+  if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.psa=[];try{const ps=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!ps.error)DB.psa=ps.data||[]}catch(e){} // v1.25 PSA
   DB.leads=[];DB.reglages={}; // v1.18.0 : leads nationaux + réglages partagés (jamais bloquant)
@@ -3224,7 +3231,8 @@ function canEditReunion(m){
   if(SESSION.role==="directeur")return zone(SESSION.zoneId).villes.includes(club(m.clubId).ville);
   return SESSION.clubIds.includes(m.clubId);
 }
-function canManageStructure(){return isNationalEditor()||SESSION.role==="directeur"} // groupes & animateurs
+function canManageStructure(){return isNationalEditor()||SESSION.role==="directeur"||!!SESSION.gereReseau} // modifier groupes & animateurs
+function canCreerStructure(){return !!SESSION&&!SESSION._voir&&(isNationalEditor()||!!SESSION.gereReseau)} // v1.81 : créer une région, une ville, un groupe = direction nationale, super admin, ou le droit donné au compte
 function canDeleteLieu(){return isNationalEditor()||SESSION.role==="directeur"}
 
 /* ============================================================
@@ -3257,7 +3265,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring,gereReseau:!!prof.gere_reseau};
   if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
     if(prof.role!=="superadmin"){voirOublier()}
     else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
@@ -3928,7 +3936,7 @@ const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux"
 function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   espCaler();
-  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="monitoring"||tab==="espace"||tab==="membres"||tab==="demandes"||((tab==="team"||tab==="clubs")&&!canManageStructure()));
+  document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="monitoring"||tab==="espace"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure())||(tab==="clubs"&&!canCreerStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
   const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
@@ -4639,7 +4647,7 @@ function fabAction(){
   if(readOnly()||tab==="dash"||tab==="membres")return;
   if(tab==="agenda"||tab==="reunions")openMeeting();
   else if(tab==="lieux")openLieu();
-  else if(tab==="clubs"&&canManageStructure())clubForm(null);
+  else if(tab==="clubs"&&canCreerStructure())clubForm(null);
   else if(tab==="team"&&canManageStructure())openAnim();
   else openMeeting();
 }
@@ -4815,7 +4823,11 @@ function zoneNomForVille(ville){
   return z?z.nom:"Autres régions";
 }
 const VILLE_COLORS={"Rabat":"#D81B3F","Salé":"#B8862A","Kenitra":"#2E7D5B","Casablanca":"#3A5DA8","Dar Bouazza":"#5AA0C8","Bouskoura":"#7A4DA8","Marrakech":"#C8A24C","Tanger":"#1FA0A0"};
-function villeColor(v){return VILLE_COLORS[v]||"#8C8085"}
+const VILLE_PALETTE=["#1FA0A0","#C2501C","#6B3FA0","#2B8A6E","#B8862A","#3A5DA8","#A8456B","#5A7A2E"];
+function villeColor(v){if(VILLE_COLORS[v])return VILLE_COLORS[v];let h=0;for(const ch of String(v||""))h=(h*31+ch.charCodeAt(0))>>>0;return v?VILLE_PALETTE[h%VILLE_PALETTE.length]:"#8C8085"}
+/* v1.81 : les villes ne sont plus une liste figée — celles des régions (dans l'ordre), puis celles des groupes et des animateurs. */
+function villesListe(){const D=window._DBvrai||DB||{},s=[];const aj=v=>{v=String(v||"").trim();if(v&&!s.includes(v))s.push(v)};
+  (D.zones||[]).forEach(z=>(z.villes||[]).forEach(aj));(D.clubs||[]).forEach(c=>aj(c.ville));(D.animateurs||[]).forEach(a=>aj(a.ville));if(!s.length)VILLES.forEach(aj);return s}
 function clubHealth(c){
   const membres=DB.membres.filter(m=>m.clubId===c.id);
   const upcoming=DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee");
@@ -5483,7 +5495,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="res")return[canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -6316,8 +6328,8 @@ function lieuDetail(l){
   openSheet();
 }
 function lieuForm(id){
-  _photoBuffer=null;const editing=!!id;const l=editing?lieu(id):{nom:"",ville:VILLES[0],adresse:"",lat:"",lng:"",capacite:"",contactNom:"",contactTel:"",notes:"",photo:""};
-  const villeOpt=VILLES.map(v=>`<option ${l.ville===v?"selected":""}>${v}</option>`).join("");
+  _photoBuffer=null;const editing=!!id;const l=editing?lieu(id):{nom:"",ville:villesListe()[0],adresse:"",lat:"",lng:"",capacite:"",contactNom:"",contactTel:"",notes:"",photo:""};
+  const villeOpt=villesListe().map(v=>`<option ${l.ville===v?"selected":""}>${v}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     <h3>${editing?"Modifier le lieu":"Nouveau lieu"}</h3><div class="sheet-sub">Fiche partagée avec toutes les régions.</div>
     <label class="photo-btn" for="l-photo-input"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>${l.photo?"Changer la photo":"Ajouter une photo"}</label>
@@ -6766,13 +6778,13 @@ async function delMembre(clubId,id){
   DB.membres=DB.membres.filter(x=>x.id!==id);openClub(clubId);toast("Membre retiré");
 }
 function clubForm(id){
-  const editing=!!id;const c=editing?club(id):{nom:"",ville:VILLES[0],animId:"",statut:"creation"};
-  const villeOpt=VILLES.map(v=>`<option ${c.ville===v?"selected":""}>${v}</option>`).join("");
+  const editing=!!id;const c=editing?club(id):{nom:"",ville:villesListe()[0],animId:"",statut:"creation"};
+  const villeOpt=villesListe().map(v=>`<option ${c.ville===v?"selected":""}>${v}</option>`).join("");
   const animOpt=`<option value="">— aucun —</option>`+DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===c.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     <h3>${editing?"Modifier le club":"Nouveau club"}</h3><div class="sheet-sub">Un groupe d'affaires rattaché à une ville.</div>
     <div class="field"><label>Nom du groupe</label><input id="c-nom" value="${esc(c.nom)}" placeholder="CAP Ville Nom"></div>
-    <div class="field"><label>Ville</label><select data-pills id="c-ville">${villeOpt}</select></div>
+    <div class="field"><label>Ville</label><select data-pills id="c-ville">${villeOpt}</select>${canCreerStructure()?`<button type="button" class="lien-b" onclick="openRegions()">La ville n'est pas dans la liste ? Régions et villes ›</button>`:""}</div>
     <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
     <div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div>
     <div class="field"><label>Statut</label><p class="c-stat"><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
@@ -6789,7 +6801,7 @@ async function saveClub(id){
   if(id){
     const {data,error}=await sb.from("clubs").update(row).eq("id",id).select("statut").single();
     if(error){toast(rlsMsg(error));return}
-    Object.assign(club(id),{nom:row.nom,ville:row.ville,animId:row.animateur_id,statutFixe:row.statut_fixe,objectif:row.objectif??"",statut:(data&&data.statut)||club(id).statut});
+    Object.assign(club(id),{nom:row.nom,ville:row.ville,animId:row.animateur_id,statutFixe:row.statut_fixe,objectif:row.objectif??"",statut:(data&&data.statut)||club(id).statut},"pairs_declares" in row?{pairs:row.pairs_declares,pairsLe:row.pairs_declares_le||""}:{});
   }else{
     const {data,error}=await sb.from("clubs").insert(row).select().single();
     if(error){toast(rlsMsg(error));return}
@@ -6822,7 +6834,7 @@ function animClubs(clubs){
     return `<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${i}"><button class="rl-h" onclick="openClub('${c.id}')"><span class="rl-emb sm">${esc(initiales(c.nom.replace(/^CAP\s+/,"")))}</span><span class="rl-t"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}</small></span><span class="rl-ind">${miniG(n,c.objectif)}${ringSm(h)}</span><span class="rl-chev">›</span></button></div>`}).join("")}</div>`;
 }
 function openAnim(id){
-  const editing=!!id;const a=editing?anim(id):{nom:"",ville:VILLES[0],tel:"",email:""};
+  const editing=!!id;const a=editing?anim(id):{nom:"",ville:villesListe()[0],tel:"",email:""};
   const clubs=editing?DB.clubs.filter(c=>c.animId===id):[];
   if(readOnly()&&editing){
     document.getElementById("sheet-content").innerHTML=`
@@ -6833,7 +6845,7 @@ function openAnim(id){
       <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;
     ficheOpen();return;
   }
-  const villeOpt=VILLES.map(v=>`<option ${a.ville===v?"selected":""}>${v}</option>`).join("");
+  const villeOpt=villesListe().map(v=>`<option ${a.ville===v?"selected":""}>${v}</option>`).join("");
   document.getElementById("sheet-content").innerHTML=`
     ${editing?animHead(a,clubs):`<h3>Nouvel animateur</h3><div class="sheet-sub">Ajoute un animateur à l'équipe.</div>`}
     <div class="field"><label>Nom complet</label><input id="an-nom" value="${esc(a.nom)}" placeholder="Prénom Nom"></div>
@@ -7529,6 +7541,56 @@ const ROLE_DROITS={
   animateur:["gère ses groupes : réunions, bilans, invités et membres","planifie ses réunions et écrit les comptes rendus","envoie le lien d'adhésion à ses futurs membres"],
   visiteur:["consulte le réseau en lecture seule"]};
 const _acc={res:{},conf:{}};
+/* v1.81 : droits en plus du rôle, donnés compte par compte par le super admin (RPC cap_droit_compte). */
+const DROITS_PLUS=[["gere_reseau","Créer des régions, des villes et des groupes","Comme la direction nationale, pour la structure du réseau"],["gere_documents","Gérer les documents du réseau","Déposer, classer, partager, retirer"],["voit_monitoring","Voir le monitoring national","Les chiffres de tout le réseau"]];
+function accDroitsBloc(u,animId){if(!u||!DB.droits||u.role==="superadmin")return"";const d=DB.droits.find(x=>x.id===u.id)||{};const nat=u.role==="directeur_national";
+  return `<div class="acc-role acc-dr"><b>Droits en plus</b>${DROITS_PLUS.map(([k,l,s])=>`<label class="c-fixe"><input type="checkbox" ${d[k]||nat?"checked":""} ${nat?"disabled":""} onchange="accDroit('${u.id}','${k}',this,'${animId}')"><span>${esc(l)}<small>${nat?"Compris dans son rôle":esc(s)}</small></span></label>`).join("")}</div>`}
+async function accDroit(pid,k,box,animId){const oui=box.checked;const {error}=await sb.rpc("cap_droit_compte",{p_profil:pid,p_droit:k,p_oui:oui});
+  if(error){box.checked=!oui;toast(rlsMsg(error));return}const d=DB.droits.find(x=>x.id===pid);if(d)d[k]=oui;toast(oui?"Droit donné. Il s'applique à sa prochaine ouverture du CRM.":"Droit retiré")}
+/* v1.81 : régions et villes, gérées depuis le CRM (direction nationale, super admin, ou le droit « gere_reseau »).
+   Une région = une ligne de `zones` (nom + villes). Une ville n'appartient qu'à une région. On lit et on écrit le vrai DB, pas la vue. */
+function regZones(){return (window._DBvrai||DB).zones}
+function regGroupes(v){return (window._DBvrai||DB).clubs.filter(c=>c.ville===v)}
+function openRegions(){if(!canCreerStructure())return;const Z=regZones(),D=window._DBvrai||DB;
+  const hors=[...new Set(D.clubs.map(c=>c.ville))].filter(v=>!Z.some(z=>z.villes.includes(v)));
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Régions et villes</h3><div class="sheet-sub">Une région regroupe des villes ; un groupe se crée dans une ville. Tout ce qui est ajouté ici apparaît dans le menu des espaces, la constellation et les statistiques.</div>
+    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
+    ${hors.length?`<div class="nat-err">Ville${hors.length>1?"s":""} sans région : ${hors.map(esc).join(", ")}. Ouvre une région pour l'y ajouter, ou crée la sienne.</div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button><button class="btn ghost" onclick="clubForm(null)">＋ Nouveau groupe</button><button class="btn" onclick="regionForm('')">＋ Nouvelle région</button></div>`;
+  openSheet()}
+let _reg=null;
+function regionForm(id){if(!canCreerStructure())return;const z=id?regZones().find(x=>x.id===id):null;_reg={id:id||"",villes:z?[...z.villes]:[]};
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>${z?"Modifier la région":"Nouvelle région"}</h3><div class="sheet-sub">${z?"Renomme-la, ajoute ou retire une ville.":"Donne-lui un nom et au moins une ville. Tu pourras ensuite y créer des groupes."}</div>
+    <div class="field"><label for="rg-nom">Nom de la région</label><input id="rg-nom" value="${esc(z?z.nom:"")}" placeholder="ex. Fès · Meknès"></div>
+    <div class="field"><label for="rg-ville">Villes de la région</label><div class="rg-v" id="rg-v"></div>
+      <div class="rg-aj"><input id="rg-ville" placeholder="Nom d'une ville" onkeydown="if(event.key==='Enter'){event.preventDefault();regVilleAjouter()}"><button type="button" class="btn ghost" onclick="regVilleAjouter()">Ajouter</button></div></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openRegions()">Retour</button><button class="btn" onclick="regionSauver(this)">${z?"Enregistrer":"Créer la région"}</button></div>
+    ${z?`<div class="del-link" onclick="regionSuppr()">Supprimer cette région</div>`:""}`;
+  regVillesRendu();openSheet()}
+function regVillesRendu(){const el=document.getElementById("rg-v");if(!el)return;
+  el.innerHTML=_reg.villes.map((v,i)=>{const n=regGroupes(v).length;return `<span class="rg-c" style="--vc:${villeColor(v)}">${esc(v)}${n?`<small>${n} groupe${n>1?"s":""}</small>`:`<button type="button" onclick="regVilleRetirer(${i})" aria-label="Retirer ${esc(v)}">✕</button>`}</span>`}).join("")||`<span class="mut">Aucune ville pour l'instant.</span>`}
+function regVilleAjouter(){const inp=document.getElementById("rg-ville");let v=inp.value.trim().replace(/\s+/g," ");if(!v)return;v=v.charAt(0).toUpperCase()+v.slice(1);
+  const cle=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  const connue=villesListe().find(x=>cle(x)===cle(v));if(connue)v=connue; // même ville, même écriture
+  if(_reg.villes.some(x=>cle(x)===cle(v))){toast("Cette ville est déjà dans la région");return}
+  const autre=regZones().find(z=>z.id!==_reg.id&&z.villes.some(x=>cle(x)===cle(v)));if(autre){toast(v+" est déjà dans la région « "+autre.nom+" »","warn");return}
+  _reg.villes.push(v);inp.value="";regVillesRendu();inp.focus()}
+function regVilleRetirer(i){_reg.villes.splice(i,1);regVillesRendu()}
+async function regionSauver(btn){const nom=document.getElementById("rg-nom").value.trim();if(document.getElementById("rg-ville").value.trim())regVilleAjouter();
+  if(!nom){toast("Donne un nom à la région");return}if(!_reg.villes.length){toast("Ajoute au moins une ville");return}
+  if(regZones().some(z=>z.id!==_reg.id&&z.nom.toLowerCase()===nom.toLowerCase())){toast("Une région porte déjà ce nom");return}
+  btn.disabled=true;const row={nom,villes:_reg.villes};let r;
+  if(_reg.id)r=await sb.from("zones").update(row).eq("id",_reg.id).select().single();else r=await sb.from("zones").insert(row).select().single();
+  btn.disabled=false;if(r.error){toast(rlsMsg(r.error));return}
+  const Z=regZones(),z=mapZone(r.data),i=Z.findIndex(x=>x.id===z.id);if(i>=0)Z[i]=z;else Z.push(z);
+  toast(_reg.id?"Région enregistrée":"Région créée : tu peux y créer un groupe");render();openRegions()}
+async function regionSuppr(){const z=regZones().find(x=>x.id===_reg.id);if(!z)return;const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);
+  if(n){toast("Cette région a "+n+" groupe"+(n>1?"s":"")+" : elle ne peut pas être supprimée","warn");return}
+  if(!_reg.conf){_reg.conf=1;toast("Touche encore « Supprimer » pour confirmer","warn");return}
+  const {error}=await sb.from("zones").delete().eq("id",z.id);if(error){toast(/foreign|violates/i.test(error.message)?"Des comptes sont rattachés à cette région : change d'abord leur région.":rlsMsg(error));return}
+  const Z=regZones();Z.splice(Z.indexOf(z),1);toast("Région supprimée");render();openRegions()}
 function accVisible(){return !!(SESSION&&SESSION.role==="superadmin"&&DB&&DB.acces)}
 function accDe(animId){return (DB.acces||[]).find(u=>u.animateur_id===animId)||null}
 function accEtat(u){
@@ -7560,6 +7622,7 @@ function accDonner(animId){
       <span class="acc-e ${t}">${esc(txt)}</span>
       <div class="acc-role"><b>Ce que son rôle permet</b><ul>${dr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
       ${accMembreBloc(a)}
+      ${accDroitsBloc(u,animId)}
       <div class="field"><label>Mobile WhatsApp</label><input id="acc-tel" type="tel" inputmode="tel" value="${esc(tel)}" placeholder="06 …" onchange="accTel('${animId}',this.value)"></div>
       ${r?`<div class="emb-ok"><div>Mot de passe provisoire : <b>${esc(r.pwd)}</b></div><small>Il ne sera plus affiché après. Envoie-le maintenant.${a.tel?"":" Sans mobile enregistré, WhatsApp te demandera à qui l'envoyer."}</small>
           <div class="emb-2"><a class="btn" href="https://wa.me/${accTelWa(a.tel)}?text=${encodeURIComponent(accMessage(r.u,a,r.pwd))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost" onclick="accCopier('${animId}')">Copier le message</button></div></div>`
@@ -8863,7 +8926,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

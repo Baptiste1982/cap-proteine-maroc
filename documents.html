@@ -280,13 +280,14 @@ function ouvrir(id){
     <div class="fen-h">${docPastille(d,38)}<span class="t"><b>${esc(d.titre)}</b><small>${esc(DOC_TYPES[k].lib)} · ${esc(docTaille(d.taille))} · ${esc(d.categorie)}</small></span><button class="fen-x" data-fermer aria-label="Fermer">✕</button></div>
     ${d.description?`<p style="margin:0;padding:10px 16px;color:var(--muted);font-size:14px;border-bottom:1px solid var(--line2)">${esc(d.description)}</p>`:""}
     <div class="fen-c">${docApercu(d,false)}</div>
-    <div class="fen-a"><a class="btn" href="${esc(u)}" download="${esc(d.nom_fichier)}">Télécharger</a><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir dans un onglet</a>
+    <div class="fen-a">${k==="lien"?`<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir le lien</a><button class="btn ghost" data-copieru>Copier l'adresse</button>`:`<a class="btn" href="${esc(u)}" download="${esc(d.nom_fichier)}">Télécharger</a><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">Ouvrir dans un onglet</a>`}
       ${d.lien_public?`<button class="btn ghost" data-copier>Copier le lien de partage</button><a class="btn ghost" href="https://wa.me/?text=${encodeURIComponent(d.titre+" : "+docLien(d.id))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>`:""}
       ${S.gere?`<button class="btn ghost" data-acces style="margin-left:auto">👤 Qui y a accès</button><button class="btn ghost" data-modifier>Modifier</button>`:""}</div></div>`;
   document.body.appendChild(v);docRemplirTextes(v);document.body.style.overflow="hidden";
   const fermer=()=>{v.remove();document.body.style.overflow="";document.removeEventListener("keydown",echap)};
   const echap=e=>{if(e.key==="Escape")fermer()};document.addEventListener("keydown",echap);
   v.onclick=e=>{if(e.target===v)fermer()};v.querySelector("[data-fermer]").onclick=fermer;v.querySelector("[data-fermer]").focus();
+  const cu=v.querySelector("[data-copieru]");if(cu)cu.onclick=async()=>{try{await navigator.clipboard.writeText(u);toast("Adresse copiée")}catch(e){prompt("Copie cette adresse :",u)}};
   const cp=v.querySelector("[data-copier]");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(docLien(d.id));toast("Lien copié : colle-le dans un message")}catch(e){prompt("Copie ce lien :",docLien(d.id))}};
   const md=v.querySelector("[data-modifier]");if(md)md.onclick=()=>{fermer();modifier(d.id)};
   const ac=v.querySelector("[data-acces]");if(ac)ac.onclick=()=>{fermer();acces(d.id)};
@@ -380,7 +381,7 @@ function modifier(id,nouveau){
   v.querySelector("[data-suppr]").onclick=()=>{v.querySelector("#d-conf").hidden=false};
   v.querySelector("[data-acces]").onclick=()=>{fermer();acces(d.id)};
   v.querySelector("[data-oui]").onclick=async()=>{
-    await sb.storage.from(DOC_BUCKET).remove([d.chemin]);
+    if(!docEstLien(d))await sb.storage.from(DOC_BUCKET).remove([d.chemin]);
     const {error}=await sb.from("documents_reseau").delete().eq("id",d.id);if(error)return toast("Suppression impossible : "+error.message);
     S.docs=S.docs.filter(x=>x.id!==d.id);fermer();rendu();toast("Document supprimé")};
 }
@@ -394,6 +395,7 @@ const ROLE_LIB={superadmin:"Super admin",directeur_national:"Direction nationale
 function accDetail(p){return p.type==="membre"?"Membre · "+(p.detail||"").replace(/^CAP\s+/,""):(ROLE_LIB[p.detail]||p.detail||"Équipe")}
 function ini(n){return String(n||"?").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase()}
 async function accRenouvelerLien(d){
+  if(docEstLien(d))return true; // un lien extérieur n'a pas de fichier à déplacer
   const nouv=crypto.randomUUID()+"/"+slug(d.nom_fichier);
   const mv=await sb.storage.from(DOC_BUCKET).move(d.chemin,nouv);if(mv.error){toast("Adresse du fichier non changée : "+mv.error.message);return false}
   const {error}=await sb.from("documents_reseau").update({chemin:nouv,maj_le:new Date().toISOString()}).eq("id",d.id);

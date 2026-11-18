@@ -12,9 +12,14 @@ const DOC_TYPES={
   audio:{lib:"Audio",coul:"#5B7FA3",fond:"#E8EEF4"},
   zip:{lib:"Archive",coul:"#6B5420",fond:"#F4ECD8"},
   txt:{lib:"Texte",coul:"#5E5054",fond:"#F1EDEE"},
+  lien:{lib:"Lien",coul:"#2B6CB0",fond:"#E6F0FA"},
   autre:{lib:"Fichier",coul:"#5E5054",fond:"#F1EDEE"}};
+/* v1.78 : une ressource peut être un lien (Canva, YouTube, page du national) : son adresse est dans `chemin`. */
+const docEstLien=d=>/^https?:\/\//i.test(String(d&&d.chemin||""));
+const docYoutube=u=>{const m=String(u||"").match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/);return m?m[1]:""};
 function docType(nom,mime){
   const e=String(nom||"").toLowerCase().split(".").pop(),m=String(mime||"").toLowerCase();
+  if(m==="text/uri-list")return "lien";
   if(e==="pdf"||m.includes("pdf"))return "pdf";
   if(["xls","xlsx","xlsm","ods","csv"].includes(e)||m.includes("spreadsheet")||m.includes("excel"))return e==="csv"?"txt":"xls";
   if(["doc","docx","odt","rtf"].includes(e)||m.includes("word"))return "doc";
@@ -27,19 +32,24 @@ function docType(nom,mime){
   return "autre";
 }
 const docExt=n=>{const p=String(n||"").split(".");return p.length>1?p.pop().toUpperCase().slice(0,4):""};
-function docTaille(o){o=Number(o)||0;if(o<1024)return o+" o";if(o<1048576)return Math.round(o/1024)+" Ko";return (o/1048576).toFixed(o<10485760?1:0).replace(".",",")+" Mo"}
-const docUrl=chemin=>DOC_SB_URL+"/storage/v1/object/public/"+DOC_BUCKET+"/"+String(chemin).split("/").map(encodeURIComponent).join("/");
+function docTaille(o){o=Number(o)||0;if(!o)return "en ligne";if(o<1024)return o+" o";if(o<1048576)return Math.round(o/1024)+" Ko";return (o/1048576).toFixed(o<10485760?1:0).replace(".",",")+" Mo"}
+const docUrl=chemin=>/^https?:\/\//i.test(String(chemin))?String(chemin):DOC_SB_URL+"/storage/v1/object/public/"+DOC_BUCKET+"/"+String(chemin).split("/").map(encodeURIComponent).join("/");
 const DOC_SITE=/^(localhost|127\.|192\.168\.)/.test(location.hostname)?location.origin:"https://cap-proteine-maroc.vercel.app"; // un lien partagé part toujours du site public
 const docLien=id=>DOC_SITE+"/doc.html?d="+id;
 const docEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 /* Pastille de type : le format en lettres sur la couleur du type, comme une étiquette de fichier. */
 function docPastille(d,taille){
-  const k=docType(d.nom_fichier,d.type_mime),t=DOC_TYPES[k],x=docExt(d.nom_fichier)||t.lib.slice(0,3).toUpperCase(),s=taille||44;
+  const k=docType(d.nom_fichier,d.type_mime),t=DOC_TYPES[k],x=k==="lien"?(docYoutube(d.chemin)?"YT":"WEB"):docExt(d.nom_fichier)||t.lib.slice(0,3).toUpperCase(),s=taille||44;
   return `<span class="dp" style="width:${s}px;height:${Math.round(s*1.2)}px;background:${t.fond};color:${t.coul};border-color:${t.coul}33" aria-hidden="true"><svg viewBox="0 0 24 28" width="${Math.round(s*.46)}" height="${Math.round(s*.54)}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 2h11l5 5v19H4z"/><path d="M15 2v5h5"/></svg><b style="font-size:${Math.max(9,Math.round(s*.22))}px">${docEsc(x)}</b></span>`;
 }
 /* L'aperçu d'un fichier selon son type. `petit` = l'aperçu qui apparaît au survol. */
 function docApercu(d,petit){
   const k=docType(d.nom_fichier,d.type_mime),u=docUrl(d.chemin);
+  if(k==="lien"){const y=docYoutube(u);
+    if(y&&!petit)return `<iframe class="ap-f" src="https://www.youtube-nocookie.com/embed/${docEsc(y)}" title="${docEsc(d.titre)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+    if(y)return `<img class="ap-i" src="https://i.ytimg.com/vi/${docEsc(y)}/hqdefault.jpg" alt="${docEsc(d.titre)}" loading="lazy">`;
+    let h="";try{h=new URL(u).hostname.replace(/^www\./,"")}catch(e){}
+    return `<div class="ap-v">${docPastille(d,72)}<span>Ressource en ligne${h?" sur "+docEsc(h):""}.${petit?"":`<br><a href="${docEsc(u)}" target="_blank" rel="noopener" style="color:#D81B3F;font-weight:700">Ouvrir le lien</a>`}</span></div>`}
   if(k==="pdf")return `<iframe class="ap-f" src="${docEsc(u)}#toolbar=${petit?0:1}&navpanes=0&view=FitH" title="Aperçu de ${docEsc(d.titre)}" loading="lazy"></iframe>`;
   if(k==="img")return `<img class="ap-i" src="${docEsc(u)}" alt="${docEsc(d.titre)}" loading="lazy">`;
   if(k==="video")return `<video class="ap-i" src="${docEsc(u)}" ${petit?"muted autoplay loop playsinline":"controls playsinline"} preload="metadata"></video>`;

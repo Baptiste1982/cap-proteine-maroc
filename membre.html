@@ -388,6 +388,16 @@ a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(6
 .ac-inv{background:#fff;color:#1B1416;padding:4px 14px 10px;box-shadow:0 2px 8px rgba(60,0,10,.18)}
 .ac-il{border-bottom-color:#EEE6E8}.ac-reu .ac-il b{color:#1B1416}.ac-il small,.ac-inv .ac-plus{color:#6B5F62}
 .ac-lien{color:#D81B3F}
+/*v1.78 ma carte de visite*/
+.ct-carte{background:var(--card,#fff);border:1px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:14px;justify-items:center;text-align:center}
+.ct-id{display:flex;align-items:center;gap:12px;text-align:left;width:100%}.ct-id b{display:block;font:700 18px/1.2 "Bricolage Grotesque",Inter,sans-serif}.ct-id span{color:var(--muted);font-size:13.5px}
+.ct-qr{width:min(100%,280px);aspect-ratio:1;background:#fff;border-radius:16px;padding:10px;display:grid;place-items:center;color:#8A7D80;font-size:13px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.ct-qr svg{width:100%;height:100%;display:block}.ct-qr.pret{animation:ctQr .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes ctQr{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.ct-qr.pret{animation:none}}
+.ct-aide{margin:0;color:var(--muted);font-size:13.5px;max-width:34ch}
+.ct-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.ct-act .btn{justify-content:center;text-align:center}.ct-act .btn:first-child{grid-column:1/-1}
+.ct-txt{margin:0 0 10px;color:var(--muted);font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -566,7 +576,7 @@ const membre=id=>S.annuaire.find(m=>m.id===id);
    ✕ pour revenir où l'on était. S.pile garde le chemin parcouru depuis l'onglet. */
 const ONGLETS_NAV=["accueil","mongroupe","annuaire","messages","moi"];
 const LIB_PAGE={accueil:"Accueil",mongroupe:"Mon groupe",annuaire:"Réseau",messages:"Messages",moi:"Moi",recos:"Mes recommandations",profil:"Ma fiche et mes réglages",
-  inviter:"Inviter à la réunion",docs:"Documents du réseau",mesdocs:"Mes documents",reunions:"Réunions du réseau",reunion:"Réunion",gpage:"Groupe",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
+  inviter:"Inviter à la réunion",docs:"Documents du réseau",mesdocs:"Mes documents",carte:"Ma carte de visite",reunions:"Réunions du réseau",reunion:"Réunion",gpage:"Groupe",groupe:"Fil du groupe",chiffres:"Mes chiffres",presence:"Présence",reco:"Recommandation"};
 const ETAT_PAGE=["fiche","conv","recoForm","recoTab","recoId","reuId","gpId"];
 S.pile=[];
 const racine=()=>S.eq?"mongroupe":"accueil";
@@ -602,7 +612,7 @@ function rendu(garderDefilement){
   $("nav").hidden=S.onglet==="conv"||S.onglet==="groupe"||!!S.eq;
   const rc=aTraiterRecos().length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
   const v={accueil:vueAccueil,mongroupe:vueMonGroupe,annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,moi:vueMoi,profil:vueProfil,inviter:vueInviter,
-    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,mesdocs:vueMesDocs,reunions:vueReunions,reunion:vueReunion,gpage:vueGroupePage,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
+    recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,mesdocs:vueMesDocs,carte:vueCarte,reunions:vueReunions,reunion:vueReunion,gpage:vueGroupePage,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
   $("app").innerHTML=v();
   const pg=$("app").querySelector(".page");
   if(pg&&S.anim&&!garderDefilement)pg.classList.add(S.anim);
@@ -851,6 +861,7 @@ function vueMoi(){
       ${ligneAct(`data-aller="recos"`,"Mes recommandations",`${nR} reçue${nR>1?"s":""} · ${nD} donnée${nD>1?"s":""}`,{fin:at?`<span class="badge">${at} à traiter</span>`:"",fort:!!at})}
       ${ligneAct(`data-aller="chiffres"`,"Mes chiffres",ch?`${esc(mad(ch.ca_transmis))} apportés · ${esc(mad(ch.ca_recu))} reçus`:"Moi, mon groupe, ma région")}
       ${ligneAct(`data-aller="profil"`,"Ma fiche","Photo, logo, présentation, ce que je cherche",{fin:`<span class="pct${pct<100?" bas":""}">${pct} %</span>`})}
+      ${ligneAct(`data-aller="carte"`,"Ma carte de visite","Un QR code à faire scanner, un lien à envoyer")}
       ${ligneAct(`data-aller="inviter"`,"Inviter quelqu'un","À la prochaine réunion du groupe")}
       ${ligneAct(`data-aller="mesdocs"`,"Mes documents","Facture, reçu, attestations : pour toi et ton comptable",{fin:mesDocsNouveaux()?`<span class="badge">${mesDocsNouveaux()} nouveau${mesDocsNouveaux()>1?"x":""}</span>`:(S.mesDocs&&S.mesDocs.length?`<span class="pct">${S.mesDocs.length}</span>`:""),fort:!!mesDocsNouveaux()})}
       ${ligneAct(`data-aller="docs"`,"Documents du réseau","Kits, formulaires, présentations du bureau national")}
@@ -858,6 +869,42 @@ function vueMoi(){
       ${DANS_CRM?"":ligneAct(`data-installer=""`,"Installer l'appli sur mon téléphone",Installer.deja()?"Déjà installée · revoir les gestes":"Les gestes, pour iPhone et Android")}
     </div>
     ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}
+  </div>`;
+}
+/* ---------- v1.78 : ma carte de visite (QR + lien) ----------
+   Le lien mène à carte.html : ce que je partage déjà avec les autres membres, rien de plus. */
+const CARTE_SITE=/^(localhost|127\.|192\.168\.)/.test(location.hostname)?location.origin:"https://cap-proteine-maroc.vercel.app";
+const carteLien=()=>S.carte&&S.carte.jeton?CARTE_SITE+"/carte.html?c="+S.carte.jeton:"";
+async function chargerCarte(){
+  if(DEMO){S.carte={jeton:"demo"};return}
+  try{const {data,error}=await sb.rpc("cap_membre_carte");S.carte=error||!data?{err:VOIR?"apercu":"indispo"}:{jeton:data}}catch(e){S.carte={err:"indispo"}}
+}
+function qrCharger(){return window.qrcode?Promise.resolve(true):new Promise(r=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";s.onload=()=>r(true);s.onerror=()=>r(false);document.head.appendChild(s)})}
+async function carteQr(){
+  const z=document.getElementById("ct-qr"),u=carteLien();if(!z||!u)return;
+  if(!await qrCharger()||!document.getElementById("ct-qr"))return;
+  try{const q=window.qrcode(0,"M");q.addData(u);q.make();z.innerHTML=q.createSvgTag({cellSize:6,margin:2,scalable:true});z.classList.add("pret")}catch(e){}
+}
+function vueCarte(){
+  if(S.carte===undefined){chargerCarte().then(()=>{if(S.onglet==="carte")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
+  const m=S.moi,f=moiFiche(),u=carteLien();
+  if(!u)return `<div class="page">${ariane()}<p class="vide">${S.carte.err==="apercu"?"En aperçu, la carte n'est pas créée : le membre l'obtient en ouvrant cette page.":"Carte indisponible pour l'instant. Réessaie dans un moment."}</p></div>`;
+  setTimeout(carteQr,0);
+  const txt="Voici ma carte de visite : "+u;
+  return `<div class="page">${ariane()}
+    <div class="ct-carte">
+      <div class="ct-id">${av({id:m.id,nom:m.nom,photo:f.photo},"grand")}<div><b>${esc(m.nom)}</b><span>${esc([m.metier,f.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</span></div></div>
+      <div class="ct-qr" id="ct-qr" role="img" aria-label="QR code de ma carte de visite"><span>QR code…</span></div>
+      <p class="ct-aide">Fais scanner ce code avec l'appareil photo d'un téléphone : ta carte s'ouvre, avec « Ajouter à mes contacts ».</p>
+    </div>
+    <div class="ct-act">
+      ${navigator.share?`<button class="btn" type="button" data-ctpartager>Partager ma carte</button>`:""}
+      <a class="btn${navigator.share?" ghost":""}" href="https://wa.me/?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>
+      <button class="btn ghost" type="button" data-ctcopier>Copier le lien</button>
+      <a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">Voir ma carte</a>
+    </div>
+    ${volet("ct-quoi","Ce que montre ma carte","",`<p class="ct-txt">Ton nom, ta fonction, ton entreprise, ton groupe, ta photo, ton logo, ta présentation, ton site et ton LinkedIn. Ton téléphone et ton e-mail n'y sont que si tu les partages déjà dans l'annuaire. Aucune donnée légale de ton entreprise.</p>
+      <button class="btn ghost" type="button" data-aller="profil">Compléter ma fiche (${fichePct()} %)</button>`)}
   </div>`;
 }
 function vueChiffres(){
@@ -1427,7 +1474,7 @@ function vueDocs(){
   const parCat={};S.docs.forEach(d=>(parCat[d.categorie||"Autres"]=parCat[d.categorie||"Autres"]||[]).push(d));
   return `<div class="page">${ariane()}<div class="head"><div><h1>Documents du réseau</h1><p class="sub">Mis à disposition par le bureau national. Touche un document pour l'ouvrir.</p></div></div>
     ${volet("doc-kit","Kit de départ",KIT_GUIDES.length,`<div class="la-l">${KIT_GUIDES.map(g=>`<a class="la" href="${g.video}" target="_blank" rel="noopener"><span class="la-pt" aria-hidden="true"></span><span class="la-t"><b>${esc(g.titre)}</b><span>${esc(g.sous)}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}${ligneAct(`data-installer=""`,"Le guide animé, pas à pas","Il reconnaît ton téléphone")}</div>`,{ouvert:true})}
-    ${Object.keys(parCat).length?Object.entries(parCat).map(([c,l])=>volet("doc-"+c,esc(c),l.length,`<div class="la-l">${l.map(d=>`<a class="la" href="${esc(d.lien_public?docLien(d.id):docUrl(d.chemin))}" target="_blank" rel="noopener">${docPastille(d,34)}<span class="la-t"><b>${esc(d.titre)}</b><span>${esc(DOC_TYPES[docType(d.nom_fichier,d.type_mime)].lib)} · ${esc(docTaille(d.taille))}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}</div>`,{ouvert:true})).join("")
+    ${Object.keys(parCat).length?Object.entries(parCat).map(([c,l])=>volet("doc-"+c,esc(c),l.length,`<div class="la-l">${l.map(d=>`<a class="la" href="${esc(d.lien_public&&!docEstLien(d)?docLien(d.id):docUrl(d.chemin))}" target="_blank" rel="noopener">${docPastille(d,34)}<span class="la-t"><b>${esc(d.titre)}</b><span>${esc(DOC_TYPES[docType(d.nom_fichier,d.type_mime)].lib)} · ${esc(docTaille(d.taille))}</span></span><span class="la-fl" aria-hidden="true">›</span></a>`).join("")}</div>`,{ouvert:true})).join("")
       :`<p class="vide">Aucun document partagé avec les membres pour l'instant.</p>`}</div>`;
 }
 /* ---------- Mes documents (v1.44.0) : les pièces que l'équipe remet au membre — sa facture une fois le paiement
@@ -1496,6 +1543,8 @@ function brancher(){
   app.querySelectorAll("[data-reco-ouvrir]").forEach(b=>b.onclick=()=>aller("reco",{recoId:b.dataset.recoOuvrir}));
   app.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>repondre(b.dataset.rep));
   app.querySelectorAll("[data-installer]").forEach(b=>b.onclick=()=>Installer.ouvrir());
+  app.querySelectorAll("[data-ctcopier]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(carteLien());toast("Lien de ta carte copié")}catch(e){prompt("Copie ce lien :",carteLien())}});
+  app.querySelectorAll("[data-ctpartager]").forEach(b=>b.onclick=()=>{navigator.share({title:"Ma carte de visite",text:S.moi.nom+" · Club d'Affaires Protéine",url:carteLien()}).catch(()=>{})});
   app.querySelectorAll("[data-rrep]").forEach(b=>b.onclick=()=>{const [i,r]=b.dataset.rrep.split(":");repondreReseau(i,r)});
   app.querySelectorAll("[data-reu]").forEach(b=>b.onclick=()=>aller("reunion",{reuId:b.dataset.reu}));
   app.querySelectorAll("[data-gp]").forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.gp)aller("gpage",{gpId:b.dataset.gp})});

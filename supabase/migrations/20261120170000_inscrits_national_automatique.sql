@@ -1,4 +1,4 @@
--- v1.72.0 — les inscrits du lien national arrivent seuls : passage toutes les 10 minutes (8 h – 22 h, heure du Maroc),
+-- v1.72.0 — les inscrits du lien national arrivent seuls : passage toutes les 10 minutes (7 h – 22 h, heure du Maroc),
 -- seulement quand une réunion à venir a une invitation au national. Le passage horaire complet (annuaire, signatures) reste.
 create or replace function public.cap_national_inscrits_lancer()
  returns bigint language plpgsql security definer set search_path to 'public'
@@ -23,4 +23,4 @@ begin
     timeout_milliseconds := 90000);
 end $function$;
 
-select cron.schedule('national-inscrits', '2-59/10 7-20 * * *', 'select public.cap_national_inscrits_lancer()');
+select cron.schedule('national-inscrits', '2-59/10 6-20 * * *', 'select public.cap_national_inscrits_lancer()');

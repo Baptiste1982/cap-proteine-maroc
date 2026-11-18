@@ -153,7 +153,20 @@ textarea.champ{width:100%;min-height:90px;border-radius:12px;border:1px solid va
 textarea.champ:focus{border-color:var(--crimson)}
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw;animation:rise .25s ease}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}}
-.toast{animation-name:toastIn}@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}}
+.toast{animation-name:toastIn}@keyframes toastIn{from{opacity:0;transform:translate(-50%,14px) scale(.94)}60%{transform:translate(-50%,-3px) scale(1.01)}}
+/*v1.51 confirmation*/
+.toast{display:flex;align-items:center;gap:11px;background:#fff;color:#1B1416;border:1px solid #E6DEE0;border-radius:16px;padding:11px 16px 12px 11px;font-weight:600;line-height:1.3;box-shadow:0 12px 34px rgba(20,10,14,.22);overflow:hidden;width:max-content;animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.9,.3,1.2)}
+html.dark .toast{background:#2C2E33;color:#F1F1F2;border-color:#3A3D44;box-shadow:0 14px 38px rgba(0,0,0,.55)}
+.toast.sort{opacity:0;transform:translate(-50%,10px);transition:opacity .24s,transform .24s}
+.t-ic{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#2E9E68;animation:tPop .5s cubic-bezier(.2,1.4,.4,1) .08s both}
+.t-ok .t-ic{box-shadow:0 0 0 0 rgba(46,158,104,.5);animation:tPop .5s cubic-bezier(.2,1.4,.4,1) .08s both,tOnde .9s ease-out .3s}
+.t-ko .t-ic{background:#C21835}.t-av .t-ic{background:#5B7FA3}.t-info .t-ic{background:#C21835}
+.t-trace{stroke-dasharray:24;stroke-dashoffset:24;animation:tTrace .38s ease-out .32s forwards}
+.t-tx{min-width:0}
+.t-fil{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#2E9E68;transform-origin:left;animation:tFil var(--t,3200ms) linear forwards;opacity:.85}
+.t-ko .t-fil{background:#C21835}.t-av .t-fil{background:#5B7FA3}.t-info .t-fil{background:#C21835}
+@keyframes tPop{from{transform:scale(0)}}@keyframes tTrace{to{stroke-dashoffset:0}}@keyframes tFil{to{transform:scaleX(0)}}@keyframes tOnde{to{box-shadow:0 0 0 12px rgba(46,158,104,0)}}
+@media(prefers-reduced-motion:reduce){.toast,.t-ic{animation:none!important}.t-trace{animation:none;stroke-dashoffset:0}.t-fil{display:none}}
 /* recommandations + présence (v0.26.0) */
 .club-tot{display:flex;flex-direction:column;gap:4px;background:var(--deep);color:var(--tint);border-color:transparent;font-size:14px}
 .club-tot .gros{font-size:30px;color:#fff;font-weight:800}.club-tot small{color:var(--or);font-size:12.5px;font-weight:600}
@@ -324,7 +337,18 @@ const COUL_D=[["#3A141B","#F29AAA"],["#3A3220","#E3C27A"],["#1E2A3A","#9DB7D1"],
 function coul(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;const P=document.documentElement.classList.contains("dark")?COUL_D:COUL;return P[h%P.length]}
 function ini(n){const p=String(n||"").replace(/[^\p{L}\s-]/gu," ").trim().split(/\s+/).filter(Boolean);return ((p[0]||"")[0]||"").toUpperCase()+((p[1]||"")[0]||"").toUpperCase()}
 function av(m,cls=""){if(m.photo)return `<span class="av img ${cls}"><img src="${esc(m.photo)}" alt="" loading="lazy"></span>`;const [f,e]=coul(m.id);return `<span class="av ${cls}" style="background:${f};color:${e}">${esc(ini(m.nom))}</span>`}
-function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+/* v1.51 — confirmation : carte lisible dans tous les thèmes, coche qui se dessine (ou alerte), trait de durée. */
+function toastGenre(t){t=String(t||"");
+  if(/^(non |code non|message non|réponse non|abonnement non|envoi impossible)|impossible|refus|indisponible|erreur|échec/i.test(t))return"ko";
+  if(/^(indique|choisis|le code doit)/i.test(t))return"av";
+  if(/^(nouveau message|nouvelle recommandation|groupe ·|démonstration)/i.test(t))return"info";
+  return"ok"}
+function toast(t,genre){document.querySelectorAll(".toast").forEach(x=>x.remove());
+  const g=genre||toastGenre(t),d=document.createElement("div");d.className="toast t-"+g;d.setAttribute("role",g==="ko"?"alert":"status");
+  const ico=g==="ok"?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="t-trace" d="M5 12.5l4.5 4.5L19 7.5"/></svg>':g==="info"?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 6v7"/><path d="M12 17.5v.5"/></svg>';
+  d.innerHTML='<span class="t-ic">'+ico+'</span><span class="t-tx"></span><i class="t-fil"></i>';d.querySelector(".t-tx").textContent=t;
+  document.body.appendChild(d);const duree=g==="ko"?4600:3200;d.style.setProperty("--t",duree+"ms");
+  setTimeout(()=>{d.classList.add("sort");setTimeout(()=>d.remove(),260)},duree)}
 const ICO={envoi:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
   loupe:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A6A6E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
   retour:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',

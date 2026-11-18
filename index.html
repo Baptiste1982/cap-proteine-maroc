@@ -2534,8 +2534,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.81.0";
+const APP_VERSION="1.82.0";
 const CHANGELOG=[
+  {v:"1.82.0",date:"18 novembre 2026",notes:{"Modifié":["Constellation mise à l'échelle du réseau d'aujourd'hui (16 groupes, 4 régions) : les groupes d'une même ville ne se chevauchent plus, le nom court est écrit sous chaque groupe, et sur un téléphone le réseau se déploie en hauteur.","Constellation : le total se lit en « pairs » (animateurs compris, d'après le bureau national) tant que des effectifs sont déclarés."]}},
   {v:"1.81.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau → « Régions et villes » : créer une région, lui ajouter des villes, la renommer. Une ville ajoutée est aussitôt proposée pour un nouveau groupe, un lieu ou un animateur.","Réseau → « Nouveau groupe ». Créer une région ou un groupe est réservé au super admin, à la direction nationale et aux comptes à qui ce droit est donné.","Équipe → fiche d'accès : « Droits en plus » à cocher pour un compte (créer des régions et des groupes, gérer les documents, voir le monitoring national)."],"Modifié":["Un directeur de région modifie toujours ses groupes, mais ne crée plus de groupe lui-même."]}},
   {v:"1.80.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau national mis à jour d'après le tableau du bureau national : 16 groupes, nouvelle région Tanger, six nouveaux animateurs.","« Pairs déclarés par le national » : l'effectif d'un groupe dont les fiches ne sont pas saisies ici s'affiche sur sa carte, sa fiche et dans la constellation. La direction nationale le modifie dans la fiche du groupe."]}},
   {v:"1.79.1",date:"18 novembre 2026",notes:{"Corrigé":["Kit de l'invité : le logo Protéine en tête de page est net (il était pixelisé)."]}},
@@ -8157,6 +8158,12 @@ function cstRender(){
   cancelAnimationFrame(_cst.raf);
   const regs=cstDonnees(),calme=_calme();
   const W=1000,H=640,cx=W/2,cy=H/2+8,nR=regs.length,TILT=.5;
+  // v1.82 : le réseau a grandi (16 groupes, 4 régions). Astres un peu plus petits, orbite calculée sur la place qu'ils prennent,
+  // nom court sous l'astre (la ville est déjà écrite au-dessus), et disposition en hauteur sur un téléphone tenu droit.
+  const SZ=n=>13+Math.min(n,12)*2,portrait=innerWidth<700&&innerHeight>innerWidth;
+  const mot=regs.some(r=>r.g.some(g=>g.decl))?"pair":"membre",iGros=regs.reduce((b,r,i)=>r.g.length>regs[b].g.length?i:b,0);
+  const court=g=>{const v=String(g.c.ville||""),cle=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();let n=g.nom;
+    for(const p of [v,v.slice(0,4)]){if(p&&cle(n).startsWith(cle(p)+" ")){n=n.slice(p.length+1);break}}return n||g.nom};
   const tot=regs.reduce((a,r)=>a+r.nb,0),nG=regs.reduce((a,r)=>a+r.g.length,0);
   const nBil=regs.reduce((a,r)=>a+r.g.reduce((b,x)=>b+x.bil.length,0),0),nPlan=regs.reduce((a,r)=>a+r.g.filter(x=>x.plan).length,0),nSans=regs.reduce((a,r)=>a+r.g.filter(x=>x.anim).length,0);
   let liens="",orb="",astres="",com="",subs="";const pos=[],orbites=[];
@@ -8167,53 +8174,55 @@ function cstRender(){
     const o={hx,hy,R,items:[],off:0,offT:0};orbites.push(o);
     orb+=`<ellipse class="cst-orb" data-o="${orbites.length-1}" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
     liste.forEach((g,gi)=>{
-      const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=15+Math.min(g.nb,12)*2.6,c=CST_COUL[g.e];
+      const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=SZ(g.nb),c=CST_COUL[g.e],nomC=court(g);
       const i=pos.length;pos.push({...g,ri,sz,oi:orbites.length-1});o.items.push({i,b0,sz,f:0});
-      const lw=Math.max(sz*1.15,g.nom.length*5.2);bord(hx-R-lw,hy-R*TILT-sz*1.15-10,hx+R+lw,hy+R*TILT+sz*1.15+24);
+      const lw=Math.max(sz*1.15,nomC.length*5.2);bord(hx-R-lw,hy-R*TILT-sz*1.15-10,hx+R+lw,hy+R*TILT+sz*1.15+24);
       const alerte=g.e==="sans"||g.e==="bil";
       astres+=`<line class="cst-sl" data-sl="${i}" x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${hx}" y2="${hy}"/>
-      <g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} membre${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--d:${(d0+gi*.06).toFixed(2)}s">
+      <g class="cst-a${alerte?" alerte":""}" data-i="${i}" data-r="${ri}" tabindex="0" role="button" aria-label="${esc(g.nom)} : ${g.nb} ${mot}${g.nb>1?"s":""}, ${esc(CST_LIB[g.e])}" style="--d:${(d0+gi*.06).toFixed(2)}s">
         <g class="cst-pl"><g class="cst-fl" style="--f:-${((gi||0)*1.3%5).toFixed(1)}s"><circle class="cst-halo" r="${(sz+10).toFixed(1)}" fill="${c}"/><circle class="cst-onde" r="${sz.toFixed(1)}" stroke="${c}"/>
         <circle class="cst-corps" r="${sz.toFixed(1)}" fill="${g.e==="sans"?"#2A0C14":c}" stroke="${g.e==="sans"?"#F2E5E8":"rgba(255,255,255,.25)"}"${g.e==="sans"?' stroke-dasharray="3 3"':""}/>
         <circle class="cst-reflet" cx="${(-sz*.35).toFixed(1)}" cy="${(-sz*.38).toFixed(1)}" r="${(sz*.38).toFixed(1)}"/>
         ${g.nb?`<text class="cst-n" y="4.5">${g.nb}</text>`:""}
         ${g.bil.length?`<circle class="cst-pip" cx="${(sz*.72).toFixed(1)}" cy="${(-sz*.72).toFixed(1)}" r="8.5"/><text class="cst-pt" x="${(sz*.72).toFixed(1)}" y="${(-sz*.72+3.6).toFixed(1)}">${g.bil.length}</text>`:""}
-        <text class="cst-gn" y="${(sz+15).toFixed(1)}">${esc(g.nom)}</text></g></g></g>`;
+        <text class="cst-gn" y="${(sz+15).toFixed(1)}">${esc(nomC)}</text></g></g></g>`;
     });
   };
   regs.forEach((r,ri)=>{
-    const a=-Math.PI/2+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:400,ry=nR<=1?0:270;
+    const a=(portrait?Math.PI/2-iGros*2*Math.PI/Math.max(1,nR):-Math.PI/2)+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:portrait?250:400,ry=nR<=1?0:portrait?520:270;
     const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);r.x=x;r.y=y;
     const ux=nR<=1?0:Math.cos(a),uy=nR<=1?-1:Math.sin(a),L=Math.hypot(x-cx,y-cy),d0=.45+ri*.12;
     liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
     if(r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
     const villes=[...new Set(r.g.map(g=>g.c.ville||"—"))];let ext;
     if(villes.length>=1){
-      const RR=villes.length>1?270:170;ext=0;
+      const rayon=gs=>gs.length>1?Math.max(62+gs.length*10,gs.reduce((s,g)=>s+2*SZ(g.nb)+34,0)/Math.PI):14;
+      const Rmax=Math.max(...villes.map(v=>rayon(r.g.filter(g=>(g.c.ville||"—")===v))));
+      const RR=villes.length>1?Math.max(270,(Rmax+66+90)/1.09):Math.max(170,Rmax+78);ext=0;
       villes.forEach((v,vi)=>{
         const gs=r.g.filter(g=>(g.c.ville||"—")===v),b=Math.atan2(uy,ux)+(vi-(villes.length-1)/2)*1.15;
-        const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=false,R=gs.length>1?62+gs.length*10:66,nb=gs.reduce((s,g)=>s+g.nb,0);
-        ext=Math.max(ext,Math.hypot(vx-x,vy-y)+R+30);
-        subs+=`<g class="cst-sub" data-r="${ri}" style="--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,15+Math.min(g.nb,12)*2.6),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
+        const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=gs.length===1,R=rayon(gs),nb=gs.reduce((s,g)=>s+g.nb,0);
+        ext=Math.max(ext,Math.hypot(vx-x,vy-y)+Math.max(R,44)+30);
+        subs+=`<g class="cst-sub" data-r="${ri}" style="--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,SZ(g.nb)),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
         bord(vx-60,vy-R*TILT-60,vx+60,vy+R*TILT+40);
         orbite(vx,vy,R,gs,ri,Math.cos(b),Math.sin(b),d0+.2+vi*.1);
       });
     }else{const R=Math.min(140,(r.g.length>1?64:84)+r.g.length*11);ext=R+20;orbite(x,y,R,r.g,ri,ux,uy,d0)}
     const dT=ext+64,tx=x+ux*dT,ty=y+uy*dT*.85,ta=ux>.35?"start":ux<-.35?"end":"middle";
     const tw=Math.max(r.nom.length*9.5,140),tx0=ta==="start"?tx:ta==="end"?tx-tw:tx-tw/2;bord(tx0,ty-34,tx0+tw,ty+6);
-    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${(ty-15).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} membre${r.nb>1?"s":""}</text></g>`;
+    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${(ty-15).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} ${mot}${r.nb>1?"s":""}</text></g>`;
   });
   _cst.pos=pos;
   const m=44,X0=bx.x0-m,Y0=bx.y0-m,VW=bx.x1-bx.x0+2*m,VH=bx.y1-bx.y0+2*m;
   let et="";for(let i=0;i<110;i++){const x=X0+(i*137.5)%VW,y=Y0+(i*89.3+i*i*.7)%VH;et+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)*.5+.5}" style="animation-delay:${(i%9)*.45}s"/>`}
-  const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle class="cst-cp b" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">membre${tot>1?"s":""}</text></g>`;
+  const coeur=`<g class="cst-c"><circle class="cst-cp" cx="${cx}" cy="${cy}" r="62"/><circle class="cst-cp b" cx="${cx}" cy="${cy}" r="62"/><circle cx="${cx}" cy="${cy}" r="48" fill="url(#cstg)"/><text x="${cx}" y="${cy+1}" class="cst-cn">${tot}</text><text x="${cx}" y="${cy+19}" class="cst-cs">${mot}${tot>1?"s":""}</text></g>`;
   const h=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   o.innerHTML=`<div class="cst-top"><span class="mono"><img src="logo-globe-192.png" alt=""></span><div><small>Club d'Affaires Protéine Maroc</small><b>Le réseau aujourd'hui</b></div><span class="cst-clk" id="cst-clk">${h}</span>
       <button class="cst-btn" onclick="closeConstellation();openPresentation()">▶ Diaporama</button><button class="cst-x" aria-label="Fermer" onclick="closeConstellation()">✕</button></div>
-    <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="${X0.toFixed(0)} ${Y0.toFixed(0)} ${VW.toFixed(0)} ${VH.toFixed(0)}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} membres"><defs><radialGradient id="cstg" cx="38%" cy="32%"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#B5142F"/></radialGradient></defs>
+    <div class="cst-mid"><div class="cst-ciel" id="cst-ciel"><svg viewBox="${X0.toFixed(0)} ${Y0.toFixed(0)} ${VW.toFixed(0)} ${VH.toFixed(0)}" role="img" aria-label="Constellation : ${nR} régions, ${nG} groupes, ${tot} ${mot}s"><defs><radialGradient id="cstg" cx="38%" cy="32%"><stop offset="0" stop-color="#E0425C"/><stop offset="1" stop-color="#B5142F"/></radialGradient></defs>
       <g class="cst-et">${et}</g>${liens}${com}${orb}${subs}${coeur}<g id="cst-astres">${astres}</g></svg><div class="cst-tip" id="cst-tip" hidden></div><div class="cst-fiche" id="cst-fiche" hidden></div></div>
-      <aside class="cst-pan" id="cst-pan">${cstPanneau(null,{tot,nG,nBil,nPlan,nSans,nR})}</aside></div>
-    <div class="cst-leg">${Object.keys(CST_COUL).map(k=>`<span><i style="background:${k==="sans"?"transparent":CST_COUL[k]};${k==="sans"?"border:1.5px dashed #F2E5E8":""}"></i>${CST_LIB[k]}</span>`).join("")}<span><i class="pip"></i>bilans en attente</span></div>`;
+      <aside class="cst-pan" id="cst-pan">${cstPanneau(null,{tot,nG,nBil,nPlan,nSans,nR,mot})}</aside></div>
+    <div class="cst-leg">${Object.keys(CST_COUL).map(k=>`<span><i style="background:${k==="sans"?"transparent":CST_COUL[k]};${k==="sans"?"border:1.5px dashed #F2E5E8":""}"></i>${CST_LIB[k]}</span>`).join("")}<span><i class="pip"></i>nombre de bilans à saisir</span></div>`;
   const svg=o.querySelector("svg"),tip=o.querySelector("#cst-tip"),ciel=o.querySelector("#cst-ciel"),cont=o.querySelector("#cst-astres");
   const els=pos.map((_,i)=>({g:o.querySelector(`.cst-a[data-i="${i}"]`),pl:o.querySelector(`.cst-a[data-i="${i}"] > .cst-pl`),sl:o.querySelector(`[data-sl="${i}"]`)}));
   // Rotation sur plusieurs axes (v0.51.2) : chaque orbite tourne, se penche (inclinaison qui respire) et pivote dans son plan.
@@ -8299,7 +8308,7 @@ function cstFiche(g){
 function cstFicheFermer(){const f=document.getElementById("cst-fiche");if(f){f.hidden=true;f.classList.remove("on")}if(_cst){_cst.sel=null;_cst.pause=false;const o=document.getElementById("cst-o");if(o){o.querySelector("svg")?.classList.remove("focus");o.querySelectorAll(".lit,.hov").forEach(e=>e.classList.remove("lit","hov"))}}}
 function cstPanneau(g,t){
   if(!g)return `<h3>Ce que le réseau demande</h3><p>Passe sur un groupe pour le voir, touche-le pour sa fiche.</p>
-    <div class="cst-k"><b>${t.tot}</b><span>membre${t.tot>1?"s":""} dans ${t.nG} groupes et ${t.nR} régions</span></div>
+    <div class="cst-k"><b>${t.tot}</b><span>${t.mot||"membre"}${t.tot>1?"s":""} dans ${t.nG} groupe${t.nG>1?"s":""} et ${t.nR} région${t.nR>1?"s":""}${t.mot==="pair"?"<small> · animateurs compris, d'après le bureau national</small>":""}</span></div>
     <div class="cst-k w"><b>${t.nBil}</b><span>bilan${t.nBil>1?"s":""} à saisir</span></div>
     <div class="cst-k w"><b>${t.nPlan}</b><span>groupe${t.nPlan>1?"s":""} sans prochaine réunion</span></div>
     <div class="cst-k r"><b>${t.nSans}</b><span>groupe${t.nSans>1?"s":""} sans animateur</span></div>`;

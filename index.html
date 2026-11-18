@@ -2233,6 +2233,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .lot-r select{min-height:42px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:0 8px;font:600 13px Inter,sans-serif;min-width:0;width:100%}.lot-x{width:40px;height:40px;border-radius:50%;color:var(--muted)}.lot-x:hover{background:var(--line)}
 .lot-r select{grid-column:1/-1;grid-row:2}
 .mb-doc-v{font-weight:700}.mb-doc-v.oui{color:#2E8B57}.mb-doc-v.att{color:var(--gold)}.mb-doc-v.non{color:var(--muted);font-weight:500}.mb-doc-n{margin:0 0 8px}
+.ck-decl{margin:8px 0 0;padding:7px 10px;border-radius:10px;border:1px dashed var(--line);font-size:12.5px;color:var(--muted);line-height:1.4}.ck-decl b{color:var(--ink);font-size:14px}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2527,8 +2528,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.79.1";
+const APP_VERSION="1.80.0";
 const CHANGELOG=[
+  {v:"1.80.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau national mis à jour d'après le tableau du bureau national : 16 groupes, nouvelle région Tanger, six nouveaux animateurs.","« Pairs déclarés par le national » : l'effectif d'un groupe dont les fiches ne sont pas saisies ici s'affiche sur sa carte, sa fiche et dans la constellation. La direction nationale le modifie dans la fiche du groupe."]}},
   {v:"1.79.1",date:"18 novembre 2026",notes:{"Corrigé":["Kit de l'invité : le logo Protéine en tête de page est net (il était pixelisé)."]}},
   {v:"1.79.0",date:"18 novembre 2026",notes:{"Ajouté":["Chaque membre a sa carte de visite et son QR code dès que sa fiche est créée, sans rien faire. Dans la fiche du membre : le QR, « Envoyer par WhatsApp », « Copier le lien », « Voir »."]}},
   {v:"1.78.0",date:"18 novembre 2026",notes:{"Ajouté":["Espace membre, Moi → « Ma carte de visite » : un QR code à faire scanner et un lien à envoyer. La carte montre ce que le membre partage déjà dans l'annuaire, avec « Ajouter à mes contacts ».","Kit de l'invité : dans la fiche d'une réunion qui a son invitation nationale, une page à envoyer (le groupe, la date, le lieu avec l'itinéraire, le déroulé, qui accueille) ; son bouton « Je m'inscris » reste compté.","Rappels automatiques aux membres, chaque jour à 17 h : la réunion du lendemain (« tu viens ? »), et une recommandation reçue restée sans suite depuis 7 jours.","Bibliothèque : les ressources du national qui sont des liens (Canva, YouTube, pages) y sont rangées, avec la vidéo lisible sur place."],"Modifié":["Message du code d'accès d'un membre : mot de bienvenue et trois premiers gestes (installer l'appli et activer les notifications, compléter sa fiche, répondre à la prochaine réunion)."]}},
@@ -3132,7 +3134,7 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||"",photo:r.photo||"",profil:r.profil||null}}
-function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
+function mapClub(r){return{pairs:r.pairs_declares??null,pairsLe:r.pairs_declares_le||"",id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
 const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi,type_reco,objet,origine,budget,date_limite,montant_devis,relance_le";
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
@@ -4846,6 +4848,13 @@ function clubBadges(c){
   if(relance)b.push(`<span class="tag" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${relance} à relancer</span>`);
   return b.join("");
 }
+/* v1.80 : « pairs déclarés » = effectif (animateur inclus) donné par le bureau national pour un groupe dont les fiches
+   ne sont pas toutes saisies ici. On l'affiche à part, tant qu'il dépasse le nombre de fiches ; aucune fiche n'est inventée. */
+function clubFiches(c){return (window._DBvrai||DB).membres.filter(m=>m.clubId===c.id).length}
+function clubDecl(c){const f=clubFiches(c);return c&&c.pairs>f?c.pairs:0}
+function clubNb(c){return Math.max(clubFiches(c),c&&c.pairs||0)}
+function clubDeclNote(c){const d=clubDecl(c);if(!d)return"";const f=clubFiches(c);
+  return `<div class="ck-decl" title="Effectif donné par le bureau national${c.pairsLe?" le "+c.pairsLe.split("-").reverse().join("/"):""}, animateur inclus"><b>${d}</b> pair${d>1?"s":""} déclaré${d>1?"s":""} par le national · ${f?f+" fiche"+(f>1?"s":"")+" saisie"+(f>1?"s":""):"aucune fiche saisie"}</div>`}
 function clubTile(c,i){
   const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date));
   const a=anim(c.animId);const nbM=DB.membres.filter(m=>m.clubId===c.id).length;const h=clubHealth(c);const na=clubNextAction(c);
@@ -4867,6 +4876,7 @@ function clubTile(c,i){
       <div class="ck-k ${up.length?"":"none"}"><div class="v">${up.length?esc(prochaine):"—"}</div><div class="l">${up.length?(up.length>1?"prochaine · "+up.length+" prévues":"prochaine réunion"):"aucune réunion"}</div></div>
     </div>
     ${c.objectif?`<div class="ck-prog" title="${nbM}/${c.objectif} membres"><i style="width:${fill}%"></i></div>`:""}
+    ${clubDeclNote(c)}
     <button class="ck-act ${ton}" ${na.act?`onclick="event.stopPropagation();clubCardAction('${c.id}')"`:`onclick="event.stopPropagation()" tabindex="-1"`}><span class="ic">${ico}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
   </div>`;
 }
@@ -6399,6 +6409,7 @@ function openClub(id){
   document.getElementById("sheet-content").innerHTML=`
     ${ficheHead({vc:villeColor(c.ville),ini:initiales(nom),title:nom,sub:`${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span>`,right:ringBig(h)})}
     ${ficheKpis([[`${membres.length}${c.objectif?`<small>/${c.objectif}</small>`:""}`,"membres"],[`${okM}<small>/${membres.length}</small>`,"à jour",okM<membres.length?"warn":""],[esc(pro),up.length>1?`prochaine · ${up.length} prévues`:"prochaine",up.length?"":"warn"]])}
+    ${clubDeclNote(c)}
     ${c.objectif?`<div class="ck-prog" style="--vc:${villeColor(c.ville)};margin:-4px 0 12px" title="${membres.length}/${c.objectif} membres"><i style="width:${Math.min(100,Math.round(membres.length/c.objectif*100))}%"></i></div>`:""}
     <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
     <div class="drow" style="margin-top:12px"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div>${a?`<a href="#" onclick="openAnim('${a.id}');return false">Fiche</a>`:""}</div>
@@ -6766,13 +6777,15 @@ function clubForm(id){
     <div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div>
     <div class="field"><label>Statut</label><p class="c-stat"><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
       <label class="c-fixe"><input type="checkbox" id="c-fixe" ${c.statutFixe?"checked":""}> Groupe déjà actif, dont la vie n'est pas saisie ici : le garder « Actif »</label></div>
+    ${vuePeutBasculer()?`<div class="field"><label for="c-pairs">Pairs déclarés par le national (animateur inclus)</label><input id="c-pairs" type="number" min="0" max="99" inputmode="numeric" value="${c.pairs??""}" placeholder="Vide si les fiches sont saisies ici"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delClub('${id}')">Supprimer ce groupe</div>`:""}`;
   openSheet();
 }
 async function saveClub(id){
   const g=x=>document.getElementById(x).value;const nom=g("c-nom").trim();if(!nom){toast("Nom requis");return}
-  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut_fixe:document.getElementById("c-fixe").checked,objectif:parseInt(g("c-objectif"))||null}; // v1.38 : le statut est calculé par la base
+  const row={nom,ville:g("c-ville"),animateur_id:g("c-anim")||null,statut_fixe:document.getElementById("c-fixe").checked,objectif:parseInt(g("c-objectif"))||null};
+  if(document.getElementById("c-pairs")){const pv=parseInt(g("c-pairs"));const av=(club(id)||{}).pairs??null,nv=isNaN(pv)?null:pv;if(nv!==av){row.pairs_declares=nv;row.pairs_declares_le=nv==null?null:isoJour(TODAY)}} // v1.38 : le statut est calculé par la base
   if(id){
     const {data,error}=await sb.from("clubs").update(row).eq("id",id).select("statut").single();
     if(error){toast(rlsMsg(error));return}
@@ -8062,7 +8075,7 @@ const CST_COUL={sans:"#F2E5E8",bil:"#8FB0D1",neuf:"#6FB0D2",dor:"#9A8A8E",ok:"#5
 const CST_LIB={sans:"Sans animateur",bil:"Bilans en attente",neuf:"A des membres",dor:"Sans membre pour l'instant",ok:"Tout est à jour"};
 function cstEtat(x){return x.anim?"sans":x.bil.length?"bil":x.nb&&!x.plan?"ok":x.nb?"neuf":"dor"}
 function cstDonnees(){
-  const regs=regionsDe(DB.clubs).map(r=>({...r,g:r.clubs.map(c=>{const t=todoClub(c);const nb=DB.membres.filter(m=>m.clubId===c.id).length;return {...t,nb,nom:c.nom.replace(/^CAP\s+/,"")}})}));
+  const regs=regionsDe(DB.clubs).map(r=>({...r,g:r.clubs.map(c=>{const t=todoClub(c);const nb=clubNb(c),decl=!!clubDecl(c);return {...t,nb,decl,nom:c.nom.replace(/^CAP\s+/,"")}})}));
   regs.forEach(r=>{r.g.forEach(x=>x.e=cstEtat(x));r.nb=r.g.reduce((a,x)=>a+x.nb,0)});
   return regs;
 }
@@ -8179,7 +8192,7 @@ function cstRender(){
     // v1.1.1 : la cible est VERROUILLÉE. Quand l'orbite tourne pour amener le groupe devant, un voisin passe sous la souris
     // immobile : il ne doit pas voler la cible (sinon l'orbite repart dans l'autre sens, en boucle). On change de cible
     // seulement sur un vrai mouvement de souris, et on lâche quand la souris sort de la zone de l'orbite.
-    const viser=()=>{clearTimeout(_cst.lache);_cst.lache=null;_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} membre${g.nb>1?"s":""} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false};
+    const viser=()=>{clearTimeout(_cst.lache);_cst.lache=null;_cst.pause=true;_cst.hov=i;focus(g.ri,null);tip.innerHTML=`<b>${esc(g.nom)}</b><span>${g.c.animId?esc(animNom(g.c.animId)):"Animateur à nommer"}</span><span>${g.nb} ${g.decl?"pair"+(g.nb>1?"s":"")+" déclaré"+(g.nb>1?"s":""):"membre"+(g.nb>1?"s":"")} · ${esc(CST_LIB[g.e])}</span>`;tip.hidden=false};
     a.addEventListener("pointerenter",()=>{const h=_cst.hov;if(h==null||pos[h].oi!==g.oi)viser()});
     a.addEventListener("pointermove",e=>{if(_cst.hov!==i&&(e.movementX||e.movementY))viser();if(_cst.hov===i){const r=ciel.getBoundingClientRect();tip.style.left=Math.min(r.width-200,e.clientX-r.left+16)+"px";tip.style.top=(e.clientY-r.top+14)+"px"}});
     a.addEventListener("pointerleave",()=>{if(_cst.hov===i)tip.hidden=true});
@@ -8209,7 +8222,7 @@ function cstFiche(g){
     <div class="cf-h"><svg class="cf-ring" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="${R}" class="cf-rt"/><circle cx="42" cy="42" r="${R}" class="cf-rv" style="stroke-dasharray:${C.toFixed(1)};--off:${(C*(1-pct)).toFixed(1)};--full:${C.toFixed(1)}"/><text x="42" y="47">${g.nb}</text></svg>
       <div><small>${esc(c.ville||"")} · ${esc(CST_LIB[g.e])}</small><h3>${esc(g.nom)}</h3><span>${c.animId?"Animé par "+esc(animNom(c.animId)):"Animateur à nommer"}</span></div></div>
     <div class="cf-k">
-      <div style="--i:0"><b>${g.nb}${c.objectif?"<i>/"+c.objectif+"</i>":""}</b><span>membres</span></div>
+      <div style="--i:0"><b>${g.nb}${c.objectif?"<i>/"+c.objectif+"</i>":""}</b><span>${g.decl?"pairs déclarés":"membres"}</span></div>
       <div style="--i:1"><b>${g.bil.length}</b><span>bilan${g.bil.length>1?"s":""} en attente</span></div>
       <div style="--i:2"><b>${sign.length}</b><span>affaire${sign.length>1?"s":""} signée${sign.length>1?"s":""}${ca?" · "+ca.toLocaleString("fr-FR")+" dh":""}</span></div>
     </div>
@@ -8231,7 +8244,7 @@ function cstPanneau(g,t){
   const act=g.anim?"Nommer un animateur":g.bil.length?"Saisir les bilans":g.plan?"Planifier la prochaine réunion":"Ouvrir le groupe";
   return `<div class="cst-gh"><i style="background:${CST_COUL[g.e]}"></i><h3>${esc(g.nom)}</h3></div><p>${esc(g.c.ville)} · ${esc(CST_LIB[g.e])}</p>
     <div class="cst-r"><span>Animateur</span><b>${g.c.animId?esc(animNom(g.c.animId)):"à nommer"}</b></div>
-    <div class="cst-r"><span>Membres</span><b>${g.nb}${g.c.objectif?" / "+g.c.objectif:""}</b></div>
+    <div class="cst-r"><span>${g.decl?"Pairs déclarés":"Membres"}</span><b>${g.nb}${g.c.objectif?" / "+g.c.objectif:""}</b></div>
     <div class="cst-r"><span>Bilans en attente</span><b>${g.bil.length}</b></div>
     <div class="cst-r"><span>Dernière réunion</span><b>${der?esc(dObj(der.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})):"aucune"}</b></div>
     <div class="cst-r"><span>Prochaine réunion</span><b>${g.plan?"à planifier":"prévue"}</b></div>

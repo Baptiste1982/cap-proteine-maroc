@@ -247,16 +247,33 @@ a.la{text-decoration:none}
 .pct{font-size:13px;font-weight:700;color:#24502A}.pct.bas{color:var(--crimson)}
 .ac-tete{display:flex;align-items:center;gap:14px}.ac-tete h1{font-size:26px;font-weight:800}.ac-tete .sub{margin:2px 0 0}
 .ac-tete .av.grand{width:64px;height:64px;font-size:22px}
-.ac-reu{display:flex;flex-direction:column;gap:5px;background:var(--deep);color:var(--tint);border-color:transparent}.ac-reu b{color:#fff}
-.ac-lieu{font-size:14px}.ac-cpt{font-size:13px;color:var(--or);font-weight:600}
+.ac-reu{display:flex;flex-direction:column;gap:9px;background:linear-gradient(155deg,#6B0C1C,#4A0813 70%);color:#F3DDE1;border-color:transparent}
+.ac-haut{display:flex;align-items:center;justify-content:space-between;gap:8px}.ac-reu .label{color:#C9D6E3;margin:0}.ac-j{font-style:normal;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;white-space:nowrap}
+.ac-date{font-size:22px;line-height:1.15}
+a.ac-lieu,span.ac-lieu{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;background:rgba(255,255,255,.08);color:#F3DDE1;text-decoration:none;min-width:0}
+.ac-ico{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.12);color:#fff}
+.ac-lt{display:flex;flex-direction:column;min-width:0;flex:1}.ac-lt b{font-size:15px}.ac-lt small{font-size:12.5px;color:#E3C6CC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-go{flex:none;font-size:12.5px;font-weight:700;color:#fff}
+.ac-trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ac-t{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;padding:10px 11px;border-radius:13px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#F3DDE1;font:inherit;min-width:0;transition:transform .15s,background .2s}
+.ac-t:active{transform:scale(.96)}.ac-t[aria-expanded=true]{background:rgba(255,255,255,.16)}
+.ac-t b{font:800 21px/1.1 "Bricolage Grotesque",sans-serif;color:#fff;overflow-wrap:anywhere}.ac-t small{font-size:11.5px;line-height:1.25;color:#E3C6CC}
+.ac-inv{display:flex;flex-direction:column;gap:2px;padding:6px 12px 10px;border-radius:13px;background:rgba(0,0,0,.22);animation:acDeplie .28s ease}
+@keyframes acDeplie{from{opacity:0;transform:translateY(-6px)}}
+.ac-il{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}.ac-il b{font-size:14.5px;color:#fff}.ac-il small,.ac-plus{font-size:12.5px;color:#E3C6CC}
+.ac-plus{padding:8px 0}
+.ac-lien{align-self:flex-start;margin-top:6px;padding:8px 0;border:0;background:none;color:#fff;font:inherit;font-size:13.5px;font-weight:700}
+.ac-sem{font-size:13px;line-height:1.4;color:#E3C6CC}.ac-sem b{color:#fff}.ac-reu b{color:#fff}
+.ac-lieu{font-size:14px}.ac-reu b{color:#fff}.ac-cpt{font-size:13px;color:var(--or);font-weight:600}
 .ac-rep{display:flex;gap:8px;margin-top:8px}
 .ac-rep button{flex:1;min-height:48px;border-radius:12px;border:1.5px solid rgba(248,233,236,.35);background:transparent;color:#fff;font-weight:700;font-size:15px;transition:background .2s,border-color .2s,transform .15s}
-.ac-rep button:active{transform:scale(.97)}.ac-rep button.on.oui{background:var(--crimson);border-color:var(--crimson)}.ac-rep button.on.non{background:#fff;border-color:#fff;color:var(--deep)}
-.ac-ok{font-size:13px;color:var(--tint)}
+.ac-rep button:active{transform:scale(.97)}.ac-rep button.on.oui{background:var(--crimson);border-color:var(--crimson)}.ac-rep button.on.non{background:#fff;border-color:#fff;color:#5C0A18}
+.ac-ok{font-size:13px;color:#F3DDE1}
 .ac-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .ac-a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:96px;padding:12px 6px;border-radius:16px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-weight:600;font-size:13px;line-height:1.25;text-align:center;transition:transform .15s}
 .ac-a svg{color:var(--crimson)}.ac-a.fort{background:var(--crimson);border-color:var(--crimson);color:#fff}.ac-a.fort svg{color:#fff}.ac-a:active{transform:scale(.96)}
-.ac-bilan{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;background:var(--ink);color:#fff;border:0;border-radius:18px;padding:16px;font:inherit}
+.ac-bilan{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;background:#1B1416;color:#fff;border:0;border-radius:18px;padding:16px;font:inherit}
+html.dark .ac-bilan{background:linear-gradient(155deg,#2F3238,#26282C);border:1px solid #3A3D44}
 .ac-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ac-duo span{display:flex;flex-direction:column;gap:2px;min-width:0}.ac-duo b{font-size:21px;overflow-wrap:anywhere}.ac-duo small{font-size:12px;color:#D9CFD1}
 .ac-pied{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#D9CFD1}.ac-pied em{font-style:normal;font-weight:700;color:#fff}
 .ac-prog{height:6px;border-radius:3px;background:#EFE6E8;overflow:hidden}.ac-prog i{display:block;height:100%;background:var(--crimson);border-radius:3px}
@@ -528,7 +545,12 @@ function ligneAct(attr,titre,sous,o){o=o||{};
 async function chargerGv(){
   if(DEMO){if(!S.gv){S.gv=demoGv();await chargerRecosClub();S.gv.chiffres=S.recosClub}return}
   const {data,error}=await sb.rpc("cap_groupe_vue",EQ?{p_club:EQ}:{});S.gv=error?{erreur:error.message}:data;
+  S.sem=null;if(!error){try{const r=await sb.rpc("cap_groupe_semaine",EQ?{p_club:EQ}:{});if(!r.error&&r.data)S.sem=r.data}catch(e){}}
 }
+/* v1.52 — les 7 derniers jours du groupe : la fonction de la base, sinon (aperçu, démonstration) les dernières recommandations déjà chargées. */
+function semaineGroupe(){if(S.sem)return S.sem;const g=S.gv,l=(g&&g.recos)||[],lim=Date.now()-7*864e5,sig=l.filter(r=>r.statut==="signee"&&new Date(r.maj_le||r.cree_le).getTime()>=lim);
+  return{recos:l.filter(r=>new Date(r.cree_le).getTime()>=lim).length,affaires:sig.length,ca:sig.reduce((a,r)=>a+Number(r.montant||0),0)}}
+function lieuCarte(p){const a=String(p.adresse||"").trim();if(/^https?:\/\//i.test(a))return a;const q=[p.lieu,a,p.ville].filter(Boolean).join(" ");return q?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q):""}
 const JOURS=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 function rythmeTxt(c){if(!c||!c.rythme_jour)return"";const j=JOURS[c.rythme_jour]||"";
   const r=c.rythme_pas==2?"Un "+j+" sur deux":c.rythme_rang>0?["","1er","2e","3e","4e"][c.rythme_rang]+" "+j+" du mois":c.rythme_rang==-1?"Dernier "+j+" du mois":"Chaque "+j;
@@ -548,12 +570,21 @@ function mesChiffres(){const g=S.gv;return (g&&g.chiffres&&g.chiffres.moi)||(S.r
 function carteReunion(p,avecReponse){
   if(!p)return `<div class="card"><b>Pas de réunion planifiée.</b><p class="sub">Elle apparaîtra ici dès que ton animateur l'aura programmée.</p></div>`;
   const h=p.heure?String(p.heure).slice(0,5):"",rep=p.ma_reponse;
+  const g=S.gv||{},inv=(g.invites||[]),nbInv=inv.length||Number(p.invites||0),adr=String(p.adresse||"").trim(),adrTxt=/^https?:/i.test(adr)?"":adr,carte=lieuCarte(p),w=semaineGroupe();
+  const jours=Math.round((new Date(p.date+"T00:00:00")-new Date(auj()+"T00:00:00"))/864e5),quand=jours===0?"Aujourd'hui":jours===1?"Demain":jours>1?"Dans "+jours+" jours":"";
+  const lieu=`<span class="ac-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="ac-lt"><b>${esc(p.lieu||"Lieu à confirmer")}</b><small>${esc([adrTxt,p.ville].filter(Boolean).join(" · ")||"Adresse à venir")}</small></span>`;
   return `<div class="card ac-reu">
-    <span class="label" style="color:var(--or)">Prochaine réunion · ${esc(typeReu(p))}</span>${p.theme?`<span class="gv-theme">${esc(p.theme)}</span>`:""}
-    <b class="bri" style="font-size:21px">${esc(dateReu(p.date,h))}</b>
-    <span class="ac-lieu">${esc([p.lieu||"Lieu à confirmer",p.ville].filter(Boolean).join(" · "))}</span>
-    <span class="ac-cpt">${p.viennent?`${p.viennent} membre${p.viennent>1?"s":""} vien${p.viennent>1?"nent":"t"}`:"Personne n'a encore confirmé"}${p.absents?` · ${p.absents} excusé${p.absents>1?"s":""}`:""} · ${p.invites||0} invité${p.invites>1?"s":""}</span>
-    ${avecReponse?`<div class="ac-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rep==="oui"?"on oui":""}" data-rep="oui" aria-pressed="${rep==="oui"}">Je viens</button><button type="button" class="${rep==="non"?"on non":""}" data-rep="non" aria-pressed="${rep==="non"}">Je ne viens pas</button></div>
+    <span class="ac-haut"><span class="label">Prochaine réunion · ${esc(typeReu(p))}</span>${quand?`<em class="ac-j">${quand}</em>`:""}</span>${p.theme?`<span class="gv-theme">${esc(p.theme)}</span>`:""}
+    <b class="bri ac-date">${esc(dateReu(p.date,h))}</b>
+    ${carte?`<a class="ac-lieu" href="${esc(carte)}" target="_blank" rel="noopener" aria-label="Ouvrir l'itinéraire vers ${esc(p.lieu||"le lieu")}">${lieu}<span class="ac-go">Itinéraire ›</span></a>`:`<span class="ac-lieu">${lieu}</span>`}
+    <span class="ac-trio">
+      <button type="button" class="ac-t" data-aller="mongroupe"><b>${p.viennent||0}</b><small>membre${p.viennent>1?"s":""} vien${p.viennent>1?"nent":"t"}${p.absents?` · ${p.absents} excusé${p.absents>1?"s":""}`:""}</small></button>
+      <button type="button" class="ac-t" data-ac-inv="" aria-expanded="${S.acInv?"true":"false"}"><b>${nbInv}</b><small>invité${nbInv>1?"s":""} attendu${nbInv>1?"s":""} ${S.acInv?"▴":"▾"}</small></button>
+      <button type="button" class="ac-t" data-aller="chiffres"><b>${w.ca?esc(madCourt(w.ca).replace(/\s*MAD$/,"")):w.recos}</b><small>${w.ca?"MAD signés en 7 jours":"recommandation"+(w.recos>1?"s":"")+" en 7 jours"}</small></button>
+    </span>
+    ${S.acInv?`<span class="ac-inv">${inv.length?inv.slice(0,12).map(i=>`<span class="ac-il"><b>${esc(i.nom||"Invité")}</b><small>${esc([i.metier,i.entreprise].filter(Boolean).join(" · ")||"Métier non précisé")}${i.invite_par?(/^lien/i.test(i.invite_par)?" · inscrit par le lien":` · invité par ${esc(String(i.invite_par).split(/\s+/)[0])}`):""}</small></span>`).join("")+(inv.length>12?`<small class="ac-plus">et ${inv.length-12} autre${inv.length-12>1?"s":""}</small>`:""):`<small class="ac-plus">${nbInv?"La liste arrive : elle est tenue par ton animateur.":"Aucun invité pour l'instant. Propose quelqu'un : c'est le meilleur moyen de faire grandir le groupe."}</small>`}<button type="button" class="ac-lien" data-aller="inviter">Proposer un invité ›</button></span>`:""}
+    <span class="ac-sem">${w.recos||w.affaires?`Cette semaine dans le groupe : <b>${w.recos}</b> recommandation${w.recos>1?"s":""} donnée${w.recos>1?"s":""}${w.affaires?` · <b>${w.affaires}</b> affaire${w.affaires>1?"s":""} signée${w.affaires>1?"s":""} pour <b>${esc(mad(w.ca))}</b>`:""}`:"Cette semaine dans le groupe : aucune recommandation pour l'instant. La prochaine peut venir de toi."}</span>
+    ${avecReponse?`<div class="ac-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rep==="oui"?"on oui":""}" data-rep="oui" aria-pressed="${rep==="oui"}">${rep==="oui"?"✓ ":""}Je viens</button><button type="button" class="${rep==="non"?"on non":""}" data-rep="non" aria-pressed="${rep==="non"}">Je ne viens pas</button></div>
     ${rep?`<span class="ac-ok">${rep==="oui"?"C'est noté : ton animateur sait que tu viens.":"C'est noté : ton animateur sait que tu ne viens pas."}</span>`:""}`:""}
   </div>`;
 }
@@ -1017,6 +1048,7 @@ const ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[
 const origineLib=k=>(ORIGINES.find(o=>o[0]===Number(k))||[])[1]||"";
 const dateFr=d=>d?new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long"}):"";
 const telWa=t=>{let d=String(t||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("0"))d="212"+d.slice(1);return d};
+const madCourt=n=>{n=Math.round(Number(n)||0);return n>=1e6?String(Math.round(n/1e5)/10).replace(".",",")+" M MAD":n>=1e4?Math.round(n/1e3)+" k MAD":mad(n)};
 const mad=n=>new Intl.NumberFormat("fr-FR").format(Math.round(Number(n)||0)).replace(/ | /g," ")+" MAD";
 async function chargerRecos(){
   if(DEMO)return;
@@ -1267,6 +1299,7 @@ function brancher(){
   app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
   app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));
+  app.querySelectorAll("[data-ac-inv]").forEach(b=>b.onclick=()=>{S.acInv=!S.acInv;rendu(true)});
   app.querySelectorAll("[data-mondoc]").forEach(b=>b.onclick=()=>mesDocOuvrir(b.dataset.mondoc));
   app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
   app.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});

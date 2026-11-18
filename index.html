@@ -2527,8 +2527,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.78.0";
+const APP_VERSION="1.79.0";
 const CHANGELOG=[
+  {v:"1.79.0",date:"18 novembre 2026",notes:{"Ajouté":["Chaque membre a sa carte de visite et son QR code dès que sa fiche est créée, sans rien faire. Dans la fiche du membre : le QR, « Envoyer par WhatsApp », « Copier le lien », « Voir »."]}},
   {v:"1.78.0",date:"18 novembre 2026",notes:{"Ajouté":["Espace membre, Moi → « Ma carte de visite » : un QR code à faire scanner et un lien à envoyer. La carte montre ce que le membre partage déjà dans l'annuaire, avec « Ajouter à mes contacts ».","Kit de l'invité : dans la fiche d'une réunion qui a son invitation nationale, une page à envoyer (le groupe, la date, le lieu avec l'itinéraire, le déroulé, qui accueille) ; son bouton « Je m'inscris » reste compté.","Rappels automatiques aux membres, chaque jour à 17 h : la réunion du lendemain (« tu viens ? »), et une recommandation reçue restée sans suite depuis 7 jours.","Bibliothèque : les ressources du national qui sont des liens (Canva, YouTube, pages) y sont rangées, avec la vidéo lisible sur place."],"Modifié":["Message du code d'accès d'un membre : mot de bienvenue et trois premiers gestes (installer l'appli et activer les notifications, compléter sa fiche, répondre à la prochaine réunion)."]}},
   {v:"1.77.0",date:"19 novembre 2026",notes:{"Ajouté":["Guide d'installation : une sixième étape, « Active les notifications », pour être prévenu dès qu'une recommandation arrive. Les deux vidéos du kit de départ sont refaites avec cette étape."]}},
   {v:"1.76.0",date:"19 novembre 2026",notes:{"Ajouté":["Bibliothèque nationale : les Documents du réseau reçoivent les ressources du CRM national (chartes, brochures, documents d'adhésion, tutoriels…) et les documents du CRM (formulaire d'adhésion, logos, vidéos d'installation). Les directeurs de région y lisent tout.","Un membre d'un autre groupe s'inscrit à ta réunion : l'animateur du groupe reçoit une notification."],"Modifié":["Les images de la trame de présentation ne sont plus lisibles sans connexion.","Le suivi du national (signatures, annuaire) démarre à 7 h."]}},
@@ -3139,7 +3140,7 @@ function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,club
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
-function mapMembre(r){return{id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
+function mapMembre(r){return{carte:r.carte_jeton||"",id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -6498,8 +6499,16 @@ function mbFicheHTML(m,d,canEd){
   return `${secHead("Fiche signalétique",undefined,canEd?`<button class="btn ghost mini" onclick="mbFicheForm('${m.clubId}','${m.id}')">${vide?"+ Compléter":"Modifier"}</button>`:"")}
     ${vide?`<p class="fh-empty">Pas encore de fiche. ${canEd?"Le membre peut la remplir lui-même depuis son espace membre.":""}</p>`
     :`<div class="mbf"><div class="mbf-img">${f.photo?`<img class="mbf-ph" src="${esc(f.photo)}" alt="Photo de ${esc(m.nom)}">`:`<span class="mbf-ph vide">${esc(initiales(m.nom))}</span>`}${f.logo?`<img class="mbf-lg" src="${esc(f.logo)}" alt="Logo">`:""}</div>
-      <div class="mbf-t">${f.presentation?`<p>${esc(f.presentation)}</p>`:""}${mbLiens(f)}${f.preRempli?`<small class="fh-note">Repris de sa demande d'adhésion.</small>`:""}</div></div>`}`;
+      <div class="mbf-t">${f.presentation?`<p>${esc(f.presentation)}</p>`:""}${mbLiens(f)}${f.preRempli?`<small class="fh-note">Repris de sa demande d'adhésion.</small>`:""}</div></div>`}${mbCarteHTML(m)}`;
 }
+/* v1.79 : la carte de visite existe dès la création de la fiche (jeton posé par la base). L'équipe la voit ici, avec son QR. */
+function mbCarteLien(m){return m&&m.carte?`${SITE_PUBLIC}/carte.html?c=${m.carte}`:""}
+function mbCarteHTML(m){const u=mbCarteLien(m);if(!u)return"";setTimeout(natInvQr,60);const pr=String(m.nom||"").split(/\s+/)[0];
+  return `<div class="nat-box ni mb-carte"><div class="nat-t">Carte de visite · QR code</div>
+    <div class="ni-row"><div class="ni-qr" data-niqr="${esc(u)}" role="img" aria-label="QR code de la carte de visite de ${esc(m.nom)}"></div><div class="ni-l">
+      <div class="nat-v">Créée d'office avec la fiche. ${esc(pr)} la retrouve dans son espace membre, « Moi → Ma carte de visite ».</div>
+      <div class="ni-act"><a class="btn mini" href="https://wa.me/?text=${encodeURIComponent("Voici la carte de visite de "+m.nom+" : "+u)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="mbCarteCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(u)}" target="_blank" rel="noopener">Voir</a></div></div></div></div>`}
+async function mbCarteCopier(id){const u=mbCarteLien(DB.membres.find(x=>x.id===id));if(!u)return;try{await navigator.clipboard.writeText(u);toast("Lien de la carte copié")}catch(e){prompt("Carte de visite :",u)}}
 let _mbf={};
 function mbFicheForm(clubId,id){
   const m=DB.membres.find(x=>x.id===id),f=mbFiche(m);_mbf={id,clubId,photo:f.photo||"",logo:f.logo||""};

@@ -6,7 +6,7 @@
    Désactivé sous un navigateur piloté (bancs de test), sauf si localStorage « cap-lancement » vaut « force ». */
 const Lancement=(()=>{
   const DUREE=3900,ARRIVEE=1.45,CONVERGE=.9,LOGO=2.05; /* v1.17.0 : un quart plus lent (JB) */
-  const COUL=["#E0324E","#B0122E","#8FB0D1","#E9D9B0","#FFFFFF"];
+  const COUL=["#E0324E","#D81B3F","#8FB0D1","#E9D9B0","#FFFFFF"];
   let el=null,t0=0,raf=0,finDemandee=false;
   const actif=()=>{let f=null;try{f=localStorage.getItem("cap-lancement")}catch(e){}
     if(f==="off")return false;if(window.top!==window)return false;try{if(sessionStorage.getItem("cap-lanc-skip")){sessionStorage.removeItem("cap-lanc-skip");return false}}catch(e){}if(navigator.webdriver&&f!=="force")return false;return true};

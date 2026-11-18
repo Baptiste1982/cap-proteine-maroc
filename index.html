@@ -2373,8 +2373,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.44.0";
+const APP_VERSION="1.45.0";
 const CHANGELOG=[
+  {v:"1.45.0",date:"18 novembre 2026",notes:{"Ajouté":["Le membre reçoit une notification sur son téléphone quand une pièce arrive dans « Mes documents » : sa facture dès que le paiement est coché, un reçu, une attestation. Un toucher ouvre la page.","L'animateur reçoit une notification quand un contact lui est confié. Un toucher ouvre sa boîte « Contacts confiés »."]}},
   {v:"1.44.0",date:"18 novembre 2026",notes:{"Ajouté":["« Mes documents » dans l'espace de chaque membre : sa facture, son reçu de paiement, ses attestations (régularité fiscale…), à ouvrir ou à envoyer à son comptable. Lui seul les voit.","Dans la fiche d'un membre, section Documents : on choisit « Facture », « Reçu de paiement » ou « Attestation » et le membre retrouve la pièce dans son espace. Chaque document se partage ou se retire d'un clic.","Une facture n'apparaît chez le membre qu'une fois l'étape « Paiement » cochée.","Le membre est prévenu sur son accueil quand une nouvelle pièce l'attend.","Documents du réseau : une catégorie « Comptabilité et attestations » pour les pièces communes à tous les membres."]}},
   {v:"1.43.0",date:"18 novembre 2026",notes:{"Modifié":["L'espace membre fait partie de l'appli : il occupe tout l'écran sous la barre du haut, sans titre, pastilles ni cadre. Au téléphone, sa barre du bas (Accueil, Groupe, Reco, Réseau, Messages, Moi) remplace celle du CRM ; on revient par le sélecteur d'espace ou le menu du haut.","Les documents du réseau s'ouvrent dans l'appli, plus dans un nouvel onglet, et suivent le thème choisi."]}},
   {v:"1.42.0",date:"18 novembre 2026",notes:{"Modifié":["Au téléphone, la fiche d'un membre tient sur un écran : Appeler, WhatsApp et E-mail en tête, la saisie du suivi dans un volet, et chaque section (informations, documents, abonnement…) se déplie au toucher.","Au téléphone, les Paramètres commencent par le compte ; le thème et les réglages d'affichage sont rangés dans un volet.","Au téléphone, Mon groupe affiche ses six onglets sans défilement, et le choix du groupe se fait par le sélecteur du haut.","Le bouton « + » flottant ne ressemble plus au bouton Reco.","Planifier en série, le classeur et l'embarquement de l'équipe préviennent, au téléphone, qu'ils sont plus à l'aise sur ordinateur (une seule fois)."]}},
@@ -3086,7 +3087,7 @@ async function bootIntoApp(){
   adhAnnonce();boiteAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
-  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();
+  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();
   presenceDemarrer();
   horlogeDemarrer();
   if(typeof Lancement!=="undefined")Lancement.fin();
@@ -3276,6 +3277,9 @@ async function ouvrirLienAdhesion(){
 /* v1.4.0 : notification du fil d'un groupe → ?groupe=<club> ouvre l'onglet Discussion de ce groupe. */
 function ouvrirLienPSA(){const q=new URLSearchParams(location.search);if(!q.get("psa")||!SESSION||SESSION.role==="visiteur")return;history.replaceState(null,"",location.pathname);openPSA()}
 function ouvrirLienLeads(){const q=new URLSearchParams(location.search);if(!q.get("leads")||!SESSION||SESSION.role==="visiteur")return;history.replaceState(null,"",location.pathname);navDem("leads")}
+/* v1.45 : notification « contact confié » → la boîte de l'animateur, données relues */
+async function ouvrirLienBoite(){const q=new URLSearchParams(location.search);if(!q.get("boite")||!SESSION||!SESSION.animId)return;history.replaceState(null,"",location.pathname);
+  try{const {data}=await sb.from("leads").select("*");if(data)DB.leads=data}catch(e){}openBoite()}
 function ouvrirLienGroupe(){
   const id=new URLSearchParams(location.search).get("groupe");if(!id||!SESSION||SESSION.role==="visiteur")return;
   history.replaceState(null,"",location.pathname);

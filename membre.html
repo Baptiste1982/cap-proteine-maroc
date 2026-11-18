@@ -390,10 +390,11 @@ function lancer(){$("nav").hidden=false;if(typeof Lancement!=="undefined")Lancem
   setInterval(()=>{if(document.hidden||S.onglet!=="chiffres"||DEMO)return;chargerRecosClub().then(()=>{if(S.onglet==="chiffres")rendu(true)})},60000);
   if(!lienHash())rendu();
   notifEtat().then(e=>{S.notif=e;if(["annuaire","messages","profil","accueil","moi"].includes(S.onglet))rendu(true)});
-  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#([cpr]=.+|g)$/i);if(h){location.hash=h[0]}});}
+  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",ev=>{const u=ev.data&&ev.data.url;const h=u&&String(u).match(/#([cpr]=.+|g|d)$/i);if(h){location.hash=h[0]}});}
 // Liens entrants : #c=<membre> (conversation), #r=recues|donnees (recommandations), #p=<réunion>.<code> (QR de présence)
 function lienHash(){
   const h=location.hash.replace(/^#moi=[0-9a-f-]{36}&/i,"#");let m; // v1.37 : un lien du CRM vers un espace déjà ouvert
+  if(h==="#d"){history.replaceState(null,"",location.pathname);S.mesDocs=undefined;aller("mesdocs");return true} // v1.45 : notification « une pièce t'attend »
   if(h==="#r=nouvelle"){history.replaceState(null,"",location.pathname);aller("recos",{recoForm:true,recoPour:""});return true}
   if((m=h.match(/^#c=([0-9a-z-]+)$/i))&&membre(m[1])){history.replaceState(null,"",location.pathname);ouvrirConv(m[1]);return true}
   if(h==="#g"&&clubId()){history.replaceState(null,"",location.pathname);aller("groupe");return true}

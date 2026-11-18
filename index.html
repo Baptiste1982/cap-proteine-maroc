@@ -2526,8 +2526,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.75.0";
+const APP_VERSION="1.76.0";
 const CHANGELOG=[
+  {v:"1.76.0",date:"19 novembre 2026",notes:{"Ajouté":["Bibliothèque nationale : les Documents du réseau reçoivent les ressources du CRM national (chartes, brochures, documents d'adhésion, tutoriels…) et les documents du CRM (formulaire d'adhésion, logos, vidéos d'installation). Les directeurs de région y lisent tout.","Un membre d'un autre groupe s'inscrit à ta réunion : l'animateur du groupe reçoit une notification."],"Modifié":["Les images de la trame de présentation ne sont plus lisibles sans connexion.","Le suivi du national (signatures, annuaire) démarre à 7 h."]}},
   {v:"1.75.0",date:"19 novembre 2026",notes:{"Modifié":["Constellation : les groupes tournent de nouveau autour de leur ville, lentement, et s'arrêtent quand tu en touches un. Ils ne suivent ni le doigt ni la souris."]}},
   {v:"1.74.0",date:"19 novembre 2026",notes:{"Ajouté":["Documents du réseau : « 🚀 Kit de départ », avec les deux vidéos « Installer l'appli » (iPhone et Android), le guide animé et l'envoi par WhatsApp à un membre ou à un animateur. Ouvert à toute l'équipe et aux membres.","Inscrit à la réunion d'un autre groupe : un toucher sur une personne ouvre sa fiche de base, et « Voir le groupe » ouvre la page du groupe avec tous ses membres."],"Modifié":["Un document déposé par le bureau national est visible des animateurs d'office (la case se décoche au besoin)."]}},
   {v:"1.73.0",date:"19 novembre 2026",notes:{"Ajouté":["« Comment installer l'appli sur mon téléphone » : un guide animé montre les gestes, pour iPhone et pour Android. Il s'ouvre depuis l'écran de connexion (CRM et espace membre), depuis Paramètres → Aide et depuis « Moi » dans l'espace membre.","Le lien du guide part tout seul dans les messages d'accès : code de l'espace membre, accès au CRM d'un animateur."]}},
@@ -3352,7 +3353,7 @@ function prPers(x,sous){const ph=x.photo?`<img src="${esc(x.photo)}" alt="">`:`<
 function prGrille(L,f){const n=L.length,cls=n<=4?"g4":n<=8?"g8":"g12";return `<div class="pr-grille ${cls}">${L.slice(0,15).map(f).join("")}</div>${n>15?`<div class="pr-plus">et ${n-15} autres</div>`:""}`}
 function presSlide(k,m,st){
   const g=presGroupeNom(m),c=club(m.clubId)||{},d=new Date(m.date+"T00:00:00");
-  if(/^p\d+$/.test(k))return `<div class="pr-s"><img class="pr-img" src="presentations/si/${String(k.slice(1)).padStart(2,"0")}.jpg" alt="${esc(presTitre(k,m,st))}"></div>`;
+  if(/^p\d+$/.test(k))return `<div class="pr-s"><img class="pr-img" src="${presImg(k)}" alt="${esc(presTitre(k,m,st))}"></div>`;
   if(k==="couv")return `<div class="pr-s pr-couv"><img class="pr-logo" src="presentations/commun/logo-blanc.png" alt="Club d'affaires Protéine Maroc"><div class="pr-acc">Le réseau d'affaires qui remet<br>l'humain au cœur du business</div><div class="pr-cg">${esc(c.ville||"")}${c.ville?", ":""}${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} ${d.getFullYear()}</div><div class="pr-cd">Club d'Affaires Protéine ${esc(g)}</div></div>`;
   if(k.startsWith("anim:")){const a=presAnim(k.slice(5))||{nom:"Animateur"},p=a.profil||{},L=Array.isArray(p.lignes)?p.lignes:[];
     return `<div class="pr-s pr-anim"><div class="pr-ag">${a.photo?`<img src="${esc(a.photo)}" alt="">`:`<i>${esc(initiales(a.nom))}</i>`}</div><div class="pr-ad"><img class="pr-globe" src="logo-globe-192.png" alt=""><div class="pr-q">QUI SUIS-JE ?</div><div class="pr-carte"><div class="pr-pil">${prNom(a.nom)}</div><div class="pr-role">${esc(p.role||"Animateur")}<br>Club d'Affaires Protéine<br>${esc(g)}</div></div><ul class="pr-coches">${L.map(l=>`<li>${prGras(l)}</li>`).join("")}</ul></div>${prBas(m,st)}</div>`}
@@ -3399,14 +3400,25 @@ async function presQr(racine){const z=[...(racine||document).querySelectorAll("[
 function presGroupe(clubId){const R=((window._DBvrai||DB).reunions||[]).filter(r=>r.clubId===clubId&&r.statut!=="annulee"),auj=isoJour(TODAY);
   const m=R.filter(r=>r.date>=auj).sort((a,b)=>a.date.localeCompare(b.date))[0]||R.sort((a,b)=>b.date.localeCompare(a.date))[0];
   if(!m){toast("Planifie d'abord une réunion pour ce groupe","warn");return}presOuvrir(m.id)}
-function presOuvrir(id){const m=presReunion(id);if(!m)return;presPolice();if(!_pres||_pres.id!==id)_pres={id,st:presEtat(m)};presRendu();openSheet()}
+/* v1.76 : les images de la trame nationale sont dans le bucket privé `presentations` ; l'équipe connectée les lit par liens signés (4 h). */
+let _presUrls=null,_presUrlsLe=0;
+function presImg(k){const n=String(String(k).replace(/^p/,"")).padStart(2,"0");return (_presUrls&&_presUrls[n])||"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="}
+async function presImgsCharger(){
+  if(_presUrls&&Date.now()-_presUrlsLe<3*36e5)return true;
+  const noms=PRES_SI.map(x=>"si/"+String(x[0]).padStart(2,"0")+".jpg");
+  let data,error;try{({data,error}=await sb.storage.from("presentations").createSignedUrls(noms,4*3600))}catch(e){return false}
+  if(error||!Array.isArray(data))return false;
+  _presUrls={};data.forEach((d,i)=>{if(d&&d.signedUrl)_presUrls[noms[i].slice(3,5)]=d.signedUrl});_presUrlsLe=Date.now();return true;
+}
+function presOuvrir(id){const m=presReunion(id);if(!m)return;presPolice();if(!_pres||_pres.id!==id)_pres={id,st:presEtat(m)};presRendu();openSheet();
+  const avant=_presUrls;presImgsCharger().then(ok=>{if(!ok){toast("Images de la trame indisponibles : vérifie ta connexion","e");return}if(_presUrls!==avant&&_pres&&_pres.id===id&&document.querySelector("#sheet-content .pr-ls"))presRendu()})}
 function presRendu(){
   const m=presReunion(_pres.id),st=_pres.st,peut=presPeut(m),K=presCles(m,st),c=club(m.clubId)||{},d=new Date(m.date+"T00:00:00");
   const vis=K.filter(k=>!st.masque.includes(k)&&!presVide(k,m)).length;
   const animsDispo=((window._DBvrai||DB).animateurs||[]).filter(a=>!st.anims.includes(a.id)).sort((a,b)=>(a.id===m.animId?-1:0)-(b.id===m.animId?-1:0)||a.nom.localeCompare(b.nom));
   const fond=presFondables(m).filter(x=>!st.membres.includes(x.id));const packs=Object.keys(PRES_PACK).filter(p=>PRES_PACK[p][2].every(k=>!st.plus.includes(k))),ajout=Object.keys(PRES_DYN).filter(k=>!st.plus.includes(k)&&!packs.some(p=>PRES_PACK[p][2].includes(k)));
   const ligne=(k,i)=>{const masq=st.masque.includes(k),vide=presVide(k,m),edit=peut&&(k.startsWith("anim:")||k.startsWith("libre:")),sup=peut&&(k.startsWith("anim:")||k.startsWith("libre:")||k.startsWith("mb:")||PRES_DYN[k]);
-    const mini=/^p\d+$/.test(k)?`<img loading="lazy" src="presentations/si/${String(k.slice(1)).padStart(2,"0")}.jpg" alt="">`:presSlide(k,m,st);
+    const mini=/^p\d+$/.test(k)?`<img loading="lazy" src="${presImg(k)}" alt="">`:presSlide(k,m,st);
     return `<div class="pr-l${masq||vide?" off":""}${presSection(k)?" sec":""}" data-k="${esc(k)}"><button class="pr-mini" onclick="presProjeter('${esc(k)}')" title="Voir cette slide">${mini}</button>
       <span class="pr-lt"><b>${esc(presTitre(k,m,st))}</b><small>${vide?"rien à afficher : elle sera sautée":masq?"masquée":/^p\d+$/.test(k)?"trame nationale":k==="couv"?"date, ville et groupe de la réunion":k.startsWith("mb:")?(presMembrePhoto(k.slice(3))?"tirée de sa fiche membre":"touche 📷 pour choisir sa photo"):"remplie par le CRM"}</small></span>
       ${peut?`<span class="pr-la">${k.startsWith("mb:")&&canEditClubId(m.clubId)?`<label class="pr-phb" title="Choisir sa photo dans le téléphone" aria-label="Choisir sa photo">📷<input type="file" accept="image/*" hidden onchange="presPhoto(this,'${esc(k.slice(3))}')"></label>`:""}${edit?`<button onclick="${k.startsWith("anim:")?`presAnimForm('${k.slice(5)}')`:`presLibreForm('${k.slice(6)}')`}" title="Modifier" aria-label="Modifier">✎</button>`:""}<button onclick="presMonter('${esc(k)}',-1)" ${i?"":"disabled"} title="Monter" aria-label="Monter">↑</button><button onclick="presMonter('${esc(k)}',1)" ${i<K.length-1?"":"disabled"} title="Descendre" aria-label="Descendre">↓</button>${sup?`<button onclick="presRetirer('${esc(k)}')" title="Retirer" aria-label="Retirer">✕</button>`:`<button onclick="presMasquer('${esc(k)}')" title="${masq?"Afficher":"Masquer"}" aria-label="${masq?"Afficher":"Masquer"}">${masq?"🚫":"👁"}</button>`}</span>`:""}</div>`};
@@ -3462,7 +3474,7 @@ function presProjeter(k){if(!_pres)return;const K=presVisibles();if(!K.length){t
   _pres.i=Math.max(0,k?K.indexOf(k):0);if(_pres.i<0)_pres.i=0;o.classList.add("on");document.documentElement.classList.add("pres-on");document.addEventListener("keydown",presTouche);window.addEventListener("resize",presCaler);presMontrer()}
 function presMontrer(){const K=presVisibles(),m=presReunion(_pres.id),st=_pres.st;_pres.i=Math.min(Math.max(0,_pres.i),K.length-1);const sc=document.getElementById("pres-sc");
   sc.innerHTML=presSlide(K[_pres.i],m,st);sc.firstElementChild.classList.add("entre");document.getElementById("pres-c").textContent=(_pres.i+1)+" / "+K.length;document.getElementById("pres-o").classList.toggle("live",K[_pres.i]==="reseau");presCaler();presQr(sc);
-  const s=K[_pres.i+1];if(s&&/^p\d+$/.test(s)){const im=new Image();im.src="presentations/si/"+String(s.slice(1)).padStart(2,"0")+".jpg"}}
+  const s=K[_pres.i+1];if(s&&/^p\d+$/.test(s)){const im=new Image();im.src=presImg(s)}}
 function presCaler(){const sc=document.getElementById("pres-sc");if(!sc)return;const k=Math.min(innerWidth/1600,innerHeight/900);sc.style.transform=`translate(${(innerWidth-1600*k)/2}px,${(innerHeight-900*k)/2}px) scale(${k})`}
 function presAller(s){const K=presVisibles();if(_pres.i+s<0)return;if(_pres.i+s>=K.length){presFermer();return}_pres.i+=s;presMontrer()}
 function presTouche(e){if(document.getElementById("cst-o"))return;if(e.key==="Escape"){e.stopPropagation();presFermer()}else if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){e.preventDefault();presAller(1)}else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){e.preventDefault();presAller(-1)}}

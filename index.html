@@ -2414,8 +2414,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.55.0";
+const APP_VERSION="1.56.0";
 const CHANGELOG=[
+  {v:"1.56.0",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une région dépliée (« Membres par région », « À traiter ») se refermait toute seule au bout de quelques secondes, même pendant qu'on la lisait. Elle reste maintenant ouverte tant qu'on est dessus."],"Modifié":["Le délai de repli ne démarre que quand on sort du bloc : un toucher ailleurs, ou le bloc qui quitte l'écran en faisant défiler. Si on y revient avant la fin du délai, il reste ouvert. Sur ordinateur, rien ne change : il se replie quand la souris en sort."]}},
   {v:"1.55.0",date:"19 novembre 2026",notes:{"Modifié":["Espace membre : un seul rouge, celui du bouton « Écrire un message », toujours avec du texte blanc. L'en-tête de la fiche d'un membre, la carte de la prochaine réunion, le total du groupe et les pastilles rouges quittent le bordeaux sombre.","Sur la carte de la réunion, la réponse choisie (« Je viens » ou « Je ne viens pas ») passe en blanc pour ressortir sur le rouge."]}},
   {v:"1.54.0",date:"19 novembre 2026",notes:{"Corrigé":["Espace membre, fiche d'un membre : plus de rouge sur rouge. Les liens Site, LinkedIn et autres réseaux sont des boutons rouges à texte blanc ; l'étiquette du groupe est blanche sur l'en-tête ; le retour et le métier sont clairs.","Même traitement pour les autres pastilles et encadrés qui posaient du rouge sur un fond rouge sombre (recommandation envoyée, choix cochés, lignes à traiter)."]}},
   {v:"1.53.0",date:"19 novembre 2026",notes:{"Corrigé":["Espace membre en thème sombre : toutes les pages ont été contrôlées une à une. Textes sur les cartes rouges (réunion, total du groupe, fiche d'un membre), onglets « Moi / Mon groupe / Ma région », tuile des affaires reçues, pastilles de statut des invités et des recommandations, textes rouges sur fond sombre : tout est lisible."]}},
@@ -5002,24 +5003,34 @@ function membresRegions(sc){
         return `<div class="km-grp${ouv.has(k)?" ouvert":""}" data-k="${k}" style="--i:${gi}"><button type="button" class="km-gh" aria-expanded="${ouv.has(k)}" onclick="kBasculer(this)"><span><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.objectif?" · objectif "+c.objectif:""}</small></span><span class="km-j"><i style="--w:${mb.length/max*100}%"></i></span><span class="km-n">${mb.length}</span>${chev}</button>
           <div class="km-tir"><div>${mb.length?`<div class="km-mbs">${mb.map((m,i)=>`<button type="button" class="km-mb" style="--i:${i}" onclick="memberSheet('${c.id}','${m.id}')"><span class="km-av">${esc(initiales(m.nom))}</span><span><b>${esc(m.nom)}</b><small>${esc(mbMetier(m)||"métier à renseigner")}</small></span>${m.paiement?'<span class="km-ok" title="À jour">✓</span>':""}</button>`).join("")}<button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></div>`:`<p class="km-rien">Aucun membre pour l'instant. <button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></p>`}</div></div></div>`}).join("")}</div></div></div></div>`}).join("")}</div>`;
 }
-function kBasculer(b){const p=b.parentElement,o=p.classList.toggle("ouvert");b.setAttribute("aria-expanded",o);const s=window._kOuv||(window._kOuv=new Set());o?s.add(p.dataset.k):s.delete(p.dataset.k);if(o)repliArmer(p,()=>kFermer(p));else clearTimeout(p._rt)}
+function kBasculer(b){const p=b.parentElement,o=p.classList.toggle("ouvert");b.setAttribute("aria-expanded",o);const s=window._kOuv||(window._kOuv=new Set());o?s.add(p.dataset.k):s.delete(p.dataset.k);if(o){p._parti=0;repliArmer(p,()=>kFermer(p))}else clearTimeout(p._rt)}
 function kFermer(p){if(!p.classList.contains("ouvert"))return;p.classList.remove("ouvert");const b=p.querySelector(":scope>button");if(b)b.setAttribute("aria-expanded","false");(window._kOuv||new Set()).delete(p.dataset.k)}
-function todoBasculer(d){const s=window._todoOuv||(window._todoOuv=new Set());if(d.open){s.add(d.dataset.k);repliArmer(d,()=>{d.open=false})}else{s.delete(d.dataset.k);clearTimeout(d._rt)}}
+function todoBasculer(d){const s=window._todoOuv||(window._todoOuv=new Set());if(d.open){s.add(d.dataset.k);d._parti=0;repliArmer(d,()=>{d.open=false})}else{s.delete(d.dataset.k);clearTimeout(d._rt)}}
 /* Repli automatique (réglable dans Paramètres, mémorisé sur l'appareil) : une région ou un groupe déplié se replie
    après N secondes sans y toucher. Le minuteur s'arrête tant que la souris est dessus et repart à chaque toucher. */
 const REPLI_CHOIX=[0,3,5,10,30];
 function repliDelai(){try{const v=localStorage.getItem("cap-repli");return v===null?3:Math.max(0,+v||0)}catch(e){return 3}}
+/* v1.56 — au doigt (pas de survol), un bloc déplié reste ouvert tant qu'on est dessus : le délai ne part que
+   quand on en SORT (un toucher ailleurs, ou le bloc qui quitte l'écran en défilant). Y revenir annule le repli. */
+function repliTactile(){return !matchMedia("(hover:hover)").matches}
+function repliSuivre(el){const S=window._replis||(window._replis=new Set());S.add(el);
+  if(window._replisEcoute)return;window._replisEcoute=1;
+  document.addEventListener("click",e=>{S.forEach(x=>{if(!x.isConnected){S.delete(x);return}if(!x.contains(e.target)&&!x._parti){x._parti=1;repliArmer(x,x._fermer)}})},true)}
 function repliArmer(el,fermer){
   clearTimeout(el._rt);el._fermer=fermer;const d=repliDelai();if(!d)return;
-  if(!el._rw){el._rw=1;
+  if(!el._rw){el._rw=1;repliSuivre(el);
     el.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse"){el._survol=1;clearTimeout(el._rt)}});
     el.addEventListener("pointermove",e=>{if(e.pointerType==="mouse"&&!el._survol){el._survol=1;clearTimeout(el._rt)}});
     el.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse"){el._survol=0;repliArmer(el,el._fermer)}});
-    el.addEventListener("pointerdown",()=>{if(!el._survol)repliArmer(el,el._fermer)});
-    el.addEventListener("keydown",()=>repliArmer(el,el._fermer));}
+    el.addEventListener("pointerdown",()=>{el._parti=0;if(!el._survol)repliArmer(el,el._fermer)});
+    el.addEventListener("keydown",()=>{el._parti=0;repliArmer(el,el._fermer)});
+    if(window.IntersectionObserver){el._io=new IntersectionObserver(l=>{const vu=l[l.length-1].isIntersecting;
+      if(!vu&&!el._parti){el._parti=1;repliArmer(el,el._fermer)}else if(vu&&el._parti&&repliTactile()){el._parti=0;clearTimeout(el._rt)}});el._io.observe(el)}}
   if(!el._survol&&matchMedia("(hover:hover)").matches&&el.matches(":hover"))el._survol=1;
-  if(el._survol)return;
-  el._rt=setTimeout(()=>{if(!el.isConnected)return;if(el._survol||el.querySelector(":focus-visible")){repliArmer(el,el._fermer);return}el._fermer()},d*1000);
+  const tac=repliTactile();
+  if(el._survol&&!tac)return;
+  if(tac&&!el._parti)return; // au doigt : ouvert tant qu'on n'est pas sorti du bloc
+  el._rt=setTimeout(()=>{if(!el.isConnected)return;if((el._survol&&!repliTactile())||el.querySelector(":focus-visible")){repliArmer(el,el._fermer);return}el._parti=0;el._fermer()},d*1000);
 }
 function repliRearmer(v){v.querySelectorAll("details.tj-reg[open]").forEach(d=>repliArmer(d,()=>{d.open=false}));v.querySelectorAll(".km-reg.ouvert,.km-grp.ouvert").forEach(p=>repliArmer(p,()=>kFermer(p)))}
 const NAV_REPLI_CHOIX=[0,3,5,8,15];

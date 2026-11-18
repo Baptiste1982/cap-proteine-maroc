@@ -2410,6 +2410,7 @@ html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 .pr-rej.trio{gap:54px}.pr-rej.trio .pr-qrc{width:330px;flex:none}.pr-rej.trio .pr-qrc b{font-size:27px;white-space:nowrap}.pr-rej.trio ol{max-width:470px}.pr-rej.trio li{font-size:31px;margin-bottom:34px}
 #pres-print{display:none}
 html.pres-on,html.pres-on body{overflow:hidden}
+.prev-h{margin:16px 0 8px;font:700 13px/1.2 "Bricolage Grotesque",sans-serif;color:var(--ink);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.prev-h small{font:500 11.5px Inter,sans-serif;color:var(--muted)}.prev-q{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.prev-q span{border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;min-width:0}.prev-q b{display:block;font:800 18px/1.15 "Bricolage Grotesque",sans-serif;color:var(--ink);overflow-wrap:anywhere}.prev-q small{display:block;font-size:11px;color:var(--muted);margin-top:3px}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
 </head>
@@ -2516,8 +2517,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.66.0";
+const APP_VERSION="1.67.0";
 const CHANGELOG=[
+  {v:"1.67.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit à la réunion d'un autre groupe, tu vois aussi les membres du groupe (métier, entreprise, qui vient) et la quinzaine du groupe : recommandations, affaires signées et chiffre d'affaires des 15 derniers jours."],"Modifié":["Espace membre : les chiffres récents du groupe portent sur la quinzaine (15 jours), plus sur la semaine."]}},
   {v:"1.66.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion d'un autre groupe : dès que tu t'inscris avec « Je viens », tu vois qui est prévu — les invités avec leur métier, leur entreprise et leur statut, et les membres qui ont répondu présent. Avant, la fiche affichait « Invités (0) ».","Les coordonnées des invités (téléphone, e-mail) restent réservées à l'animateur du groupe et à la direction."]}},
   {v:"1.65.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : les fiches « Membre fondateur ». Dans « Ajouter », « 🌟 Membres fondateurs » pose une slide par membre du groupe (nom, fonction, entreprise, métier, ville, site), tirée de sa fiche membre ; sa photo et son logo s'affichent dès qu'ils sont dans sa fiche. Une fiche se retire ou se rajoute seule.","Présentations, slide « L'adhésion en ligne » : le QR code du formulaire d'adhésion du groupe, à scanner pendant la réunion. La demande arrive directement dans le CRM, rattachée au groupe."]}},
   {v:"1.64.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : un paquet « 💻 Le CRM et l'espace membre » de cinq slides à ajouter d'un geste — titre, « Un CRM pensé pour les groupes », « Votre espace membre » (avec deux écrans de l'appli), « L'adhésion en ligne » et « Déjà disponible, et bientôt ».","Présentations : la slide « ✦ Le réseau en constellation » dessine le réseau à partir du CRM (régions, groupes, le groupe de la réunion mis en avant). En projection, un bouton ouvre la constellation animée par-dessus, Échap revient à la slide.","Ces slides se placent après les acteurs et les membres du groupe, juste avant « L'adhésion » ; chacune se déplace, se masque ou se retire comme les autres."],"Modifié":["Projection : la barre de commandes ne s'affiche que lorsque la souris bouge ou qu'on touche l'écran, pour ne plus recouvrir le bas de la slide."],"Corrigé":["Espace membre, carte de la prochaine réunion : le mot « recommandation » ne déborde plus de sa case."]}},
@@ -5757,11 +5759,12 @@ async function prevusCharger(m){
   const z=document.getElementById("prev-bloc");if(!z||z.dataset.reunion!==m.id||error||!data)return;
   const vide=document.querySelector("#sheet-content .g-vide"),avenir=m.date>=isoJour(TODAY);
   if(!data.acces){if(vide&&avenir)vide.textContent="Inscris-toi avec « Je viens » pour voir qui est prévu à cette réunion.";return}
-  const I=data.invites||[],M=data.membres||[],E=data.equipe||[];if(!I.length&&!M.length)return;
-  if(vide)vide.remove();const n=document.getElementById("inv-n");if(n)n.textContent="("+I.length+")";
+  const I=data.invites||[],M=data.membres||[],E=data.equipe||[],G=data.groupe||[],Q=data.quinzaine||null;if(!I.length&&!M.length&&!G.length)return;
+  if(vide){if(I.length)vide.remove();else vide.textContent="Aucun invité inscrit pour l'instant."}const n=document.getElementById("inv-n");if(n)n.textContent="("+I.length+")";
   const tag=s=>`<span class="tag ${s==="Membre"||s==="À intégrer"?"ok":s==="Non intéressé"?"":"y"}">${esc(s)}</span>`;
   z.innerHTML=`${I.length?`<div class="gl">${I.map(g=>`<div class="gl-r"><span class="gl-n"><b>${esc(g.nom)}</b><small>${esc([g.metier,g.entreprise].filter(Boolean).join(" · "))}</small></span>${tag(g.statut)}</div>`).join("")}</div>`:""}
-    ${M.length?`<div class="viens-eq" style="margin-top:10px"><b>Membres qui viennent · ${M.length}</b> ${M.map(x=>esc(x.nom)).join(", ")}</div>`:""}
+    ${G.length?`<div class="prev-h">Les membres du groupe · ${G.length}${M.length?` <small>${M.length} ${M.length>1?"ont":"a"} répondu présent</small>`:""}</div><div class="gl">${G.map(x=>`<div class="gl-r"><span class="gl-n"><b>${esc(x.nom)}</b><small>${esc([x.metier,x.entreprise].filter(Boolean).join(" · "))}</small></span>${x.vient==="oui"?`<span class="tag ok">Vient</span>`:x.vient==="non"?`<span class="tag">Absent</span>`:""}</div>`).join("")}</div>`:M.length?`<div class="viens-eq" style="margin-top:10px"><b>Membres qui viennent · ${M.length}</b> ${M.map(x=>esc(x.nom)).join(", ")}</div>`:""}
+    ${Q?`<div class="prev-h">La quinzaine du groupe <small>15 derniers jours</small></div><div class="prev-q"><span><b>${Number(Q.recos)||0}</b><small>recommandation${Q.recos>1?"s":""}</small></span><span><b>${Number(Q.affaires)||0}</b><small>affaire${Q.affaires>1?"s":""} signée${Q.affaires>1?"s":""}</small></span><span><b>${fmtMAD(Number(Q.ca)||0)}</b><small>chiffre d'affaires</small></span></div>`:""}
     <p class="fh-note">Tu vois cette liste parce que tu es inscrit à cette réunion. Les coordonnées des invités restent avec l'animateur du groupe${E.length?" · équipe présente : "+E.map(esc).join(", "):""}.</p>`;
 }
 async function repCharger(m){

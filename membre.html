@@ -608,7 +608,7 @@ async function chargerGv(){
   S.sem=null;if(!error){try{const r=await sb.rpc("cap_groupe_semaine",EQ?{p_club:EQ}:{});if(!r.error&&r.data)S.sem=r.data}catch(e){}}
 }
 /* v1.52 — les 7 derniers jours du groupe : la fonction de la base, sinon (aperçu, démonstration) les dernières recommandations déjà chargées. */
-function semaineGroupe(){if(S.sem)return S.sem;const g=S.gv,l=(g&&g.recos)||[],lim=Date.now()-7*864e5,sig=l.filter(r=>r.statut==="signee"&&new Date(r.maj_le||r.cree_le).getTime()>=lim);
+function semaineGroupe(){if(S.sem)return S.sem;const g=S.gv,l=(g&&g.recos)||[],lim=Date.now()-14*864e5,sig=l.filter(r=>r.statut==="signee"&&new Date(r.maj_le||r.cree_le).getTime()>=lim);
   return{recos:l.filter(r=>new Date(r.cree_le).getTime()>=lim).length,affaires:sig.length,ca:sig.reduce((a,r)=>a+Number(r.montant||0),0)}}
 function lieuCarte(p){const a=String(p.adresse||"").trim();if(/^https?:\/\//i.test(a))return a;const q=[p.lieu,a,p.ville].filter(Boolean).join(" ");return q?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q):""}
 const JOURS=["","lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
@@ -640,10 +640,10 @@ function carteReunion(p,avecReponse){
     <span class="ac-trio">
       <button type="button" class="ac-t" data-aller="mongroupe"><b>${p.viennent||0}</b><small>membre${p.viennent>1?"s":""} vien${p.viennent>1?"nent":"t"}${p.absents?` · ${p.absents} excusé${p.absents>1?"s":""}`:""}</small></button>
       <button type="button" class="ac-t" data-ac-inv="" aria-expanded="${S.acInv?"true":"false"}"><b>${nbInv}</b><small>invité${nbInv>1?"s":""} attendu${nbInv>1?"s":""} ${S.acInv?"▴":"▾"}</small></button>
-      <button type="button" class="ac-t" data-aller="chiffres"><b>${w.ca?esc(madCourt(w.ca).replace(/\s*MAD$/,"")):w.recos}</b><small>${w.ca?"MAD signés en 7 jours":"recommandation"+(w.recos>1?"s":"")+" en 7 jours"}</small></button>
+      <button type="button" class="ac-t" data-aller="chiffres"><b>${w.ca?esc(madCourt(w.ca).replace(/\s*MAD$/,"")):w.recos}</b><small>${w.ca?"MAD signés en 15 jours":"recommandation"+(w.recos>1?"s":"")+" en 15 jours"}</small></button>
     </span>
     ${S.acInv?`<span class="ac-inv">${inv.length?inv.slice(0,12).map(i=>`<span class="ac-il"><b>${esc(i.nom||"Invité")}</b><small>${esc([i.metier,i.entreprise].filter(Boolean).join(" · ")||"Métier non précisé")}${i.invite_par?(/^lien/i.test(i.invite_par)?" · inscrit par le lien":` · invité par ${esc(String(i.invite_par).split(/\s+/)[0])}`):""}</small></span>`).join("")+(inv.length>12?`<small class="ac-plus">et ${inv.length-12} autre${inv.length-12>1?"s":""}</small>`:""):`<small class="ac-plus">${nbInv?"La liste arrive : elle est tenue par ton animateur.":"Aucun invité pour l'instant. Propose quelqu'un : c'est le meilleur moyen de faire grandir le groupe."}</small>`}<button type="button" class="ac-lien" data-aller="inviter">Proposer un invité ›</button></span>`:""}
-    <span class="ac-sem">${w.recos||w.affaires?`Cette semaine dans le groupe : <b>${w.recos}</b> recommandation${w.recos>1?"s":""} donnée${w.recos>1?"s":""}${w.affaires?` · <b>${w.affaires}</b> affaire${w.affaires>1?"s":""} signée${w.affaires>1?"s":""} pour <b>${esc(mad(w.ca))}</b>`:""}`:"Cette semaine dans le groupe : aucune recommandation pour l'instant. La prochaine peut venir de toi."}</span>
+    <span class="ac-sem">${w.recos||w.affaires?`Cette quinzaine dans le groupe : <b>${w.recos}</b> recommandation${w.recos>1?"s":""} donnée${w.recos>1?"s":""}${w.affaires?` · <b>${w.affaires}</b> affaire${w.affaires>1?"s":""} signée${w.affaires>1?"s":""} pour <b>${esc(mad(w.ca))}</b>`:""}`:"Cette quinzaine dans le groupe : aucune recommandation pour l'instant. La prochaine peut venir de toi."}</span>
     ${avecReponse?`<div class="ac-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rep==="oui"?"on oui":""}" data-rep="oui" aria-pressed="${rep==="oui"}">${rep==="oui"?"✓ ":""}Je viens</button><button type="button" class="${rep==="non"?"on non":""}" data-rep="non" aria-pressed="${rep==="non"}">Je ne viens pas</button></div>
     ${rep?`<span class="ac-ok">${rep==="oui"?"C'est noté : ton animateur sait que tu viens.":"C'est noté : ton animateur sait que tu ne viens pas."}</span>`:""}`:""}
   </div>`;

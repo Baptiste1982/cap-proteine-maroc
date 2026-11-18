@@ -2271,13 +2271,13 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
     <p>Planning, clubs, lieux et invités des régions du Maroc, réunis dans un seul espace.</p>
   </div>
   <div class="auth-card">
-    <div class="field"><label>Identifiant</label><input id="lg-user" type="text" autocomplete="username" placeholder="prénom" autocapitalize="none" /></div>
-    <div class="field"><label>Mot de passe</label><div class="pw-wrap"><input id="lg-pass" type="password" autocomplete="current-password" placeholder="••••••••" /><button type="button" class="pw-eye" id="pw-eye" onclick="pwToggle()" aria-label="Afficher le mot de passe">Voir</button></div></div>
+    <div class="field"><label>Prénom ou mobile</label><input id="lg-user" type="text" autocomplete="username" placeholder="prénom, ou 06 61 23 45 67" autocapitalize="none" /></div>
+    <div class="field"><label>Mot de passe ou code d'accès</label><div class="pw-wrap"><input id="lg-pass" type="password" autocomplete="current-password" placeholder="••••••••" /><button type="button" class="pw-eye" id="pw-eye" onclick="pwToggle()" aria-label="Afficher le mot de passe">Voir</button></div></div>
     <p id="lg-err" class="auth-err"></p>
     <button class="btn" onclick="doLogin()">Se connecter</button>
   </div>
   <div class="demo-note"><b>Accès réservé au réseau CAP MA</b><br>
-    Identifie-toi avec ton prénom et ton mot de passe.
+    Équipe : ton prénom et ton mot de passe.<br>Membre : ton mobile et le code donné par ton animateur.
   </div>
 </div>
 
@@ -2363,8 +2363,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.39.0";
+const APP_VERSION="1.40.0";
 const CHANGELOG=[
+  {v:"1.40.0",date:"18 novembre 2026",notes:{"Modifié":["Une seule page de connexion : l'équipe entre son prénom et son mot de passe, un membre son mobile et le code donné par son animateur. Le membre arrive directement dans son espace.","Un membre déjà connecté qui ouvre l'adresse du CRM est conduit à son espace. La page de l'espace membre garde un lien « Connexion avec ton prénom » pour l'équipe."]}},
   {v:"1.39.0",date:"18 novembre 2026",notes:{"Ajouté":["Un sélecteur d'espace en haut : un seul bouton pour passer du réseau national à une région, à l'un de ses groupes ou à son espace membre. Il remplace la bascule National / Région et la liste des régions."],"Modifié":["L'accueil d'une région range ses groupes ville par ville (Rabat, Salé, Kénitra), du plus urgent au plus calme dans chaque ville. L'en-tête d'une ville ouvre ses statistiques.","Au téléphone, l'heure de la barre du haut laisse sa place au sélecteur d'espace."]}},
   {v:"1.38.0",date:"17 novembre 2026",notes:{"Modifié":["Le statut d'un groupe se calcule tout seul : « Actif » dès 5 membres, ou dès qu'une réunion de lancement ou du cycle est tenue ; sinon « En création ». Il se met à jour à chaque membre ajouté ou retiré et à chaque bilan.","Dans la fiche d'un groupe, une case permet de garder « Actif » un groupe dont la vie n'est pas saisie dans le CRM."]}},
   {v:"1.37.0",date:"17 novembre 2026",notes:{"Ajouté":["Au téléphone, un bouton « Reco » au centre de la barre du bas : un toucher ouvre le formulaire de recommandation, sans passer par un menu. Dans l'espace membre comme dans le CRM (pour qui a une fiche membre)."],"Corrigé":["Espace membre en thème sombre : le lieu de la prochaine réunion et la ligne « À faire » en rouge étaient illisibles."]}},
@@ -3021,11 +3022,21 @@ function canDeleteLieu(){return isNationalEditor()||SESSION.role==="directeur"}
 /* ============================================================
    AUTH
    ============================================================ */
+function loginMobile(v){if(/[a-z@]/i.test(v))return null;let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("212"))return /^212[5-7]\d{8}$/.test(d)?d:null;if(d.startsWith("0"))d=d.slice(1);return /^[5-7]\d{8}$/.test(d)?"212"+d:null}
+/* Un membre déjà connecté qui ouvre l'adresse du CRM est conduit à son espace (sauf ?crm : lien « Équipe » de l'espace membre). */
+function membreDejaConnecte(){if(/[?&]crm\b/.test(location.search)||window.top!==window)return false;try{const t=JSON.parse(localStorage.getItem("cap-membre-auth")||"null");return !!(t&&(t.access_token||(t.currentSession&&t.currentSession.access_token)))}catch(e){return false}}
 async function doLogin(){
   const u=document.getElementById("lg-user").value.trim().toLowerCase();
   const p=document.getElementById("lg-pass").value;const err=document.getElementById("lg-err");
   if(!u||!p){err.textContent="Identifiant et mot de passe requis.";authShake();return}
   err.textContent="Connexion…";
+  /* v1.40 : une seule porte d'entrée. Un mobile = un membre : sa session s'ouvre sous la clé de l'espace membre, puis il y est conduit. */
+  const mob=loginMobile(u);
+  if(mob){const sm=window.supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"cap-membre-auth",persistSession:true}});
+    const r=await sm.auth.signInWithPassword({email:mob+"@membres."+EMAIL_DOMAIN,password:p.trim()});
+    if(r.error){err.textContent=/rate|too many/i.test(r.error.message)?"Trop d'essais d'un coup. Attends quelques minutes.":"Mobile ou code incorrect. Vérifie le code, ou demande-en un nouveau à ton animateur.";authShake();return}
+    err.textContent="";location.href="membre.html";return}
+  if(/^[\d\s+().-]{6,}$/.test(u)){err.textContent="Ce numéro ne ressemble pas à un mobile marocain. Exemple : 06 61 23 45 67.";authShake();return}
   const email=u.includes("@")?u:u+"@"+EMAIL_DOMAIN;
   const {error}=await sb.auth.signInWithPassword({email,password:p});
   if(error){err.textContent="Identifiant ou mot de passe incorrect.";authShake();return}
@@ -7689,6 +7700,7 @@ function rolePill(r){return{directeur:"dir",directeur_national:"dir",animateur:"
   document.getElementById("lg-user").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("lg-pass").focus()});
   const {data:{session}}=await sb.auth.getSession();
   if(session)await bootIntoApp();
+  else if(membreDejaConnecte()&&!navigator.webdriver){location.replace("membre.html");return}
   checkUpdate();setInterval(checkUpdate,180000);
 })();
 

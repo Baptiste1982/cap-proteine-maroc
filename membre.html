@@ -347,6 +347,7 @@ function vueLogin(msg){
       <button class="btn" id="l-go" type="submit">Entrer</button>
     </form>
     <p class="note">Pas encore de code, ou code oublié ? Demande à ton animateur : il t'en crée un nouveau en un clic.</p>
+    <p class="note">Tu fais partie de l'équipe (animateur, direction) ? <a href="/?crm" style="color:var(--crimson);font-weight:700">Connexion avec ton prénom</a></p>
   </div>`;
   $("f-login").onsubmit=e=>{e.preventDefault();seConnecter()};
   (S.telSaisi?$("l-code"):$("l-tel")).focus();

@@ -403,6 +403,7 @@ a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(6
 <script src="documents-commun.js"></script>
 <script src="lancement.js"></script>
 <script src="tel-commun.js"></script>
+<script src="installer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL="https://xsppsqjigdgaybmowzaq.supabase.co",SB_KEY="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
@@ -467,9 +468,11 @@ function vueLogin(msg){
       <button class="btn" id="l-go" type="submit">Entrer</button>
     </form>
     <p class="note">Pas encore de code, ou code oublié ? Demande à ton animateur : il t'en crée un nouveau en un clic.</p>
+    <p class="note"><button type="button" id="l-inst" style="background:none;border:0;padding:6px 0;color:var(--muted);font:600 13px Inter,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer">❓ Comment installer l'appli sur mon téléphone</button></p>
     <p class="note">Tu fais partie de l'équipe (animateur, direction) ? <a href="/?crm" style="color:var(--crimson-txt,var(--crimson));font-weight:700">Connexion avec ton prénom</a></p>
   </div>`;
   $("f-login").onsubmit=e=>{e.preventDefault();seConnecter()};
+  {const bi=$("l-inst");if(bi)bi.onclick=()=>Installer.ouvrir()}
   (S.telSaisi?$("l-code"):$("l-tel")).focus();
 }
 async function seConnecter(){
@@ -852,6 +855,7 @@ function vueMoi(){
       ${ligneAct(`data-aller="mesdocs"`,"Mes documents","Facture, reçu, attestations : pour toi et ton comptable",{fin:mesDocsNouveaux()?`<span class="badge">${mesDocsNouveaux()} nouveau${mesDocsNouveaux()>1?"x":""}</span>`:(S.mesDocs&&S.mesDocs.length?`<span class="pct">${S.mesDocs.length}</span>`:""),fort:!!mesDocsNouveaux()})}
       ${ligneAct(`data-aller="docs"`,"Documents du réseau","Kits, formulaires, présentations du bureau national")}
       ${ligneAct(`data-aller="profil"`,"Notifications et code d'accès",esc(notif))}
+      ${DANS_CRM?"":ligneAct(`data-installer=""`,"Installer l'appli sur mon téléphone",Installer.deja()?"Déjà installée · revoir les gestes":"Les gestes, pour iPhone et Android")}
     </div>
     ${S.viaCrm?`<a class="btn ghost" href="/">↩ Retour au CRM</a>`:`<button class="btn ghost" id="p-out" type="button">Me déconnecter</button>`}
   </div>`;
@@ -1490,6 +1494,7 @@ function brancher(){
   app.querySelectorAll("[data-ariane]").forEach(b=>b.onclick=()=>revenirA(Number(b.dataset.ariane)));
   app.querySelectorAll("[data-reco-ouvrir]").forEach(b=>b.onclick=()=>aller("reco",{recoId:b.dataset.recoOuvrir}));
   app.querySelectorAll("[data-rep]").forEach(b=>b.onclick=()=>repondre(b.dataset.rep));
+  app.querySelectorAll("[data-installer]").forEach(b=>b.onclick=()=>Installer.ouvrir());
   app.querySelectorAll("[data-rrep]").forEach(b=>b.onclick=()=>{const [i,r]=b.dataset.rrep.split(":");repondreReseau(i,r)});
   app.querySelectorAll("[data-reu]").forEach(b=>b.onclick=()=>aller("reunion",{reuId:b.dataset.reu}));
   app.querySelectorAll("[data-gp]").forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.gp)aller("gpage",{gpId:b.dataset.gp})});
@@ -1598,6 +1603,7 @@ async function demarrerVoir(){
   const {data:{session}}=await sb.auth.getSession();
   if(session)demarrer();else vueLogin();
 })();
+window.addEventListener("load",()=>setTimeout(()=>{try{Installer.auto()}catch(e){}},500)); // v1.73 : membre.html#installer ouvre le guide
 </script>
 </body>
 </html>

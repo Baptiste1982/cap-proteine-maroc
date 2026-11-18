@@ -2327,6 +2327,74 @@ html .vn-band.reg{background:#2B2D32;color:#F1F1F2;border:1px solid #3C3F45;bord
 /* pastille de date en tête de fiche : même dessin que les autres (bande rouge pleine largeur, filet) */
 html .fh .fh-date{padding:0;width:54px}html .fh .fh-date b{font-size:21px}
 .mb-rap a.acc{flex:1 1 100%}.mb-rap a.acc.fort{background:var(--crimson);border-color:var(--crimson);color:#fff}
+/*v1.63 présentations : les slides sont dessinées en 1600 × 900 puis mises à l'échelle. Le rouge est celui de la trame nationale (#AB2145), pour se fondre avec ses images. */
+.pr-s{position:relative;width:1600px;height:900px;overflow:hidden;background:#fff;color:#1B1416;font-family:"Josefin Sans",Inter,sans-serif;box-sizing:border-box;--pr:#AB2145;text-align:left}
+.pr-s *{box-sizing:border-box}.pr-s .pr-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pr-s.entre{animation:prEntre .28s ease-out}@keyframes prEntre{from{opacity:.25}to{opacity:1}}
+.pr-bas{position:absolute;left:0;right:0;bottom:0;height:84px;background:var(--pr);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 52px;font-size:19px;letter-spacing:.02em}
+.pr-bas span:last-child{max-width:150px;line-height:1.3}
+.pr-globe{position:absolute;right:50px;top:30px;width:96px;height:96px;object-fit:contain}
+.pr-sur{position:absolute;left:52px;top:62px;font:italic 700 28px "Josefin Sans",sans-serif;text-transform:uppercase;color:var(--pr)}
+.pr-h{position:absolute;left:52px;right:180px;top:112px;margin:0;font:italic 700 58px/1.05 "Josefin Sans",sans-serif;text-transform:uppercase;color:#111;letter-spacing:.01em}
+.pr-couv{background:var(--pr) url(presentations/commun/couv-fond.jpg) center/cover;color:#fff}
+.pr-couv .pr-logo{position:absolute;left:50%;top:58px;width:1060px;transform:translateX(-50%)}
+.pr-couv .pr-acc{position:absolute;left:0;right:0;top:505px;text-align:center;font:italic 700 60px/1.25 "Josefin Sans",sans-serif}
+.pr-couv .pr-cg{position:absolute;left:18px;bottom:22px;font-size:27px}.pr-couv .pr-cd{position:absolute;right:40px;bottom:22px;font:italic 700 28px "Josefin Sans",sans-serif}
+.pr-anim .pr-ag{position:absolute;left:0;top:0;bottom:84px;width:724px;background:#AF1B3D;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.pr-anim .pr-ag img{max-width:92%;max-height:86%;object-fit:contain;object-position:bottom;display:block}
+.pr-anim .pr-ag i{font:700 190px "Josefin Sans",sans-serif;font-style:normal;color:rgba(255,255,255,.35);align-self:center}
+.pr-anim .pr-ad{position:absolute;left:724px;right:0;top:0;bottom:84px}
+.pr-anim .pr-q{position:absolute;left:0;right:0;top:148px;text-align:center;font:italic 700 44px "Josefin Sans",sans-serif;color:var(--pr)}
+.pr-anim .pr-carte{position:absolute;left:60px;right:76px;top:214px;border:2px solid var(--pr);border-radius:26px;padding:104px 20px 30px;text-align:center}
+.pr-anim .pr-pil{position:absolute;left:34px;right:42px;top:-20px;background:var(--pr);color:#fff;border-radius:14px;padding:22px 12px 16px;font:italic 700 46px/1.1 "Josefin Sans",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-anim .pr-role{font:italic 700 33px/1.25 "Josefin Sans",sans-serif;color:var(--pr)}
+.pr-coches{position:absolute;left:150px;right:60px;top:528px;margin:0;padding:0;list-style:none;font:400 33px/1.2 Arial,Helvetica,sans-serif}
+.pr-coches li{position:relative;padding:0 0 0 52px;margin:0 0 26px}.pr-coches li::before{content:"✓";position:absolute;left:0;top:-2px;width:34px;height:34px;border:2px solid var(--pr);border-radius:50%;color:var(--pr);font:700 22px/31px Arial,sans-serif;text-align:center}
+.pr-grille{position:absolute;left:52px;right:52px;top:230px;bottom:112px;display:flex;flex-wrap:wrap;gap:22px 22px;align-content:center;justify-content:center}
+.pr-pers{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;min-width:0;width:357px}.pr-grille.g12 .pr-pers{width:281px}
+.pr-pers .pr-av{width:150px;height:150px;border-radius:50%;background:var(--pr);overflow:hidden;display:grid;place-items:center;flex:none}
+.pr-grille.g8 .pr-av{width:118px;height:118px}.pr-grille.g12 .pr-av{width:92px;height:92px}
+.pr-pers .pr-av img{width:100%;height:100%;object-fit:cover}.pr-pers .pr-av i{font:700 52px "Josefin Sans",sans-serif;font-style:normal;color:#fff}.pr-grille.g12 .pr-av i{font-size:34px}
+.pr-pers b{font:italic 700 27px/1.1 "Josefin Sans",sans-serif;background:var(--pr);color:#fff;border-radius:8px;padding:9px 14px 5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-grille.g12 .pr-pers b{font-size:21px}.pr-pers small{font-size:22px;line-height:1.2;color:#333;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.pr-grille.g12 .pr-pers small{font-size:17px}
+.pr-plus{position:absolute;right:52px;bottom:96px;font:italic 600 22px "Josefin Sans",sans-serif;color:var(--pr)}
+.pr-rien{position:absolute;left:52px;right:52px;top:400px;text-align:center;font-size:34px;color:#777}
+.pr-ronds{position:absolute;left:52px;right:52px;top:250px;bottom:190px;display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:center}
+.pr-ronds span{width:226px;height:226px;border-radius:50%;background:var(--pr);color:#fff;display:grid;place-items:center;text-align:center;padding:18px;font:italic 700 25px/1.15 "Josefin Sans",sans-serif;overflow:hidden}
+.pr-note{position:absolute;left:0;right:0;bottom:112px;text-align:center;font:italic 700 30px "Josefin Sans",sans-serif;color:var(--pr)}
+.pr-proch{position:absolute;left:52px;right:52px;top:300px;display:flex;align-items:center;justify-content:center;gap:54px}
+.pr-proch .pr-date{width:250px;border-radius:26px;overflow:hidden;border:3px solid var(--pr);text-align:center;flex:none}.pr-proch .pr-date small{display:block;background:var(--pr);color:#fff;font:700 30px "Josefin Sans",sans-serif;text-transform:uppercase;padding:14px 0 8px}.pr-proch .pr-date b{display:block;font:700 150px/1.15 "Josefin Sans",sans-serif;color:#111}
+.pr-proch>div:last-child{display:flex;flex-direction:column;gap:14px}.pr-proch>div:last-child b{font:italic 700 50px "Josefin Sans",sans-serif;color:var(--pr)}.pr-proch>div:last-child span{font-size:34px;color:#222}
+.pr-rej{position:absolute;left:52px;right:52px;top:236px;bottom:112px;display:flex;align-items:center;justify-content:center;gap:90px}
+.pr-qrc{width:430px;border:3px solid var(--pr);border-radius:22px;padding:26px 26px 20px;text-align:center;background:#fff}.pr-qr{width:100%;aspect-ratio:1;font-size:16px;word-break:break-all}.pr-qr svg{width:100%;height:100%;display:block}
+.pr-qrc b{display:block;margin-top:14px;font:italic 700 30px "Josefin Sans",sans-serif;color:var(--pr)}.pr-qrc small{font-size:22px;color:#444}
+.pr-rej ol{margin:0;padding:0;list-style:none;counter-reset:n;max-width:640px}.pr-rej li{counter-increment:n;position:relative;padding:0 0 0 86px;margin:0 0 44px;font-size:36px;line-height:1.25}
+.pr-rej li::before{content:counter(n);position:absolute;left:0;top:-8px;width:62px;height:62px;border-radius:50%;background:var(--pr);color:#fff;font:700 34px/66px "Josefin Sans",sans-serif;text-align:center}
+.pr-points{position:absolute;left:92px;right:92px;top:250px;bottom:112px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;justify-content:center;gap:20px;font-size:38px;line-height:1.25}
+.pr-points li{position:relative;padding-left:44px}.pr-points li::before{content:"";position:absolute;left:0;top:14px;width:18px;height:18px;border-radius:50%;background:var(--pr)}
+/* le montage, dans la fiche */
+.pr-act{display:flex;align-items:center;gap:8px;margin:12px 0}.pr-act .pr-n{margin-left:auto;font-size:13px;color:var(--muted)}
+.pr-reg{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}.pr-ajd{margin:0 0 12px}.pr-ajd>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1.5px dashed var(--line);border-radius:10px;font:700 13px Inter,sans-serif;color:var(--ink)}.pr-ajd>summary::-webkit-details-marker{display:none}.pr-ajd[open]>summary{border-style:solid}
+.pr-aj{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.pr-aj select{border:1.5px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);padding:6px 8px;font:600 12.5px Inter,sans-serif;max-width:170px}
+.pr-ls{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}.pr-l{display:flex;align-items:center;gap:10px;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.pr-l.sec{border-left:3px solid #AB2145}.pr-l.off{opacity:.45}.pr-l.off .pr-lt b{text-decoration:line-through}
+.pr-mini{position:relative;width:112px;height:63px;flex:none;overflow:hidden;border-radius:7px;border:0;padding:0;background:#222;cursor:pointer}
+.pr-mini>img{width:100%;height:100%;object-fit:cover;display:block}.pr-mini>.pr-s{position:absolute;left:0;top:0;transform:scale(.07);transform-origin:0 0;pointer-events:none}
+.pr-mini.grand{width:100%;max-width:480px;height:auto;aspect-ratio:16/9;cursor:default;container-type:inline-size}.pr-mini.grand>.pr-s{transform:scale(calc(100cqw / 1600px))}
+.pr-apercu{margin:10px 0 14px}
+.pr-lt{flex:1;min-width:0}.pr-lt b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pr-lt small{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-la{display:flex;gap:3px;flex:none}.pr-la button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:13px;cursor:pointer}.pr-la button:disabled{opacity:.25;cursor:default}
+@media(max-width:600px){.pr-mini{width:84px;height:47px}.pr-mini>.pr-s{transform:scale(.0525)}.pr-la button{width:30px;height:30px}}
+/* projection */
+#pres-o{position:fixed;inset:0;z-index:900;background:#000;display:none;overflow:hidden;touch-action:pan-y}#pres-o.on{display:block}
+#pres-sc{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0}
+#pres-o .pp-g,#pres-o .pp-d{position:absolute;top:0;bottom:60px;width:30%;border:0;background:transparent;cursor:pointer}#pres-o .pp-g{left:0}#pres-o .pp-d{right:0;width:70%}
+#pres-o .pp-b{position:absolute;right:12px;bottom:10px;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:12px;background:rgba(0,0,0,.55);color:#fff;opacity:.35;transition:opacity .2s}
+#pres-o .pp-b:hover,#pres-o .pp-b:focus-within{opacity:1}@media(hover:none){#pres-o .pp-b{opacity:.8}}
+#pres-o .pp-b span{font:600 13px Inter,sans-serif;padding:0 6px}#pres-o .pp-b button{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:16px;cursor:pointer}
+#pres-print{display:none}
+html.pres-on,html.pres-on body{overflow:hidden}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
 </head>
@@ -2433,8 +2501,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.62.1";
+const APP_VERSION="1.63.0";
 const CHANGELOG=[
+  {v:"1.63.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentations : dans la fiche d'une réunion et dans Mon groupe, « 🎬 Présentation » monte la présentation à partir de la trame nationale de la réunion d'information (32 slides). La couverture prend la date, la ville et le groupe ; la slide « Qui suis-je ? » reprend la photo et les activités de l'animateur.","Le montage : masquer une slide, la déplacer, passer en version courte, ajouter un co-animateur ou une slide — invités du jour, membres du groupe, nouveaux membres, renouvellements, métiers recherchés, prochaine réunion, QR code du formulaire d'adhésion du groupe, ou une slide libre avec un titre et quelques lignes.","Projection en plein écran (flèches, clic, balayage au téléphone, Échap) et sortie PDF, une slide par page.","Un second modèle, « Réunion du groupe », pour les réunions de membres : couverture, invités, nouveaux membres, renouvellements, métiers recherchés, prochaine réunion.","Le montage est gardé sur la réunion ; la slide « Qui suis-je ? » est gardée sur l'animateur et sert à toutes ses présentations."]}},
   {v:"1.62.1",date:"19 novembre 2026",notes:{"Ajouté":["Au téléphone, fiche d'un membre : un bouton « 🔑 Donner l'accès à l'espace membre » en tête de fiche, sous Appeler / WhatsApp / E-mail. Il crée le code et prépare le message WhatsApp. Avant, il fallait déplier la section « Espace membre » tout en bas."]}},
   {v:"1.62.0",date:"19 novembre 2026",notes:{"Ajouté":["Visite guidée refaite sur l'appli d'aujourd'hui. À la première connexion : « L'essentiel », deux minutes. Dans Paramètres → Aide : l'essentiel, la visite complète (cinq minutes) ou une partie seulement — accueil et chiffres, Mon groupe, agenda, groupes et membres, recommandations, adhésions, équipe, ressources.","La visite s'adapte au rôle (animateur, directeur, direction nationale, lecture seule) et à l'écran : sur téléphone elle montre la barre du bas, le bouton Reco et le menu ☰."],"Modifié":["Un seul mot partout : « groupe ». Les écrans, les filtres, les tableaux et les messages qui disaient encore « club » disent « groupe » (le « Club d'Affaires Protéine » garde son nom).","Sur une grande zone, la visite n'éclaire que le haut et garde sa bulle lisible en dessous."],"Corrigé":["Carte « Affaires générées par les recos » : petit titre en blanc (il était bleu sur rouge).","Un lien de document partagé part toujours de l'adresse publique du site."]}},
   {v:"1.61.0",date:"19 novembre 2026",notes:{"Modifié":["Thèmes sombres : plus de rouge sur rouge dans le CRM. Les fonds teintés de rouge passent en gris neutre, le rouge des textes est adouci, les boutons secondaires (Copier le lien, Ouvrir, Je ne viens plus…) sont en texte clair.","Une action rouge est maintenant un vrai bouton rouge à texte blanc : « Voir » sur les demandes, « Planifier une réunion » dans les tableaux et sur les cartes des groupes.","Bandeau « Vue régionale » en anthracite avec un filet rouge, pour ne plus avoir deux bandeaux rouges l'un sous l'autre."],"Corrigé":["Pastille de date en tête d'une fiche de réunion : même dessin que partout ailleurs (bande rouge sur toute la largeur, filet autour)."]}},
@@ -3018,13 +3087,13 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
-function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||""}}
+function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||"",photo:r.photo||"",profil:r.profil||null}}
 function mapClub(r){return{id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
 const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi,type_reco,objet,origine,budget,date_limite,montant_devis,relance_le";
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.archivee_le&&(r.statut==="planifiee"||r.statut==="confirmee")?"archivee":r.statut,statutBase:r.statut,archiveeLe:r.archivee_le||null,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
+function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.archivee_le&&(r.statut==="planifiee"||r.statut==="confirmee")?"archivee":r.statut,statutBase:r.statut,archiveeLe:r.archivee_le||null,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
@@ -3191,6 +3260,154 @@ async function docsAccueilCRM(){
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="closeSheet();docsOuvrir()">Ouvrir mon espace documents</button></div></div>`;
   openSheet();return true;
 }
+/* ══ v1.63 : présentations montées dans le CRM ══════════════════════════════════════════════
+   La trame nationale « Réunion d'information » (32 slides) est rangée en images dans presentations/si/.
+   Les slides qui changent d'un groupe à l'autre sont dessinées ici (1600 × 900) : couverture, « Qui suis-je ? »,
+   le groupe, nouveaux membres, renouvellements, invités, métiers recherchés, prochaine réunion, QR d'adhésion, slide libre.
+   Le montage d'une réunion (slides masquées, ordre, animateurs, slides ajoutées) est dans reunions.presentation.
+   Une clé de slide : "couv", "p<n>" (image de la trame), "anim:<id>", "libre:<id>", ou un nom de PRES_DYN. */
+const PRES_SI=[[2,"Sommaire"],[3,"Faisons connaissance",1],[6,"Qui êtes-vous ?"],[7,"Les réseaux",1],[8,"Un réseau, à quoi ça sert ?"],[9,"Dans quels réseaux êtes-vous ?"],[10,"Histoire et concept",1],[11,"Notre histoire"],[12,"Du business mais pas que…"],[13,"Un club façonné par ses membres"],[14,"Chez nous, pas de monotonie !"],[15,"Interclubs, afterworks, soirées"],[16,"Les outils",1],[17,"Le site internet"],[18,"Le CRM"],[19,"L'application mobile"],[20,"Les réseaux sociaux"],[21,"Les acteurs",1],[22,"Les missions de l'animateur"],[23,"Les missions du directeur de secteur"],[24,"Les missions des pairs"],[25,"Hassan Bahajjoub, directeur national"],[26,"Les missions du directeur national"],[27,"Les missions du bureau national"],[28,"L'adhésion",1],[29,"Investissement pour l'adhérent"],[30,"L'adhésion permet de…"],[31,"Nos réseaux sociaux"],[32,"Des questions ?",1]];
+const PRES_SI_COURT=[9,11,15,17,18,19,20,23,26,27,31];
+const PRES_MODELES={si:"Réunion d'information",mb:"Réunion du groupe"};
+const PRES_DYN={invites:["🙋","Nos invités du jour"],groupe:["👥","Le groupe"],nouveaux:["🎉","Nouveaux membres"],renouv:["🔁","Renouvellements"],recherche:["🔎","Métiers recherchés"],prochaine:["📅","Prochaine réunion"],rejoindre:["📲","Rejoignez-nous (QR code)"]};
+const PRES_DEFAUT={si:["rejoindre"],mb:["invites","nouveaux","renouv","recherche","prochaine"]};
+let _pres=null,_presPolice=false;
+function presPolice(){if(_presPolice)return;_presPolice=true;const l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,600;1,600;1,700&family=Poppins:wght@700&display=swap";document.head.appendChild(l)}
+function presReunion(id){return ((window._DBvrai||DB).reunions||[]).find(x=>x.id===id)||DB.reunions.find(x=>x.id===id)}
+function presPeut(m){try{return !!m&&!readOnly()&&!(SESSION&&SESSION._voir)&&canEditReunion(m)}catch(e){return false}}
+function presEtat(m){const p=m.pres&&typeof m.pres==="object"?m.pres:{};const modele=PRES_MODELES[p.modele]?p.modele:(m.format?"mb":"si");
+  return{modele,masque:Array.isArray(p.masque)?p.masque.slice():[],ordre:Array.isArray(p.ordre)?p.ordre.slice():null,anims:Array.isArray(p.anims)?p.anims.slice():(m.animId?[m.animId]:[]),plus:Array.isArray(p.plus)?p.plus.slice():PRES_DEFAUT[modele].slice(),libres:Array.isArray(p.libres)?p.libres.map(x=>({...x})):[]}}
+/* Les clés dans l'ordre : la trame du modèle, les slides ajoutées, puis l'ordre choisi par l'animateur s'il en a un. */
+function presCles(m,st){
+  const A=st.anims.map(a=>"anim:"+a),L=st.libres.map(l=>"libre:"+l.id),P=k=>st.plus.includes(k)?[k]:[];let base;
+  if(st.modele==="si"){const im=PRES_SI.map(x=>"p"+x[0]),i6=im.indexOf("p6"),i28=im.indexOf("p28"),i31=im.indexOf("p31");
+    base=["couv",...im.slice(0,i6),...A,...im.slice(i6,i28),...P("groupe"),...P("nouveaux"),...P("renouv"),...P("recherche"),...P("invites"),...im.slice(i28,i31),...P("rejoindre"),...P("prochaine"),...L,...im.slice(i31)]}
+  else base=["couv",...A,...P("invites"),...P("nouveaux"),...P("renouv"),...P("groupe"),...P("recherche"),...L,...P("prochaine"),...P("rejoindre"),"p32"];
+  if(!st.ordre)return base;
+  const out=st.ordre.filter(k=>base.includes(k));base.forEach((k,i)=>{if(out.includes(k))return;const prec=base.slice(0,i).reverse().find(x=>out.includes(x));out.splice(prec?out.indexOf(prec)+1:0,0,k)});return out}
+function presAnim(id){return ((window._DBvrai||DB).animateurs||[]).find(a=>a.id===id)}
+function presGroupeNom(m){return String((club(m.clubId)||{}).nom||"").replace(/^CAP\s+/,"")}
+function presMembres(m){return ((window._DBvrai||DB).membres||[]).filter(x=>x.clubId===m.clubId).sort((a,b)=>(a.num||0)-(b.num||0))}
+function presEcheance(x){const d=new Date((x.abDebut||x.createdAt||"").slice(0,10)+"T00:00:00");if(isNaN(d))return null;d.setFullYear(d.getFullYear()+1);return d}
+function presListe(k,m){const ref=new Date(m.date+"T00:00:00"),J=864e5;
+  if(k==="groupe")return presMembres(m);
+  if(k==="nouveaux")return presMembres(m).filter(x=>{const d=new Date((x.createdAt||"").slice(0,10)+"T00:00:00");return !isNaN(d)&&ref-d<=90*J&&ref-d>=-J});
+  if(k==="renouv")return presMembres(m).filter(x=>{const e=presEcheance(x);return e&&e-ref<=60*J&&e-ref>=-30*J});
+  if(k==="invites")return (m.guests||[]).filter(g=>!g.profilId&&g.statut!=="Non intéressé"&&g.statut!=="Membre");
+  if(k==="recherche")return (club(m.clubId)||{}).metRech||[];
+  if(k==="prochaine"){const n=((window._DBvrai||DB).reunions||[]).filter(r=>r.clubId===m.clubId&&r.date>m.date&&r.statut!=="annulee"&&r.statut!=="archivee").sort((a,b)=>a.date.localeCompare(b.date))[0];return n?[n]:[]}
+  return [1]}
+function presVide(k,m){return !!PRES_DYN[k]&&k!=="rejoindre"&&!presListe(k,m).length}
+function presTitre(k,m,st){if(k==="couv")return"Couverture";if(k[0]==="p"&&/^p\d+$/.test(k)){const x=PRES_SI.find(y=>"p"+y[0]===k);return x?x[1]:k}
+  if(k.startsWith("anim:")){const a=presAnim(k.slice(5));return "Qui suis-je ? · "+(a?a.nom:"animateur")}
+  if(k.startsWith("libre:")){const l=st.libres.find(x=>x.id===k.slice(6));return (l&&l.titre)||"Slide libre"}
+  return PRES_DYN[k]?PRES_DYN[k][1]:k}
+function presSection(k){const x=PRES_SI.find(y=>"p"+y[0]===k);return !!(x&&x[2])}
+/* ── dessin des slides (1600 × 900) ── */
+function prBas(m,st){const lb=st.modele==="si"?(m.type==="RL"?"Réunion de lancement":"Réunion d'information"):typeLib(m);return `<div class="pr-bas"><span>Club d'Affaires Protéine Maroc</span><span>${esc(lb)}</span></div>`}
+function prTete(sur,titre){return `<div class="pr-sur">${esc(sur)}</div><img class="pr-globe" src="logo-globe-192.png" alt=""><h1 class="pr-h">${esc(titre)}</h1>`}
+function prGras(t){return esc(t).replace(/\*([^*]+)\*/g,"<b>$1</b>")}
+function prNom(n){const w=String(n||"").trim().split(/\s+/);if(w.length<2)return esc(n||"");const d=w.pop();return esc(w.join(" "))+" "+esc(d.toUpperCase())}
+function prPers(x,sous){const ph=x.photo?`<img src="${esc(x.photo)}" alt="">`:`<i>${esc(initiales(x.nom))}</i>`;return `<div class="pr-pers"><span class="pr-av">${ph}</span><b>${esc(x.nom)}</b><small>${esc(sous||"")}</small></div>`}
+function prGrille(L,f){const n=L.length,cls=n<=4?"g4":n<=8?"g8":"g12";return `<div class="pr-grille ${cls}">${L.slice(0,15).map(f).join("")}</div>${n>15?`<div class="pr-plus">et ${n-15} autres</div>`:""}`}
+function presSlide(k,m,st){
+  const g=presGroupeNom(m),c=club(m.clubId)||{},d=new Date(m.date+"T00:00:00");
+  if(/^p\d+$/.test(k))return `<div class="pr-s"><img class="pr-img" src="presentations/si/${String(k.slice(1)).padStart(2,"0")}.jpg" alt="${esc(presTitre(k,m,st))}"></div>`;
+  if(k==="couv")return `<div class="pr-s pr-couv"><img class="pr-logo" src="presentations/commun/logo-blanc.png" alt="Club d'affaires Protéine Maroc"><div class="pr-acc">Le réseau d'affaires qui remet<br>l'humain au cœur du business</div><div class="pr-cg">${esc(c.ville||"")}${c.ville?", ":""}${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} ${d.getFullYear()}</div><div class="pr-cd">Club d'Affaires Protéine ${esc(g)}</div></div>`;
+  if(k.startsWith("anim:")){const a=presAnim(k.slice(5))||{nom:"Animateur"},p=a.profil||{},L=Array.isArray(p.lignes)?p.lignes:[];
+    return `<div class="pr-s pr-anim"><div class="pr-ag">${a.photo?`<img src="${esc(a.photo)}" alt="">`:`<i>${esc(initiales(a.nom))}</i>`}</div><div class="pr-ad"><img class="pr-globe" src="logo-globe-192.png" alt=""><div class="pr-q">QUI SUIS-JE ?</div><div class="pr-carte"><div class="pr-pil">${prNom(a.nom)}</div><div class="pr-role">${esc(p.role||"Animateur")}<br>Club d'Affaires Protéine<br>${esc(g)}</div></div><ul class="pr-coches">${L.map(l=>`<li>${prGras(l)}</li>`).join("")}</ul></div>${prBas(m,st)}</div>`}
+  if(k==="groupe"||k==="nouveaux"||k==="renouv"){const L=presListe(k,m),t=k==="groupe"?"Les membres du groupe":k==="nouveaux"?"Bienvenue à nos nouveaux membres":"Ils renouvellent leur confiance";
+    return `<div class="pr-s pr-liste">${prTete(g,t)}${L.length?prGrille(L,x=>prPers(x,[mbMetier(x),(x.infos||{}).ent_nom].filter(Boolean).join(" · "))):`<div class="pr-rien">Rien à afficher pour cette réunion.</div>`}${prBas(m,st)}</div>`}
+  if(k==="invites"){const L=presListe(k,m);return `<div class="pr-s pr-liste">${prTete(g,"Nos invités du jour")}${L.length?prGrille(L,x=>prPers({nom:x.nom},[x.metier,x.entreprise].filter(Boolean).join(" · ")||(x.par&&!/^Lien/.test(x.par)?"invité par "+x.par:""))):`<div class="pr-rien">Aucun invité inscrit pour l'instant.</div>`}${prBas(m,st)}</div>`}
+  if(k==="recherche"){const L=presListe(k,m);return `<div class="pr-s pr-liste">${prTete(g,"Les métiers que nous recherchons")}<div class="pr-ronds">${L.slice(0,10).map(x=>`<span>${esc(x)}</span>`).join("")}</div><div class="pr-note">Vous connaissez quelqu'un ? Parlez-en à votre animateur.</div>${prBas(m,st)}</div>`}
+  if(k==="prochaine"){const n=presListe(k,m)[0];if(!n)return `<div class="pr-s pr-liste">${prTete(g,"Prochaine réunion")}<div class="pr-rien">La date sera annoncée très vite.</div>${prBas(m,st)}</div>`;const nd=new Date(n.date+"T00:00:00");
+    return `<div class="pr-s pr-liste">${prTete(g,"Prochaine réunion")}<div class="pr-proch"><div class="pr-date"><small>${MOIS_LONG[nd.getMonth()]}</small><b>${nd.getDate()}</b></div><div><b>${esc(JOURS_LONG[nd.getDay()||7])} ${nd.getDate()} ${esc(MOIS_LONG[nd.getMonth()].toLowerCase())}${n.heure?" à "+esc(n.heure.replace(":"," h ").replace(" h 00"," h")):""}</b><span>${esc(typeLib(n))}${n.theme?" · "+esc(n.theme):""}</span><span>${esc(lieuNom(n.lieuId))}</span></div></div>${prBas(m,st)}</div>`}
+  if(k==="rejoindre")return `<div class="pr-s pr-liste">${prTete(g,"Rejoignez-nous")}<div class="pr-rej"><div class="pr-qrc"><div class="pr-qr" data-prqr="${esc(adhLink(m.clubId))}"></div><b>Formulaire d'adhésion</b><small>${esc(g)}</small></div><ol><li>Scannez le QR code avec votre téléphone</li><li>Remplissez le formulaire en quelques minutes</li><li>Votre animateur vous recontacte pour la suite</li></ol></div>${prBas(m,st)}</div>`;
+  if(k.startsWith("libre:")){const l=st.libres.find(x=>x.id===k.slice(6))||{};return `<div class="pr-s pr-liste">${prTete(g,l.titre||"")}<ul class="pr-points">${String(l.texte||"").split(/\n+/).map(x=>x.trim()).filter(Boolean).slice(0,9).map(x=>`<li>${prGras(x)}</li>`).join("")}</ul>${prBas(m,st)}</div>`}
+  return `<div class="pr-s"></div>`}
+async function presQr(racine){const z=[...(racine||document).querySelectorAll("[data-prqr]:empty")];if(!z.length)return;
+  try{const qrcode=await qrLib();z.forEach(el=>{const q=qrcode(0,"M");q.addData(el.dataset.prqr);q.make();el.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true})})}catch(e){z.forEach(el=>{el.textContent=el.dataset.prqr})}}
+/* ── le montage (fiche) ── */
+function presGroupe(clubId){const R=((window._DBvrai||DB).reunions||[]).filter(r=>r.clubId===clubId&&r.statut!=="annulee"),auj=isoJour(TODAY);
+  const m=R.filter(r=>r.date>=auj).sort((a,b)=>a.date.localeCompare(b.date))[0]||R.sort((a,b)=>b.date.localeCompare(a.date))[0];
+  if(!m){toast("Planifie d'abord une réunion pour ce groupe","warn");return}presOuvrir(m.id)}
+function presOuvrir(id){const m=presReunion(id);if(!m)return;presPolice();if(!_pres||_pres.id!==id)_pres={id,st:presEtat(m)};presRendu();openSheet()}
+function presRendu(){
+  const m=presReunion(_pres.id),st=_pres.st,peut=presPeut(m),K=presCles(m,st),c=club(m.clubId)||{},d=new Date(m.date+"T00:00:00");
+  const vis=K.filter(k=>!st.masque.includes(k)&&!presVide(k,m)).length;
+  const animsDispo=((window._DBvrai||DB).animateurs||[]).filter(a=>!st.anims.includes(a.id)).sort((a,b)=>(a.id===m.animId?-1:0)-(b.id===m.animId?-1:0)||a.nom.localeCompare(b.nom));
+  const ajout=Object.keys(PRES_DYN).filter(k=>!st.plus.includes(k));
+  const ligne=(k,i)=>{const masq=st.masque.includes(k),vide=presVide(k,m),edit=peut&&(k.startsWith("anim:")||k.startsWith("libre:")),sup=peut&&(k.startsWith("anim:")||k.startsWith("libre:")||PRES_DYN[k]);
+    const mini=/^p\d+$/.test(k)?`<img loading="lazy" src="presentations/si/${String(k.slice(1)).padStart(2,"0")}.jpg" alt="">`:presSlide(k,m,st);
+    return `<div class="pr-l${masq||vide?" off":""}${presSection(k)?" sec":""}" data-k="${esc(k)}"><button class="pr-mini" onclick="presProjeter('${esc(k)}')" title="Voir cette slide">${mini}</button>
+      <span class="pr-lt"><b>${esc(presTitre(k,m,st))}</b><small>${vide?"rien à afficher : elle sera sautée":masq?"masquée":/^p\d+$/.test(k)?"trame nationale":k==="couv"?"date, ville et groupe de la réunion":"remplie par le CRM"}</small></span>
+      ${peut?`<span class="pr-la">${edit?`<button onclick="${k.startsWith("anim:")?`presAnimForm('${k.slice(5)}')`:`presLibreForm('${k.slice(6)}')`}" title="Modifier" aria-label="Modifier">✎</button>`:""}<button onclick="presMonter('${esc(k)}',-1)" ${i?"":"disabled"} title="Monter" aria-label="Monter">↑</button><button onclick="presMonter('${esc(k)}',1)" ${i<K.length-1?"":"disabled"} title="Descendre" aria-label="Descendre">↓</button>${sup?`<button onclick="presRetirer('${esc(k)}')" title="Retirer" aria-label="Retirer">✕</button>`:`<button onclick="presMasquer('${esc(k)}')" title="${masq?"Afficher":"Masquer"}" aria-label="${masq?"Afficher":"Masquer"}">${masq?"🚫":"👁"}</button>`}</span>`:""}</div>`};
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),ini:"🎬",title:"Présentation",sub:`${esc(presGroupeNom(m))} · ${esc(typeLib(m))} du ${dateLongue(d)}`})}
+    <div class="pr-act"><button class="btn" onclick="presProjeter()">▶ Projeter</button><button class="btn ghost" onclick="presImprimer()">🖨 PDF</button><span class="pr-n">${vis} slide${vis>1?"s":""}</span></div>
+    ${peut?`<div class="pr-reg"><div class="gv-seg">${Object.entries(PRES_MODELES).map(([k,l])=>`<button class="${st.modele===k?"on":""}" onclick="presModele('${k}')">${esc(l)}</button>`).join("")}</div>
+      ${st.modele==="si"?`<div class="gv-seg"><button class="${PRES_SI_COURT.every(n=>st.masque.includes("p"+n))?"":"on"}" onclick="presVersion('longue')">Version longue</button><button class="${PRES_SI_COURT.every(n=>st.masque.includes("p"+n))?"on":""}" onclick="presVersion('courte')">Version courte</button></div>`:""}</div>
+      <details class="pr-ajd"${window._presAj?" open":""} ontoggle="window._presAj=this.open"><summary>＋ Ajouter une slide ou un animateur</summary><div class="pr-aj"><button class="btn ghost mini" onclick="presLibreForm()">＋ Slide libre</button>${ajout.map(k=>`<button class="btn ghost mini" onclick="presAjouter('${k}')">${PRES_DYN[k][0]} ${esc(PRES_DYN[k][1])}</button>`).join("")}${animsDispo.length?`<select onchange="if(this.value){presAnimAjouter(this.value);this.value=''}" aria-label="Ajouter un animateur"><option value="">＋ Animateur…</option>${animsDispo.map(a=>`<option value="${a.id}">${esc(a.nom)}</option>`).join("")}</select>`:""}</div></details>`:`<p class="fh-note">Tu peux projeter cette présentation. Seul l'animateur du groupe ou la direction peut la modifier.</p>`}
+    <div class="pr-ls">${K.map(ligne).join("")}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openMeeting('${m.id}')">← La réunion</button><button class="btn" onclick="presProjeter()">▶ Projeter</button></div>`;
+  presQr(document.getElementById("sheet-content"));
+}
+let _presSauve=null;
+function presMaj(){const m=presReunion(_pres.id),st=_pres.st;m.pres={modele:st.modele,masque:st.masque,ordre:st.ordre,anims:st.anims,plus:st.plus,libres:st.libres};presRendu();
+  if(!presPeut(m))return;clearTimeout(_presSauve);_presSauve=setTimeout(async()=>{const {error}=await sb.from("reunions").update({presentation:m.pres}).eq("id",m.id);if(error)toast("Présentation non enregistrée : "+error.message,"warn")},600)}
+function presMasquer(k){const s=_pres.st.masque,i=s.indexOf(k);if(i<0)s.push(k);else s.splice(i,1);presMaj()}
+function presMonter(k,sens){const m=presReunion(_pres.id),st=_pres.st,K=presCles(m,st),i=K.indexOf(k),j=i+sens;if(i<0||j<0||j>=K.length)return;[K[i],K[j]]=[K[j],K[i]];st.ordre=K;presMaj()}
+function presRetirer(k){const st=_pres.st;if(k.startsWith("anim:"))st.anims=st.anims.filter(a=>a!==k.slice(5));else if(k.startsWith("libre:"))st.libres=st.libres.filter(l=>l.id!==k.slice(6));else st.plus=st.plus.filter(x=>x!==k);st.masque=st.masque.filter(x=>x!==k);if(st.ordre)st.ordre=st.ordre.filter(x=>x!==k);presMaj()}
+function presAjouter(k){const st=_pres.st;if(!st.plus.includes(k))st.plus.push(k);presMaj()}
+function presAnimAjouter(id){const st=_pres.st;if(!st.anims.includes(id))st.anims.push(id);presMaj()}
+function presModele(k){const st=_pres.st;if(st.modele===k)return;st.modele=k;st.ordre=null;st.masque=[];st.plus=PRES_DEFAUT[k].slice();presMaj()}
+function presVersion(v){const st=_pres.st,C=PRES_SI_COURT.map(n=>"p"+n);st.masque=st.masque.filter(k=>!C.includes(k));if(v==="courte")st.masque.push(...C);presMaj()}
+function presLibreForm(id){const st=_pres.st,l=id?st.libres.find(x=>x.id===id):null;
+  document.getElementById("sheet-content").innerHTML=`<h3>${l?"Modifier la slide":"Nouvelle slide"}</h3><div class="sheet-sub">Un titre et quelques lignes : thème du jour, annonce, remerciements, agenda…</div>
+    <div class="field"><label>Titre</label><input id="pl-t" maxlength="60" value="${esc(l?l.titre:"")}" placeholder="Le thème du jour"></div>
+    <div class="field"><label>Texte, une idée par ligne (9 lignes au plus)</label><textarea id="pl-x" rows="7" placeholder="Une ligne par point.&#10;Entoure un mot d'étoiles pour le mettre en *gras*.">${esc(l?l.texte:"")}</textarea></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="presRendu()">Annuler</button><button class="btn" onclick="presLibreOk('${id||""}')">Enregistrer</button></div>`}
+function presLibreOk(id){const st=_pres.st,t=document.getElementById("pl-t").value.trim(),x=document.getElementById("pl-x").value.trim();if(!t&&!x){toast("Écris un titre ou un texte","warn");return}
+  if(id){const l=st.libres.find(y=>y.id===id);if(l){l.titre=t;l.texte=x}}else st.libres.push({id:Math.random().toString(36).slice(2,8),titre:t,texte:x});presMaj()}
+/* La slide « Qui suis-je ? » : photo et lignes de l'animateur, gardées sur sa fiche d'animateur. */
+function presAnimPeut(id){return !!SESSION&&!readOnly()&&!SESSION._voir&&(SESSION.animId===id||navDir())}
+function presAnimForm(id){const a=presAnim(id);if(!a)return;const p=a.profil||{},peut=presAnimPeut(id);_pres.photo=null;
+  document.getElementById("sheet-content").innerHTML=`<h3>Qui suis-je ? · ${esc(a.nom)}</h3><div class="sheet-sub">${peut?"Ta photo et tes activités, reprises dans toutes tes présentations.":"Seul l'animateur lui-même ou la direction peut modifier cette slide."}</div>
+    <div class="pr-apercu"><div class="pr-mini grand">${presSlide("anim:"+id,presReunion(_pres.id),_pres.st)}</div></div>
+    ${peut?`<div class="field"><label>Photo (portrait, de préférence sur fond uni)</label><input type="file" id="pa-f" accept="image/*" onchange="presAnimPhoto(this)"><small id="pa-fi" class="fh-note"></small></div>
+    <div class="field"><label>Rôle</label><select id="pa-r">${["Animateur","Animatrice","Co-animateur","Co-animatrice","Directeur de zone","Directrice de zone"].map(r=>`<option ${(p.role||"Animateur")===r?"selected":""}>${r}</option>`).join("")}</select></div>
+    <div class="field"><label>Activités, une par ligne (5 au plus)</label><textarea id="pa-l" rows="5" placeholder="Gérant *Nom de la société*&#10;Les étoiles mettent en gras.">${esc((Array.isArray(p.lignes)?p.lignes:[]).join("\n"))}</textarea></div>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="presRendu()">← Retour</button>${peut?`<button class="btn" onclick="presAnimOk('${id}',this)">Enregistrer</button>`:""}</div>`}
+function presAnimPhoto(inp){const f=inp.files&&inp.files[0],z=document.getElementById("pa-fi");if(!f)return;const im=new Image();
+  im.onload=()=>{const k=Math.min(1,640/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+    let u=cv.toDataURL("image/webp",.86);if(!/^data:image\/webp/.test(u)||u.length>380000)u=cv.toDataURL("image/jpeg",.84);URL.revokeObjectURL(im.src);
+    if(u.length>380000){z.textContent="Photo trop lourde, essaie une image plus petite.";return}_pres.photo=u;z.textContent="Photo prête ("+Math.round(u.length/1400)+" ko). Enregistre pour la garder."};
+  im.onerror=()=>{z.textContent="Image illisible."};im.src=URL.createObjectURL(f)}
+async function presAnimOk(id,b){const a=presAnim(id);if(!a)return;const profil={role:document.getElementById("pa-r").value,lignes:document.getElementById("pa-l").value.split(/\n+/).map(x=>x.trim()).filter(Boolean).slice(0,5)};
+  b.disabled=true;const {error}=await sb.rpc("cap_anim_profil",{p_anim:id,p_photo:_pres.photo||null,p_profil:profil});b.disabled=false;
+  if(error){toast("Non enregistré : "+error.message,"warn");return}a.profil=profil;if(_pres.photo)a.photo=_pres.photo;_pres.photo=null;toast("Slide « Qui suis-je ? » enregistrée");presRendu()}
+/* ── projection plein écran ── */
+function presVisibles(){const m=presReunion(_pres.id),st=_pres.st;return presCles(m,st).filter(k=>!st.masque.includes(k)&&!presVide(k,m))}
+function presProjeter(k){if(!_pres)return;const K=presVisibles();if(!K.length){toast("Aucune slide à projeter","warn");return}
+  let o=document.getElementById("pres-o");if(!o){o=document.createElement("div");o.id="pres-o";o.innerHTML=`<div id="pres-sc"></div><button class="pp-g" aria-label="Slide précédente" onclick="presAller(-1)"></button><button class="pp-d" aria-label="Slide suivante" onclick="presAller(1)"></button><div class="pp-b"><span id="pres-c"></span><button onclick="presAller(-1)" aria-label="Précédente">‹</button><button onclick="presAller(1)" aria-label="Suivante">›</button><button onclick="presPlein()" aria-label="Plein écran">⤢</button><button onclick="presFermer()" aria-label="Fermer">✕</button></div>`;document.body.appendChild(o);
+    let x0=null;o.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});o.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)presAller(dx<0?1:-1)},{passive:true})}
+  _pres.i=Math.max(0,k?K.indexOf(k):0);if(_pres.i<0)_pres.i=0;o.classList.add("on");document.documentElement.classList.add("pres-on");document.addEventListener("keydown",presTouche);window.addEventListener("resize",presCaler);presMontrer()}
+function presMontrer(){const K=presVisibles(),m=presReunion(_pres.id),st=_pres.st;_pres.i=Math.min(Math.max(0,_pres.i),K.length-1);const sc=document.getElementById("pres-sc");
+  sc.innerHTML=presSlide(K[_pres.i],m,st);sc.firstElementChild.classList.add("entre");document.getElementById("pres-c").textContent=(_pres.i+1)+" / "+K.length;presCaler();presQr(sc);
+  const s=K[_pres.i+1];if(s&&/^p\d+$/.test(s)){const im=new Image();im.src="presentations/si/"+String(s.slice(1)).padStart(2,"0")+".jpg"}}
+function presCaler(){const sc=document.getElementById("pres-sc");if(!sc)return;const k=Math.min(innerWidth/1600,innerHeight/900);sc.style.transform=`translate(${(innerWidth-1600*k)/2}px,${(innerHeight-900*k)/2}px) scale(${k})`}
+function presAller(s){const K=presVisibles();if(_pres.i+s<0)return;if(_pres.i+s>=K.length){presFermer();return}_pres.i+=s;presMontrer()}
+function presTouche(e){if(e.key==="Escape"){e.stopPropagation();presFermer()}else if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){e.preventDefault();presAller(1)}else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){e.preventDefault();presAller(-1)}}
+function presPlein(){const o=document.getElementById("pres-o");try{if(document.fullscreenElement)document.exitFullscreen();else if(o.requestFullscreen)o.requestFullscreen()}catch(e){}}
+function presFermer(){const o=document.getElementById("pres-o");if(o)o.classList.remove("on");document.documentElement.classList.remove("pres-on");document.removeEventListener("keydown",presTouche);window.removeEventListener("resize",presCaler);try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+/* ── PDF : une page par slide, par l'impression du navigateur ── */
+async function presImprimer(){const K=presVisibles(),m=presReunion(_pres.id),st=_pres.st;if(!K.length)return;toast("Préparation du PDF…");
+  let z=document.getElementById("pres-print");if(!z){z=document.createElement("div");z.id="pres-print";document.body.appendChild(z)}
+  z.innerHTML=K.map(k=>presSlide(k,m,st)).join("");await presQr(z);
+  await Promise.all([...z.querySelectorAll("img")].map(im=>im.complete?null:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,8000)})));
+  let css=document.getElementById("pres-print-css");if(!css){css=document.createElement("style");css.id="pres-print-css";document.head.appendChild(css)}
+  css.textContent="@page{size:1600px 900px;margin:0}@media print{html,body{background:#fff!important;margin:0!important;padding:0!important}body>*:not(#pres-print){display:none!important}#pres-print{display:block!important}#pres-print .pr-s{break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}}";
+  const fin=()=>{css.textContent="";z.innerHTML="";window.removeEventListener("afterprint",fin)};window.addEventListener("afterprint",fin);
+  const t=document.title;document.title="Présentation "+presGroupeNom(m)+" "+m.date;setTimeout(()=>{window.print();document.title=t},150)}
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
 const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Accueil et chiffres"],["groupe","👥","Mon groupe"],["agenda","📅","Agenda et réunions"],["reseau","🌐","Groupes, membres, lieux"],["recos","🤝","Recommandations"],["adhesions","📝","Adhésions"],["equipe","🧑‍💼","Équipe"],["reglages","⚙️","Ressources et paramètres"]];
 /* v1.62 : visite guidée refaite sur l'appli d'aujourd'hui. Elle s'adapte au rôle (visiteur, animateur, directeur, direction nationale, super admin)
@@ -3221,6 +3438,7 @@ function tutoEtapes(partie){
       {k:1,go:"reunions",c:"#view .grp-ong",t:"Mon groupe",x:"Le poste de pilotage d'un groupe : tableau de bord, calendrier, membres et métiers, bilans, affaires et discussion. "+(anim?"Si tu animes plusieurs groupes, change de groupe en haut.":"Tu choisis le groupe en haut, ou « Tous mes périmètres ».")},
       {go:"reunions",c:"#view .grp-todo, #view .per",t:"Le tableau de bord",x:"Ce qu'il reste à faire pour ce groupe, puis ses chiffres sur la période : membres, réunions, présences, invités, adhésions et affaires échangées. Les métiers représentés et ceux que le groupe recherche sont dans l'onglet Membres."},
       {k:1,go:"reunions",c:'#view button[onclick="openPlanSerie()"]',t:"Planifier en série",x:"Crée d'un coup les réunions des prochains mois : chaque semaine, tous les quinze jours ou une fois par mois. En « Cycle », les réunions s'enchaînent seules : business, conférence avec un intervenant, visite d'entreprise, puis business."},
+      {go:"reunions",c:'#view [onclick^="presGroupe"]',t:"La présentation",x:"« Présentation » monte les slides de ta prochaine réunion à partir de la trame nationale : la couverture prend la date, la ville et le groupe, ta slide « Qui suis-je ? » est déjà prête. Tu masques, tu déplaces, tu ajoutes une slide (invités du jour, nouveaux membres, QR d'adhésion, slide libre), puis tu projettes en plein écran ou tu sors un PDF."},
       {go:"reunions",t:"Le bilan après la réunion",x:"Un seul écran, une minute : présents, invités venus, adhésions, recommandations passées et notes, avec le compte rendu dans un volet. Une vieille réunion sans intérêt s'archive sans bilan. Le pointage des membres peut se faire par QR code le jour même."},
       {go:"reunions",c:'#view a[href^="membre.html#equipe="]',t:"La vue membre",x:"« Vue membre » te montre le groupe exactement comme tes membres le voient dans leur espace : prochaine réunion, invités, fil de discussion, chiffres. Tu peux écrire dans le fil du groupe depuis l'onglet Discussion."}]:[],
     agenda:[
@@ -3929,7 +4147,7 @@ function viewGroupe(){
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
       <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
-      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${maFiche(c.id)?`<a class="btn mini" href="membre.html#moi=${maFiche(c.id).id}" target="_blank" rel="noopener" title="Ton espace membre : tes recos, tes chiffres, ton groupe">🪪 Mon espace membre</a>`:""}<a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
+      <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${maFiche(c.id)?`<a class="btn mini" href="membre.html#moi=${maFiche(c.id).id}" target="_blank" rel="noopener" title="Ton espace membre : tes recos, tes chiffres, ton groupe">🪪 Mon espace membre</a>`:""}<a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a><button class="btn ghost mini" onclick="presGroupe('${c.id}')" title="Monter et projeter la présentation de la prochaine réunion">🎬 Présentation</button>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
     </section>
     ${onglets}<div class="grp-corps">${corps}</div><div style="height:8px"></div></div>`;
 }
@@ -5118,6 +5336,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
     monPeut()&&it(vuePeutBasculer()||SESSION.monitoring?"Monitoring":"Statistiques","navVers('monitoring')",{on:tab==="monitoring"}),!ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","monOuvrir('rapport')"),it("Présenter","openPresentation()")].filter(Boolean);
   if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
     return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
+      it("Présentation",`presGroupe('${c.id}')`),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
   if(r==="age"){const nb=reunionsSansBilan().length;
     return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb})].filter(Boolean)}
@@ -5476,7 +5695,7 @@ function meetingDetail(m,editable){
       <h3 style="font-size:16px">Invités <span style="color:var(--muted);font-weight:500">(${guests.length})</span></h3>${guests.length?`<div class="gv-seg"><button class="${gvl?"":"on"}" onclick="guestVueChoisir('det','${m.id}')">Détaillé</button><button class="${gvl?"on":""}" onclick="guestVueChoisir('liste','${m.id}')">Liste</button></div>`:""}
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
-    <div class="sheet-actions">${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    <div class="sheet-actions">${SESSION&&SESSION.role!=="visiteur"?`<button class="btn ghost" onclick="presOuvrir('${m.id}')">🎬 Présentation</button>`:""}${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   ficheOpen();natInvQr();repCharger(m);natClicsCharger(m);
 }
 /* v1.9.0 : réponses des membres à la réunion (« Je viens » / « Je ne viens pas » dans l'espace membre). */
@@ -8396,7 +8615,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

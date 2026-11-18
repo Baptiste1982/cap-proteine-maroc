@@ -14,7 +14,11 @@
   const PTS='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
   const ICO='<img class="ins-ico" src="icone-192.png?v=2" alt="">';
   const PAGE='<div class="ins-page">'+ICO+'<b>CAP Protéine</b><p>Club d\'Affaires Protéine</p><span class="ins-champ"></span><span class="ins-champ"></span><span class="ins-cta"></span></div>';
-  const ACC='<div class="ins-acc" data-acc>'+'<span class="ins-app"><i></i>Appli</span>'.repeat(7)+'<span class="ins-app cap" data-cap><i>'+ICO+'</i>CAP Protéine</span></div>';
+  // v1.77 : dernière étape — activer les notifications (recommandation reçue, message, document…)
+  const MEMBRE=/membre\.html/.test(location.pathname);
+  const NOTIF=["Active les notifications",(MEMBRE?"Ouvre l'appli par son icône, puis Moi → Notifications → Activer.":"Ouvre l'appli par son icône, puis la cloche en haut → Activer.")+(MEMBRE?" Tu es prévenu dès qu'une recommandation arrive.":" Tu es prévenu des inscriptions, des demandes et des recommandations.")];
+  const BANN='<div class="ins-notif" data-notif><b>CAP Protéine</b><span>'+(MEMBRE?"Karim t\'a recommandé un contact":"Nouvel inscrit à ta réunion")+'</span></div>';
+  const ACC='<div class="ins-acc" data-acc>'+BANN+'<span class="ins-app"><i></i>Appli</span>'.repeat(7)+'<span class="ins-app cap" data-cap><i>'+ICO+'</i>CAP Protéine</span></div>';
   const lig=(t,fort,d)=>'<div class="ins-lg"'+(d?' data-c="'+d+'"':'')+'><span>'+(fort?'<b>'+t+'</b>':t)+'</span></div>';
   function guide(os){
     if(os==="ios"){const haut=chromeIOS;
@@ -26,7 +30,7 @@
             ["Touche le bouton de partage",haut?"Le carré avec la flèche vers le haut, en haut à droite.":"Le carré avec la flèche vers le haut, en bas de l'écran."],
             ["Choisis « Sur l'écran d'accueil »","Fais défiler la liste vers le bas si tu ne le vois pas."],
             ["Touche « Ajouter »","En haut à droite de la fenêtre."],
-            ["C'est fait","L'icône CAP Protéine est sur ton téléphone, comme une appli."]]}}
+            ["C'est fait","L'icône CAP Protéine est sur ton téléphone, comme une appli."],NOTIF]}}
     return {html:'<div class="ins-barre"><span class="ins-url">cap-proteine-maroc.vercel.app</span><span class="ins-bt n" data-c="1">'+PTS+'</span></div>'+PAGE+
         '<div class="ins-voile" data-vo></div><div class="ins-menu" data-fe>'+lig("Nouvel onglet")+lig("Favoris")+lig("Ajouter à l'écran d'accueil",1,2)+lig("Paramètres")+'</div>'+
         '<div class="ins-conf" data-co>'+ICO+'<b>Installer l\'appli ?</b><span class="ins-ok" data-c="3">Installer</span></div>'+ACC,
@@ -34,7 +38,7 @@
             ["Touche les trois points","En haut à droite de l'écran."],
             ["Choisis « Ajouter à l'écran d'accueil »","Selon le téléphone, la ligne s'appelle « Installer l'application »."],
             ["Touche « Installer »","Le téléphone te demande de confirmer."],
-            ["C'est fait","L'icône CAP Protéine est sur ton téléphone, comme une appli."]]}}
+            ["C'est fait","L'icône CAP Protéine est sur ton téléphone, comme une appli."],NOTIF]}}
   const CSS=`#ins-o{position:fixed;inset:0;z-index:100000;background:rgba(10,11,13,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(14px,env(safe-area-inset-top,0px)) 16px max(18px,env(safe-area-inset-bottom,0px));color:#F2F1EF;font-family:Inter,system-ui,sans-serif}
 #ins-o *{box-sizing:border-box}
 .ins-b{width:min(100%,400px);display:flex;flex-direction:column;align-items:center;gap:10px;margin:auto 0}
@@ -65,6 +69,7 @@
 .ins-conf{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%) scale(.9);background:#fff;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;align-items:center;opacity:0;transition:.3s;text-align:center}.ins-conf.on{opacity:1;transform:translateY(-50%)}
 .ins-conf b{font-size:12px}.ins-ok{align-self:stretch;text-align:center;padding:8px;border-radius:8px;background:#1F6FEB;color:#fff;font-weight:700}
 .ins-acc{position:absolute;inset:0;background:linear-gradient(160deg,#2B3A55,#5B3B52 60%,#8A3A44);display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px;padding:38px 14px;align-content:start;opacity:0;transition:opacity .5s;pointer-events:none}.ins-acc.on{opacity:1}
+.ins-notif{position:absolute;left:8px;right:8px;top:8px;grid-column:1/-1;background:rgba(255,255,255,.96);color:#1B1416;border-radius:13px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;font-size:9.5px;text-align:left;box-shadow:0 8px 22px rgba(0,0,0,.35);transform:translateY(-130%);transition:transform .5s cubic-bezier(.2,.9,.3,1.1)}.ins-notif.on{transform:none}.ins-notif b{font-size:9px;color:#D81B3F}
 .ins-app{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:7.5px;color:#fff;text-align:center}.ins-app i{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.22);display:block;overflow:hidden}
 .ins-app.cap i{background:#fff}.ins-app.cap .ins-ico{width:38px;height:38px;border-radius:10px;box-shadow:none}.ins-app.cap.pose i{animation:insPose .6s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes insPose{from{transform:scale(0)}}
@@ -76,7 +81,7 @@
 .ins-act button.p{background:#D81B3F;border-color:#D81B3F}
 .ins-note{font-size:12.5px;color:#A7A9AE;text-align:center;margin:0}
 #ins-o button:focus-visible{outline:2px solid #8FB0D1;outline-offset:2px}
-@media(prefers-reduced-motion:reduce){.ins-cible,.ins-app.cap.pose i{animation:none}.ins-feuille,.ins-menu,.ins-conf,.ins-acc,.ins-voile{transition:none}}`;
+@media(prefers-reduced-motion:reduce){.ins-notif{transition:none}.ins-cible,.ins-app.cap.pose i{animation:none}.ins-feuille,.ins-menu,.ins-conf,.ins-acc,.ins-voile{transition:none}}`;
   let os=iOS?"ios":"and",pas=0,joue=true,min=null,G=null;
   const q=s=>document.querySelector("#ins-o "+s);
   function etat(){const l=q(".ins-lect");if(l)l.textContent=joue?"❚❚ Pause":"▶ Lecture"}
@@ -84,8 +89,9 @@
     document.querySelectorAll("#ins-o .ins-pas [data-i]").forEach((b,k)=>b.setAttribute("aria-current",k===i));
     document.querySelectorAll("#ins-o [data-c]").forEach(e=>e.classList.toggle("ins-cible",Number(e.dataset.c)===i));
     q("[data-fe]").classList.toggle("on",i===2);q("[data-vo]").classList.toggle("on",i===2||i===3);q("[data-co]").classList.toggle("on",i===3);
-    q("[data-acc]").classList.toggle("on",i===4);const c=q("[data-cap]");c.classList.remove("pose");if(i===4){void c.offsetWidth;c.classList.add("pose")}
-    etat();if(joue)min=setTimeout(()=>aller((pas+1)%G.pas.length),i===4?3600:2800)}
+    q("[data-acc]").classList.toggle("on",i>=4);const c=q("[data-cap]");c.classList.remove("pose");if(i===4){void c.offsetWidth;c.classList.add("pose")}
+    q("[data-notif]").classList.toggle("on",i===5);
+    etat();if(joue)min=setTimeout(()=>aller((pas+1)%G.pas.length),i>=4?3600:2800)}
   function dessiner(){G=guide(os);q(".ins-ecran").innerHTML=G.html;
     q("[data-os=ios]").setAttribute("aria-pressed",os==="ios");q("[data-os=and]").setAttribute("aria-pressed",os==="and");
     q(".ins-pas").innerHTML=G.pas.map((_,i)=>'<button type="button" data-i="'+i+'" aria-label="Étape '+(i+1)+'"></button>').join("")+'<button type="button" class="ins-lect"></button>';

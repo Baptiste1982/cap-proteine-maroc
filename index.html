@@ -1293,6 +1293,12 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 /*v0291 — notifications en bas à droite (pile commune) */
 #notifs{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(84px + env(safe-area-inset-bottom));z-index:75;width:min(400px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px;align-items:stretch;pointer-events:none}
 #notifs>*{pointer-events:auto}
+.maj-carte{pointer-events:auto;display:flex;align-items:center;gap:12px;background:#fff;color:#1B1416;border:1px solid #E6DCDA;border-radius:16px;padding:12px 12px 12px 14px;box-shadow:0 18px 40px -14px rgba(27,20,22,.5);animation:nGlisse .5s cubic-bezier(.2,1.2,.4,1) both}
+.maj-ic{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#F8E9EC;color:#B0122E;font-size:20px;font-weight:700}
+.maj-t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}.maj-t b{font:700 14px Inter,sans-serif;color:#1B1416}.maj-t small{font-size:12px;color:#6F6367}
+.maj-go{flex:none;min-height:40px;padding:0 14px;border-radius:11px;background:#B0122E;color:#fff;font:700 13.5px Inter,sans-serif}.maj-go:hover{background:#8E0E25}
+.maj-x{flex:none;width:36px;height:36px;border-radius:50%;color:#6F6367;font-size:14px}.maj-x:hover{background:#F1ECEA}
+@media(max-width:420px){.maj-t small{display:none}}@media(prefers-reduced-motion:reduce){.maj-carte{animation:none}}
 #notifs .annonce{position:relative;left:auto;right:auto;top:auto;width:100%;transform:none;animation:nGlisse .5s cubic-bezier(.2,1.2,.4,1) both}
 #notifs .annonce.out,#notifs .celeb.out{transition:transform .35s,opacity .35s;transform:translateX(115%);opacity:0}
 #notifs .celeb{position:relative;inset:auto;display:block;background:none;animation:nGlisse .5s cubic-bezier(.2,1.2,.4,1) both}
@@ -1305,6 +1311,7 @@ svg.focus .cst-l:not(.lit){opacity:.3}
 @media(min-width:900px){.toast{left:auto;right:max(20px,env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));transform:translateY(20px)}.toast.show{transform:none;animation:tinD .35s var(--ease)}}
 @keyframes tinD{from{opacity:0;transform:translateX(30px)}}
 @media(max-width:899px){#notifs{left:12px;right:12px;width:auto;bottom:calc(150px + env(safe-area-inset-bottom))}}
+@media(min-width:900px){#notifs{bottom:24px;right:108px}html.rail-on #notifs{right:calc(var(--rail) + 132px)}}
 @media (prefers-reduced-motion:reduce){#notifs>*{animation:none!important}}
 /*v030 — localisation Google Maps / Waze */
 .lien-aide{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin-top:6px;font-size:12px;color:var(--muted)}
@@ -2373,8 +2380,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.45.0";
+const APP_VERSION="1.46.0";
 const CHANGELOG=[
+  {v:"1.46.0",date:"18 novembre 2026",notes:{"Modifié":["L'annonce d'une nouvelle version est une carte blanche, rangée avec les notifications : en bas à droite sur ordinateur, juste au-dessus de la barre du bas au téléphone. Elle ne flotte plus en rouge au milieu de la page."]}},
   {v:"1.45.0",date:"18 novembre 2026",notes:{"Ajouté":["Le membre reçoit une notification sur son téléphone quand une pièce arrive dans « Mes documents » : sa facture dès que le paiement est coché, un reçu, une attestation. Un toucher ouvre la page.","L'animateur reçoit une notification quand un contact lui est confié. Un toucher ouvre sa boîte « Contacts confiés »."]}},
   {v:"1.44.0",date:"18 novembre 2026",notes:{"Ajouté":["« Mes documents » dans l'espace de chaque membre : sa facture, son reçu de paiement, ses attestations (régularité fiscale…), à ouvrir ou à envoyer à son comptable. Lui seul les voit.","Dans la fiche d'un membre, section Documents : on choisit « Facture », « Reçu de paiement » ou « Attestation » et le membre retrouve la pièce dans son espace. Chaque document se partage ou se retire d'un clic.","Une facture n'apparaît chez le membre qu'une fois l'étape « Paiement » cochée.","Le membre est prévenu sur son accueil quand une nouvelle pièce l'attend.","Documents du réseau : une catégorie « Comptabilité et attestations » pour les pièces communes à tous les membres."]}},
   {v:"1.43.0",date:"18 novembre 2026",notes:{"Modifié":["L'espace membre fait partie de l'appli : il occupe tout l'écran sous la barre du haut, sans titre, pastilles ni cadre. Au téléphone, sa barre du bas (Accueil, Groupe, Reco, Réseau, Messages, Moi) remplace celle du CRM ; on revient par le sélecteur d'espace ou le menu du haut.","Les documents du réseau s'ouvrent dans l'appli, plus dans un nouvel onglet, et suivent le thème choisi."]}},
@@ -7004,11 +7012,12 @@ async function checkUpdate(){
 }
 function showUpdateBar(v){
   if(document.getElementById("update-bar"))return;
-  const bar=document.createElement("div");bar.id="update-bar";bar.className="update-bar";
-  bar.innerHTML=`<div class="ub-t">Nouvelle version <b>v${esc(v)}</b> disponible</div>
-    <button onclick="location.reload(true)">Mettre à jour</button>
-    <button onclick="this.parentElement.remove()" style="background:transparent;color:#fff;padding:9px 6px">✕</button>`;
-  document.body.appendChild(bar);
+  /* v1.46 : carte blanche rangée avec les notifications (bas à droite sur ordinateur, au-dessus de la barre au téléphone) */
+  const bar=document.createElement("div");bar.id="update-bar";bar.className="maj-carte";bar.setAttribute("role","status");
+  bar.innerHTML=`<span class="maj-ic" aria-hidden="true">↻</span><span class="maj-t"><b>Nouvelle version disponible</b><small>Version ${esc(v)} · un toucher suffit</small></span>
+    <button type="button" class="maj-go" onclick="location.reload(true)">Mettre à jour</button>
+    <button type="button" class="maj-x" onclick="this.parentElement.remove()" aria-label="Plus tard">✕</button>`;
+  notifPile().prepend(bar);
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];

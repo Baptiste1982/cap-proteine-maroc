@@ -2127,9 +2127,8 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 .ldf-pt.on i{border-color:#3DAA74;background:#3DAA74;color:#fff}.ldf-pt.on b{color:var(--ink)}
 .ldf-pt.att i{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson))}.ldf-pt.att b{color:var(--crimson-txt,var(--crimson))}.ldf-pt.ko i{border-color:var(--muted);background:var(--line)}
 @media(max-width:899px){.ldf-r{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}.ldf-fr{grid-column:1/-1;order:3}}
-/*v1.25 espace membre*/#esp-host{padding:0 clamp(12px,3vw,32px) 16px}#esp-host iframe{display:block;width:100%;height:calc(100dvh - 190px);min-height:480px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}
-.esp-page{padding-bottom:6px!important}.esp-tete{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.esp-fiches{display:flex;gap:6px;flex-wrap:wrap}
-@media(max-width:899px){#esp-host{padding:0 8px 8px}#esp-host iframe{height:calc(100dvh - 210px);min-height:400px;border-radius:12px}}
+/*v1.43 espace membre et documents dans l'appli*/#esp-host{position:fixed;z-index:6;background:var(--bg)}#esp-host iframe{display:block;width:100%;height:100%;border:0;background:var(--bg)}
+body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{display:none!important}
 .mr-it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
 .mr-tx{flex:1;min-width:0}.mr-tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mr-tx small{color:var(--muted)}
 .mr-st{font:700 10.5px Inter,sans-serif;padding:3px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,#3DAA74 18%,transparent);color:#3DAA74}.mr-st.mr-envoyee{background:color-mix(in srgb,var(--crimson) 18%,transparent);color:var(--crimson-txt,var(--crimson))}
@@ -2372,8 +2371,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.42.0";
+const APP_VERSION="1.43.0";
 const CHANGELOG=[
+  {v:"1.43.0",date:"18 novembre 2026",notes:{"Modifié":["L'espace membre fait partie de l'appli : il occupe tout l'écran sous la barre du haut, sans titre, pastilles ni cadre. Au téléphone, sa barre du bas (Accueil, Groupe, Reco, Réseau, Messages, Moi) remplace celle du CRM ; on revient par le sélecteur d'espace ou le menu du haut.","Les documents du réseau s'ouvrent dans l'appli, plus dans un nouvel onglet, et suivent le thème choisi."]}},
   {v:"1.42.0",date:"18 novembre 2026",notes:{"Modifié":["Au téléphone, la fiche d'un membre tient sur un écran : Appeler, WhatsApp et E-mail en tête, la saisie du suivi dans un volet, et chaque section (informations, documents, abonnement…) se déplie au toucher.","Au téléphone, les Paramètres commencent par le compte ; le thème et les réglages d'affichage sont rangés dans un volet.","Au téléphone, Mon groupe affiche ses six onglets sans défilement, et le choix du groupe se fait par le sélecteur du haut.","Le bouton « + » flottant ne ressemble plus au bouton Reco.","Planifier en série, le classeur et l'embarquement de l'équipe préviennent, au téléphone, qu'ils sont plus à l'aise sur ordinateur (une seule fois)."]}},
   {v:"1.41.0",date:"18 novembre 2026",notes:{"Ajouté":["Une réunion passée peut être archivée sans bilan : elle reste dans l'historique du groupe et sort des bilans à saisir. Choix « Archiver sans bilan » dans l'écran du bilan.","Depuis ce même écran, les réunions de plus de 60 jours sans bilan s'archivent d'un coup, en deux clics.","Une réunion archivée se rouvre pour saisir son bilan plus tard."]}},
   {v:"1.40.0",date:"18 novembre 2026",notes:{"Modifié":["Une seule page de connexion : l'équipe entre son prénom et son mot de passe, un membre son mobile et le code donné par son animateur. Le membre arrive directement dans son espace.","Un membre déjà connecté qui ouvre l'adresse du CRM est conduit à son espace. La page de l'espace membre garde un lien « Connexion avec ton prénom » pour l'équipe."]}},
@@ -3105,8 +3105,8 @@ async function docsAccueilCRM(){
     <div class="dacc-h"><span class="dacc-i" aria-hidden="true">📚</span><div><small>Bienvenue${prenom?" "+esc(prenom):""}</small><h2>Ton espace : les documents du réseau</h2></div></div>
     <p>C'est toi qui déposes les documents dont les groupes ont besoin : kits, formulaires, présentations, règlements. Tu choisis qui les voit et tu les partages par un lien.</p>
     <div class="dacc-l"><span><b>1</b>Ouvre ton espace documents</span><span><b>2</b>Glisse tes fichiers dans le cadre en pointillés</span><span><b>3</b>Choisis qui les voit, partage le lien</span></div>
-    <p class="dacc-n">Ton espace s'ouvre dans un nouvel onglet. Tu le retrouves à tout moment dans le menu, rubrique « Ressources » → « Documents du réseau ».</p>
-    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="window.open('documents.html','_blank');closeSheet()">Ouvrir mon espace documents</button></div></div>`;
+    <p class="dacc-n">Tu le retrouves à tout moment dans le menu, rubrique « Ressources » → « Documents du réseau ».</p>
+    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Plus tard</button><button class="btn" onclick="closeSheet();docsOuvrir()">Ouvrir mon espace documents</button></div></div>`;
   openSheet();return true;
 }
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
@@ -3461,6 +3461,7 @@ function updateRegionLabel(){
 const TAB_ORDER=["dash","reunions","agenda","demandes","clubs","membres","lieux","team"];let _navDir=null;
 function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_ORDER.indexOf(t)>=TAB_ORDER.indexOf(tab)?"next":"prev";if(t===tab)_navDir=null;tab=t;filter="all";
   document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  espCaler();
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="monitoring"||tab==="espace"||tab==="membres"||tab==="demandes"||((tab==="team"||tab==="clubs")&&!canManageStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
 function render(){const v=document.getElementById("view");
@@ -4997,7 +4998,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
   if(r==="res")return[it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","openZones()"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
-  if(r==="doc")return[it("Documents du réseau","window.open('documents.html','_blank')"),it("Vidéos de prise en main","window.open('documents.html#videos','_blank')"),it("Visite guidée","openAide()")];
+  if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
 function navSous(){const nav=document.getElementById("nav");if(!nav||!SESSION)return;
@@ -5986,10 +5987,20 @@ async function mbFicheSauver(){
    Tout lien vers membre.html#… du CRM passe par là (écouteur en capture) : plus d'onglet ni de second CRM. */
 function espaceOuvrir(url){if(!url)return;try{if(document.getElementById("sheet")?.classList.contains("open"))closeSheet()}catch(e){}const h=document.getElementById("esp-host"),f=h.querySelector("iframe");window._espUrl=url;f.src=url;go("espace")}
 function espaceDefaut(){const f=mesFiches()[0];return f?"membre.html#moi="+f.id:null}
-function viewEspace(){const F=mesFiches(),u=window._espUrl||"";
+function viewEspace(){const u=window._espUrl||"";
   if(!u){const d=espaceDefaut();if(d){setTimeout(()=>espaceOuvrir(d),0)}else return `<div class="page"><h1 class="page-title">Mon espace membre</h1><p class="fh-note">Aucune fiche membre n'est reliée à ton compte. Elle se crée depuis Équipe → ta fiche → « Espace membre ».</p></div>`}
-  const titre=/#voir=/.test(u)?"Aperçu d'un espace membre":/#equipe=/.test(u)?"Vue membre du groupe":"Mon espace membre";
-  return `<div class="page esp-page"><div class="esp-tete"><h1 class="page-title">${titre}</h1>${F.length>1&&/#moi=/.test(u)?`<div class="esp-fiches">${F.map(m=>`<button type="button" class="chip${u.includes(m.id)?" on":""}" onclick="espaceOuvrir('membre.html#moi=${m.id}')">${esc((club(m.clubId)||{}).nom||"Groupe")}</button>`).join("")}</div>`:""}</div></div>`}
+  return `<div class="page esp-page" aria-hidden="true"></div>`}
+/* v1.43 — l'espace membre et les documents occupent toute la zone de travail, sous la barre du haut : plus de titre,
+   de pastilles ni de cadre arrondi. Au téléphone, la barre du bas de l'espace membre remplace celle du CRM
+   (on revient par le sélecteur d'espace ou le menu du haut). */
+function espAvecBarre(){return /membre\.html#(moi|voir)=/.test(window._espUrl||"")}
+function espCaler(){const on=tab==="espace"&&!!window._espUrl,b=document.body,h=document.getElementById("esp-host");if(!h)return;
+  b.classList.toggle("esp-on",on);b.classList.toggle("esp-plein",on&&!isWide()&&espAvecBarre());if(!on){h.removeAttribute("style");return}
+  const tb=document.querySelector(".topbar").getBoundingClientRect(),ap=document.querySelector(".app").getBoundingClientRect(),nv=document.getElementById("nav").getBoundingClientRect(),vb=document.getElementById("voir-band");
+  const haut=Math.max(tb.bottom,vb&&vb.offsetParent!==null?vb.getBoundingClientRect().bottom:0),bas=isWide()||b.classList.contains("esp-plein")?0:Math.max(0,innerHeight-nv.top);
+  h.style.cssText=`top:${Math.round(haut)}px;left:${Math.round(ap.left)}px;width:${Math.round(ap.width)}px;bottom:${Math.round(bas)}px`}
+window.addEventListener("resize",()=>espCaler());
+function docsOuvrir(h){espaceOuvrir("documents.html"+(h||""))}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href^="membre.html#"]');if(!a||e.ctrlKey||e.metaKey)return;e.preventDefault();espaceOuvrir(a.getAttribute("href"))},true);
 /* v1.25 : recommandations reçues par la personne connectée (ses fiches membre), à traiter depuis la Synthèse. */
 function mesFiches(){if(!SESSION||!DB)return[];const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(),moi=nom(SESSION.animId?animNom(SESSION.animId):SESSION.name);
@@ -7721,7 +7732,7 @@ async function openParametres(){
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
     ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}${r("💰","Mon rendement","Commissions et objectif annuel","openRendement()")}</div>`:""}
     <div class="set-sec">Documents</div>
-    <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","window.open('documents.html','_blank')")}</div>
+    <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>
     <div class="set-l">${r("🎓","Visite guidée","Revoir l'utilisation du CRM, en entier ou par partie","openAide()")}</div>
     <div class="set-sec">Application</div>

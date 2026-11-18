@@ -10,6 +10,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>/* v1.43 : mêmes couleurs que le CRM (thème choisi dans le CRM, Graphite par défaut) */
+(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";
+if({sombre:1,verre:1,bordeaux:1,graphite:1}[t])document.documentElement.classList.add("dark")}catch(e){}})();
+addEventListener("storage",function(e){if(e.key==="cap-theme")location.reload()});</script>
 <script src="documents-commun.js"></script>
 <style>
 /* Documents du réseau (v1.10.0) : l'espace où le bureau national dépose et partage les documents des groupes. */
@@ -128,6 +132,18 @@ main{max-width:1180px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-ri
 .acc-hist{font-size:13px;color:var(--muted)}.acc-hist summary{cursor:pointer;font-weight:600}.acc-h{padding:4px 0}
 .acc-coupe{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:6px}
 .acc-coupe div{display:flex;flex-direction:column;flex:1;min-width:200px}.acc-coupe small{color:var(--muted);font-size:12.5px}
+.dans-crm .marque{display:none}
+/* v1.43 thème sombre, aligné sur le CRM */
+html.dark{color-scheme:dark;--crimson:#C21835;--tint:#3A141B;--ink:#F1F1F2;--muted:#9EA0A8;--soft:#B3B5BC;--paper:#1A1B1E;--card:#222327;--line:#2E3035;--line2:#2A2C30;--ardoise:#8FB0D1}
+html.dark .tete{background:#222327;border-bottom:2px solid var(--crimson)}html.dark .tete p{color:var(--muted)}
+html.dark .cherche{background:#2C2E33;color:var(--ink)}html.dark .cherche input{background:transparent;color:var(--ink)}
+html.dark .chip{border-color:var(--line);color:var(--ink)}html.dark .chip.on{background:var(--crimson);color:#fff;border-color:var(--crimson)}
+html.dark .envoi i,html.dark .vue,html.dark .v-n,html.dark .doc .vis span,html.dark .fen-x{background:#2C2E33;color:var(--ink)}
+html.dark .vue button{color:var(--muted)}html.dark .vue button.on{background:#3A3C42;color:#fff}
+html.dark .doc .vis span.on{background:#223042;color:#9DB7D1}html.dark .doc .vis span.off{background:transparent;color:#6E7078}
+html.dark #survol,html.dark #survol .sv-p{background:#222327}
+html.dark .form input[type=text],html.dark .form textarea,html.dark .form select{background:#2C2E33;color:var(--ink)}
+html.dark .acc-a{background:#223042;color:#C9D8E8}html.dark .toast{background:#F1F1F2;color:#1B1416}
 </style>
 </head>
 <body>
@@ -429,6 +445,8 @@ function retourCRM(e){
   try{if(window.opener&&!window.opener.closed&&window.opener.location.origin===location.origin){window.opener.focus();window.close();setTimeout(()=>{if(!window.closed){try{sessionStorage.setItem("cap-lanc-skip","1")}catch(x){}location.href="/"}},400);return false}}catch(x){}
   try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1){history.back();return false}}catch(x){}
   try{sessionStorage.setItem("cap-lanc-skip","1")}catch(x){}return true}
+/* v1.43 : ouverte dans le CRM (cadre), la page laisse sa marque et son retour au CRM */
+if(window.top!==window)document.documentElement.classList.add("dans-crm");
 </script>
 </body>
 </html>

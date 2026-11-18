@@ -2240,6 +2240,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .reg-v i,.rg-c{font-style:normal;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600}.reg-v i::before,.rg-c::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vc,#8C8085)}.reg-v i.vide::before{display:none}.reg-v i.vide{color:var(--muted);font-weight:500}
 .rg-v{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;min-height:30px;align-items:center}.rg-c{font-size:13.5px;padding:6px 6px 6px 12px}.rg-c small{color:var(--muted);font-weight:500;padding-right:6px}.rg-c button{width:26px;height:26px;border-radius:50%;border:0;background:var(--line);color:var(--ink);cursor:pointer;font-size:12px}
 .rg-aj{display:flex;gap:8px}.rg-aj input{flex:1;min-width:0}.acc-dr .c-fixe span{display:grid}.acc-dr .c-fixe small{color:var(--muted);font-size:12px}
+.mb-nomm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line)}.mb-nomm.on{border-style:solid}.mb-nomm span{display:grid;min-width:0}.mb-nomm b{font-size:13.5px}.mb-nomm small{color:var(--muted);font-size:12px}.mb-nomm .btn{flex:none}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2534,8 +2535,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.82.1";
+const APP_VERSION="1.83.0";
 const CHANGELOG=[
+  {v:"1.83.0",date:"18 novembre 2026",notes:{"Ajouté":["Fiche d'un membre → « Nommer animateur » : sa fiche Équipe est créée d'office avec son nom, sa ville et son mobile, le groupe lui est confié, et tu arrives directement sur « Donner l'accès ».","Sur la fiche d'un membre déjà animateur : son état (compte créé ou non) et le bouton pour lui donner ou renvoyer son accès au CRM."],"Modifié":["Deux animateurs qui portent le même prénom reçoivent des identifiants différents."]}},
   {v:"1.82.1",date:"18 novembre 2026",notes:{"Modifié":["On parle de « membres » partout : le mot « pairs » disparaît de la constellation, des cartes et des fiches de groupe. Le nombre de membres d'un groupe reprend celui du bureau national tant que ses fiches ne sont pas saisies."]}},
   {v:"1.82.0",date:"18 novembre 2026",notes:{"Modifié":["Constellation mise à l'échelle du réseau d'aujourd'hui (16 groupes, 4 régions) : les groupes d'une même ville ne se chevauchent plus, le nom court est écrit sous chaque groupe, et sur un téléphone le réseau se déploie en hauteur.","Constellation : le total se lit en « pairs » (animateurs compris, d'après le bureau national) tant que des effectifs sont déclarés."]}},
   {v:"1.81.0",date:"18 novembre 2026",notes:{"Ajouté":["Réseau → « Régions et villes » : créer une région, lui ajouter des villes, la renommer. Une ville ajoutée est aussitôt proposée pour un nouveau groupe, un lieu ou un animateur.","Réseau → « Nouveau groupe ». Créer une région ou un groupe est réservé au super admin, à la direction nationale et aux comptes à qui ce droit est donné.","Équipe → fiche d'accès : « Droits en plus » à cocher pour un compte (créer des régions et des groupes, gérer les documents, voir le monitoring national)."],"Modifié":["Un directeur de région modifie toujours ses groupes, mais ne crée plus de groupe lui-même."]}},
@@ -6455,6 +6457,7 @@ function memberSheet(clubId,id){
   document.getElementById("sheet-content").innerHTML=`
     ${editing?ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Suivi d'intégration · "+esc(club(clubId).nom.replace(/^CAP\s+/,""))+(mbAnim(m)?" · Animateur":"")}):`<h3>Nouveau membre</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>`}
     ${editing?mbRapides(m):""}
+    ${editing?mbNommerBloc(m):""}
     ${editing&&!isWide()?`<details class="mb-edit"><summary>✏️ Modifier le suivi (nom, étapes, abonnement, notes)</summary><div class="mb-edit-c">`:""}
     <div class="field"><label>Nom complet</label><input id="m-nom" value="${esc(m.nom)}" placeholder="Prénom Nom"></div>
     <div class="field"><label>Spécialité</label><input id="m-specialite" value="${esc(m.specialite)}" placeholder="Métier / secteur"></div>
@@ -6475,6 +6478,30 @@ function memberSheet(clubId,id){
 const DOC_TYPES={formulaire:"Formulaire d'adhésion",contrat:"Contrat",contrat_signe:"Contrat signé",autre:"Autre pièce"};
 /* v1.42 — fiche membre au téléphone : lecture et gestes rapides d'abord. Appeler / WhatsApp / E-mail en tête,
    la saisie du suivi dans un volet, et chaque section du dossier repliable (état gardé le temps de la session). */
+/* v1.83 : nommer un membre animateur. Sa fiche Équipe est créée d'office (nom, ville, mobile, e-mail repris de la fiche membre),
+   reliée à sa fiche membre, et le super admin arrive tout de suite sur « Donner l'accès » pour qu'il intègre ses membres. */
+function mbNommerBloc(m){if(!canManageStructure()||SESSION._voir)return"";const aid=mbAnim(m);
+  if(aid){const a=anim(aid);if(!a)return"";const u=accVisible()?accDe(aid):null,grp=(window._DBvrai||DB).clubs.filter(c=>c.animId===aid).map(c=>c.nom.replace(/^CAP\s+/,""));
+    return `<div class="mb-nomm on"><span><b>Animateur${grp.length?" · "+esc(grp.join(", ")):""}</b><small>${accVisible()?(u?(u.derniere_connexion?"A déjà ouvert le CRM":"Compte créé, pas encore connecté"):"Pas encore de compte CRM"):"Fiche Équipe reliée"}</small></span>${accVisible()?`<button class="btn mini" onclick="accDonner('${aid}')">🔑 ${u?"Renvoyer son accès":"Donner son accès"}</button>`:`<button class="btn ghost mini" onclick="openAnim('${aid}')">Sa fiche</button>`}</div>`}
+  return `<div class="mb-nomm"><span><b>Nommer animateur</b><small>Crée sa fiche Équipe et prépare son accès au CRM</small></span><button class="btn ghost mini" onclick="mbNommer('${m.id}')">Nommer</button></div>`}
+function mbNommer(id){const D=window._DBvrai||DB,m=D.membres.find(x=>x.id===id);if(!m||!canManageStructure())return;const c0=D.clubs.find(c=>c.id===m.clubId);
+  const G=D.clubs.filter(c=>canCreerStructure()||canEditClubId(c.id)).sort((a,b)=>(a.id===m.clubId?-1:b.id===m.clubId?1:0)||a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
+  const defaut=c0&&!c0.animId?c0.id:"";
+  document.getElementById("sheet-content").innerHTML=`
+    <h3>Nommer ${esc(m.nom)} animateur</h3><div class="sheet-sub">Sa fiche Équipe est créée avec son nom, sa ville et son mobile. Il reste membre de ${esc(c0?c0.nom.replace(/^CAP\s+/,""):"son groupe")}.</div>
+    <div class="field"><label for="nm-grp">Groupe qu'il anime</label><select id="nm-grp"><option value="">Aucun pour l'instant (groupe à créer)</option>${G.map(c=>{const a=c.animId?anim(c.animId):null;return `<option value="${c.id}" ${c.id===defaut?"selected":""}>${esc(c.nom.replace(/^CAP\s+/,""))} · ${esc(c.ville)}${a?" — remplace "+esc(a.nom):""}</option>`}).join("")}</select></div>
+    ${canCreerStructure()?`<button type="button" class="lien-b" onclick="clubForm(null)">Son groupe n'existe pas encore ? Nouveau groupe ›</button>`:""}
+    <div class="sheet-actions"><button class="btn ghost" onclick="memberSheet('${m.clubId}','${m.id}')">Annuler</button><button class="btn" onclick="mbNommerOk('${m.id}',this)">Nommer animateur</button></div>`;
+  openSheet()}
+async function mbNommerOk(id,btn){const D=window._DBvrai||DB,m=D.membres.find(x=>x.id===id);if(!m)return;const gid=document.getElementById("nm-grp").value,c0=D.clubs.find(c=>c.id===m.clubId),d=mbInfos(m)||{};
+  btn.disabled=true;let a=D.animateurs.find(x=>mbNomCle(x.nom)===mbNomCle(m.nom));
+  if(!a){const {data,error}=await sb.from("animateurs").insert({nom:m.nom,ville:c0?c0.ville:null,tel:String(d.m_tel||"").trim(),email:String(d.m_email||"").trim()}).select().single();
+    if(error){btn.disabled=false;toast(rlsMsg(error));return}a=mapAnim(data);D.animateurs.push(a);if(D!==DB&&!DB.animateurs.includes(a))DB.animateurs.push(a)}
+  if(!D.membres.some(x=>x.animId===a.id)){const r=await sb.from("membres").update({animateur_id:a.id}).eq("id",m.id);if(!r.error)m.animId=a.id}
+  if(gid){const r=await sb.from("clubs").update({animateur_id:a.id}).eq("id",gid);if(r.error){toast("Animateur créé, mais le groupe n'a pas pu lui être confié : "+rlsMsg(r.error),"warn")}else{const c=D.clubs.find(x=>x.id===gid);if(c)c.animId=a.id}}
+  render();
+  if(accVisible()){toast(m.nom.split(/\s+/)[0]+" est animateur. Donne-lui son accès.");accDonner(a.id)}
+  else{toast(m.nom.split(/\s+/)[0]+" est animateur. Le super admin lui donne son accès au CRM.");memberSheet(m.clubId,m.id)}}
 function mbRapides(m){const d=mbInfos(m),tel=String(d.m_tel||"").trim(),mail=String(d.m_email||"").trim();
   // v1.62.1 : au téléphone, l'accès à l'espace membre est un bouton en tête de fiche (il était au fond d'une section repliée)
   let acc="";try{if(canEditClubId(m.clubId)&&!readOnly()&&!(SESSION&&SESSION._voir))acc=`<a href="#" class="acc${m.inscrit?"":" fort"}" onclick="mbAccesFiche('${m.id}');return false">🔑 ${m.inscrit?"Renvoyer un code d'accès":"Donner l'accès à l'espace membre"}</a>`}catch(e){}
@@ -7609,7 +7636,10 @@ function accCellule(a){
   const neuf=!u||u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire);
   return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span><button class="btn ${neuf?"":"ghost"} acc-go" onclick="event.stopPropagation();accDonner('${a.id}')">🔑 ${neuf?"Donner l'accès":"Renvoyer"}</button></div>`;
 }
-function accLogin(a){return (a.nom||"").split(/\s+/)[0].normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+function accLogin(a){const net=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,""),p=(a.nom||"").trim().split(/\s+/),base=net(p[0]);
+  // v1.83 : deux animateurs au même prénom → le second prend l'initiale de son nom, puis son nom entier (youssef, youssefb, youssefbennani)
+  const pris=l=>(DB.acces||[]).some(u=>u.animateur_id!==a.id&&String(u.email||"").split("@")[0]===l);
+  for(const l of [base,base+net(p.slice(1).join("")).slice(0,1),base+net(p.slice(1).join(""))])if(l&&!pris(l))return l;return base+String(a.id).slice(0,4)}
 function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
   return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nPour l'avoir comme une appli sur ton téléphone, en 30 secondes :\n${INSTALLER_CRM}\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
@@ -8936,7 +8966,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

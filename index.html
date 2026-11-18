@@ -2415,7 +2415,7 @@ html.pres-on,html.pres-on body{overflow:hidden}
 button.q-tag{border:0;cursor:pointer;font-family:inherit}button.q-nom{border:0;background:none;padding:0;cursor:pointer;font:inherit;font-weight:700;text-decoration:underline dotted}.gp-r .btn{white-space:nowrap}.q-tag{font-style:normal;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;color:#fff;white-space:nowrap;vertical-align:middle}.q-groupe .q-tag{background:#3F7FD1}.q-reseau .q-tag{background:#1E9E63}
 .q-nom{font-weight:700}.q-nom.q-groupe{color:#5C9AE6}.q-nom.q-reseau{color:#2FB877}html:not(.dark) .q-nom.q-groupe{color:#2C66B5}html:not(.dark) .q-nom.q-reseau{color:#167A4B}
 .q-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 2px;font-size:11.5px;color:var(--muted)}.q-leg span{display:inline-flex;align-items:center;gap:6px}.q-leg span::before{content:"";width:10px;height:10px;border-radius:3px;border:1px solid var(--line)}.q-leg .q-groupe::before{background:#3F7FD1;border-color:#3F7FD1}.q-leg .q-reseau::before{background:#1E9E63;border-color:#1E9E63}
-.ctc-btn{width:100%;margin:0 0 6px}.ctc-aide{margin:0 0 12px}.pr-phb{display:inline-grid;place-items:center;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px}.pr-phb:hover{border-color:var(--crimson)}.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
+.lg-aide{display:block;width:100%;margin-top:12px;background:none;border:0;color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:8px}.lg-aide:hover{color:var(--ink)}.ctc-btn{width:100%;margin:0 0 6px}.ctc-aide{margin:0 0 12px}.pr-phb{display:inline-grid;place-items:center;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px}.pr-phb:hover{border-color:var(--crimson)}.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
 .ar-c{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}.ar-c:hover{border-color:var(--crimson)}.ar-c i,.ar-c img{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:13px;background:var(--crimson);color:#fff}.ar-c span{display:flex;flex-direction:column;min-width:0}.ar-c b{font-size:14px}.ar-c small{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}.ar-ph{width:54px;height:54px;border-radius:50%;object-fit:cover;flex:none}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
 </style>
@@ -2435,6 +2435,7 @@ button.q-tag{border:0;cursor:pointer;font-family:inherit}button.q-nom{border:0;b
     <div class="field"><label>Mot de passe ou code d'accès</label><div class="pw-wrap"><input id="lg-pass" type="password" autocomplete="current-password" placeholder="••••••••" /><button type="button" class="pw-eye" id="pw-eye" onclick="pwToggle()" aria-label="Afficher le mot de passe">Voir</button></div></div>
     <p id="lg-err" class="auth-err"></p>
     <button class="btn" onclick="doLogin()">Se connecter</button>
+    <button type="button" class="lg-aide" onclick="Installer.ouvrir()">❓ Comment installer l'appli sur mon téléphone</button>
   </div>
   <div class="demo-note"><b>Accès réservé au réseau CAP MA</b><br>
     Équipe : ton prénom et ton mot de passe.<br>Membre : ton mobile et le code donné par ton animateur.
@@ -2502,6 +2503,7 @@ button.q-tag{border:0;cursor:pointer;font-family:inherit}button.q-nom{border:0;b
 
 <script src="lancement.js"></script>
 <script src="tel-commun.js"></script>
+<script src="installer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
@@ -2523,8 +2525,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.72.1";
+const APP_VERSION="1.73.0";
 const CHANGELOG=[
+  {v:"1.73.0",date:"19 novembre 2026",notes:{"Ajouté":["« Comment installer l'appli sur mon téléphone » : un guide animé montre les gestes, pour iPhone et pour Android. Il s'ouvre depuis l'écran de connexion (CRM et espace membre), depuis Paramètres → Aide et depuis « Moi » dans l'espace membre.","Le lien du guide part tout seul dans les messages d'accès : code de l'espace membre, accès au CRM d'un animateur."]}},
   {v:"1.72.1",date:"19 novembre 2026",notes:{"Modifié":["Fiche réunion : le texte d'explication de l'invitation nationale est replié sous « Comment ça marche », et le bouton devient « Actualiser ». La lecture automatique des inscrits démarre à 7 h."]}},
   {v:"1.72.0",date:"19 novembre 2026",notes:{"Ajouté":["Les inscrits du lien national arrivent tout seuls : le serveur les lit toutes les 10 minutes (de 7 h à 22 h) et le CRM les affiche dans la minute, avec une annonce « Nouvel inscrit ». Plus besoin d'appuyer sur « Récupérer les inscrits » (le bouton reste pour forcer une lecture immédiate)."]}},
   {v:"1.71.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit membre d'un autre groupe : son nom est suivi de « CAP » et du nom de son groupe. Un toucher ouvre la page du groupe : ses membres en consultation (métier, entreprise), et « Demander son numéro » qui prépare le message à l'animateur du groupe.","Même page de groupe dans l'espace membre."]}},
@@ -3513,6 +3516,7 @@ function annResFiche(id){
     <p class="fh-note">Fiche de l'annuaire du réseau : ce que le membre partage avec les autres membres. Son dossier reste avec l'animateur de son groupe.</p>`;
   openSheet();
 }
+window.addEventListener("load",()=>setTimeout(()=>{try{Installer.auto()}catch(e){}},500)); // v1.73 : /?installer ouvre le guide
 function tutoPeutEditer(){return SESSION.role!=="visiteur"}
 const TUTO_PARTIES=[["accueil","👋","Bienvenue"],["synthese","📊","Accueil et chiffres"],["groupe","👥","Mon groupe"],["agenda","📅","Agenda et réunions"],["reseau","🌐","Groupes, membres, lieux"],["recos","🤝","Recommandations"],["adhesions","📝","Adhésions"],["equipe","🧑‍💼","Équipe"],["reglages","⚙️","Ressources et paramètres"]];
 /* v1.62 : visite guidée refaite sur l'appli d'aujourd'hui. Elle s'adapte au rôle (visiteur, animateur, directeur, direction nationale, super admin)
@@ -3646,7 +3650,7 @@ function tutoFin(){
 }
 function openAide(){
   document.getElementById("sheet-content").innerHTML=`<h3>Visite guidée</h3><div class="sheet-sub">Revois tout, ou seulement la partie qui t'intéresse.</div>
-    <div class="set-l"><button class="set-r" onclick="tutoLancer('essentiel')"><span class="ic">⚡</span><span class="t"><b>L'essentiel</b><small>Environ deux minutes</small></span><span class="go">›</span></button><button class="set-r" onclick="tutoLancer('complet')"><span class="ic">🎓</span><span class="t"><b>Visite complète</b><small>Environ cinq minutes</small></span><span class="go">›</span></button>
+    <div class="set-l"><button class="set-r" onclick="closeSheet();Installer.ouvrir()"><span class="ic">📲</span><span class="t"><b>Installer l'appli sur mon téléphone</b><small>Les gestes, pour iPhone et Android</small></span><span class="go">›</span></button><button class="set-r" onclick="tutoLancer('essentiel')"><span class="ic">⚡</span><span class="t"><b>L'essentiel</b><small>Environ deux minutes</small></span><span class="go">›</span></button><button class="set-r" onclick="tutoLancer('complet')"><span class="ic">🎓</span><span class="t"><b>Visite complète</b><small>Environ cinq minutes</small></span><span class="go">›</span></button>
     ${TUTO_PARTIES.filter(([k])=>k!=="accueil"&&tutoEtapes(k).length).map(([k,ic,l])=>`<button class="set-r" onclick="tutoLancer('${k}')"><span class="ic">${ic}</span><span class="t"><b>${l}</b><small>${tutoEtapes(k).length} étape${tutoEtapes(k).length>1?"s":""}</small></span><span class="go">›</span></button>`).join("")}</div>
     <div class="sheet-actions"><button class="btn ghost" onclick="openParametres()">← Paramètres</button></div>`;
   openSheet();
@@ -6539,6 +6543,7 @@ function maFiche(clubId){if(!SESSION)return null;const nom=n=>String(n||"").norm
    même lien et même aperçu WhatsApp quel que soit l'écran d'où on l'envoie, même si le CRM est ouvert ailleurs. */
 const SITE_PUBLIC=(location.protocol==="file:"||/^(localhost|127\.|192\.168\.)/.test(location.hostname))?location.origin:"https://cap-proteine-maroc.vercel.app";
 const ESPACE_MEMBRE_URL=SITE_PUBLIC+"/membre.html";
+const INSTALLER_MEMBRE=SITE_PUBLIC+"/membre.html#installer",INSTALLER_CRM=SITE_PUBLIC+"/?installer"; // v1.73 : guide « mettre l'appli sur l'écran d'accueil »
 function mbWa(tel){let d=String(tel||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.length===10&&d.startsWith("0"))d="212"+d.slice(1);return d}
 function mbEspaceHTML(m,d,canEd){
   const tel=d.m_tel;
@@ -6560,7 +6565,7 @@ async function mbCodeAcces(id){
   if(error||!r||r.error){let msg=r&&r.error;if(!msg&&error&&error.context)try{msg=(await error.context.json()).error}catch(e){}box.innerHTML=`<p class="fh-note" style="color:var(--crimson-txt,var(--crimson))">${esc(msg||(error&&error.message)||"Erreur")}</p>`;return}
   m.inscrit=true;
   const prenom=String(m.nom).split(/\s+/)[0];
-  const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${telAff(r.telephone)}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».`;
+  const msg=`Bonjour ${prenom}, ton espace membre Protéine est ouvert : l'annuaire du réseau et les messages entre membres.\n\n${ESPACE_MEMBRE_URL}\nMobile : ${telAff(r.telephone)}\nCode d'accès : ${r.code}\n\nTu pourras changer ce code dans « Mon profil ».\n\nPour l'avoir comme une appli sur ton téléphone, en 30 secondes :\n${INSTALLER_MEMBRE}`;
   box.innerHTML=`<div class="mb-code"><span>Code d'accès de ${esc(prenom)}</span><b>${esc(r.code)}</b><small>À transmettre au membre. Il ne s'affichera plus : en cas d'oubli, crée un nouveau code.</small>
     <div class="mb-code-act"><a class="btn mini" href="https://wa.me/${r.telephone}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="navigator.clipboard&&navigator.clipboard.writeText(${esc(JSON.stringify(msg))}).then(()=>toast('Message copié'))">Copier le message</button></div></div>`;
   const etat=box.parentElement&&box.parentElement.querySelector(".mb-esp");if(etat&&!m.vuLe){etat.className="mb-esp";etat.textContent="Code créé, jamais connecté"}
@@ -7400,7 +7405,7 @@ function embRendu(){
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
 }
 function embMessage(u,pwd){const pr=(u.nom||"").split(/\s+/)[0];
-  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nPour l'avoir comme une appli sur ton téléphone, en 30 secondes :\n${INSTALLER_CRM}\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function embWa(u,pwd){const a=u.animateur_id&&anim(u.animateur_id);const t=a&&a.tel?String(a.tel).replace(/[^\d]/g,"").replace(/^0/,"212"):"";return "https://wa.me/"+t+"?text="+encodeURIComponent(embMessage(u,pwd))}
 async function embCopier(id){const u=_emb.l.find(x=>x.id===id),r=_emb.res[id];try{await navigator.clipboard.writeText(embMessage(u,r.pwd));toast("Message copié")}catch(e){prompt("Message :",embMessage(u,r.pwd))}}
 async function embTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();toast("Mobile enregistré")}
@@ -7488,7 +7493,7 @@ function accCellule(a){
 }
 function accLogin(a){return (a.nom||"").split(/\s+/)[0].normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
-  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
+  return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nPour l'avoir comme une appli sur ton téléphone, en 30 secondes :\n${INSTALLER_CRM}\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
 function accDonner(animId){
   const a=anim(animId);if(!a||!accVisible())return;

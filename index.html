@@ -2523,8 +2523,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.71.0";
+const APP_VERSION="1.72.0";
 const CHANGELOG=[
+  {v:"1.72.0",date:"19 novembre 2026",notes:{"Ajouté":["Les inscrits du lien national arrivent tout seuls : le serveur les lit toutes les 10 minutes (de 8 h à 22 h) et le CRM les affiche dans la minute, avec une annonce « Nouvel inscrit ». Plus besoin d'appuyer sur « Récupérer les inscrits » (le bouton reste pour forcer une lecture immédiate)."]}},
   {v:"1.71.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrit membre d'un autre groupe : son nom est suivi de « CAP » et du nom de son groupe. Un toucher ouvre la page du groupe : ses membres en consultation (métier, entreprise), et « Demander son numéro » qui prépare le message à l'animateur du groupe.","Même page de groupe dans l'espace membre."]}},
   {v:"1.70.0",date:"19 novembre 2026",notes:{"Ajouté":["Inscrits d'une réunion en couleurs : les membres du groupe en bleu, les membres d'un autre groupe en vert (avec le nom de leur groupe), les invités extérieurs au réseau inchangés. Dans le CRM et dans l'espace membre."]}},
   {v:"1.69.0",date:"19 novembre 2026",notes:{"Ajouté":["Plus de doublon dans une réunion : une personne inscrite par le lien du national, par « Je viens » ou ajoutée à la main n'apparaît qu'une fois. Le CRM et l'espace membre le disent : « déjà inscrit par le lien », « déjà inscrit depuis le CRM ».","Présentation : sur la fiche d'un membre, le bouton 📷 va chercher sa photo dans le téléphone (elle est rangée sur sa fiche).","Inviter quelqu'un (CRM et espace membre) : bouton pour reprendre une personne du carnet d'adresses du téléphone."]}},
@@ -8724,6 +8725,24 @@ function railDemandes(){
   return `<div class="sec-h"><span>Demandes à traiter <em>${l.length}</em></span></div><div class="dem-l rail-dem">${l.slice(0,5).map(demCarte).join("")}</div>`;
 }
 let _adhRafr=false;
+/* v1.72 : les inscrits arrivent seuls. Le serveur lit le national toutes les 10 minutes ; ici on relit chaque minute les
+   invités des réunions à venir (et le compteur du national), on annonce les nouveaux et on rafraîchit la fiche ouverte. */
+async function inscritsRelire(){
+  if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return;const D=window._DBvrai||DB,auj=isoJour(TODAY);
+  const R=(D.reunions||[]).filter(m=>m.date>=auj&&m.statut!=="annulee");if(!R.length)return;const ids=R.map(m=>m.id);
+  const [g,n]=await Promise.all([sb.from("invites").select("*").in("reunion_id",ids),sb.from("reunions").select("id,national").in("id",ids)]);
+  if(g.error)return;const par={};(g.data||[]).forEach(x=>(par[x.reunion_id]=par[x.reunion_id]||[]).push(x));
+  const prem=!D._inscritsVus;D._inscritsVus=true;let change=null;
+  R.forEach(m=>{const L=par[m.id]||[],av=new Set([...(m.guests||[]),...(m.equipe||[])].map(x=>x._id)),nv=L.filter(x=>!x.profil_id&&!av.has(x.id));
+    const sig=a=>a.map(x=>(x._id||x.id)+":"+x.statut).sort().join("|");
+    const G=L.filter(x=>!x.profil_id).map(mapGuest),E=L.filter(x=>x.profil_id).map(mapGuest),bouge=sig(G)!==sig(m.guests||[])||E.length!==(m.equipe||[]).length;
+    m.guests=G;m.equipe=E;const nat=((n.data||[]).find(x=>x.id===m.id)||{}).national;if(nat&&m.nat)m.nat={...m.nat,...nat};
+    if(bouge)change=change||m;
+    if(!prem&&nv.length)annonce("🗓",nv.length>1?nv.length+" nouveaux inscrits":"Nouvel inscrit · "+nv[0].nom,String(club(m.clubId).nom||"").replace(/^CAP\s+/,"")+" · "+ldReuLib(m),()=>openMeeting(m.id))});
+  if(change){const z=document.querySelector("#sheet.open #rep-bloc");const ouv=z&&R.find(m=>m.id===z.dataset.reunion);
+    if(ouv&&!document.querySelector("#sheet-content input:focus,#sheet-content textarea:focus,#sheet-content select:focus"))meetingDetail(ouv,canEditReunion(ouv));
+    if(["agenda","reunions","dash"].includes(tab)&&!document.querySelector("#view input:focus,#view textarea:focus"))render()}
+}
 async function adhRafraichir(){
   if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
   try{
@@ -8737,6 +8756,7 @@ async function adhRafraichir(){
     try{const ld=await sb.from("leads").select("*").order("created_at"); // v1.21 : les leads remontés du Google Sheet arrivent sans recharger
       if(!ld.error){const av=new Set((DB.leads||[]).map(l=>l.id)),nl=(ld.data||[]).filter(l=>!av.has(l.id));DB.leads=ld.data||[];
         if(nl.length&&av.size){annonce("📇",nl.length>1?nl.length+" nouveaux leads":"Nouveau lead",nl.map(l=>l.nom).join(", "),()=>navDem("leads"));if(SESSION&&document.querySelector('.ld'))render()}}}catch(e){}
+    try{await inscritsRelire()}catch(e){}
     const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
     if(error||!data)return;
     const avant=new Set((DB.adhesions||[]).map(a=>a.id)),nouv=data.filter(a=>!avant.has(a.id)&&a.statut==="recue");

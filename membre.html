@@ -719,7 +719,7 @@ async function repondreReseau(id,rep){
   else{const {data,error}=await sb.rpc("cap_membre_repondre",{p_reunion:id,p_reponse:rep});if(error){toast("Réponse non enregistrée : "+error.message,"ko");return}r.ma_reponse=data.ma_reponse;r.viennent=data.viennent;r.deja_lien=data.deja_lien}
   const p=S.gv&&S.gv.prochaine;if(p&&p.id===id){p.ma_reponse=r.ma_reponse;p.viennent=r.viennent}
   if(S.reuPrev&&S.reuPrev.id===id)S.reuPrev=null;
-  toast(rep==="oui"?(r.deja_lien?"C'est noté. Tu étais déjà inscrit par le lien d'invitation.":"Inscription notée : l'animateur la voit dans sa réunion"):"Ton absence est notée");rendu(true);
+  toast(rep==="oui"?(r.deja_lien?"C'est noté. Tu étais déjà inscrit par le lien d'invitation.":"Inscription notée : l'animateur du groupe est prévenu"):"Ton absence est notée");rendu(true);
 }
 async function chargerPrevus(id){
   const r=(S.reseauReu||[]).find(x=>x.id===id);

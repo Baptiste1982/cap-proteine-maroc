@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Votre invitation · Club d'Affaires Protéine</title>
+<meta property="og:site_name" content="Club d'Affaires Protéine Rabat et Région">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Votre invitation · Club d'Affaires Protéine">
+<meta property="og:description" content="Le lieu, le déroulé et l'inscription, en une page.">
+<meta property="og:image" content="https://cap-proteine-maroc.vercel.app/icone-512.png?v=2">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#D81B3F">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:15.5px/1.55 Inter,system-ui,sans-serif;background:#ECEAE9;color:#1B1416;padding:max(16px,env(safe-area-inset-top)) 16px 110px}
+main{max-width:520px;margin:0 auto;display:grid;gap:12px}
+main>*{animation:monte .5s cubic-bezier(.2,.8,.2,1) both}main>*:nth-child(2){animation-delay:.06s}main>*:nth-child(3){animation-delay:.12s}main>*:nth-child(4){animation-delay:.18s}main>*:nth-child(5){animation-delay:.24s}
+@keyframes monte{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.tete{background:#D81B3F;color:#fff;border-radius:24px;padding:22px 20px}
+.tete img{height:34px;display:block;margin-bottom:16px;filter:brightness(0) invert(1)}
+.tete small{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;opacity:.92}
+h1{margin:4px 0 14px;font:800 28px/1.12 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em}
+.quand{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quand div,.ou{background:#fff;color:#1B1416;border-radius:14px;padding:10px 12px}
+.quand small,.ou small{display:block;color:#5E5054;letter-spacing:0;text-transform:none;font-size:12.5px;opacity:1;font-weight:500}
+.quand b{font-size:17px}.ou{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;text-decoration:none}
+.ou b{display:block}.ou i{font-style:normal;color:#D81B3F;font-weight:700;white-space:nowrap}
+.bloc{background:#fff;border-radius:20px;padding:18px 20px}
+h2{margin:0 0 10px;font:800 18px "Bricolage Grotesque",Inter,sans-serif}
+.bloc p{margin:0 0 8px;color:#3B3033}.bloc p:last-child{margin:0}
+ol,ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+ol li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+ol li>span{width:30px;height:30px;border-radius:50%;background:#D81B3F;color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+ol b,ul b{display:block}ol small,ul small{color:#5E5054;font-size:14px}
+ul li{padding-left:16px;position:relative}ul li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:#5B7FA3}
+.anim{display:flex;align-items:center;gap:14px}
+.anim .ph{width:64px;height:64px;border-radius:50%;background:#F3EEEC center top/cover no-repeat;flex-shrink:0;display:grid;place-items:center;font:800 22px "Bricolage Grotesque",Inter,sans-serif;color:#D81B3F}
+.anim b{display:block;font-size:16.5px}.anim small{color:#5E5054}
+.bas{position:fixed;left:0;right:0;bottom:0;padding:12px 16px max(12px,env(safe-area-inset-bottom));background:linear-gradient(to top,#ECEAE9 68%,rgba(236,234,233,0))}
+.btn{display:flex;align-items:center;justify-content:center;max-width:520px;margin:0 auto;min-height:54px;border-radius:16px;background:#D81B3F;color:#fff;font:700 17px Inter,sans-serif;text-decoration:none;box-shadow:0 12px 28px -12px rgba(216,27,63,.7);transition:transform .15s,background .15s}
+.btn:hover{background:#B5142F}.btn:active{transform:scale(.98)}.btn:focus-visible,.ou:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
+.pied{text-align:center;color:#5E5054;font-size:13px;margin:4px 0 0}
+@media(prefers-reduced-motion:reduce){main>*{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+<main id="m"><div class="bloc"><p>Ouverture de votre invitation…</p></div></main>
+<div class="bas" id="bas" hidden><a class="btn" id="go" href="#">Je m'inscris</a></div>
+<script>
+/* v1.78 : kit de l'invité. Page publique envoyée avec l'invitation : le groupe, la date, le lieu, qui anime, le déroulé.
+   « Je m'inscris » passe par i.html : le clic est compté comme pour le lien d'inscription. */
+(function(){
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const P=new URLSearchParams(location.search),n=(P.get("n")||"").replace(/\D/g,""),s=P.get("s")||"",M=document.getElementById("m");
+  const DEMO={date:new Date(Date.now()+3*86400e3).toISOString().slice(0,10),heure:"11:00",type:"SI",groupe:"CAP Rabat Agdal",ville:"Rabat",lieu:"Le Limonadier",adresse:"Avenue Annakhil, Hay Riad, Rabat",animateur:"Karim El Fassi",animateur_role:"Animateur du groupe"};
+  const TYPES={SI:"Réunion d'information",RL:"Réunion de lancement"},FORMATS={business:"Réunion business",conference:"Conférence",visite:"Visite d'entreprise"};
+  const sur=u=>/^https?:\/\/[^\s"'<>]+$/i.test(String(u||""))?u:"";
+  function rendu(d){
+    const dt=new Date(d.date+"T12:00:00"),jour=dt.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}),h=d.heure?String(d.heure).slice(0,5).replace(":"," h ").replace(/ 00$/,""):"";
+    const adrLien=sur(d.adresse);if(adrLien)d.adresse="";if(d.lieu)d.lieu=d.lieu.charAt(0).toUpperCase()+d.lieu.slice(1);
+    const carte=sur(d.lien_carte)||adrLien||(d.lat&&d.lng?`https://www.google.com/maps/search/?api=1&query=${d.lat},${d.lng}`:(d.lieu||d.adresse?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent([d.lieu,d.adresse,d.ville].filter(Boolean).join(", ")):""));
+    const ph=String(d.animateur_photo||""),photo=/^(https:\/\/|data:image\/|presentations\/)/.test(ph)&&!/["'()<>\s]/.test(ph)?ph:"";
+    const ini=String(d.animateur||"").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase();
+    const info=!d.format&&d.type!=="RL";
+    M.innerHTML=`
+      <section class="tete"><img src="logo-proteine.png" alt="Club d'Affaires Protéine"><small>Vous êtes invité · ${esc(d.format?FORMATS[d.format]||"Réunion du groupe":TYPES[d.type]||"Réunion")}</small>
+        <h1>${esc(d.groupe||"Club d'Affaires Protéine")}</h1>
+        <div class="quand"><div><small>Le</small><b>${esc(jour.charAt(0).toUpperCase()+jour.slice(1))}</b></div><div><small>À</small><b>${esc(h||"Heure à venir")}</b></div></div>
+        ${d.lieu||d.adresse?`<a class="ou" ${carte?`href="${esc(carte)}" target="_blank" rel="noopener"`:""}><span><small>Où</small><b>${esc(d.lieu||d.adresse)}</b>${d.lieu&&d.adresse?`<small>${esc(d.adresse)}</small>`:""}</span>${carte?"<i>Itinéraire ›</i>":""}</a>`:`<div class="ou"><span><small>Où</small><b>Lieu communiqué à l'inscription</b></span></div>`}
+        ${d.theme?`<div class="ou"><span><small>Au programme</small><b>${esc(d.theme)}</b></span></div>`:""}
+      </section>
+      <section class="bloc"><h2>Le Club d'Affaires Protéine, en deux mots</h2>
+        <p>Un réseau de dirigeants et d'indépendants qui se retrouvent régulièrement pour se connaître, se faire confiance et se recommander des clients.</p>
+        <p>Un seul représentant par métier dans chaque groupe : votre place, si elle est libre, n'est qu'à vous.</p></section>
+      <section class="bloc"><h2>Comment ça se passe</h2><ol>
+        <li><span>1</span><div><b>Accueil</b><small>On fait connaissance autour d'un café.</small></div></li>
+        <li><span>2</span><div><b>${info?"Présentation du réseau":"La vie du groupe"}</b><small>${info?"Son fonctionnement, ce qu'il apporte, ce qu'il demande.":"Les actualités, les recommandations échangées entre membres."}</small></div></li>
+        <li><span>3</span><div><b>Tour de table</b><small>Chacun présente son activité en quelques mots. Vous aussi, si vous le souhaitez.</small></div></li>
+        <li><span>4</span><div><b>Échanges</b><small>Le moment de prendre des contacts et de poser vos questions.</small></div></li></ol></section>
+      <section class="bloc"><h2>Bon à savoir</h2><ul>
+        <li><b>Venez avec vos cartes de visite</b><small>Vous repartirez avec des contacts.</small></li>
+        <li><b>Préparez une phrase sur votre activité</b><small>Ce que vous faites, et le client que vous cherchez.</small></li>
+        <li><b>Sans engagement</b><small>Vous venez découvrir. La suite, vous en décidez après.</small></li></ul></section>
+      ${d.animateur?`<section class="bloc"><h2>Qui vous accueille</h2><div class="anim"><span class="ph" ${photo?`style="background-image:url('${esc(photo)}')"`:""}>${photo?"":esc(ini)}</span><span><b>${esc(d.animateur)}</b><small>${esc(d.animateur_role||"Animateur du groupe")}</small></span></div></section>`:""}
+      <p class="pied">Club d'Affaires Protéine · inscription en une minute</p>`;
+    const go=document.getElementById("go");go.href=n?"i.html?n="+encodeURIComponent(n)+"&s="+encodeURIComponent(s):"#";document.getElementById("bas").hidden=false;
+  }
+  if(P.has("demo")){rendu(DEMO);return}
+  const repli=()=>{location.replace(n?"i.html?n="+encodeURIComponent(n)+"&s="+encodeURIComponent(s):"https://www.caproteine.com/")};
+  if(!n){repli();return}
+  fetch("https://xsppsqjigdgaybmowzaq.supabase.co/rest/v1/rpc/cap_reunion_kit",{method:"POST",headers:{"Content-Type":"application/json",apikey:"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7"},body:JSON.stringify({p_inv:n})})
+    .then(r=>r.ok?r.json():null).then(d=>{if(d&&d.date)rendu(d);else repli()}).catch(repli);
+})();
+</script>
+</body>
+</html>

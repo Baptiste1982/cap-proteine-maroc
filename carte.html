@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carte de visite · Club d'Affaires Protéine</title>
+<meta property="og:site_name" content="Club d'Affaires Protéine Rabat et Région">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Carte de visite · Club d'Affaires Protéine">
+<meta property="og:description" content="Les coordonnées d'un membre du réseau, à enregistrer en un geste.">
+<meta property="og:image" content="https://cap-proteine-maroc.vercel.app/icone-512.png?v=2">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#D81B3F">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="tel-commun.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:15px/1.5 Inter,system-ui,sans-serif;background:#ECEAE9;color:#1B1416;display:flex;flex-direction:column;align-items:center;padding:max(18px,env(safe-area-inset-top)) 16px 28px}
+main{width:100%;max-width:440px}
+.c{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 18px 50px -24px rgba(27,20,22,.45);animation:monte .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes monte{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.h{background:#D81B3F;color:#fff;padding:22px 20px 54px;position:relative}
+.h small{display:block;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;opacity:.92}
+.h b{display:block;font-size:14.5px;margin-top:2px}
+.logo{position:absolute;right:16px;top:16px;width:56px;height:56px;border-radius:14px;background:#fff center/contain no-repeat;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+.ph{width:104px;height:104px;border-radius:50%;margin:-52px 0 0 20px;border:4px solid #fff;background:#F3EEEC center/cover no-repeat;display:grid;place-items:center;font:800 34px "Bricolage Grotesque",Inter,sans-serif;color:#D81B3F;position:relative}
+.b{padding:10px 20px 20px}
+h1{margin:6px 0 2px;font:800 26px/1.15 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em}
+.f{margin:0;color:#5E5054;font-size:15px}.e{margin:2px 0 0;font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.tags span{padding:4px 10px;border-radius:999px;background:#F1EDEE;font-size:12.5px;font-weight:600;color:#3B3033}
+.p{margin:14px 0 0;color:#3B3033;white-space:pre-line}
+.act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 12px;border-radius:14px;border:1.5px solid #E2DCDA;background:#fff;color:#1B1416;font:600 14.5px Inter,sans-serif;text-decoration:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}.btn:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
+.btn.plein{grid-column:1/-1;background:#D81B3F;border-color:#D81B3F;color:#fff;font-weight:700}
+.btn.plein:hover{background:#B5142F}
+.l{margin:14px 0 0;display:grid;gap:2px}.l a{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #EFEAE8;color:#1B1416;text-decoration:none;font-size:14.5px}.l a span:first-child{color:#5E5054}.l a span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.pied{margin:18px 0 0;text-align:center;color:#5E5054;font-size:13px}.pied img{height:30px;display:block;margin:0 auto 8px}.pied a{color:#D81B3F;font-weight:600}
+.vide{background:#fff;border-radius:24px;padding:36px 22px;text-align:center}.vide h1{font-size:22px}
+@media(prefers-reduced-motion:reduce){.c{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+<main id="m"><div class="vide"><p>Ouverture de la carte…</p></div></main>
+<script>
+/* v1.78 : carte de visite d'un membre, ouverte par son lien ou son QR code. Lecture par la RPC publique cap_carte_membre :
+   seulement ce que le membre partage déjà dans l'annuaire du réseau. */
+(function(){
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const M=document.getElementById("m"),c=new URLSearchParams(location.search).get("c")||"";
+  const DEMO={nom:"Salma Bennani",fonction:"Gérante",metier:"Architecte d'intérieur",entreprise:"Atelier Bennani",groupe:"CAP Rabat Agdal",ville:"Rabat",
+    presentation:"Aménagement de bureaux, de commerces et de résidences, de l'esquisse à la remise des clés.",site:"atelier-bennani.ma",linkedin:"https://www.linkedin.com/in/exemple",telephone:"0661234567",email:"salma@atelier-bennani.ma"};
+  const vide=(t,s)=>{M.innerHTML=`<div class="vide"><img src="logo-proteine.png" alt="Club d'Affaires Protéine" style="height:38px"><h1>${esc(t)}</h1><p>${esc(s)}</p></div>`};
+  const url=u=>{u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u};
+  const sur=u=>/^https?:\/\/[^\s"'<>]+$/i.test(u)?u:""; // jamais d'adresse javascript: ou data:
+  function rendu(d){
+    const ini=String(d.nom||"?").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase(),prenom=String(d.nom||"").split(/\s+/)[0];
+    const tel=d.telephone?telE164(d.telephone):"",wa=tel.replace(/\D/g,""),site=sur(url(d.site)),li=sur(url(d.linkedin)),photo=sur(d.photo||""),logo=sur(d.logo||"");
+    document.title=(d.nom||"Carte de visite")+" · Club d'Affaires Protéine";
+    M.innerHTML=`<article class="c">
+      <div class="h"><small>Membre du Club d'Affaires Protéine</small><b>${esc(d.groupe||"")}</b>${logo?`<span class="logo" style="background-image:url('${esc(logo)}')" role="img" aria-label="Logo de ${esc(d.entreprise||"l'entreprise")}"></span>`:""}</div>
+      <div class="ph" ${photo?`style="background-image:url('${esc(photo)}')" role="img" aria-label="Photo de ${esc(d.nom)}"`:""}>${photo?"":esc(ini)}</div>
+      <div class="b">
+        <h1>${esc(d.nom||"")}</h1>
+        ${d.fonction?`<p class="f">${esc(d.fonction)}</p>`:""}${d.entreprise?`<p class="e">${esc(d.entreprise)}</p>`:""}
+        <div class="tags">${[d.metier,d.ville].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+        ${d.presentation?`<p class="p">${esc(String(d.presentation).slice(0,600))}</p>`:""}
+        <div class="act">
+          <button class="btn plein" id="vcf" type="button">Ajouter à mes contacts</button>
+          ${tel?`<a class="btn" href="tel:${esc(tel)}">Appeler</a><a class="btn" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
+          ${d.email?`<a class="btn" href="mailto:${esc(d.email)}">E-mail</a>`:""}
+          ${navigator.share?`<button class="btn" id="part" type="button">Partager</button>`:""}
+        </div>
+        <div class="l">
+          ${tel?`<a href="tel:${esc(tel)}"><span>Mobile</span><span>${esc(telAff(d.telephone))}</span></a>`:""}
+          ${d.email?`<a href="mailto:${esc(d.email)}"><span>E-mail</span><span>${esc(d.email)}</span></a>`:""}
+          ${site?`<a href="${esc(site)}" target="_blank" rel="noopener"><span>Site</span><span>${esc(site.replace(/^https?:\/\/(www\.)?/,"").replace(/\/$/,""))}</span></a>`:""}
+          ${li?`<a href="${esc(li)}" target="_blank" rel="noopener"><span>LinkedIn</span><span>Voir le profil</span></a>`:""}
+        </div>
+      </div></article>
+      <p class="pied"><img src="logo-proteine.png" alt="Club d'Affaires Protéine">${prenom?esc(prenom)+" fait partie d'un réseau de dirigeants qui se recommandent.":""}${d.club_id?`<br><a href="adhesion.html?ref=${encodeURIComponent(d.club_id)}">Rejoindre le réseau</a>`:""}</p>`;
+    document.getElementById("vcf").onclick=()=>{
+      const v=x=>String(x||"").replace(/([\\;,])/g,"\\$1").replace(/\r?\n/g,"\\n"),p=String(d.nom||"").trim().split(/\s+/),pr=p.shift()||"",nm=p.join(" ");
+      const L=["BEGIN:VCARD","VERSION:3.0","N:"+v(nm)+";"+v(pr)+";;;","FN:"+v(d.nom),d.entreprise?"ORG:"+v(d.entreprise):"",d.fonction||d.metier?"TITLE:"+v(d.fonction||d.metier):"",
+        tel?"TEL;TYPE=CELL:"+tel:"",d.email?"EMAIL;TYPE=WORK:"+v(d.email):"",site?"URL:"+site:"","NOTE:"+v([d.metier,d.groupe?"Club d'Affaires Protéine · "+d.groupe:""].filter(Boolean).join(" · ")),"END:VCARD"].filter(Boolean).join("\r\n");
+      const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([L],{type:"text/vcard;charset=utf-8"}));a.download=(d.nom||"contact").replace(/[^\p{L}\p{N} -]/gu,"")+".vcf";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)};
+    const pt=document.getElementById("part");if(pt)pt.onclick=()=>navigator.share({title:d.nom,text:[d.nom,d.entreprise].filter(Boolean).join(" · "),url:location.href}).catch(()=>{});
+  }
+  if(c==="demo"){rendu(DEMO);return}
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(c)){vide("Carte introuvable","Ce lien n'est pas complet. Demande à la personne de te le renvoyer.");return}
+  fetch("https://xsppsqjigdgaybmowzaq.supabase.co/rest/v1/rpc/cap_carte_membre",{method:"POST",headers:{"Content-Type":"application/json",apikey:"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7"},body:JSON.stringify({p_jeton:c})})
+    .then(r=>r.ok?r.json():null).then(d=>{if(d&&d.nom)rendu(d);else vide("Carte introuvable","Cette carte n'existe plus. Demande à la personne de te renvoyer son lien.")})
+    .catch(()=>vide("Pas de connexion","La carte n'a pas pu s'ouvrir. Vérifie ta connexion et réessaie."));
+})();
+</script>
+</body>
+</html>

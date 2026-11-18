@@ -580,6 +580,7 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
   - **Bienvenue** : le message du code d'accès membre (`mbCodeAcces`) donne les trois premiers gestes.
   - Banc `scratchpad/audit/v178.mjs` 34/34 (téléphone et ordinateur) ; `rr`, `v169`, `v171`, `v172`, `v173` verts.
 - **v1.79.0 — carte de visite créée d'office** (18/11, JB : « quand il y a des nouveaux membres, ça crée automatiquement les fiches avec les QR codes »). Migration `20261120220000_carte_jeton_automatique.sql` (appliquée) : `membres.carte_jeton` a pour valeur par défaut `gen_random_uuid()` (toute nouvelle fiche, quelle que soit la façon dont elle est créée : intégration d'une adhésion, ajout à la main, fiche d'un animateur) ; les fiches existantes ont reçu la leur. CRM : `mapMembre.carte`, `mbCarteLien(m)`, `mbCarteHTML(m)` (bloc « Carte de visite · QR code » sous la fiche signalétique, QR dessiné par `natInvQr`), `mbCarteCopier`. Le compte visiteur ne le voit pas (les RPC vitrine ne rendent pas le jeton).
+- **v1.79.1** : `invite.html` utilise `logo-proteine-blanc.png` (logo blanc de la trame, recadré). ⚠ Ne jamais blanchir `logo-proteine.png` par un filtre CSS (`brightness(0) invert(1)`) : le rendu est pixelisé ; sur fond rouge, prendre le fichier blanc.
 - Le plan du 17/11 est entièrement livré. Reste hors plan : compte de Rita (infos attendues de JB), données de test (3 recos, Nawar).
 
 - ⚠ Les chiffres animés (compteurs `data-count`) faussent un relevé fait trop tôt après le rendu : lire `dataset.count` ou les fonctions, pas le texte.

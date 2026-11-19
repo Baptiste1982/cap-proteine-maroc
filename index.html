@@ -2510,7 +2510,7 @@ body.lecture .ann-btn{display:none}
 .pt-r.non{opacity:.62}
 .pt-n{flex:1 1 150px;min-width:0;display:flex;flex-direction:column}
 .pt-n b{font-size:15px}
-.pt-n small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.pt-n small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .pt-b{display:inline-flex;gap:6px;flex:none}
 .pt-b button{min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 13.5px Inter,sans-serif;cursor:pointer;transition:transform .12s,background .2s}
 .pt-b button:active{transform:scale(.95)}
@@ -2521,6 +2521,14 @@ body.lecture .ann-btn{display:none}
 .pt-plus .btn{flex:none;white-space:nowrap}
 .pt-lot{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .pt-fin{color:#1E9E63;font-weight:700;font-size:13.5px}
+.pt-sec{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 2px 0;font:700 12px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pt-sec:first-child{margin-top:0}.pt-sec[hidden]{display:none}
+.pt-sec span{display:inline-flex;align-items:center;gap:7px}
+.pt-sec i{width:9px;height:9px;border-radius:50%;background:rgba(127,127,127,.5)}
+.pt-sec.s-groupe i{background:#3F7FD1}.pt-sec.s-reseau i{background:#1E9E63}
+.pt-sec em{font-style:normal;letter-spacing:0}
+.pt-r.s-groupe:not(.ok){border-left-color:#3F7FD1}.pt-r.s-reseau:not(.ok){border-left-color:#1E9E63}
+.pt-qr{margin-left:6px;padding:1px 6px;border-radius:99px;border:1px solid var(--line);font-size:10px;color:var(--muted);vertical-align:middle}
 @media (max-width:480px){.pt-r{padding:8px 10px;gap:6px 8px}.pt-n{flex:1 1 110px}.pt-n b{font-size:14px}.pt-b{gap:5px}.pt-b button{padding:0 10px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.pt-bar i,.pt-r,.pt-b button{transition:none}}
 </style>
@@ -2630,8 +2638,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.96.0";
+const APP_VERSION="1.97.0";
 const CHANGELOG=[
+  {v:"1.97.0",date:"19 novembre 2026",notes:{"Modifié":["Pointage : tout le monde sur le même écran — membres du groupe, invités, membres d\u2019autres groupes, équipe inscrite. Une personne n\u2019apparaît qu\u2019une fois, même si elle est membre et inscrite par le lien."]}},
   {v:"1.96.0",date:"19 novembre 2026",notes:{"Ajouté":["Pointage des invités : le jour de la réunion, bouton « Pointer les invités » dans la fiche. Une ligne par invité, un toucher pour Présent ou Absent, compteur en direct, ajout d\u2019une personne arrivée sans inscription, et « les restants sont présents / absents ». La présence apparaît ensuite dans la liste des invités, le bilan et le remerciement."]}},
   {v:"1.95.1",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une recommandation s\u2019affiche sur deux lignes : les noms en entier, puis la chaleur et l\u2019état."]}},
   {v:"1.95.0",date:"19 novembre 2026",notes:{"Ajouté":["La chaleur des recommandations (1 à 5, du rouge au vert) s\u2019affiche dans le CRM : listes des recommandations, affaires du groupe, fiche membre. Elle se règle aussi depuis la fiche d\u2019une affaire."]}},
@@ -9330,46 +9339,83 @@ function openRemercier(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return
       <p class="fh-note">Repères : ${SUIVI_REPERES.map(([k,l])=>`<code>{${k}}</code> ${l}`).join(" · ")}</p>
       <div class="emb-2"><button class="btn ghost mini" onclick="suiviGarder()">Garder comme modèle</button><button class="btn ghost mini" onclick="suiviOrigine('${mid}')">Revenir au texte d'origine</button>${L[0]?`<button class="btn ghost mini" onclick="suiviApercu('${mid}',${L[0].i})">Aperçu pour ${esc(String(L[0].g.nom).split(/\s+/)[0])}</button>`:""}</div></details>`:""}
     <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
-/* v1.96 : pointage des invités — le jour de la réunion (et après), une ligne par invité, un toucher = présent ou absent.
-   La présence est dans invites.venu (vrai | faux | vide), la même que celle du remerciement et du bilan. */
+/* v1.97 : pointage de TOUT LE MONDE le jour de la réunion (et après) : membres du groupe, invités, membres d'autres groupes, équipe inscrite.
+   Une personne = une ligne, même si elle est à la fois membre et inscrite par le lien. Où s'écrit la présence :
+   - invité ou équipe inscrite : invites.venu (vrai | faux | vide), lu aussi par le remerciement et le bilan ;
+   - membre : une ligne dans presences (comme le QR). « Absent » pour un membre n'existe pas en base : il est gardé pour la séance (sessionStorage cap-pt-abs). */
 function ptPeut(m){try{return !!m&&m.statut!=="annulee"&&m.date<=isoJour(TODAY)&&canEditReunion(m)&&!readOnly()&&!(SESSION&&SESSION._voir)}catch(e){return false}}
-function ptListe(m){return (m.guests||[]).map((g,i)=>({g,i})).filter(x=>x.g.statut!=="Non intéressé").sort((a,b)=>String(a.g.nom).localeCompare(String(b.g.nom)))}
-function ptCompte(m){const L=ptListe(m),ok=L.filter(x=>x.g.venu===true).length,non=L.filter(x=>x.g.venu===false).length;return{n:L.length,ok,non,reste:L.length-ok-non}}
+function ptCle(n){return String(n||"").toLowerCase().normalize("NFD").replace(/[^a-z]/g,"")}
+function ptAbs(){if(!window._ptAbs){try{window._ptAbs=JSON.parse(sessionStorage.getItem("cap-pt-abs")||"{}")}catch(e){window._ptAbs={}}}return window._ptAbs}
+function ptAbsPoser(mid,k,oui){const A=ptAbs();A[mid]=A[mid]||{};if(oui)A[mid][k]=1;else delete A[mid][k];try{sessionStorage.setItem("cap-pt-abs",JSON.stringify(A))}catch(e){}}
+const PT_SEC=[["groupe","Membres du groupe"],["invites","Invités"],["reseau","Membres d'autres groupes"],["equipe","Équipe"]];
+function ptListe(m){const V=window._DBvrai||DB,E=[],parNom={};
+  const pose=e=>{E.push(e);if(e.cle)parNom[e.cle]=parNom[e.cle]||e;return e};
+  (V.membres||[]).filter(x=>x.clubId===m.clubId).sort((a,b)=>a.nom.localeCompare(b.nom)).forEach(x=>pose({k:"m:"+x.id,sec:"groupe",nom:x.nom,sous:mbMetier(x)||(x.infos||{}).ent_nom||"Membre du groupe",cle:ptCle(x.nom),mbId:x.id,uid:x.userId||null,inv:[]}));
+  ((window._ptVis||{})[m.id]||[]).forEach(v=>{const c=ptCle(v.nom),d=E.find(e=>e.mbId===v.id)||parNom[c];if(d){if(!d.mbId)d.mbId=v.id;return}
+    pose({k:"m:"+v.id,sec:"reseau",nom:v.nom,sous:capNom(v.groupe),cle:c,mbId:v.id,inv:[]})});
+  (m.equipe||[]).forEach(g=>{const c=ptCle(g.nom),d=E.find(e=>e.uid&&e.uid===g.profilId)||parNom[c];if(d){d.inv.push(g);return}pose({k:"i:"+g._id,sec:"equipe",nom:g.nom,sous:"Équipe inscrite",cle:c,inv:[g]})});
+  (m.guests||[]).filter(g=>g.statut!=="Non intéressé").slice().sort((a,b)=>String(a.nom).localeCompare(String(b.nom))).forEach(g=>{const c=ptCle(g.nom),d=parNom[c];if(d){d.inv.push(g);if(d.sec==="equipe"&&(g.entreprise||g.metier))d.sous=[g.entreprise,g.metier].filter(Boolean).join(" · ");return}
+    pose({k:"i:"+g._id,sec:"invites",nom:String(g.nom).replace(/\.+$/,""),sous:[g.entreprise,g.metier].filter(Boolean).join(" · ")||(g.par?"invité par "+g.par:"Invité"),cle:c,inv:[g]})});
+  const abs=(ptAbs()[m.id])||{},P=presDe(m.id);
+  E.forEach(e=>{const p=e.mbId?P.find(x=>x.membre_id===e.mbId):null;e.pres=p||null;
+    e.etat=p||e.inv.some(g=>g.venu===true)?true:(e.inv.length&&e.inv.every(g=>g.venu===false))||(!e.inv.length&&abs[e.k])||(e.inv.length&&abs[e.k]&&e.inv.every(g=>g.venu!==true))?false:null});
+  return E}
+function ptCompte(m){const L=ptListe(m),ok=L.filter(e=>e.etat===true).length,non=L.filter(e=>e.etat===false).length;return{n:L.length,ok,non,reste:L.length-ok-non}}
 function ptBadge(g){return g.venu===true?` <span class="g-venu">✓ présent</span>`:g.venu===false?` <span class="g-venu non">absent</span>`:""}
 function ptBloc(m,editable){if(!editable||!ptPeut(m))return"";const c=ptCompte(m),jour=m.date===isoJour(TODAY);
-  return `<button class="btn${c.reste||!c.n?"":" ghost"}" id="pt-ouvrir" style="margin-top:10px;width:100%" onclick="openPointage('${m.id}')">✅ Pointer les invités${c.n?` · ${c.ok} présent${c.ok>1?"s":""} sur ${c.n}`:""}${jour&&c.reste?" · c'est aujourd'hui":""}</button>`}
+  return `<button class="btn${c.reste||!c.n?"":" ghost"}" id="pt-ouvrir" style="margin-top:10px;width:100%" onclick="openPointage('${m.id}')">✅ Pointer les présents${c.n?` · ${c.ok} sur ${c.n}`:""}${jour&&c.reste?" · c'est aujourd'hui":""}</button>`}
 function ptTete(m){const c=ptCompte(m),pct=c.n?Math.round((c.ok+c.non)/c.n*100):0;
   return `<div class="pt-k"><span class="ok"><b>${c.ok}</b>présent${c.ok>1?"s":""}</span><span class="non"><b>${c.non}</b>absent${c.non>1?"s":""}</span><span><b>${c.reste}</b>à pointer</span></div><div class="pt-bar"><i style="width:${pct}%"></i></div>`}
-function ptLigne(mid,x){const g=x.g;return `<div class="pt-r${g.venu===true?" ok":g.venu===false?" non":""}" data-pt="${x.i}" data-q="${esc(mbNorm([g.nom,g.entreprise,g.metier].join(" ")))}"><div class="pt-n"><b>${esc(String(g.nom).replace(/\.+$/,""))}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||(g.par?"invité par "+g.par:"Invité"))}</small></div>
-    <div class="pt-b" role="group" aria-label="Présence de ${esc(g.nom)}"><button type="button" class="p${g.venu===true?" on":""}" aria-pressed="${g.venu===true}" onclick="ptNoter('${mid}',${x.i},true)">✓ Présent</button><button type="button" class="a${g.venu===false?" on":""}" aria-pressed="${g.venu===false}" onclick="ptNoter('${mid}',${x.i},false)">Absent</button></div></div>`}
+function ptLigne(mid,e){const qr=e.pres&&e.pres.mode==="qr";
+  return `<div class="pt-r s-${e.sec}${e.etat===true?" ok":e.etat===false?" non":""}" data-pt="${esc(e.k)}" data-q="${esc(mbNorm([e.nom,e.sous].join(" ")))}"><div class="pt-n"><b>${esc(e.nom)}${qr?` <span class="pt-qr">QR</span>`:""}</b><small>${esc(e.sous||"")}</small></div>
+    <div class="pt-b" role="group" aria-label="Présence de ${esc(e.nom)}"><button type="button" class="p${e.etat===true?" on":""}" aria-pressed="${e.etat===true}" onclick="ptNoter('${mid}','${esc(e.k)}',true)">✓ Présent</button><button type="button" class="a${e.etat===false?" on":""}" aria-pressed="${e.etat===false}" onclick="ptNoter('${mid}','${esc(e.k)}',false)">Absent</button></div></div>`}
+function ptCorps(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return"";const L=ptListe(m);if(!L.length)return `<p class="fh-empty">Personne n'est encore inscrit. Ajoute ceux qui arrivent, juste en dessous.</p>`;
+  return PT_SEC.map(([s,t])=>{const l=L.filter(e=>e.sec===s);if(!l.length)return"";const ok=l.filter(e=>e.etat===true).length;
+    return `<div class="pt-sec s-${s}" data-sec="${s}"><span><i></i>${esc(t)}</span><em>${ok} / ${l.length}</em></div>${l.map(e=>ptLigne(mid,e)).join("")}`}).join("")}
 function openPointage(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!ptPeut(m)){toast("Le pointage s'ouvre le jour de la réunion","w");return}
-  const c=club(m.clubId)||{},d=dObj(m.date),L=ptListe(m);window._ptQ="";
-  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Pointage des invités",sub:`${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)}`})}
+  const c=club(m.clubId)||{},d=dObj(m.date),n=ptListe(m).length;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Pointage",sub:`${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)}`})}
     <div id="pt-tete">${ptTete(m)}</div>
-    ${L.length>6?`<input class="an-q" id="pt-q" type="search" placeholder="Chercher un invité…" oninput="ptFiltrer(this.value)" aria-label="Chercher un invité">`:""}
-    <div class="pt-l" id="pt-l">${L.length?L.map(x=>ptLigne(mid,x)).join(""):`<p class="fh-empty">Aucun invité inscrit. Ajoute ceux qui arrivent, juste en dessous.</p>`}</div>
+    ${n>6?`<input class="an-q" id="pt-q" type="search" placeholder="Chercher une personne…" oninput="ptFiltrer(this.value)" aria-label="Chercher une personne">`:""}
+    <div class="pt-l" id="pt-l">${ptCorps(mid)}</div>
     <div class="pt-plus"><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
     <div class="pt-lot" id="pt-lot"></div>
     <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button><button class="btn" onclick="closeSheet()">Terminé</button></div>`;
-  ptLot(mid);openSheet()}
+  ptLot(mid);openSheet();ptVisiteurs(mid)}
+/* Les membres d'autres groupes qui ont répondu « je viens » depuis leur espace : lus une fois, ajoutés à la liste. */
+async function ptVisiteurs(mid){window._ptVis=window._ptVis||{};if(window._ptVis[mid])return;
+  try{const {data,error}=await sb.rpc("cap_reunion_reponses",{p_reunion:mid});if(error||!Array.isArray(data))return;
+    window._ptVis[mid]=data.filter(x=>x&&x.id&&x.autre_groupe&&x.reponse==="oui");if(window._ptVis[mid].length&&document.getElementById("pt-l"))ptMaj(mid,true)}catch(e){}}
 function ptLot(mid){const m=DB.reunions.find(x=>x.id===mid),z=document.getElementById("pt-lot");if(!m||!z)return;const c=ptCompte(m);
   z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span>`:""}
-function ptMaj(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const t=document.getElementById("pt-tete");if(t)t.innerHTML=ptTete(m);
-  document.querySelectorAll("#pt-l .pt-r").forEach(r=>{const g=m.guests[Number(r.dataset.pt)];if(!g)return;r.classList.toggle("ok",g.venu===true);r.classList.toggle("non",g.venu===false);
-    const p=r.querySelector(".p"),a=r.querySelector(".a");p.classList.toggle("on",g.venu===true);p.setAttribute("aria-pressed",g.venu===true);a.classList.toggle("on",g.venu===false);a.setAttribute("aria-pressed",g.venu===false)});ptLot(mid)}
-async function ptNoter(mid,i,oui){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const av=g.venu,v=g.venu===oui?null:oui;g.venu=v;ptMaj(mid);
-  const {error}=await sb.from("invites").update({venu:v}).eq("id",g._id);if(error){g.venu=av;ptMaj(mid);toast(rlsMsg(error),"e")}}
+function ptMaj(mid,tout){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const t=document.getElementById("pt-tete");if(t)t.innerHTML=ptTete(m);const z=document.getElementById("pt-l");if(!z)return;
+  if(tout){z.innerHTML=ptCorps(mid);const q=document.getElementById("pt-q");if(q&&q.value)ptFiltrer(q.value);ptLot(mid);return}
+  const L=ptListe(m),P={};L.forEach(e=>P[e.k]=e);
+  z.querySelectorAll(".pt-r").forEach(r=>{const e=P[r.dataset.pt];if(!e)return;r.classList.toggle("ok",e.etat===true);r.classList.toggle("non",e.etat===false);
+    const p=r.querySelector(".p"),a=r.querySelector(".a");p.classList.toggle("on",e.etat===true);p.setAttribute("aria-pressed",e.etat===true);a.classList.toggle("on",e.etat===false);a.setAttribute("aria-pressed",e.etat===false)});
+  z.querySelectorAll(".pt-sec").forEach(h=>{const l=L.filter(e=>e.sec===h.dataset.sec);h.querySelector("em").textContent=l.filter(e=>e.etat===true).length+" / "+l.length});ptLot(mid)}
+/* Écrit l'état d'une personne : v = vrai (présent), faux (absent) ou vide (retiré). Rend un message d'erreur, ou rien si tout s'est bien passé. */
+async function ptEcrire(mid,e,v){
+  if(e.inv.length){const ids=e.inv.map(g=>g._id),{error}=await sb.from("invites").update({venu:v}).in("id",ids);if(error)return rlsMsg(error);e.inv.forEach(g=>g.venu=v)}
+  if(e.mbId){const p=presDe(mid).find(x=>x.membre_id===e.mbId);
+    if(v===true&&!p){const {data,error}=await sb.from("presences").insert({reunion_id:mid,membre_id:e.mbId,mode:"animateur",pointe_par:SESSION.id||null}).select().single();if(error)return rlsMsg(error);DB.presences.push(data);if(window._DBvrai&&window._DBvrai.presences&&window._DBvrai.presences!==DB.presences)window._DBvrai.presences.push(data)}
+    if(v!==true&&p){const {error}=await sb.from("presences").delete().eq("id",p.id);if(error)return rlsMsg(error);DB.presences=DB.presences.filter(x=>x.id!==p.id);if(window._DBvrai&&window._DBvrai.presences)window._DBvrai.presences=window._DBvrai.presences.filter(x=>x.id!==p.id)}}
+  ptAbsPoser(mid,e.k,v===false);return""}
+async function ptNoter(mid,k,oui){const m=DB.reunions.find(x=>x.id===mid),e=m&&ptListe(m).find(x=>x.k===k);if(!e||window._ptOcc)return;const v=e.etat===oui?null:oui;
+  const r=document.querySelector(`#pt-l .pt-r[data-pt="${k}"]`);if(r){r.classList.toggle("ok",v===true);r.classList.toggle("non",v===false)}
+  window._ptOcc=1;let err="";try{err=await ptEcrire(mid,e,v)}catch(x){err="Non enregistré, réessaie"}window._ptOcc=0;if(err)toast(err,"e");ptMaj(mid)}
 async function ptReste(mid,oui,btn){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : "+btn.textContent.toLowerCase();btn.classList.remove("ghost");return}
-  const R=ptListe(m).filter(x=>x.g.venu==null);if(!R.length)return;btn.disabled=true;
-  const {error}=await sb.from("invites").update({venu:oui}).in("id",R.map(x=>x.g._id));if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
-  R.forEach(x=>x.g.venu=oui);ptMaj(mid);toast(R.length+" invité"+(R.length>1?"s":"")+" noté"+(R.length>1?"s":"")+" "+(oui?"présent":"absent")+(R.length>1?"s":""))}
+  const R=ptListe(m).filter(e=>e.etat==null);if(!R.length)return;btn.disabled=true;let ko=0;
+  for(const e of R){try{if(await ptEcrire(mid,e,oui))ko++}catch(x){ko++}}
+  ptMaj(mid);toast(ko?ko+" personne"+(ko>1?"s":"")+" non enregistrée"+(ko>1?"s":""):(R.length+" personne"+(R.length>1?"s":"")+" notée"+(R.length>1?"s":"")+" "+(oui?"présente":"absente")+(R.length>1?"s":"")),ko?"e":"s")}
 async function ptAjouter(mid){const z=document.getElementById("pt-nom"),nom=(z&&z.value||"").trim();if(!nom){toast("Écris son prénom et son nom","w");if(z)z.focus();return}
-  const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const d=invMeme(m,nom,"");
-  if(d){const i=m.guests.indexOf(d);if(i>=0&&d.venu!==true){await ptNoter(mid,i,true);toast(d.nom+" était déjà inscrit : noté présent")}else toast(d.nom+" est déjà dans la liste");z.value="";return}
+  const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const d=ptListe(m).find(e=>e.cle===ptCle(nom));
+  if(d){if(d.etat!==true){const err=await ptEcrire(mid,d,true);if(err){toast(err,"e");return}ptMaj(mid);toast(d.nom+" était déjà dans la liste : noté présent")}else toast(d.nom+" est déjà noté présent");z.value="";return}
   const {data,error}=await sb.from("invites").insert({reunion_id:mid,nom,tel:"",invite_par:"Sur place",statut:"Intéressé",venu:true}).select().single();
   if(error){toast(/déjà inscrit/.test(error.message||"")?error.message:rlsMsg(error),"e");return}
-  m.guests=m.guests||[];m.guests.push(mapGuest(data));toast(nom+" ajouté et noté présent");openPointage(mid)}
-function ptFiltrer(q){const t=predMots(q);document.querySelectorAll("#pt-l .pt-r").forEach(r=>{const W=predMots(r.dataset.q||"");r.hidden=!t.every(x=>W.some(w=>w.startsWith(x)))})}
+  m.guests=m.guests||[];m.guests.push(mapGuest(data));z.value="";ptMaj(mid,true);toast(nom+" ajouté et noté présent")}
+function ptFiltrer(q){const t=predMots(q);document.querySelectorAll("#pt-l .pt-r").forEach(r=>{const W=predMots(r.dataset.q||"");r.hidden=!t.every(x=>W.some(w=>w.startsWith(x)))});
+  document.querySelectorAll("#pt-l .pt-sec").forEach(h=>{let n=h.nextElementSibling,vu=false;while(n&&n.classList.contains("pt-r")){if(!n.hidden)vu=true;n=n.nextElementSibling}h.hidden=!vu})}
 function suiviTexte(){const t=document.getElementById("sv-txt");return (t&&t.value.trim())||window._svTpl||suiviModele()}
 async function suiviVenu(mid,i,oui){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const v=g.venu===oui?null:oui;
   const {error}=await sb.from("invites").update({venu:v}).eq("id",g._id);if(error){toast(rlsMsg(error),"e");return}g.venu=v;openRemercier(mid)}

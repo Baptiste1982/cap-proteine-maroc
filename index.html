@@ -2549,8 +2549,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.87.0";
+const APP_VERSION="1.88.0";
 const CHANGELOG=[
+  {v:"1.88.0",date:"19 novembre 2026",notes:{"Corrigé":["Vue membre d'un groupe : le bouton « Fermer » ne faisait rien dans l'appli. Il ramène maintenant à l'espace du groupe.","Aperçu « voir comme un membre » : la croix d'une sous-page passait sous le bandeau bleu dès qu'on faisait défiler et ne répondait plus. Elle reste maintenant juste dessous, et le bandeau tient sur une ligne."]}},
   {v:"1.87.0",date:"19 novembre 2026",notes:{"Modifié":["Carte de visite recto verso. Recto au format d'une carte de visite : photo, nom, fonction, entreprise, groupe et le QR code de la carte. Un bouton en bas à droite la retourne : au verso, l'activité, la spécialité, les contacts recherchés, les loisirs et les coordonnées.","Dans le CRM, la petite fenêtre de la carte prend la taille de la carte et s'allonge quand on la retourne."]}},
   {v:"1.86.0",date:"19 novembre 2026",notes:{"Ajouté":["Fiche du membre : « Spécialité » (ce qu'il fait précisément), « Contacts recherchés » (ses cibles) et « Loisirs et hobbies ». Le membre les remplit dans son espace, l'équipe dans la fiche signalétique.","Espace membre : sur la fiche d'un autre membre, un loisir partagé est mis en avant (« Vous avez en commun : padel »). La recherche du réseau trouve aussi les loisirs et les spécialités."]}},
   {v:"1.85.1",date:"19 novembre 2026",notes:{"Corrigé":["Carte de visite : un membre dont le métier est « - Autre - » n'affiche plus cette étiquette."]}},
@@ -6640,7 +6641,9 @@ async function mbFicheSauver(){
 /* v1.25 : l'espace membre est une page du CRM (onglet « espace ») : il s'affiche dans la zone principale, menu du CRM
    à gauche, dans un cadre gardé d'un rendu à l'autre (#esp-host, à côté de #view : render() ne le recrée jamais).
    Tout lien vers membre.html#… du CRM passe par là (écouteur en capture) : plus d'onglet ni de second CRM. */
-function espaceOuvrir(url){if(!url)return;try{if(document.getElementById("sheet")?.classList.contains("open"))closeSheet()}catch(e){}const h=document.getElementById("esp-host"),f=h.querySelector("iframe");window._espUrl=url;f.src=url;go("espace")}
+function espaceOuvrir(url){if(!url)return;try{if(document.getElementById("sheet")?.classList.contains("open"))closeSheet()}catch(e){}const h=document.getElementById("esp-host"),f=h.querySelector("iframe");const mode=u=>(String(u||"").match(/^(membre\.html#(?:equipe|voir|moi)=[0-9a-f-]+)/i)||[])[1]||"",change=mode(window._espUrl)&&mode(url)&&mode(window._espUrl)!==mode(url);
+  window._espUrl=url;f.src=url;if(change)try{f.contentWindow.location.reload()}catch(e){} // v1.88 : changer de fiche ou de mode ne change que le # : sans rechargement, l'ancien espace restait affiché
+  go("espace")}
 function espaceDefaut(){const f=mesFiches()[0];return f?"membre.html#moi="+f.id:null}
 function viewEspace(){const u=window._espUrl||"";
   if(!u){const d=espaceDefaut();if(d){setTimeout(()=>espaceOuvrir(d),0)}else return `<div class="page"><h1 class="page-title">Mon espace membre</h1><p class="fh-note">Aucune fiche membre n'est reliée à ton compte. Elle se crée depuis Équipe → ta fiche → « Espace membre ».</p></div>`}

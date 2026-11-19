@@ -18,83 +18,129 @@
 <script src="tel-commun.js"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;font:15px/1.5 Inter,system-ui,sans-serif;background:#ECEAE9;color:#1B1416;display:flex;flex-direction:column;align-items:center;padding:max(18px,env(safe-area-inset-top)) 16px 28px}
+body{margin:0;min-height:100vh;font:15px/1.5 Inter,system-ui,sans-serif;background:#ECEAE9;color:#1B1416;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(18px,env(safe-area-inset-top)) 16px 28px}
 main{width:100%;max-width:440px}
-.c{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 18px 50px -24px rgba(27,20,22,.45);animation:monte .5s cubic-bezier(.2,.8,.2,1) both}
+/* La carte : deux faces dos à dos. Le recto garde le format d'une carte de visite ; le verso prend la hauteur de son contenu. */
+.sc{perspective:1400px;animation:monte .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes monte{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-.h{background:#D81B3F;color:#fff;padding:22px 20px 54px;position:relative}
-.h small{display:block;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;opacity:.92}
-.h b{display:block;font-size:14.5px;margin-top:2px}
-.logo{position:absolute;right:16px;top:16px;width:56px;height:56px;border-radius:14px;background:#fff center/contain no-repeat;box-shadow:0 0 0 3px rgba(255,255,255,.35)}
-.ph{width:104px;height:104px;border-radius:50%;margin:-52px 0 0 20px;border:4px solid #fff;background:#F3EEEC center/cover no-repeat;display:grid;place-items:center;font:800 34px "Bricolage Grotesque",Inter,sans-serif;color:#D81B3F;position:relative}
-.b{padding:10px 20px 20px}
-h1{margin:6px 0 2px;font:800 26px/1.15 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em}
-.f{margin:0;color:#5E5054;font-size:15px}.e{margin:2px 0 0;font-weight:700}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.tags span{padding:4px 10px;border-radius:999px;background:#F1EDEE;font-size:12.5px;font-weight:600;color:#3B3033}
-.p{margin:14px 0 0;color:#3B3033;white-space:pre-line}
-.act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 0}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 12px;border-radius:14px;border:1.5px solid #E2DCDA;background:#fff;color:#1B1416;font:600 14.5px Inter,sans-serif;text-decoration:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.btn:active{transform:scale(.97)}.btn:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
-.btn.plein{grid-column:1/-1;background:#D81B3F;border-color:#D81B3F;color:#fff;font-weight:700}
-.btn.plein:hover{background:#B5142F}
-.l{margin:14px 0 0;display:grid;gap:2px}.l a{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #EFEAE8;color:#1B1416;text-decoration:none;font-size:14.5px}.l a span:first-child{color:#5E5054}.l a span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
-.pied{margin:18px 0 0;text-align:center;color:#5E5054;font-size:13px}.pied img{height:30px;display:block;margin:0 auto 8px}.pied a{color:#D81B3F;font-weight:600}
+.c{position:relative;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,.8,.25,1)}
+.c.tourne{transform:rotateY(180deg)}
+.face{backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 18px 50px -24px rgba(27,20,22,.5)}
+.verso{transform:rotateY(180deg)}
+.c:not(.dos) .verso,.c.dos .recto{position:absolute;inset:0 0 auto 0;pointer-events:none}
+.c:not(.dos) .verso{max-height:100%}
+/* Recto */
+.recto{aspect-ratio:1.586;display:grid;grid-template-columns:36% 1fr}
+.rg{background:#D81B3F;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px 8px;text-align:center}
+.ph{width:clamp(64px,22vw,92px);aspect-ratio:1;border-radius:50%;border:3px solid #fff;background:#F3EEEC center/cover no-repeat;display:grid;place-items:center;font:800 clamp(22px,7vw,30px) "Bricolage Grotesque",Inter,sans-serif;color:#D81B3F}
+.rg small{font-weight:700;font-size:clamp(9.5px,2.7vw,11.5px);line-height:1.25;letter-spacing:.02em}
+.rg img{height:clamp(16px,5vw,22px);opacity:.95}
+.rd{position:relative;padding:clamp(10px,3.4vw,16px);display:flex;flex-direction:column;min-width:0}
+h1{margin:0;font:800 clamp(17px,5.2vw,23px)/1.12 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere}
+.f{margin:3px 0 0;color:#5E5054;font-size:clamp(11.5px,3.3vw,13.5px);line-height:1.3}.e{margin:1px 0 0;font-weight:700;font-size:clamp(12px,3.5vw,14.5px);line-height:1.3}
+.bas{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.qr{width:clamp(58px,19vw,84px);aspect-ratio:1;background:#fff;border-radius:8px;display:grid;place-items:center}.qr svg{width:100%;height:100%;display:block}
+.lg{max-height:clamp(22px,7vw,32px);max-width:42%;object-fit:contain;margin-bottom:auto;align-self:flex-end}
+.tr{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:#D81B3F;color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 14px -6px rgba(216,27,63,.8);transition:transform .2s,background .15s}
+.tr:hover{background:#B5142F;transform:rotate(-25deg)}.tr:active{transform:scale(.92)}.tr svg{width:20px;height:20px}
+.tr:focus-visible,.btn:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
+.sc:not(.vu) .tr{animation:appel 1.8s ease-in-out 1s 3}
+@keyframes appel{0%,100%{box-shadow:0 0 0 0 rgba(216,27,63,.5)}50%{box-shadow:0 0 0 10px rgba(216,27,63,0)}}
+/* Verso */
+.vh{background:#D81B3F;color:#fff;padding:14px 60px 14px 18px;position:relative}.vh b{display:block;font:800 18px/1.2 "Bricolage Grotesque",Inter,sans-serif}.vh small{font-size:12.5px;opacity:.92}
+.vh .tr{position:absolute;right:12px;top:50%;margin-top:-20px;background:#fff;color:#D81B3F;box-shadow:none}.vh .tr:hover{background:#F8E9EC}
+.vb{padding:14px 18px 18px;display:grid;gap:14px}
+.bl small{display:block;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#5E5054;margin-bottom:3px}
+.bl p{margin:0;white-space:pre-line;color:#1B1416}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tags span{padding:4px 10px;border-radius:999px;background:#F1EDEE;font-size:12.5px;font-weight:600;color:#3B3033}
+.l{display:grid}.l a{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid #EFEAE8;color:#1B1416;text-decoration:none;font-size:14.5px}.l a:first-child{border-top:0}.l a span:first-child{color:#5E5054}.l a span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 12px;border-radius:14px;border:1.5px solid #D9D2D0;background:#fff;color:#1B1416;font:600 14.5px Inter,sans-serif;text-decoration:none;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.plein{grid-column:1/-1;background:#D81B3F;border-color:#D81B3F;color:#fff;font-weight:700}.btn.plein:hover{background:#B5142F}
+.aide{margin:10px 0 0;text-align:center;color:#5E5054;font-size:13px}
+.pied{margin:16px 0 0;text-align:center;color:#5E5054;font-size:13px}.pied img{height:28px;display:block;margin:0 auto 8px}.pied a{color:#D81B3F;font-weight:600}
 .vide{background:#fff;border-radius:24px;padding:36px 22px;text-align:center}.vide h1{font-size:22px}
-html.cadre body{padding:0;background:#fff;min-height:0}html.cadre .c{border-radius:0;box-shadow:none;animation:none}html.cadre .logo{right:54px}html.cadre .pied{padding:0 16px 18px}
-@media(prefers-reduced-motion:reduce){.c{animation:none}.btn{transition:none}}
+html.cadre body{padding:54px 16px 18px;justify-content:flex-start;min-height:0}html.cadre .pied{display:none}
+@media(prefers-reduced-motion:reduce){.sc{animation:none}.c{transition:none}.sc:not(.vu) .tr{animation:none}.btn,.tr{transition:none}}
 </style>
 </head>
 <body>
 <main id="m"><div class="vide"><p>Ouverture de la carte…</p></div></main>
 <script>
-/* v1.78 : carte de visite d'un membre, ouverte par son lien ou son QR code. Lecture par la RPC publique cap_carte_membre :
-   seulement ce que le membre partage déjà dans l'annuaire du réseau. */
+/* v1.78 : carte de visite d'un membre, ouverte par son lien ou son QR code. Lecture par la RPC publique cap_carte_membre.
+   v1.87 : recto au format carte de visite (identité + QR code de la carte), verso avec le détail ; un bouton en bas à droite la retourne. */
 (function(){
-  if(window.top!==window)document.documentElement.classList.add("cadre"); // ouverte dans la petite fenêtre du CRM : la carte seule, bord à bord
+  if(window.top!==window)document.documentElement.classList.add("cadre"); // ouverte dans la petite fenêtre du CRM
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const M=document.getElementById("m"),c=new URLSearchParams(location.search).get("c")||"";
   const DEMO={nom:"Salma Bennani",fonction:"Gérante",metier:"Architecte d'intérieur",entreprise:"Atelier Bennani",groupe:"CAP Rabat Agdal",ville:"Rabat",
-    presentation:"Aménagement de bureaux, de commerces et de résidences, de l'esquisse à la remise des clés.",site:"atelier-bennani.ma",linkedin:"https://www.linkedin.com/in/exemple",telephone:"0661234567",email:"salma@atelier-bennani.ma"};
+    presentation:"Aménagement de bureaux, de commerces et de résidences, de l'esquisse à la remise des clés.",specialite:"Agencement de commerces et de cafés : plans, suivi de chantier, mobilier sur mesure.",
+    cherche:"Promoteurs et gérants de franchises qui ouvrent de nouveaux points de vente.",loisirs:"Padel, Photographie, Randonnée",
+    site:"atelier-bennani.ma",linkedin:"https://www.linkedin.com/in/exemple",telephone:"0661234567",email:"salma@atelier-bennani.ma"};
   const vide=(t,s)=>{M.innerHTML=`<div class="vide"><img src="logo-proteine.png" alt="Club d'Affaires Protéine" style="height:38px"><h1>${esc(t)}</h1><p>${esc(s)}</p></div>`};
   const url=u=>{u=String(u||"").trim();if(!u)return"";return /^https?:\/\//i.test(u)?u:"https://"+u};
   const sur=u=>/^https?:\/\/[^\s"'<>]+$/i.test(u)?u:""; // jamais d'adresse javascript: ou data:
-  function rendu(d){
+  const TOUR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg>`;
+  function qr(lien){const z=document.getElementById("qr");if(!z)return;const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+    s.onload=()=>{try{const q=window.qrcode(0,"M");q.addData(lien);q.make();z.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}};document.head.appendChild(s)}
+  function rendu(d,lien){
     const ini=String(d.nom||"?").split(/\s+/).map(x=>x[0]||"").join("").slice(0,2).toUpperCase(),prenom=String(d.nom||"").split(/\s+/)[0];
     const tel=d.telephone?telE164(d.telephone):"",wa=tel.replace(/\D/g,""),site=sur(url(d.site)),li=sur(url(d.linkedin)),photo=sur(d.photo||""),logo=sur(d.logo||"");
+    const metier=/^\s*-\s*autre/i.test(d.metier||"")?"":(d.metier||""),lo=String(d.loisirs||"").split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean).slice(0,12);
+    const bl=(t,v)=>v?`<div class="bl"><small>${t}</small><p>${esc(String(v).slice(0,800))}</p></div>`:"";
     document.title=(d.nom||"Carte de visite")+" · Club d'Affaires Protéine";
-    M.innerHTML=`<article class="c">
-      <div class="h"><small>Membre du Club d'Affaires Protéine</small><b>${esc(d.groupe||"")}</b>${logo?`<span class="logo" style="background-image:url('${esc(logo)}')" role="img" aria-label="Logo de ${esc(d.entreprise||"l'entreprise")}"></span>`:""}</div>
-      <div class="ph" ${photo?`style="background-image:url('${esc(photo)}')" role="img" aria-label="Photo de ${esc(d.nom)}"`:""}>${photo?"":esc(ini)}</div>
-      <div class="b">
-        <h1>${esc(d.nom||"")}</h1>
-        ${d.fonction?`<p class="f">${esc(d.fonction)}</p>`:""}${d.entreprise?`<p class="e">${esc(d.entreprise)}</p>`:""}
-        <div class="tags">${[/^\s*-\s*autre/i.test(d.metier||"")?"":d.metier,d.ville].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("")}</div>
-        ${d.presentation?`<p class="p">${esc(String(d.presentation).slice(0,600))}</p>`:""}
-        <div class="act">
-          <button class="btn plein" id="vcf" type="button">Ajouter à mes contacts</button>
-          ${tel?`<a class="btn" href="tel:${esc(tel)}">Appeler</a><a class="btn" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
-          ${d.email?`<a class="btn" href="mailto:${esc(d.email)}">E-mail</a>`:""}
-          ${navigator.share?`<button class="btn" id="part" type="button">Partager</button>`:""}
+    M.innerHTML=`<div class="sc" id="sc"><div class="c" id="c">
+      <article class="face recto" aria-label="Carte de visite de ${esc(d.nom)}">
+        <div class="rg"><span class="ph" ${photo?`style="background-image:url('${esc(photo)}')" role="img" aria-label="Photo de ${esc(d.nom)}"`:""}>${photo?"":esc(ini)}</span><small>${esc(d.groupe||"Club d'Affaires Protéine")}</small><img src="logo-proteine-blanc.png" alt="Club d'Affaires Protéine"></div>
+        <div class="rd">${logo?`<img class="lg" src="${esc(logo)}" alt="Logo de ${esc(d.entreprise||"l'entreprise")}">`:""}
+          <h1>${esc(d.nom||"")}</h1>${d.fonction?`<p class="f">${esc(d.fonction)}</p>`:""}${d.entreprise?`<p class="e">${esc(d.entreprise)}</p>`:""}${metier||d.ville?`<p class="f">${esc([metier,d.ville].filter(Boolean).join(" · "))}</p>`:""}
+          <div class="bas"><div class="qr" id="qr" role="img" aria-label="QR code de cette carte"></div><button class="tr" type="button" data-tr aria-label="Retourner la carte : voir le détail" title="Retourner la carte">${TOUR}</button></div></div>
+      </article>
+      <article class="face verso" aria-label="Verso : le détail" aria-hidden="true">
+        <div class="vh"><b>${esc(d.nom||"")}</b><small>${esc([d.fonction,d.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</small><button class="tr" type="button" data-tr aria-label="Revenir au recto" title="Retourner la carte">${TOUR}</button></div>
+        <div class="vb">
+          ${bl("Son activité",d.presentation)}${bl("Sa spécialité",d.specialite)}${bl("Contacts recherchés",d.cherche)}
+          ${lo.length?`<div class="bl"><small>Loisirs et hobbies</small><div class="tags">${lo.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`:""}
+          <div class="l">
+            ${tel?`<a href="tel:${esc(tel)}"><span>Mobile</span><span>${esc(telAff(d.telephone))}</span></a>`:""}
+            ${d.email?`<a href="mailto:${esc(d.email)}"><span>E-mail</span><span>${esc(d.email)}</span></a>`:""}
+            ${site?`<a href="${esc(site)}" target="_blank" rel="noopener"><span>Site</span><span>${esc(site.replace(/^https?:\/\/(www\.)?/,"").replace(/\/$/,""))}</span></a>`:""}
+            ${li?`<a href="${esc(li)}" target="_blank" rel="noopener"><span>LinkedIn</span><span>Voir le profil</span></a>`:""}
+          </div>
         </div>
-        <div class="l">
-          ${tel?`<a href="tel:${esc(tel)}"><span>Mobile</span><span>${esc(telAff(d.telephone))}</span></a>`:""}
-          ${d.email?`<a href="mailto:${esc(d.email)}"><span>E-mail</span><span>${esc(d.email)}</span></a>`:""}
-          ${site?`<a href="${esc(site)}" target="_blank" rel="noopener"><span>Site</span><span>${esc(site.replace(/^https?:\/\/(www\.)?/,"").replace(/\/$/,""))}</span></a>`:""}
-          ${li?`<a href="${esc(li)}" target="_blank" rel="noopener"><span>LinkedIn</span><span>Voir le profil</span></a>`:""}
-        </div>
-      </div></article>
+      </article></div></div>
+      <div class="act">
+        <button class="btn plein" id="vcf" type="button">Ajouter à mes contacts</button>
+        ${tel?`<a class="btn" href="tel:${esc(tel)}">Appeler</a><a class="btn" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
+        ${d.email?`<a class="btn" href="mailto:${esc(d.email)}">E-mail</a>`:""}
+        ${navigator.share?`<button class="btn" id="part" type="button">Partager</button>`:""}
+      </div>
+      <p class="aide" id="aide">Touchez le bouton rouge de la carte pour la retourner.</p>
       <p class="pied"><img src="logo-proteine.png" alt="Club d'Affaires Protéine">${prenom?esc(prenom)+" fait partie d'un réseau de dirigeants qui se recommandent.":""}${d.club_id?`<br><a href="adhesion.html?ref=${encodeURIComponent(d.club_id)}">Rejoindre le réseau</a>`:""}</p>`;
+    qr(lien);
+    // Dans la petite fenêtre du CRM : la fenêtre prend la hauteur de la carte (recto court, verso plus long).
+    const dire=()=>{if(window.top!==window)try{window.parent.postMessage({carteH:document.body.scrollHeight},location.origin)}catch(e){}};
+    dire();setTimeout(dire,400);
+    const C=document.getElementById("c"),SC=document.getElementById("sc");
+    const tourner=()=>{const dos=!C.classList.contains("tourne");C.classList.toggle("tourne",dos);SC.classList.add("vu");
+      const calme=matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setTimeout(()=>{C.classList.toggle("dos",dos);C.querySelector(".recto").setAttribute("aria-hidden",dos);C.querySelector(".verso").setAttribute("aria-hidden",!dos);
+        document.getElementById("aide").textContent=dos?"Touchez la flèche pour revenir au recto.":"Touchez le bouton rouge de la carte pour la retourner.";
+        (dos?C.querySelector(".verso [data-tr]"):C.querySelector(".recto [data-tr]")).focus({preventScroll:true});dire()},calme?0:260)};
+    M.querySelectorAll("[data-tr]").forEach(b=>b.onclick=tourner);
     document.getElementById("vcf").onclick=()=>{
       const v=x=>String(x||"").replace(/([\\;,])/g,"\\$1").replace(/\r?\n/g,"\\n"),p=String(d.nom||"").trim().split(/\s+/),pr=p.shift()||"",nm=p.join(" ");
-      const L=["BEGIN:VCARD","VERSION:3.0","N:"+v(nm)+";"+v(pr)+";;;","FN:"+v(d.nom),d.entreprise?"ORG:"+v(d.entreprise):"",d.fonction||d.metier?"TITLE:"+v(d.fonction||d.metier):"",
-        tel?"TEL;TYPE=CELL:"+tel:"",d.email?"EMAIL;TYPE=WORK:"+v(d.email):"",site?"URL:"+site:"","NOTE:"+v([/^\s*-\s*autre/i.test(d.metier||"")?"":d.metier,d.groupe?"Club d'Affaires Protéine · "+d.groupe:""].filter(Boolean).join(" · ")),"END:VCARD"].filter(Boolean).join("\r\n");
+      const L=["BEGIN:VCARD","VERSION:3.0","N:"+v(nm)+";"+v(pr)+";;;","FN:"+v(d.nom),d.entreprise?"ORG:"+v(d.entreprise):"",d.fonction||metier?"TITLE:"+v(d.fonction||metier):"",
+        tel?"TEL;TYPE=CELL:"+tel:"",d.email?"EMAIL;TYPE=WORK:"+v(d.email):"",site?"URL:"+site:"","NOTE:"+v([metier,d.groupe?"Club d'Affaires Protéine · "+d.groupe:""].filter(Boolean).join(" · ")),"END:VCARD"].filter(Boolean).join("\r\n");
       const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([L],{type:"text/vcard;charset=utf-8"}));a.download=(d.nom||"contact").replace(/[^\p{L}\p{N} -]/gu,"")+".vcf";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)};
-    const pt=document.getElementById("part");if(pt)pt.onclick=()=>navigator.share({title:d.nom,text:[d.nom,d.entreprise].filter(Boolean).join(" · "),url:location.href}).catch(()=>{});
+    const pt=document.getElementById("part");if(pt)pt.onclick=()=>navigator.share({title:d.nom,text:[d.nom,d.entreprise].filter(Boolean).join(" · "),url:lien}).catch(()=>{});
   }
-  if(c==="demo"){rendu(DEMO);return}
+  const LIEN=(/^(localhost|127\.|192\.168\.)/.test(location.hostname)?location.origin:"https://cap-proteine-maroc.vercel.app")+"/carte.html?c="+encodeURIComponent(c);
+  if(c==="demo"){rendu(DEMO,LIEN);return}
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(c)){vide("Carte introuvable","Ce lien n'est pas complet. Demande à la personne de te le renvoyer.");return}
   fetch("https://xsppsqjigdgaybmowzaq.supabase.co/rest/v1/rpc/cap_carte_membre",{method:"POST",headers:{"Content-Type":"application/json",apikey:"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7"},body:JSON.stringify({p_jeton:c})})
-    .then(r=>r.ok?r.json():null).then(d=>{if(d&&d.nom)rendu(d);else vide("Carte introuvable","Cette carte n'existe plus. Demande à la personne de te renvoyer son lien.")})
+    .then(r=>r.ok?r.json():null).then(d=>{if(d&&d.nom)rendu(d,LIEN);else vide("Carte introuvable","Cette carte n'existe plus. Demande à la personne de te renvoyer son lien.")})
     .catch(()=>vide("Pas de connexion","La carte n'a pas pu s'ouvrir. Vérifie ta connexion et réessaie."));
 })();
 </script>

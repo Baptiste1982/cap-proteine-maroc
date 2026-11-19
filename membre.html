@@ -637,6 +637,9 @@ function voletOuvert(id,def){try{const v=localStorage.getItem("cap-volet-"+id);r
 function volet(id,titre,compte,corps,o){o=o||{};
   return `<details class="volet${o.ton?" "+o.ton:""}" data-volet="${id}" ${voletOuvert(id,!!o.ouvert)?"open":""}><summary><span class="v-t">${titre}</span>${compte!==undefined&&compte!==null&&compte!==""?`<span class="v-n">${esc(compte)}</span>`:""}${CHEVRON}</summary><div class="v-c">${corps}</div></details>`;
 }
+/* Après la fermeture des voisins, le volet ouvert peut se retrouver au-dessus de l'écran : on le ramène sous le fil d'Ariane. */
+function voletCadrer(d){requestAnimationFrame(()=>{const r=d.getBoundingClientRect(),haut=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bande"))||0)+((document.querySelector(".ariane")||{}).offsetHeight||0)+8;
+  if(r.top<haut||r.top>innerHeight*.6)scrollBy({top:r.top-haut,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})})}
 /* Une ligne cliquable : pastille, titre, sous-titre, flèche. */
 function ligneAct(attr,titre,sous,o){o=o||{};
   return `<button type="button" class="la${o.fort?" fort":""}" ${attr}>${o.av||`<span class="la-pt${o.fort?" r":""}" aria-hidden="true"></span>`}<span class="la-t"><b>${titre}</b>${sous?`<span>${sous}</span>`:""}</span>${o.fin?`<span class="la-fin">${o.fin}</span>`:""}<span class="la-fl" aria-hidden="true">›</span></button>`;
@@ -988,7 +991,7 @@ function annTri(){let v=null;try{v=localStorage.getItem("cap-anntri")}catch(e){}
 function annGroupes(l,i0){const g=new Map();l.forEach(m=>{const k=m.club||"Sans groupe";(g.get(k)||g.set(k,[]).get(k)).push(m)});
   const reg=k=>(g.get(k)[0].region||""),ord=[...g.keys()].sort((a,b)=>(b===S.moi.club)-(a===S.moi.club)||(reg(b)===S.maRegion)-(reg(a)===S.maRegion)||reg(a).localeCompare(reg(b))||a.localeCompare(b));
   let i=i0||0;const O=S.annOuv||(S.annOuv={});
-  return ord.map(k=>{const mm=g.get(k).sort((a,b)=>a.nom.localeCompare(b.nom,"fr")),ouv=O[k]!==undefined?O[k]:(!!S.q.trim()||k===S.moi.club||ord.length<=2),v=mm[0].ville||"",r=mm[0].region||"";
+  return ord.map(k=>{const mm=g.get(k).sort((a,b)=>a.nom.localeCompare(b.nom,"fr")),ouv=S.q.trim()?true:O[k]!==undefined?O[k]:(k===S.moi.club||ord.length<=2),v=mm[0].ville||"",r=mm[0].region||"";
     return `<details class="ann-grp" data-g="${esc(k)}" style="--g:${coulGroupe(k)}"${ouv?" open":""} ontoggle="(S.annOuv||(S.annOuv={}))[this.dataset.g]=this.open"><summary><i aria-hidden="true"></i><span class="ag-t"><b>${esc(k.replace(/^CAP\s+/,""))}${k===S.moi.club?` <em class="ag-moi">mon groupe</em>`:""}</b><small>${esc([v,r&&r!==v?r:""].filter(Boolean).join(" · "))}</small></span><span class="ag-n">${mm.length}</span><span class="ag-fl" aria-hidden="true">›</span></summary><div class="ag-l">${mm.map(m=>carteMembre(m,i++)).join("")}</div></details>`}).join("")}
 function listeAnnuaire(){const l=filtrer(),ail=annAilleurs(),i0=l.length;
   const plus=ail.length?`<div class="label ann-reg">Dans les autres régions · ${ail.length}</div>${ail.map((m,i)=>carteMembre(m,i0+i)).join("")}`:"";
@@ -1566,7 +1569,17 @@ function brancher(){
   app.querySelectorAll("[data-reu]").forEach(b=>b.onclick=()=>aller("reunion",{reuId:b.dataset.reu}));
   app.querySelectorAll("[data-gp]").forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.gp)aller("gpage",{gpId:b.dataset.gp})});
   app.querySelectorAll("[data-gpdem]").forEach(b=>b.onclick=()=>groupeDemander(Number(b.dataset.gpdem)));
-  app.querySelectorAll("details[data-volet]").forEach(d=>d.ontoggle=()=>{try{localStorage.setItem("cap-volet-"+d.dataset.volet,d.open?"1":"0")}catch(e){}});
+  /* v1.89 : un seul volet ouvert à la fois (JB : « qu'il ne reste pas ouvert et que ça fasse des défilements inutiles »).
+     Ouvrir un volet referme ses voisins de la même page, puis le ramène en haut de l'écran s'il a glissé. */
+  const garder=d=>{try{localStorage.setItem("cap-volet-"+d.dataset.volet,d.open?"1":"0")}catch(e){}};
+  // Seul un toucher de la personne ferme les voisins : un volet ouvert d'office à l'affichage déclenche aussi « toggle », et deux volets ouverts d'office se refermaient l'un l'autre.
+  const touche=d=>{const sm=d.querySelector(":scope > summary");if(sm)sm.addEventListener("click",()=>{d._clic=Date.now()})},voulu=d=>d._clic&&Date.now()-d._clic<800;
+  app.querySelectorAll("details[data-volet],details.ann-grp").forEach(touche);
+  app.querySelectorAll("details[data-volet]").forEach(d=>d.ontoggle=()=>{garder(d);if(!d.open||d._auto||!voulu(d))return;
+    const page=d.closest(".page")||app;page.querySelectorAll("details[data-volet][open]").forEach(x=>{if(x!==d&&!x.contains(d)&&!d.contains(x)){x._auto=1;x.open=false;garder(x);setTimeout(()=>{x._auto=0},0)}});
+    voletCadrer(d)});
+  app.querySelectorAll("details.ann-grp").forEach(d=>d.addEventListener("toggle",()=>{if(!d.open||S.q||!voulu(d))return;
+    app.querySelectorAll("details.ann-grp[open]").forEach(x=>{if(x!==d){x.open=false;(S.annOuv||(S.annOuv={}))[x.dataset.g]=false}});voletCadrer(d)}));
   app.querySelectorAll("[data-ecrire]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.ecrire));
   app.querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>ouvrirConv(b.dataset.conv));
   app.querySelectorAll("[data-aller]").forEach(b=>b.onclick=()=>aller(b.dataset.aller));

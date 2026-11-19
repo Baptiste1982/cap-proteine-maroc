@@ -2549,8 +2549,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.88.0";
+const APP_VERSION="1.89.0";
 const CHANGELOG=[
+  {v:"1.89.0",date:"19 novembre 2026",notes:{"Modifié":["Un seul volet ouvert à la fois : dans l'espace membre (volets des pages, groupes du réseau) et dans la fiche d'un membre au téléphone, ouvrir un volet referme les autres et le ramène en haut de l'écran."]}},
   {v:"1.88.0",date:"19 novembre 2026",notes:{"Corrigé":["Vue membre d'un groupe : le bouton « Fermer » ne faisait rien dans l'appli. Il ramène maintenant à l'espace du groupe.","Aperçu « voir comme un membre » : la croix d'une sous-page passait sous le bandeau bleu dès qu'on faisait défiler et ne répondait plus. Elle reste maintenant juste dessous, et le bandeau tient sur une ligne."]}},
   {v:"1.87.0",date:"19 novembre 2026",notes:{"Modifié":["Carte de visite recto verso. Recto au format d'une carte de visite : photo, nom, fonction, entreprise, groupe et le QR code de la carte. Un bouton en bas à droite la retourne : au verso, l'activité, la spécialité, les contacts recherchés, les loisirs et les coordonnées.","Dans le CRM, la petite fenêtre de la carte prend la taille de la carte et s'allonge quand on la retourne."]}},
   {v:"1.86.0",date:"19 novembre 2026",notes:{"Ajouté":["Fiche du membre : « Spécialité » (ce qu'il fait précisément), « Contacts recherchés » (ses cibles) et « Loisirs et hobbies ». Le membre les remplit dans son espace, l'équipe dans la fiche signalétique.","Espace membre : sur la fiche d'un autre membre, un loisir partagé est mis en avant (« Vous avez en commun : padel »). La recherche du réseau trouve aussi les loisirs et les spécialités."]}},
@@ -6543,7 +6544,11 @@ function sheetReplier(){if(isWide())return;const z=document.querySelector("#shee
   tetes.forEach((h,i)=>{const cle=(h.querySelector("span")||h).textContent.trim().replace(/\s+\d+$/,""),suite=[];let n=h.nextElementSibling;while(n&&!n.classList.contains("sec-h")){suite.push(n);n=n.nextElementSibling}
     const maj=o=>{h.classList.toggle("ouv",o);h.setAttribute("aria-expanded",o);suite.forEach(x=>x.classList.toggle("repl-cache",!o))};
     h.classList.add("repl");h.setAttribute("role","button");h.tabIndex=0;maj(cle in ouv?!!ouv[cle]:i===0);
-    h.addEventListener("click",e=>{if(e.target.closest("button,a,select,input"))return;const o=!h.classList.contains("ouv");maj(o);ouv[cle]=o;try{sessionStorage.setItem("cap-mb-sec",JSON.stringify(ouv))}catch(e){}});
+    h._maj=maj;h._cle=cle;
+    h.addEventListener("click",e=>{if(e.target.closest("button,a,select,input"))return;const o=!h.classList.contains("ouv");maj(o);ouv[cle]=o;
+      // v1.89 : une seule section ouverte à la fois ; ouvrir l'une referme les autres et la ramène en haut de la fiche
+      if(o){tetes.forEach(t=>{if(t!==h&&t.classList.contains("ouv")){t._maj(false);ouv[t._cle]=false}});requestAnimationFrame(()=>h.scrollIntoView({block:"start",behavior:_calme()?"auto":"smooth"}))}
+      try{sessionStorage.setItem("cap-mb-sec",JSON.stringify(ouv))}catch(e){}});
     h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();h.click()}})})}
 /* v1.42 — écrans faits pour l'ordinateur (longues saisies, grands tableaux) : au téléphone, un mot avant d'ouvrir. */
 function pcConseil(cle,titre,fn){if(isWide())return fn();let ok=false;try{ok=localStorage.getItem("cap-pc-ok-"+cle)==="1"}catch(e){}if(ok)return fn();

@@ -2565,6 +2565,9 @@ body.lecture .ann-btn{display:none}
 .arc-an{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card)}.arc-an>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.arc-an>summary::-webkit-details-marker{display:none}
 .arc-an>summary b{font:700 17px "Bricolage Grotesque",sans-serif}.arc-an>summary span{font-size:13px;color:var(--muted)}.arc-an>summary::after{content:"›";font-size:18px;color:var(--muted);transition:transform .2s}.arc-an[open]>summary::after{transform:rotate(90deg)}
 .arc-an .grp-crl{padding:0 10px 10px}.grp-cr{cursor:pointer}.grp-cr .gc-a{display:flex;gap:6px;flex:none;align-items:center}.grp-cr .gc-a .btn{padding:7px 10px;min-width:40px}.grp-cr.neutre{opacity:.82}
+/*v1.101 verrou du pointage*/
+.pt-ver{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:10px 0}.pt-ver span{min-width:0}.pt-ver small{display:block;color:var(--muted);font-size:12.5px}
+.pt-l.verrou .pt-b{pointer-events:none;opacity:.55}
 </style>
 </head>
 <body>
@@ -2672,8 +2675,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.100.0";
+const APP_VERSION="1.101.0";
 const CHANGELOG=[
+  {v:"1.101.0",date:"19 novembre 2026",notes:{"Ajouté":["Pointage verrouillé dès que tout le monde est pointé (ou par « Terminer et verrouiller ») : plus rien ne bouge sans « Déverrouiller », les absents sont gardés"],"Corrigé":["Boîte à outils : la pastille « Pointer les présents » disparaît une fois le pointage terminé"]}},
   {v:"1.100.0",date:"19 novembre 2026",notes:{"Ajouté":["Bilan d\u2019une réunion en PDF : envoi par WhatsApp ou e-mail depuis le téléphone, résumé WhatsApp au directeur national, téléchargement","Après l\u2019enregistrement du bilan, l\u2019écran « Transmettre le bilan » s\u2019ouvre tout seul","Mon groupe → Bilans : archives de toutes les réunions, rangées par année, chaque bilan ressort en PDF"],"Modifié":["La pastille de l\u2019onglet Bilans compte les bilans à saisir, plus les comptes rendus non écrits"]}},
   {v:"1.99.2",date:"19 novembre 2026",notes:{"Modifié":["Au téléphone, le « + » flottant qui recouvrait le contenu est remplacé par un bouton avec son libellé en haut de la page (＋ Réunion, ＋ Lieu, ＋ Groupe, ＋ Animateur)"]}},
   {v:"1.99.1",date:"19 novembre 2026",notes:{"Corrigé":["La réunion du jour apparaît dans les bilans et les comptes rendus à saisir dès son heure de début (avant : seulement le lendemain)"]}},
@@ -3762,7 +3766,7 @@ function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB
     t("Ma réunion","🎬","Préparer mes slides",pro?"Réunion du "+quand+" : monter et projeter la présentation":"Aucune réunion planifiée : commence par en planifier une",pro?`presOuvrir('${pro.id}')`:"openPlanSerie()");
     t("Ma réunion","✉️","Inviter à ma réunion",pro?"Lien d'inscription, QR code et message WhatsApp prêts":"Le lien se crée sur la fiche de la réunion",pro?`openMeeting('${pro.id}')`:"openPlanSerie()");
     t("Ma réunion","📆","Planifier mes réunions","Toute la série d'un coup, au rythme du groupe","openPlanSerie()");
-    {const se=seanceDuGroupe(c);if(se)t("Ma réunion","✅","Pointer les présents",(se.jour?"Réunion d'aujourd'hui":"Réunion du "+dateLongue(dObj(se.m.date)))+" : qui est là, puis le bilan",`openPointage('${se.m.id}')`,se.jour?1:0)}
+    {const se=seanceDuGroupe(c);if(se)t("Ma réunion","✅","Pointer les présents",(se.jour?"Réunion d'aujourd'hui":"Réunion du "+dateLongue(dObj(se.m.date)))+(ptVerrou(se.m)?" : pointage verrouillé":!ptCompte(se.m).reste&&ptCompte(se.m).n?" : tout le monde est pointé":" : qui est là, puis le bilan"),`openPointage('${se.m.id}')`,se.jour&&ptCompte(se.m).reste?1:0)}
     t("Ma réunion","📝","Bilans et comptes rendus",bil?bil+" réunion"+(bil>1?"s":"")+" passée"+(bil>1?"s":"")+" à saisir":"Tout est à jour","openBilan()",bil);
     t("Mes membres","👥","Mes membres et leurs accès",mb.length?esp+" sur "+mb.length+" ont leur espace membre":"Pas encore de membre dans le groupe",`grpAller('${c.id}','membres')`);
     t("Mes membres","🔗","Lien d'adhésion du groupe","Le formulaire à envoyer à un futur membre",`adhWhatsAppClub('${c.id}')`);
@@ -4555,7 +4559,7 @@ function grpSeance(c){const se=seanceDuGroupe(c);if(!se)return"";const m=se.m,d=
   const ptOk=p.n>0&&p.reste===0,et=(n,cls,act,ti,sous,id)=>`<button class="sea-b ${cls}" ${id?`id="${id}"`:""} onclick="${act}"><i>${cls.includes("fait")?"✓":n}</i><span><b>${ti}</b><small>${sous}</small></span></button>`;
   return `<section class="sea" id="sea"><div class="sea-h"><span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span><div><b>${se.jour?"Ta réunion d'aujourd'hui":"Réunion à clôturer"}</b><small>${esc(typeLib(m))} du ${esc(dateLongue(d))}${m.heure?" · "+esc(m.heure):""}${se.autres?` · et ${se.autres} autre${se.autres>1?"s":""} sans bilan`:""}</small></div></div>
     <div class="sea-e${inv?" trois":""}">
-      ${et(1,ptOk?"fait":fait?"":"go",`openPointage('${m.id}')`,"Pointer les présents",p.n?`${p.ok} présent${p.ok>1?"s":""} sur ${p.n}${p.reste?` · ${p.reste} à pointer`:""}`:"Personne d'inscrit : ajoute ceux qui arrivent","sea-pt")}
+      ${et(1,ptOk?"fait":fait?"":"go",`openPointage('${m.id}')`,"Pointer les présents",p.n?`${p.ok} présent${p.ok>1?"s":""} sur ${p.n}${p.reste?` · ${p.reste} à pointer`:ptVerrou(m)?" · verrouillé":""}`:"Personne d'inscrit : ajoute ceux qui arrivent","sea-pt")}
       ${et(2,fait?"fait":ptOk?"go":"",`openBilan('${m.id}')`,fait?"Bilan saisi":"Faire le bilan",fait?"Tu peux le compléter":"Chiffres de la réunion et compte rendu","sea-bil")}
       ${inv?et(3,"",`openRemercier('${m.id}')`,"Remercier les invités",`${inv} invité${inv>1?"s":""} · message WhatsApp prêt`,"sea-mer"):""}
     </div></section>`}
@@ -9552,6 +9556,17 @@ function ptCle(n){return String(n||"").toLowerCase().normalize("NFD").replace(/[
 function ptAbs(){if(!window._ptAbs){try{window._ptAbs=JSON.parse(sessionStorage.getItem("cap-pt-abs")||"{}")}catch(e){window._ptAbs={}}}return window._ptAbs}
 function ptAbsPoser(mid,k,oui){const A=ptAbs();A[mid]=A[mid]||{};if(oui)A[mid][k]=1;else delete A[mid][k];try{sessionStorage.setItem("cap-pt-abs",JSON.stringify(A))}catch(e){}}
 const PT_SEC=[["groupe","Membres du groupe"],["invites","Invités"],["reseau","Membres d'autres groupes"],["equipe","Équipe"]];
+/* v1.101 : verrou du pointage. Verrouillé = terminé : les personnes non pointées comptent comme absentes, plus rien ne se modifie
+   sans déverrouiller, et plus aucune pastille d'alerte. Gardé dans reunions.compte_rendu.pointage {verrouille_le, par, absents[]}. */
+function ptVerrou(m){const p=m&&m.cr&&m.cr.pointage;return p&&p.verrouille_le?p:null}
+function ptVerHTML(m){const v=ptVerrou(m);return v?`<div class="pt-ver"><span>🔒 <b>Pointage verrouillé</b><small>le ${esc(adhDate(v.verrouille_le))}${v.par?" par "+esc(v.par):""}</small></span><button class="btn ghost mini" id="pt-ouvrir-v" onclick="ptVerrouiller('${m.id}',false)">🔓 Déverrouiller</button></div>`:""}
+async function ptVerrouiller(mid,oui,auto){const m=DB.reunions.find(x=>x.id===mid);if(!m||!ptPeut(m))return false;
+  const abs=oui?ptListe(m).filter(e=>e.etat!==true).map(e=>e.k):((m.cr&&m.cr.pointage&&m.cr.pointage.absents)||[]);
+  const cr={...(m.cr||{}),pointage:{verrouille_le:oui?new Date().toISOString():null,par:oui?((SESSION&&SESSION.name)||""):"",absents:abs}};
+  const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",mid);if(error){toast(rlsMsg(error),"e");return false}
+  if(!oui)abs.forEach(k=>ptAbsPoser(mid,k,true));
+  m.cr=cr;toast(oui?(auto?"Tout le monde est pointé : pointage verrouillé":"Pointage verrouillé"):"Pointage déverrouillé : tu peux le corriger",oui?"s":undefined);
+  if(document.getElementById("pt-l"))openPointage(mid);else render();return true}
 function ptListe(m){const V=window._DBvrai||DB,E=[],parNom={};
   const pose=e=>{E.push(e);if(e.cle)parNom[e.cle]=parNom[e.cle]||e;return e};
   (V.membres||[]).filter(x=>x.clubId===m.clubId).sort((a,b)=>a.nom.localeCompare(b.nom)).forEach(x=>pose({k:"m:"+x.id,sec:"groupe",nom:x.nom,sous:mbMetier(x)||(x.infos||{}).ent_nom||"Membre du groupe",cle:ptCle(x.nom),mbId:x.id,uid:x.userId||null,inv:[]}));
@@ -9560,13 +9575,14 @@ function ptListe(m){const V=window._DBvrai||DB,E=[],parNom={};
   (m.equipe||[]).forEach(g=>{const c=ptCle(g.nom),d=E.find(e=>e.uid&&e.uid===g.profilId)||parNom[c];if(d){d.inv.push(g);return}pose({k:"i:"+g._id,sec:"equipe",nom:g.nom,sous:"Équipe inscrite",cle:c,inv:[g]})});
   (m.guests||[]).filter(g=>g.statut!=="Non intéressé").slice().sort((a,b)=>String(a.nom).localeCompare(String(b.nom))).forEach(g=>{const c=ptCle(g.nom),d=parNom[c];if(d){d.inv.push(g);if(d.sec==="equipe"&&(g.entreprise||g.metier))d.sous=[g.entreprise,g.metier].filter(Boolean).join(" · ");return}
     pose({k:"i:"+g._id,sec:"invites",nom:String(g.nom).replace(/\.+$/,""),sous:[g.entreprise,g.metier].filter(Boolean).join(" · ")||(g.par?"invité par "+g.par:"Invité"),cle:c,inv:[g]})});
-  const abs=(ptAbs()[m.id])||{},P=presDe(m.id);
+  const ver=ptVerrou(m),abs={...((ptAbs()[m.id])||{})},P=presDe(m.id);if(ver)(ver.absents||[]).forEach(k=>abs[k]=1);
   E.forEach(e=>{const p=e.mbId?P.find(x=>x.membre_id===e.mbId):null;e.pres=p||null;
-    e.etat=p||e.inv.some(g=>g.venu===true)?true:(e.inv.length&&e.inv.every(g=>g.venu===false))||(!e.inv.length&&abs[e.k])||(e.inv.length&&abs[e.k]&&e.inv.every(g=>g.venu!==true))?false:null});
+    e.etat=p||e.inv.some(g=>g.venu===true)?true:(e.inv.length&&e.inv.every(g=>g.venu===false))||(!e.inv.length&&abs[e.k])||(e.inv.length&&abs[e.k]&&e.inv.every(g=>g.venu!==true))?false:null;if(ver&&e.etat==null)e.etat=false});
   return E}
 function ptCompte(m){const L=ptListe(m),ok=L.filter(e=>e.etat===true).length,non=L.filter(e=>e.etat===false).length;return{n:L.length,ok,non,reste:L.length-ok-non}}
 function ptBadge(g){return g.venu===true?` <span class="g-venu">✓ présent</span>`:g.venu===false?` <span class="g-venu non">absent</span>`:""}
 function ptBloc(m,editable){if(!editable||!ptPeut(m))return"";const c=ptCompte(m),jour=m.date===isoJour(TODAY);
+  if(ptVerrou(m))return `<button class="btn ghost" id="pt-ouvrir" style="margin-top:10px;width:100%" onclick="openPointage('${m.id}')">🔒 Pointage verrouillé · ${c.ok} présent${c.ok>1?"s":""} sur ${c.n}</button>`;
   return `<button class="btn${c.reste||!c.n?"":" ghost"}" id="pt-ouvrir" style="margin-top:10px;width:100%" onclick="openPointage('${m.id}')">✅ Pointer les présents${c.n?` · ${c.ok} sur ${c.n}`:""}${jour&&c.reste?" · c'est aujourd'hui":""}</button>`}
 function ptTete(m){const c=ptCompte(m),pct=c.n?Math.round((c.ok+c.non)/c.n*100):0;
   return `<div class="pt-k"><span class="ok"><b>${c.ok}</b>présent${c.ok>1?"s":""}</span><span class="non"><b>${c.non}</b>absent${c.non>1?"s":""}</span><span><b>${c.reste}</b>à pointer</span></div><div class="pt-bar"><i style="width:${pct}%"></i></div>`}
@@ -9579,10 +9595,10 @@ function ptCorps(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return"";con
 function openPointage(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!ptPeut(m)){toast("Le pointage s'ouvre le jour de la réunion","w");return}
   const c=club(m.clubId)||{},d=dObj(m.date),n=ptListe(m).length;
   document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Pointage",sub:`${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)}`})}
-    <div id="pt-tete">${ptTete(m)}</div>
+    ${ptVerHTML(m)}<div id="pt-tete">${ptTete(m)}</div>
     ${n>6?`<input class="an-q" id="pt-q" type="search" placeholder="Chercher une personne…" oninput="ptFiltrer(this.value)" aria-label="Chercher une personne">`:""}
-    <div class="pt-l" id="pt-l">${ptCorps(mid)}</div>
-    <div class="pt-plus"><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
+    <div class="pt-l${ptVerrou(m)?" verrou":""}" id="pt-l">${ptCorps(mid)}</div>
+    <div class="pt-plus"${ptVerrou(m)?" hidden":""}><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
     <div class="pt-lot" id="pt-lot"></div>
     <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button>${m.statut==="realisee"?`<button class="btn" onclick="closeSheet()">Terminé</button>`:`<button class="btn" id="pt-bilan" onclick="openBilan('${mid}')">Faire le bilan →</button>`}</div>`;
   ptLot(mid);openSheet();ptVisiteurs(mid)}
@@ -9591,7 +9607,8 @@ async function ptVisiteurs(mid){window._ptVis=window._ptVis||{};if(window._ptVis
   try{const {data,error}=await sb.rpc("cap_reunion_reponses",{p_reunion:mid});if(error||!Array.isArray(data))return;
     window._ptVis[mid]=data.filter(x=>x&&x.id&&x.autre_groupe&&x.reponse==="oui");if(window._ptVis[mid].length&&document.getElementById("pt-l"))ptMaj(mid,true)}catch(e){}}
 function ptLot(mid){const m=DB.reunions.find(x=>x.id===mid),z=document.getElementById("pt-lot");if(!m||!z)return;const c=ptCompte(m);
-  z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span>`:""}
+  if(ptVerrou(m)){z.innerHTML=`<span class="pt-fin">✓ Tout le monde est pointé</span>`;return}
+  z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button><button class="btn ghost mini" id="pt-verrou" onclick="ptVerrouiller('${mid}',true)" title="Les personnes non pointées seront comptées absentes">🔒 Terminer et verrouiller</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span>`:""}
 function ptMaj(mid,tout){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const t=document.getElementById("pt-tete");if(t)t.innerHTML=ptTete(m);const z=document.getElementById("pt-l");if(!z)return;
   if(tout){z.innerHTML=ptCorps(mid);const q=document.getElementById("pt-q");if(q&&q.value)ptFiltrer(q.value);ptLot(mid);return}
   const L=ptListe(m),P={};L.forEach(e=>P[e.k]=e);
@@ -9605,15 +9622,16 @@ async function ptEcrire(mid,e,v){
     if(v===true&&!p){const {data,error}=await sb.from("presences").insert({reunion_id:mid,membre_id:e.mbId,mode:"animateur",pointe_par:SESSION.id||null}).select().single();if(error)return rlsMsg(error);DB.presences.push(data);if(window._DBvrai&&window._DBvrai.presences&&window._DBvrai.presences!==DB.presences)window._DBvrai.presences.push(data)}
     if(v!==true&&p){const {error}=await sb.from("presences").delete().eq("id",p.id);if(error)return rlsMsg(error);DB.presences=DB.presences.filter(x=>x.id!==p.id);if(window._DBvrai&&window._DBvrai.presences)window._DBvrai.presences=window._DBvrai.presences.filter(x=>x.id!==p.id)}}
   ptAbsPoser(mid,e.k,v===false);return""}
-async function ptNoter(mid,k,oui){const m=DB.reunions.find(x=>x.id===mid),e=m&&ptListe(m).find(x=>x.k===k);if(!e||window._ptOcc)return;const v=e.etat===oui?null:oui;
+async function ptNoter(mid,k,oui){const m=DB.reunions.find(x=>x.id===mid),e=m&&ptListe(m).find(x=>x.k===k);if(!e||window._ptOcc)return;if(ptVerrou(m)){toast("Pointage verrouillé : déverrouille-le pour le corriger","w");return}const v=e.etat===oui?null:oui;
   const r=document.querySelector(`#pt-l .pt-r[data-pt="${k}"]`);if(r){r.classList.toggle("ok",v===true);r.classList.toggle("non",v===false)}
-  window._ptOcc=1;let err="";try{err=await ptEcrire(mid,e,v)}catch(x){err="Non enregistré, réessaie"}window._ptOcc=0;if(err)toast(err,"e");ptMaj(mid)}
-async function ptReste(mid,oui,btn){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : "+btn.textContent.toLowerCase();btn.classList.remove("ghost");return}
+  window._ptOcc=1;let err="";try{err=await ptEcrire(mid,e,v)}catch(x){err="Non enregistré, réessaie"}window._ptOcc=0;if(err)toast(err,"e");ptMaj(mid);if(!err)ptVerrouAuto(mid)}
+function ptVerrouAuto(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m||ptVerrou(m))return;const c=ptCompte(m);if(c.n&&!c.reste)ptVerrouiller(mid,true,true)}
+async function ptReste(mid,oui,btn){const m=DB.reunions.find(x=>x.id===mid);if(!m||ptVerrou(m))return;if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : "+btn.textContent.toLowerCase();btn.classList.remove("ghost");return}
   const R=ptListe(m).filter(e=>e.etat==null);if(!R.length)return;btn.disabled=true;let ko=0;
   for(const e of R){try{if(await ptEcrire(mid,e,oui))ko++}catch(x){ko++}}
-  ptMaj(mid);toast(ko?ko+" personne"+(ko>1?"s":"")+" non enregistrée"+(ko>1?"s":""):(R.length+" personne"+(R.length>1?"s":"")+" notée"+(R.length>1?"s":"")+" "+(oui?"présente":"absente")+(R.length>1?"s":"")),ko?"e":"s")}
+  ptMaj(mid);toast(ko?ko+" personne"+(ko>1?"s":"")+" non enregistrée"+(ko>1?"s":""):(R.length+" personne"+(R.length>1?"s":"")+" notée"+(R.length>1?"s":"")+" "+(oui?"présente":"absente")+(R.length>1?"s":"")),ko?"e":"s");if(!ko)ptVerrouAuto(mid)}
 async function ptAjouter(mid){const z=document.getElementById("pt-nom"),nom=(z&&z.value||"").trim();if(!nom){toast("Écris son prénom et son nom","w");if(z)z.focus();return}
-  const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const d=ptListe(m).find(e=>e.cle===ptCle(nom));
+  const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(ptVerrou(m)){toast("Pointage verrouillé : déverrouille-le pour ajouter quelqu'un","w");return}const d=ptListe(m).find(e=>e.cle===ptCle(nom));
   if(d){if(d.etat!==true){const err=await ptEcrire(mid,d,true);if(err){toast(err,"e");return}ptMaj(mid);toast(d.nom+" était déjà dans la liste : noté présent")}else toast(d.nom+" est déjà noté présent");z.value="";return}
   const {data,error}=await sb.from("invites").insert({reunion_id:mid,nom,tel:"",invite_par:"Sur place",statut:"Intéressé",venu:true}).select().single();
   if(error){toast(/déjà inscrit/.test(error.message||"")?error.message:rlsMsg(error),"e");return}

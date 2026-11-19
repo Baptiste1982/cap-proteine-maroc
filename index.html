@@ -2462,6 +2462,19 @@ body.lecture .ann-btn{display:none}
 .an-bientot i{font-style:normal;font-size:38px;display:block;margin-bottom:8px}
 .an-bientot b{font:700 17px "Bricolage Grotesque",sans-serif;display:block;margin-bottom:6px}
 .an-bientot p{color:var(--muted);font-size:13.5px;margin:0}
+/*v1.92 boîte à outils de l'animateur*/
+.bo-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:14px}
+.bo-h{font:700 12px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+.bo{position:relative;display:flex;gap:11px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:13px;font:inherit;cursor:pointer;transition:transform .18s,border-color .2s,box-shadow .2s;min-width:0}
+.bo:hover{transform:translateY(-2px);border-color:var(--crimson);box-shadow:0 10px 22px -16px rgba(0,0,0,.6)}
+.bo:active{transform:scale(.98)}
+.bo>i{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-style:normal;font-size:20px;background:rgba(127,127,127,.14)}
+.bo>span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bo b{font:700 14.5px "Bricolage Grotesque",sans-serif}
+.bo small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.bo em{position:absolute;top:9px;right:10px;font-style:normal;font-weight:700;font-size:12px;min-width:20px;text-align:center;padding:2px 7px;border-radius:99px;background:var(--crimson);color:#fff}
+.bo-go{display:inline-flex}
+@media (prefers-reduced-motion:reduce){.bo{transition:none}}
 </style>
 </head>
 <body>
@@ -2569,8 +2582,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.91.0";
+const APP_VERSION="1.92.0";
 const CHANGELOG=[
+  {v:"1.92.0",date:"19 novembre 2026",notes:{"Ajouté":["Ma boîte à outils : tous les outils de l\u2019animateur au même endroit (slides de la réunion, invitation, planification, bilans, membres et accès, contacts confiés, annuaire, documents du Bureau national, kit de départ, slide « Qui suis-je ? », point avec le directeur). Bouton dans Mon groupe et dans le menu."]}},
   {v:"1.91.0",date:"19 novembre 2026",notes:{"Ajouté":["Annuaire du réseau ouvert de partout : bouton 📇 dans la barre du haut (et menu Réseau), quelle que soit la vue. Onglets Ma région, Maroc (régions puis groupes), France et Espagne (prêts, à enrichir). Recherche par nom, métier, entreprise ou ville."]}},
 {v:"1.90.1",date:"19 novembre 2026",notes:{"Corrigé":["Présentation : un animateur invité se présente avec son propre groupe sur sa slide « Qui suis-je ? »."]}},
 {v:"1.90.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentation : une slide par personne présente à la réunion, à faire défiler une par une (bouton « Une slide par personne présente » dans le montage). Elles suivent les inscriptions en direct ; les membres des autres groupes sont reconnus, avec leur photo."]}},
@@ -3632,6 +3646,33 @@ function openAnnuaire(t){if(!SESSION||SESSION.role==="visiteur")return;if(t)wind
     <input class="an-q" id="an-q" type="search" placeholder="Nom, métier, entreprise, ville…" value="${esc(window._annQ||"")}" oninput="window._annQ=this.value;annuaireMaj()" aria-label="Chercher un membre">
     <div id="an-res"></div>`;
   annuaireMaj();openSheet()}
+/* v1.92 : la boîte à outils de l'animateur — tout ce dont il a besoin, au même endroit, chaque tuile avec ce qui l'attend.
+   Rien de neuf dessous : chaque tuile ouvre un outil qui existe. Un nouvel outil pour les animateurs s'ajoute dans boiteOutils(). */
+function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB,o=[];
+  const pro=c?(V.reunions||[]).filter(r=>r.clubId===c.id&&r.date>=auj&&r.statut!=="annulee"&&r.statut!=="archivee").sort((a,b)=>a.date.localeCompare(b.date))[0]:null;
+  const quand=pro?(()=>{const d=new Date(pro.date+"T00:00:00");return JOURS_LONG[d.getDay()||7]+" "+d.getDate()+" "+MOIS_LONG[d.getMonth()].toLowerCase()})():"";
+  const t=(sec,ic,ti,sous,act,n)=>o.push({sec,ic,ti,sous,act,n:n||0});
+  if(c){const mb=(V.membres||[]).filter(x=>x.clubId===c.id),esp=mb.filter(x=>x.inscrit).length,bil=reunionsSansBilan().length;
+    t("Ma réunion","🎬","Préparer mes slides",pro?"Réunion du "+quand+" : monter et projeter la présentation":"Aucune réunion planifiée : commence par en planifier une",pro?`presOuvrir('${pro.id}')`:"openPlanSerie()");
+    t("Ma réunion","✉️","Inviter à ma réunion",pro?"Lien d'inscription, QR code et message WhatsApp prêts":"Le lien se crée sur la fiche de la réunion",pro?`openMeeting('${pro.id}')`:"openPlanSerie()");
+    t("Ma réunion","📆","Planifier mes réunions","Toute la série d'un coup, au rythme du groupe","openPlanSerie()");
+    t("Ma réunion","📝","Bilans et comptes rendus",bil?bil+" réunion"+(bil>1?"s":"")+" passée"+(bil>1?"s":"")+" à saisir":"Tout est à jour","openBilan()",bil);
+    t("Mes membres","👥","Mes membres et leurs accès",mb.length?esp+" sur "+mb.length+" ont leur espace membre":"Pas encore de membre dans le groupe",`grpAller('${c.id}','membres')`);
+    t("Mes membres","🔗","Lien d'adhésion du groupe","Le formulaire à envoyer à un futur membre",`adhWhatsAppClub('${c.id}')`);
+    if(SESSION.animId)t("Mes membres","📬","Contacts confiés",mesContactsNonLus().length?mesContactsNonLus().length+" nouveau"+(mesContactsNonLus().length>1?"x":"")+" à rappeler":"Les contacts que la direction te confie","openBoite()",mesContactsNonLus().length)}
+  t("Mes membres","📇","Annuaire du réseau","Tous les membres, par région et par groupe","openAnnuaire()");
+  t("Mes ressources","📚","Documents du Bureau national",`<span id="bo-docs">Trames, visuels, documents d'adhésion</span>`,"docsOuvrir()");
+  t("Mes ressources","🚀","Kit de départ et vidéos","Les guides à envoyer pour installer l'appli","docsOuvrir('#videos')");
+  if(SESSION.animId&&pro)t("Mes ressources","🪪","Ma slide « Qui suis-je ? »",(anim(SESSION.animId)||{}).photo?"Ta photo et ton parcours, repris dans tes présentations":"Ajoute ta photo et ton parcours",`boiteProfil('${pro.id}')`);
+  t("Mes ressources","📅","Point avec mon directeur","Réserver un créneau de point sur activité","openPSA()",psaCompte());
+  t("Mes ressources","❓","Visite guidée","Revoir le CRM pas à pas","openAide()");
+  return o}
+function boiteProfil(rid){presOuvrir(rid);setTimeout(()=>{try{if(_pres)presAnimForm(SESSION.animId)}catch(e){}},400)}
+function openOutils(){if(!SESSION||readOnly())return;const O=boiteOutils(),S=[...new Set(O.map(x=>x.sec))],c=grpClub();
+  document.getElementById("sheet-content").innerHTML=ficheHead({title:"Ma boîte à outils",ini:"🧰",sub:c?"Animateur · "+esc(String(c.nom).replace(/^CAP\s+/,"")):"Tes outils d'animateur"})+
+    S.map(s=>`<div class="bo-h">${esc(s)}</div><div class="bo-g">${O.filter(x=>x.sec===s).map(x=>`<button type="button" class="bo" onclick="${x.act}"><i>${x.ic}</i><span><b>${esc(x.ti)}</b><small>${x.sous}</small></span>${x.n?`<em>${x.n}</em>`:""}</button>`).join("")}</div>`).join("");
+  openSheet();
+  sb.from("documents_reseau").select("id",{count:"exact",head:true}).eq("archive",false).then(r=>{const z=document.getElementById("bo-docs");if(z&&r&&r.count)z.textContent=r.count+" document"+(r.count>1?"s":"")+" : trames, visuels, adhésion"}).catch(()=>{})}
 function annResFiche(id){
   const m=(window._annRes||[]).find(x=>x.id===id);if(!m)return;const tel=String(m.telephone||"").trim(),mail=String(m.email||"").trim(),site=String(m.site||"").trim();
   const l=(k,v)=>v?`<div class="drow"><div class="tx"><div class="k">${k}</div><div class="v">${v}</div></div></div>`:"";
@@ -4379,7 +4420,7 @@ function viewGroupe(){
   const choix=clubs.length>1&&(isWide()||window._reuTous||!mine.length)?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.acr.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
-  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>
+  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 Ma boîte à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier en série</button></span></div>
     ${bascule}${choix}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
@@ -5591,7 +5632,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
     monPeut()&&it(vuePeutBasculer()||SESSION.monitoring?"Monitoring":"Statistiques","navVers('monitoring')",{on:tab==="monitoring"}),!ro&&it("À traiter","navVers('dash','#dash-todo')"),it("Rapport du mois","monOuvrir('rapport')"),it("Présenter","openPresentation()")].filter(Boolean);
   if(r==="grp"){const esp=mesFiches().length&&!SESSION._voir?[it("Mon espace membre","espaceOuvrir(espaceDefaut())",{on:tab==="espace"&&/#moi=/.test(window._espUrl||""),n:mesRecosATraiter().length})]:[];if(ro)return esp;const c=grpClub();if(!c)return esp;
-    return [...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
+    return [it("Boîte à outils","openOutils()"),...GRP_ONGLETS.map(([id,,lb])=>it(lb,`grpAller('${c.id}','${id}')`,{on:tab==="reunions"&&(window._grpOng||"bord")===id})),
       it("Présentation",`presGroupe('${c.id}')`),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
   if(r==="age"){const nb=reunionsSansBilan().length;
@@ -9103,7 +9144,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

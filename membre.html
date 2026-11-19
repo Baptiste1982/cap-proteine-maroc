@@ -221,7 +221,7 @@ html.dark .toast{background:#2C2E33;color:#F1F1F2;border-color:#3A3D44;box-shado
 a.la{text-decoration:none}
 .page.entre{animation:glisseIn .28s cubic-bezier(.2,.8,.2,1)}.page.sort{animation:glisseOut .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes glisseIn{from{opacity:0;transform:translateX(28px)}}@keyframes glisseOut{from{opacity:0;transform:translateX(-28px)}}
-.ariane{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:3;background:var(--paper);margin:calc(-16px - var(--safe-t)) -18px 0;padding:calc(8px + var(--safe-t)) 12px 8px 18px;border-bottom:1px solid var(--line2)}
+.ariane{display:flex;align-items:center;gap:10px;position:sticky;top:var(--bande,0px);z-index:3;background:var(--paper);margin:calc(-16px - var(--safe-t)) -18px 0;padding:calc(8px + var(--safe-t)) 12px 8px 18px;border-bottom:1px solid var(--line2)}
 .ariane nav{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:13px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.ariane nav::-webkit-scrollbar{display:none}
 .ariane nav button{border:0;background:none;padding:6px 0;color:var(--crimson-txt,var(--crimson));font-weight:600;font-size:13px;white-space:nowrap}
 .ariane nav span{color:var(--soft)}.ariane nav b{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
@@ -289,7 +289,8 @@ html.dark .ac-bilan{background:linear-gradient(155deg,#2F3238,#26282C);border:1p
 @keyframes feteIn{from{opacity:0;transform:scale(.6) translateY(20px)}}@keyframes feteOut{to{opacity:0;transform:scale(.9)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 #voir-band{position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;background:#5B7FA3;color:#fff;font-size:13px}
-#voir-band button{background:#fff;color:#36556F;border:0;border-radius:999px;padding:6px 12px;font:600 12.5px inherit;cursor:pointer}
+#voir-band button{flex:none;background:#fff;color:#36556F;border:0;border-radius:999px;padding:8px 14px;min-height:36px;font:700 12.5px inherit;cursor:pointer}
+#voir-band{flex-wrap:nowrap}#voir-band span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#voir-band small{opacity:.85;font-size:inherit}
 
 /*v1.17 : place de la barre de défilement réservée en permanence : rien ne bouge quand elle apparaît (fin de l'animation d'ouverture)*/
 html{scrollbar-gutter:stable}
@@ -844,7 +845,7 @@ function vueMonGroupe(){
     :`<p class="vide" style="padding:12px">Pas encore d'invité.</p>`;
   const lrecos=recos.length?`<div class="gv-recos">${recos.map(x=>`<div><span>${esc(String(x.de_nom||"?").split(" ")[0])} → ${esc(String(x.a_nom||"?").split(" ")[0])}</span><em class="chip-st ${x.statut}">${esc(ST[x.statut]||x.statut)}${x.statut==="signee"&&x.montant!=null?" · "+esc(mad(x.montant)):""}</em></div>`).join("")}</div>`:`<p class="vide" style="padding:12px">Pas encore de recommandation dans le groupe.</p>`;
   return `<div class="page">
-    ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" onclick="window.close()">Fermer</button></div>`:""}
+    ${S.eq?`<div class="eq-band">👁 Vue membre de ${esc(nom)} · tu vois ce que voient ses membres<button class="btn mini ghost" type="button" onclick="eqFermer()">Fermer</button></div>`:""}
     <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
       <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
     ${carteReunion(p,false)}
@@ -1652,9 +1653,14 @@ const DANS_CRM=window.top!==window;
 function crmRetour(){if(!DANS_CRM)return false;try{window.top.go("dash");return true}catch(e){return false}}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href="/"]');if(a&&crmRetour())e.preventDefault()},true);
 if(DANS_CRM)document.documentElement.classList.add("dans-crm");
+/* v1.88 : fermer la « Vue membre » d'un groupe. Dans le CRM (cadre) window.close() ne fait rien : on revient à l'espace du groupe. */
+function eqFermer(){if(DANS_CRM){try{window.top.go("reunions");return}catch(e){}}if(window.opener){window.close();setTimeout(()=>{location.href="/"},400);return}location.href="/"}
+/* v1.88 : le fil d'Ariane (et sa croix) se cale SOUS le bandeau d'aperçu, sinon le bandeau le recouvre dès qu'on fait défiler. */
+function voirCaler(){const b=document.getElementById("voir-band");document.documentElement.style.setProperty("--bande",(b?Math.round(b.getBoundingClientRect().height):0)+"px")}
 function voirBandeau(){if(!VOIR||document.getElementById("voir-band"))return;const b=document.createElement("div");b.id="voir-band";
-  b.innerHTML=`<span>👁 Aperçu : l'espace de <b id="voir-nom">ce membre</b>, tel qu'il le voit. Lecture seule.</span><button type="button" onclick="voirQuitter()">Fermer l'aperçu</button>`;
-  document.body.prepend(b);document.body.classList.add("voir-on")}
+  b.innerHTML=`<span>👁 Aperçu · <b id="voir-nom">ce membre</b><small> · lecture seule</small></span><button type="button" onclick="voirQuitter()">Fermer l'aperçu</button>`;
+  document.body.prepend(b);document.body.classList.add("voir-on");voirCaler();
+  try{new ResizeObserver(voirCaler).observe(b)}catch(e){addEventListener("resize",voirCaler)}}
 async function demarrerVoir(){
   $("app").innerHTML=`<div class="vide" style="margin-top:40vh">Chargement…</div>`;
   const {data:{session}}=await sb.auth.getSession();

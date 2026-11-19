@@ -2569,6 +2569,17 @@ body.lecture .ann-btn{display:none}
 .pt-ver{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:10px 0}.pt-ver span{min-width:0}.pt-ver small{display:block;color:var(--muted);font-size:12.5px}
 .pt-l.verrou .pt-b{pointer-events:none;opacity:.55}
 /*v1.103*/.nc-intro{margin:10px 0;padding:11px 13px;border:1px solid var(--line);border-left:4px solid var(--crimson);border-radius:12px;font-size:14px;line-height:1.45}
+/*v1.104 réunion verrouillée : fiche de synthèse*/
+.rv-etat{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:10px 0 6px}.rv-etat small{display:block;color:var(--muted);font-size:12.5px}
+.rv-l{color:var(--muted);font-size:13.5px;line-height:1.5;margin:6px 0 10px}
+.rv-k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.rv-t{border:1px solid var(--line);border-radius:14px;padding:11px 10px;background:var(--card);min-width:0}.rv-t b{display:block;font:700 22px/1.1 "Bricolage Grotesque",sans-serif;color:var(--ink)}.rv-t span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.rv-t.ca{grid-column:1/-1;background:var(--crimson);border-color:var(--crimson)}.rv-t.ca b,.rv-t.ca span{color:#fff}.rv-t.ca span{opacity:.9}
+.rv-d{border:1px solid var(--line);border-radius:12px;margin-top:8px}.rv-d>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;cursor:pointer;list-style:none;font-size:14px}.rv-d>summary::-webkit-details-marker{display:none}.rv-d>summary em{font-style:normal;font-weight:700;color:var(--muted)}
+.rv-c{padding:0 12px 12px;font-size:14px;line-height:1.5}.rv-c h5{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.rv-c p{margin:0 0 6px}
+.rv-p{display:inline-block;margin:0 6px 6px 0;padding:5px 10px;border-radius:999px;border:1px solid var(--line);font-size:13px}.rv-abs{color:var(--muted);font-size:13px;margin-top:4px}
+.rv-i{padding:7px 0;border-top:1px solid var(--line)}.rv-i:first-child{border-top:0}.rv-i small{display:block;color:var(--muted);font-size:12.5px}
+@media (max-width:420px){.rv-k{grid-template-columns:repeat(2,1fr)}}
+.pt-lot .pt-fin+#pt-verrou{margin-left:8px}
 </style>
 </head>
 <body>
@@ -2676,8 +2687,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.103.0";
+const APP_VERSION="1.104.0";
 const CHANGELOG=[
+  {v:"1.104.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion verrouillée dès que son bilan est enregistré : la fiche ne montre plus qu\u2019une synthèse (présents, invités, adhésions, recommandations, chiffre d\u2019affaires) ; « Déverrouiller » rend la fiche complète, « Verrouiller » la referme"],"Corrigé":["Pointage déjà complet : le bouton « Verrouiller le pointage » manquait ; « Faire le bilan » verrouille le pointage"]}},
   {v:"1.103.0",date:"19 novembre 2026",notes:{"Ajouté":["À la connexion, la direction et les animateurs qui n\u2019ont pas encore branché leur compte du CRM national sont invités à le faire (une fois par session)"],"Corrigé":["Lieux du national : la liste complète du compte est lue, un lieu déjà créé n\u2019est plus recréé en double"]}},
   {v:"1.102.0",date:"19 novembre 2026",notes:{"Modifié":["Bilan en PDF redessiné : logo, numéro de la réunion, nom du groupe en grand, type, date, heure, lieu, animateur, membres présents et absents, invités venus","Fichier nommé « Groupe - Réunion 05 - date - type » pour se trier tout seul ; numéro de réunion dans les archives et le résumé WhatsApp"]}},
   {v:"1.101.0",date:"19 novembre 2026",notes:{"Ajouté":["Pointage verrouillé dès que tout le monde est pointé (ou par « Terminer et verrouiller ») : plus rien ne bouge sans « Déverrouiller », les absents sont gardés"],"Corrigé":["Boîte à outils : la pastille « Pointer les présents » disparaît une fois le pointage terminé"]}},
@@ -4768,7 +4780,7 @@ function grpCR(c,D){const auj=isoJour(TODAY),l=D.reu.slice().sort((a,b)=>b.date.
     const sous=fait?[(r.presents??0)+" présent"+((r.presents||0)>1?"s":""),(r.invitesVenus??0)+" invité"+((r.invitesVenus||0)>1?"s":""),r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":""):"",r.crLe?"compte rendu écrit":"",b.transmis_le?"transmis":""].filter(Boolean).join(" · "):att?"Bilan à saisir":r.date>=auj&&r.statut!=="annulee"?"À venir"+(r.lieuId?" · "+lieuNom(r.lieuId):""):(STATUTS[r.statut]||"");
     return `<div class="grp-cr ${fait?"ok":att?"todo":"neutre"}" role="button" tabindex="0" style="--i:${Math.min(i,14)}" onclick="openMeeting('${r.id}')" onkeydown="if(event.key==='Enter')openMeeting('${r.id}')">
       <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>
-      <span class="gc-t"><b>${r.statut!=="annulee"&&r.statut!=="archivee"?"N° "+bilNumero(r)+" · ":""}${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${esc(sous)}</small></span>
+      <span class="gc-t"><b>${reuVerrou(r)?"🔒 ":""}${r.statut!=="annulee"&&r.statut!=="archivee"?"N° "+bilNumero(r)+" · ":""}${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${esc(sous)}</small></span>
       <span class="gc-a">${att&&ed?`<button class="btn mini" onclick="event.stopPropagation();openBilan('${r.id}')">Saisir</button>`:fait?`<button class="btn ghost mini" title="Télécharger le bilan en PDF" aria-label="Télécharger le bilan en PDF" onclick="event.stopPropagation();bilEnvTelecharger('${r.id}',this)">📄</button><button class="btn ghost mini" title="Transmettre le bilan" aria-label="Transmettre le bilan" onclick="event.stopPropagation();openBilanEnvoi('${r.id}')">📤</button>`:""}</span></div>`};
   return `<p class="grp-note">${l.length} réunion${l.length>1?"s":""} au total, ${faites} avec bilan${D.sansBilan.length?`, <b style="color:var(--crimson-txt,var(--crimson))">${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir</b>`:""}. Chaque bilan se ressort en PDF.</p>
     ${l.length?ans.map(a=>{const la=l.filter(r=>r.date.startsWith(a)),fa=la.filter(r=>r.statut==="realisee").length;
@@ -6205,7 +6217,37 @@ function openMeeting(id){
   if(editing){meetingDetail(m,true);return}
   meetingForm(null);
 }
+/* v1.104 : réunion verrouillée = classée. Posé à l'enregistrement du bilan (ou par le bouton), gardé dans
+   reunions.compte_rendu.verrou {le, par}. Verrouillée, la fiche ne montre qu'une synthèse ; « Déverrouiller » rend la fiche complète. */
+function reuVerrou(m){const v=m&&m.cr&&m.cr.verrou;return v&&v.le?v:null}
+function reuVerrouPose(m,cr){const par=(SESSION&&SESSION.name)||"",le=new Date().toISOString();cr.verrou={le,par};
+  if(!(cr.pointage&&cr.pointage.verrouille_le)){let abs=[];try{abs=ptListe(m).filter(e=>e.etat!==true).map(e=>e.k)}catch(e){}cr.pointage={verrouille_le:le,par,absents:abs}}return cr}
+async function reuVerrouiller(mid,oui){const m=DB.reunions.find(x=>x.id===mid);if(!m||!canEditReunion(m)||readOnly()||(SESSION&&SESSION._voir))return false;
+  const cr={...(m.cr||{})};if(oui)reuVerrouPose(m,cr);else cr.verrou={le:null};
+  const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",mid);if(error){toast(rlsMsg(error),"e");return false}
+  m.cr=cr;toast(oui?"Réunion verrouillée":"Réunion déverrouillée : la fiche complète est de retour",oui?"s":undefined);
+  render();meetingDetail(m,true);return true}
+function reuResume(m,editable){const D=bilDonnees(m),c=D.c,d=D.d,v=reuVerrou(m),ca=D.montant?madFmt(D.montant):"0 MAD";
+  const k=(n,l,cls)=>`<div class="rv-t ${cls||""}"><b>${n}</b><span>${l}</span></div>`;
+  const vol=(t,n,corps)=>corps?`<details class="rv-d" name="rv-d"><summary><b>${t}</b>${n!=null?`<em>${n}</em>`:""}</summary><div class="rv-c">${corps}</div></details>`:"";
+  const cr=[D.notes?`<p>${esc(D.notes)}</p>`:"",...D.rub.map(([t,x])=>`<h5>${esc(t)}</h5><p>${esc(x).replace(/\n/g,"<br>")}</p>`)].join("");
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:D.groupe.replace(/^CAP\s+/,""),sub:`Réunion n° ${D.numero} · ${esc(typeLib(m))}`})}
+    <div class="rv-etat" id="rv-etat"><span>🔒 <b>Réunion verrouillée</b><small>le ${esc(adhDate(v.le))}${v.par?" par "+esc(v.par):""}</small></span></div>
+    <p class="rv-l">${esc(dateLongue(d))} ${d.getFullYear()}${m.heure?" · "+esc(m.heure):""}${D.lieu?" · "+esc(D.lieu):""}<br>Animée par ${esc(D.anim)}</p>
+    <div class="rv-k">${k(D.nPres,"membre"+(D.nPres>1?"s":"")+" présent"+(D.nPres>1?"s":""))}${k(D.nInv,"invité"+(D.nInv>1?"s":"")+" venu"+(D.nInv>1?"s":""))}${k(D.nAdh,"adhésion"+(D.nAdh>1?"s":""))}${k(D.recos,"recommandation"+(D.recos>1?"s":""))}${k(esc(ca),"d'affaires","ca")}</div>
+    ${vol("Membres présents",D.presents.length,D.presents.length?D.presents.map(n=>`<span class="rv-p">${esc(n)}</span>`).join("")+(D.absents.length?`<p class="rv-abs">Absents : ${D.absents.map(esc).join(" · ")}</p>`:""):"")}
+    ${vol("Invités venus",D.venus.length,D.venus.map(([n,s])=>`<div class="rv-i"><b>${esc(n)}</b>${s?`<small>${esc(s)}</small>`:""}</div>`).join(""))}
+    ${vol("Compte rendu",null,cr)}
+    <div class="be-act" style="margin-top:12px"><button class="btn" id="rv-envoi" onclick="openBilanEnvoi('${m.id}')">📤 Transmettre le bilan<small>PDF ou résumé WhatsApp</small></button></div>
+    <div class="sheet-actions" style="margin-top:12px">${editable?`<button class="btn ghost" id="rv-ouvrir" onclick="reuVerrouiller('${m.id}',false)">🔓 Déverrouiller</button>`:`<button class="btn ghost" id="rv-detail" onclick="(window._reuDepl=window._reuDepl||{})['${m.id}']=1;meetingDetail(DB.reunions.find(x=>x.id==='${m.id}'),false)">Voir tout le détail</button>`}<button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  ficheOpen()}
+/* Fin du pointage : on le verrouille, puis on passe au bilan. */
+async function ptFinir(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;
+  if(!ptVerrou(m)&&ptCompte(m).n){const cr={...(m.cr||{})},le=new Date().toISOString();cr.pointage={verrouille_le:le,par:(SESSION&&SESSION.name)||"",absents:ptListe(m).filter(e=>e.etat!==true).map(e=>e.k)};
+    const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",mid);if(!error)m.cr=cr}
+  openBilan(mid)}
 function meetingDetail(m,editable){
+  if(reuVerrou(m)&&!((window._reuDepl||{})[m.id])){reuResume(m,editable);return}
   const c=club(m.clubId),l=lieu(m.lieuId),dt=dObj(m.date);
   const guests=m.guests||[];
   const gvl=guestVue()==="liste";
@@ -6242,7 +6284,7 @@ function meetingDetail(m,editable){
       ${editable?`<button class="btn ghost mini" onclick="addGuest('${m.id}')">+ Ajouter</button>`:""}</div>
     ${guestsHtml}
     <div id="prev-bloc" data-reunion="${m.id}"></div>
-    <div class="sheet-actions">${SESSION&&SESSION.role!=="visiteur"?`<button class="btn ghost" onclick="presOuvrir('${m.id}')">🎬 Présentation</button>`:""}${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    <div class="sheet-actions">${SESSION&&SESSION.role!=="visiteur"?`<button class="btn ghost" onclick="presOuvrir('${m.id}')">🎬 Présentation</button>`:""}${editable?`<button class="btn ghost" onclick="meetingForm('${m.id}')">Modifier</button>`:""}${editable&&m.statut==="realisee"&&!reuVerrou(m)?`<button class="btn ghost" id="rv-fermer" onclick="reuVerrouiller('${m.id}',true)">🔒 Verrouiller</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   ficheOpen();natInvQr();repCharger(m);natClicsCharger(m);prevusCharger(m).then(()=>qualCharger(m));
 }
 /* v1.9.0 : réponses des membres à la réunion (« Je viens » / « Je ne viens pas » dans l'espace membre). */
@@ -8400,6 +8442,7 @@ function openBilan(id){
   if(!id||!document.getElementById("sheet").classList.contains("open"))_bilSerie={total:reunionsSansBilan().length,faits:0,passes:new Set()};
   const m=id?DB.reunions.find(x=>x.id===id):reunionsSansBilan()[0];
   if(!m){toast("Toutes les réunions ont leur bilan");return}
+  if(reuVerrou(m)){toast("Réunion verrouillée : déverrouille-la pour modifier son bilan","w");return}
   const _bb=(m.cr&&m.cr.bilan)||{};
   _bil={id:m.id,statut:m.statut==="annulee"?"annulee":"realisee",presents:Math.max(m.presents??0,presCompte(m.id)),inv:m.invitesVenus??((m.guests||[]).some(g=>g.venu!=null)?(m.guests||[]).filter(g=>g.venu).length:(m.guests||[]).length),adh:m.adhObt??0,date:"",recos:_bb.recos??0,montant:_bb.montant??0,notes:_bb.notes||"",cr:Object.fromEntries(Object.entries(m.cr||{}).filter(([k,v])=>k!=="bilan"&&typeof v==="string"))};
   renderBilan();openSheet();
@@ -8450,7 +8493,8 @@ async function saveBilan(){
   }else if(_bil.statut==="archivee"){row={archivee_le:new Date().toISOString(),archivee_par:SESSION.id}; // v1.41 : rangée sans bilan
   }else{row={archivee_le:null,statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
     if(_bil.statut==="realisee"){const txt=Object.fromEntries(Object.entries(_bil.cr||{}).map(([k,v])=>[k,String(v||"").trim()]).filter(([,v])=>v));
-      row.compte_rendu={...Object.fromEntries(Object.entries(m.cr||{}).filter(([k])=>k==="bilan"||!(k in (_bil.cr||{})))),...txt,bilan:{recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}};
+      row.compte_rendu={...Object.fromEntries(Object.entries(m.cr||{}).filter(([k])=>k==="bilan"||!(k in (_bil.cr||{})))),...txt,bilan:{...((m.cr&&m.cr.bilan)||{}),recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}};
+      reuVerrouPose(m,row.compte_rendu); // v1.104 : bilan enregistré = réunion verrouillée
       if(Object.keys(txt).length){row.cr_le=new Date().toISOString();row.cr_par=SESSION.id}}} // v1.33 : bilan et compte rendu sur le même écran
   const {error}=await sb.from("reunions").update(row).eq("id",m.id);
   if(error){toast(rlsMsg(error));return}
@@ -9640,7 +9684,7 @@ function openPointage(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;
     <div class="pt-l${ptVerrou(m)?" verrou":""}" id="pt-l">${ptCorps(mid)}</div>
     <div class="pt-plus"${ptVerrou(m)?" hidden":""}><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
     <div class="pt-lot" id="pt-lot"></div>
-    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button>${m.statut==="realisee"?`<button class="btn" onclick="closeSheet()">Terminé</button>`:`<button class="btn" id="pt-bilan" onclick="openBilan('${mid}')">Faire le bilan →</button>`}</div>`;
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button>${m.statut==="realisee"?`<button class="btn" onclick="closeSheet()">Terminé</button>`:`<button class="btn" id="pt-bilan" onclick="ptFinir('${mid}')">Faire le bilan →</button>`}</div>`;
   ptLot(mid);openSheet();ptVisiteurs(mid)}
 /* Les membres d'autres groupes qui ont répondu « je viens » depuis leur espace : lus une fois, ajoutés à la liste. */
 async function ptVisiteurs(mid){window._ptVis=window._ptVis||{};if(window._ptVis[mid])return;
@@ -9648,7 +9692,7 @@ async function ptVisiteurs(mid){window._ptVis=window._ptVis||{};if(window._ptVis
     window._ptVis[mid]=data.filter(x=>x&&x.id&&x.autre_groupe&&x.reponse==="oui");if(window._ptVis[mid].length&&document.getElementById("pt-l"))ptMaj(mid,true)}catch(e){}}
 function ptLot(mid){const m=DB.reunions.find(x=>x.id===mid),z=document.getElementById("pt-lot");if(!m||!z)return;const c=ptCompte(m);
   if(ptVerrou(m)){z.innerHTML=`<span class="pt-fin">✓ Tout le monde est pointé</span>`;return}
-  z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button><button class="btn ghost mini" id="pt-verrou" onclick="ptVerrouiller('${mid}',true)" title="Les personnes non pointées seront comptées absentes">🔒 Terminer et verrouiller</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span>`:""}
+  z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button><button class="btn ghost mini" id="pt-verrou" onclick="ptVerrouiller('${mid}',true)" title="Les personnes non pointées seront comptées absentes">🔒 Terminer et verrouiller</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span><button class="btn mini" id="pt-verrou" onclick="ptVerrouiller('${mid}',true)">🔒 Verrouiller le pointage</button>`:""}
 function ptMaj(mid,tout){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const t=document.getElementById("pt-tete");if(t)t.innerHTML=ptTete(m);const z=document.getElementById("pt-l");if(!z)return;
   if(tout){z.innerHTML=ptCorps(mid);const q=document.getElementById("pt-q");if(q&&q.value)ptFiltrer(q.value);ptLot(mid);return}
   const L=ptListe(m),P={};L.forEach(e=>P[e.k]=e);

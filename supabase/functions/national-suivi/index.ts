@@ -99,6 +99,33 @@ async function invitationsListe(N: National): Promise<any[]> {
   return Array.isArray(j?.data) ? j.data : [];
 }
 
+// v20 : lieux (« hôtes ») d'un compte national. Chaque compte a sa propre liste : celle du formulaire d'une invitation.
+const decH = (x: string) => x.replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
+async function hotesDuCompte(N: National, invs: any[]): Promise<Map<string, string>> {
+  const m = new Map<string, string>(); for (const x of invs) if (x.idHote) m.set(n(x.nomHote), String(x.idHote));
+  const src = invs[0]?.id; if (!src) return m;
+  const t = await (await N.req('GET', '/invitation/formulaireNew?id=' + encodeURIComponent(String(src)) + '&forcerCreation=true')).text();
+  const sel = t.match(/<select[^>]*\sid="listeHote"[^>]*>([\s\S]*?)<\/select>/);
+  if (sel) for (const o of sel[1].matchAll(/<option\b[^>]*value="(\d+)"[^>]*>([^<]*)/g)) m.set(n(decH(o[2])), o[1]);
+  return m;
+}
+async function hoteFiche(N: National, id: string) {
+  const t = await (await N.req('GET', '/hoteInvitation/formulaire?id=' + encodeURIComponent(id))).text();
+  const val = (k: string) => { const tg = (t.match(new RegExp(`<input[^>]*\\sid="${k}"[^>]*>`)) || [''])[0]; return decH((tg.match(/\svalue="([^"]*)"/) || [])[1] ?? ''); };
+  const adresse = decH((t.match(/<textarea[^>]*\sid="adresse"[^>]*>([\s\S]*?)<\/textarea>/) || [])[1] ?? '').trim();
+  const f = { nom: val('nom').trim(), adresse, codePostal: val('codePostal').trim(), ville: val('ville').trim() };
+  if (!f.nom) throw new Error('Fiche du lieu introuvable au national');
+  return f;
+}
+// Copie un lieu du compte commun dans le compte d'un animateur (même nom, adresse, code postal, ville). Rend son n° là-bas.
+async function hoteCopier(admin: any, cible: National, invsCible: any[], nom: string): Promise<{ id: string; fiche: any } | null> {
+  const NC = (await sessionPour(admin, null)).N; const idc = (await hotesDuCompte(NC, await invitationsListe(NC))).get(n(nom));
+  if (!idc) return null;
+  const fiche = await hoteFiche(NC, idc);
+  await cible.ecrire('/hoteInvitation/enregistrer', { id: '', nom: fiche.nom, adresse: fiche.adresse, codePostal: fiche.codePostal, ville: fiche.ville });
+  return { id: (await hotesDuCompte(cible, invsCible)).get(n(fiche.nom)) || '', fiche };
+}
+
 // Écrit une invitation au national en reprenant le formulaire d'une invitation existante (body.source).
 // body.maj = true : on modifie cette invitation (dates, lieu, type) ; sinon on en crée une nouvelle (forcerCreation).
 async function invitationEcrire(N: National, body: any): Promise<any> {
@@ -233,6 +260,20 @@ Deno.serve(async (req) => {
       const forms = [...t.matchAll(/<form\b[^>]*>/g)].map(f => f[0]);
       return json({ ok: true, forms, champs: champs.filter(c => c.name || c.id) });
     }
+    if (body.action === 'lieu_copier') {
+      // Copie un lieu du compte commun dans le compte national d'un animateur. essai:true = rien n'est écrit.
+      const cible = await sessionPour(admin, String(body.animateur_id || ''));
+      if (!cible.compte) throw new Error("Cet animateur n'a pas branché son compte national.");
+      const invs = await invitationsListe(cible.N), deja = await hotesDuCompte(cible.N, invs);
+      if (deja.get(n(body.nom))) return json({ ok: true, deja: true, id: deja.get(n(body.nom)), lieux: [...deja.keys()] });
+      if (body.essai) { const NC = (await sessionPour(admin, null)).N; const idc = (await hotesDuCompte(NC, await invitationsListe(NC))).get(n(body.nom)); return json({ ok: true, essai: true, source: idc || null, fiche: idc ? await hoteFiche(NC, idc) : null, lieux: [...deja.keys()] }); }
+      const c = await hoteCopier(admin, cible.N, invs, String(body.nom));
+      if (!c) throw new Error(`Le lieu « ${body.nom} » n'existe pas dans le compte commun.`);
+      const { data: nc } = await admin.from('national_comptes').select('infos').eq('animateur_id', cible.compte).single();
+      const lieux = [...(await hotesDuCompte(cible.N, invs)).keys()];
+      await admin.from('national_comptes').update({ infos: { ...(nc?.infos || {}), lieux_tous: lieux } }).eq('animateur_id', cible.compte);
+      return json({ ok: true, cree: true, id: c.id, fiche: c.fiche, lieux });
+    }
     if (body.action === 'lister') {
       // Lecture seule d'une liste DataTables du national (ex. /invitation + /invitation/lister).
       const N0 = (await sessionPour(admin, body.animateur_id ? String(body.animateur_id) : null)).N;
@@ -268,9 +309,11 @@ Deno.serve(async (req) => {
       const source = maj || String((invs.find(x => +x.idType === idType) || invs[0] || {}).id || '');
       if (!source) throw new Error(`Aucune invitation au national à prendre pour modèle${compteNom ? ' dans le compte de ' + compteNom : ''} : crée la première là-bas.`);
       // Lieu : celui du national dont le nom correspond au nôtre, sinon on refuse (le national exige un lieu existant).
-      const hotes = new Map<string, string>(); for (const x of invs) if (x.idHote) hotes.set(n(x.nomHote), String(x.idHote));
-      const idHote = l?.nom ? hotes.get(n(l.nom)) : (invs.find(x => String(x.id) === source)?.idHote ? String(invs.find(x => String(x.id) === source).idHote) : '');
-      if (!idHote) throw new Error(l?.nom ? `Le lieu « ${l.nom} » n'existe pas encore au national. Lieux connus là-bas : ${[...new Set(invs.map(x => x.nomHote))].join(', ') || 'aucun'}.` : 'Choisis d\'abord le lieu de la réunion.');
+      const hotes = await hotesDuCompte(N0, invs);
+      let idHote = l?.nom ? (hotes.get(n(l.nom)) || '') : (invs.find(x => String(x.id) === source)?.idHote ? String(invs.find(x => String(x.id) === source).idHote) : '');
+      // v20 : le lieu manque dans le compte de l'animateur mais existe dans le compte commun → on y recopie sa fiche.
+      if (!idHote && l?.nom && compte && !body.essai) { const c = await hoteCopier(admin, N0, invs, l.nom); if (c) idHote = c.id; }
+      if (!idHote) throw new Error(l?.nom ? `Le lieu « ${l.nom} » n'existe pas encore au national${compteNom ? ' dans le compte de ' + compteNom : ''}. Lieux connus là-bas : ${[...hotes.keys()].join(', ') || 'aucun'}.` : 'Choisis d\'abord le lieu de la réunion.');
       const d = new Date(r.date + 'T12:00:00Z'), j2 = (k: number) => { const x = new Date(d); x.setUTCDate(x.getUTCDate() - k); return x.toISOString().slice(0, 10).split('-').reverse().join('/'); };
       const h = /^\d\d:\d\d/.test(r.heure || '') ? r.heure.slice(0, 5) : '11:00', hf = String(Math.min(23, +h.slice(0, 2) + 3)).padStart(2, '0') + h.slice(2);
       const jour = j2(0);

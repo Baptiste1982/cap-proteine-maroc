@@ -2665,8 +2665,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.99.0";
+const APP_VERSION="1.99.1";
 const CHANGELOG=[
+  {v:"1.99.1",date:"19 novembre 2026",notes:{"Corrigé":["La réunion du jour apparaît dans les bilans et les comptes rendus à saisir dès son heure de début (avant : seulement le lendemain)"]}},
   {v:"1.99.0",date:"19 novembre 2026",notes:{"Ajouté":["Mon groupe s\u2019ouvre sur la réunion du jour (ou la dernière à clôturer) : pointer les présents, faire le bilan, remercier les invités, dans l\u2019ordre et sans ouvrir la fiche","À la fin du pointage, un bouton mène directement au bilan","Boîte à outils : « Pointer les présents »"]}},
   {v:"1.98.0",date:"19 novembre 2026",notes:{"Ajouté":["Compte du CRM national par animateur : chacun branche le sien (Ma boîte à outils → Mon compte national, ou fiche d\u2019accès dans Équipe). L\u2019invitation d\u2019une réunion part alors au national avec son compte : son nom, sa photo, son carnet d\u2019adresses. Le mot de passe est rangé chiffré et ne s\u2019affiche plus jamais. Sans compte branché, rien ne change."]}},
   {v:"1.97.0",date:"19 novembre 2026",notes:{"Modifié":["Pointage : tout le monde sur le même écran — membres du groupe, invités, membres d\u2019autres groupes, équipe inscrite. Une personne n\u2019apparaît qu\u2019une fois, même si elle est membre et inscrite par le lien."]}},
@@ -3369,6 +3370,8 @@ function zone(id){return DB.zones.find(z=>z.id===id)}
 function initiales(n){const w=String(n||"").split(/\s+/).filter(x=>/\p{L}/u.test(x));return w.length?w.slice(0,2).map(x=>x.match(/\p{L}/u)[0]).join("").toUpperCase():"?"}
 function dObj(iso){const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d)}
 function isPast(iso){return dObj(iso)<TODAY}
+/* v1.99.1 : une réunion du jour compte comme passée dès son heure de début (bilan et compte rendu à saisir le jour même). */
+function reuFinie(r){if(isPast(r.date))return true;if(r.date!==isoJour(TODAY))return false;const h=String(r.heure||"").match(/^(\d{1,2})[:h](\d{2})/),n=new Date();return !h||n.getHours()*60+n.getMinutes()>=Number(h[1])*60+Number(h[2])}
 function esc(s){return(s||"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function toastKind(m){m=String(m||"");if(/erreur|impossible|non autoris|échec|refus|incorrect/i.test(m))return"e";if(/requis|obligatoire|choisis d'abord|déjà|attention|hors ligne/i.test(m))return"w";return"s"}
 /* v0.27 : un pop-up peut porter une action (fonction) : il devient cliquable et mène à la page concernée. */
@@ -4109,7 +4112,7 @@ function vrVille(v){if(typeof monPeut==="function"&&monPeut()){_mon.niv="ville";
 function viewRegion(){
   const R=vueRegion(),cl=DB.clubs.slice(),ids=new Set(cl.map(c=>c.id));
   const aVenir=DB.reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee");
-  const sansBil=DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee"));
+  const sansBil=DB.reunions.filter(r=>reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee"));
   const sansDate=cl.filter(c=>!aVenir.some(r=>r.clubId===c.id));
   const dem=(DB.adhesions||[]).filter(a=>a.statut==="recue"||a.statut==="traitee");
   const incomp=DB.membres.filter(m=>!membreAJour(m)),renouv=typeof renouvAFaire==="function"?renouvAFaire(ids):[];
@@ -4418,7 +4421,7 @@ function crChamps(m){return [...(CR_CANEVAS[m.format]||CR_CANEVAS.info),...CR_FI
 function reuMesClubs(){return SESSION.animId?DB.clubs.filter(c=>c.animId===SESSION.animId):[]}
 function reuPeutTout(){return ["superadmin","directeur_national","directeur"].includes(SESSION.role)}
 function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)return DB.clubs.filter(c=>canEditClubId(c.id));return mine}
-function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
+function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
 /* v0.43.0 : quinzaine = un jour fixe, toutes les deux semaines, à partir d'une réunion de référence (rythme_depart). */
 function rythmeQuinz(c){return(c.rRang??0)===0&&c.rPas===2}
 function rythmeAncre(c){if(c.rDepart)return dObj(c.rDepart);const der=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee").map(r=>r.date).sort().pop();return der?dObj(der):null}
@@ -4494,7 +4497,7 @@ function grpDonnees(c){
   const id=c.id,an=String(TODAY.getFullYear());
   const reu=DB.reunions.filter(r=>r.clubId===id).sort((a,b)=>a.date.localeCompare(b.date));
   const vivantes=reu.filter(r=>r.statut!=="annulee");
-  const passees=vivantes.filter(r=>isPast(r.date)),avenir=vivantes.filter(r=>!isPast(r.date));
+  const passees=vivantes.filter(r=>reuFinie(r)),avenir=vivantes.filter(r=>!isPast(r.date));
   const faites=reu.filter(r=>r.statut==="realisee");
   const membres=DB.membres.filter(m=>m.clubId===id).sort((x,y)=>(x.num||99)-(y.num||99)||x.nom.localeCompare(y.nom));
   const avecPres=faites.filter(r=>r.presents!=null);
@@ -8241,7 +8244,7 @@ function dashOutils(){
   return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","monOuvrir('rapport')")}</div>`; // v1.27 : le reste est dans le menu
 }
 /* ---------- 1. Bilan de réunion ---------- */
-function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
+function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
 function dashBilanAlerte(){
   const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
   return `<button class="bil-alert" onclick="openBilan()"><span class="n">${l.length}</span><span><b>${l.length} réunion${l.length>1?"s attendent leur":" attend son"} bilan</b><small>La plus ancienne date du ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Une question par réunion.</small></span><span class="go">›</span></button>`;
@@ -8437,7 +8440,7 @@ function rpData(){
   const surv=[];
   cs.filter(c=>!c.animId).forEach(c=>surv.push(c.nom.replace(/^CAP\s+/,"")+" : animateur à nommer."));
   cs.filter(c=>c.animId&&!rs.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee")).forEach(c=>surv.push(c.nom.replace(/^CAP\s+/,"")+" : aucune réunion à venir, prochaine date à fixer."));
-  const sansB=rs.filter(r=>isPast(r.date)&&(r.statut==="planifiee"||r.statut==="confirmee")).length;
+  const sansB=rs.filter(r=>reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")).length;
   if(sansB)surv.push(sansB+" réunion"+(sansB>1?"s passées attendent leur":" passée attend son")+" bilan dans le CRM.");
   const aS=(DB.adhesions||[]).filter(a=>!a.saisie_proteine_le&&a.statut!=="rejetee"&&ids.has(adhClubId(a))).length;
   if(aS)surv.push(aS+" adhésion"+(aS>1?"s attendent leur":" attend sa")+" saisie dans le CRM national.");

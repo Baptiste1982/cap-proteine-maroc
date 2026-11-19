@@ -2239,8 +2239,15 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .reg-c:hover{border-color:var(--crimson)}.reg-n b{display:block;font-size:15.5px}.reg-n small{color:var(--muted);font-size:12.5px}.reg-v{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.reg-c .rl-chev{grid-row:1;grid-column:2}
 .reg-v i,.rg-c{font-style:normal;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600}.reg-v i::before,.rg-c::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vc,#8C8085)}.reg-v i.vide::before{display:none}.reg-v i.vide{color:var(--muted);font-weight:500}
 .rg-v{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;min-height:30px;align-items:center}.rg-c{font-size:13.5px;padding:6px 6px 6px 12px}.rg-c small{color:var(--muted);font-weight:500;padding-right:6px}.rg-c button{width:26px;height:26px;border-radius:50%;border:0;background:var(--line);color:var(--ink);cursor:pointer;font-size:12px}
+.rg-d{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:0 0 8px}.rg-d span{display:grid}.rg-d small{color:var(--muted);font-size:12px}.rg-aj select{flex:1;min-width:0}.reg-dir{margin-top:14px}
 .rg-aj{display:flex;gap:8px}.rg-aj input{flex:1;min-width:0}.acc-dr .c-fixe span{display:grid}.acc-dr .c-fixe small{color:var(--muted);font-size:12px}
 .mb-nomm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line)}.mb-nomm.on{border-style:solid}.mb-nomm span{display:grid;min-width:0}.mb-nomm b{font-size:13.5px}.mb-nomm small{color:var(--muted);font-size:12px}.mb-nomm .btn{flex:none}
+#carte-pop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:rgba(10,8,9,.55);backdrop-filter:blur(3px);animation:cpFond .2s ease-out}
+.cp-c{position:relative;width:min(400px,100%);height:min(660px,calc(100vh - 32px));border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);animation:cpCarte .38s cubic-bezier(.2,.9,.3,1.15)}
+.cp-c iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.cp-x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1B1416;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+@keyframes cpFond{from{opacity:0}to{opacity:1}}@keyframes cpCarte{from{opacity:0;transform:translateY(18px) scale(.94) rotate(-1.5deg)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#carte-pop,.cp-c{animation:none}}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2535,8 +2542,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.83.0";
+const APP_VERSION="1.84.0";
 const CHANGELOG=[
+  {v:"1.84.0",date:"19 novembre 2026",notes:{"Ajouté":["Réseau → Régions et villes : le directeur de chaque région s'y lit, et le super admin le nomme ou le retire depuis la fiche de la région.","Dans la fiche d'un membre, « Voir » ouvre sa carte de visite dans une petite fenêtre, par-dessus le CRM, au lieu d'un nouvel onglet.","Visite guidée : la carte de visite du membre, « Nommer animateur », et la création des régions et des groupes."],"Modifié":["Synthèse, chiffres par période, comparaison des régions et statistiques : le nombre de membres reprend celui du bureau national pour les groupes dont les fiches ne sont pas saisies. Il s'ajuste seul à chaque fiche ajoutée.","Les messages d'invitation, de remerciement et d'accès portent le nom de la région du groupe (« Protéine Casablanca », « Protéine Tanger ») ; la région de Rabat garde « Protéine Rabat et Région »."]}},
   {v:"1.83.0",date:"18 novembre 2026",notes:{"Ajouté":["Fiche d'un membre → « Nommer animateur » : sa fiche Équipe est créée d'office avec son nom, sa ville et son mobile, le groupe lui est confié, et tu arrives directement sur « Donner l'accès ».","Sur la fiche d'un membre déjà animateur : son état (compte créé ou non) et le bouton pour lui donner ou renvoyer son accès au CRM."],"Modifié":["Deux animateurs qui portent le même prénom reçoivent des identifiants différents."]}},
   {v:"1.82.1",date:"18 novembre 2026",notes:{"Modifié":["On parle de « membres » partout : le mot « pairs » disparaît de la constellation, des cartes et des fiches de groupe. Le nombre de membres d'un groupe reprend celui du bureau national tant que ses fiches ne sont pas saisies."]}},
   {v:"1.82.0",date:"18 novembre 2026",notes:{"Modifié":["Constellation mise à l'échelle du réseau d'aujourd'hui (16 groupes, 4 régions) : les groupes d'une même ville ne se chevauchent plus, le nom court est écrit sous chaque groupe, et sur un téléphone le réseau se déploie en hauteur.","Constellation : le total se lit en « pairs » (animateurs compris, d'après le bureau national) tant que des effectifs sont déclarés."]}},
@@ -3184,6 +3192,7 @@ async function loadDB(){
   DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
   try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
+  DB.directeurs=[];try{const dz=await sb.rpc("cap_regions_directeurs");if(!dz.error&&Array.isArray(dz.data))DB.directeurs=dz.data}catch(e){console.warn(e)} // v1.84
   DB.aEmbarquer=0; // v0.33.0 : comptes d'équipe à embarquer (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
@@ -3595,6 +3604,9 @@ function tutoEtapes(partie){
       {go:"membres",c:"#view .page-head",t:"Les membres",x:"L'annuaire en quatre vues : cartes, liste, par groupe ou par métier. Les animateurs, qui sont aussi membres, portent une étiquette."+(ed?" « Pièces en lot » dépose plusieurs factures ou attestations d'un coup : chaque fichier est rangé chez le bon membre d'après son nom.":"")},
       {go:"membres",t:"Le dossier d'un membre",x:"Ses étapes (formulaire, contrat, facture, paiement), ses informations, sa fiche signalétique avec photo et logo, son abonnement et ses documents."+(ed?" Une facture ou une attestation peut lui être remise : il la retrouve dans son espace, la facture une fois le paiement saisi.":"")},
       ...(ed?[{k:1,go:"membres",t:"Donner son espace à un membre",x:"Dans sa fiche, section « Espace membre » : « Créer son code » fabrique un code à lui envoyer par WhatsApp. Il se connecte avec son mobile et ce code, sur la même adresse que toi. La fiche te dit ensuite s'il s'est connecté."}]:[]),
+      {go:"membres",t:"Sa carte de visite",x:"Chaque membre a sa carte de visite dès que sa fiche existe : un QR code à faire scanner et un lien à envoyer. Elle montre son nom, son métier, son entreprise, sa photo et son logo, avec « Ajouter à mes contacts ». Tu la trouves dans sa fiche ; lui, dans son espace, « Moi → Ma carte de visite »."},
+      ...(ed?[{go:"membres",t:"Nommer un animateur",x:"Dans la fiche d'un membre, « Nommer animateur » crée sa fiche Équipe et lui confie un groupe."+(sup?" Tu arrives ensuite sur « Donner l'accès » : il se connecte et intègre ses membres.":" Le super admin lui donne ensuite son accès.")}]:[]),
+      ...(nat?[{go:"clubs",t:"Régions, villes et groupes",x:"Dans le menu Réseau, « Régions et villes » crée une région, lui ajoute des villes et nomme son directeur ; « Nouveau groupe » crée un groupe dans une de ces villes. Tout apparaît aussitôt dans la constellation et les statistiques."}]:[]),
       {go:"lieux",c:navCible("lieux"),t:"Les lieux",x:"Hôtels et salles : photo, adresse, capacité. Colle le lien Google Maps ou Waze du lieu : les boutons d'itinéraire apparaissent dans la fiche du lieu et dans chaque réunion qui s'y tient."},
       {go:"clubs",t:"Présenter le réseau",x:"Dans le menu Réseau, « Constellation » affiche le réseau en plein écran : régions, villes et groupes, avec la taille pour les membres et la couleur pour l'état. Utile en réunion, avec le diaporama."}],
     recos:[
@@ -3881,7 +3893,7 @@ function viewRegion(){
   /* v1.39 : rangé par ville (dans l'ordre de la région), puis du plus urgent au plus calme */
   const nv=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(),ordV=R.villes.map(nv),rv=c=>{const i=ordV.indexOf(nv(c.ville));return i<0?99:i};
   const tri=cl.slice().sort((a,b)=>(rv(a)-rv(b))||a.ville.localeCompare(b.ville)||(rangDe(a)-rangDe(b))||a.nom.localeCompare(b.nom));
-  const villeTete=(v)=>{const g=cl.filter(c=>c.ville===v),nb=nbPersonnes(DB.membres.filter(m=>g.some(c=>c.id===m.clubId))),at=g.filter(c=>clubTone(c)!=="ok").length,va=String(v).replace(/'/g,"\\'");
+  const villeTete=(v)=>{const g=cl.filter(c=>c.ville===v),nb=nbPersonnes(DB.membres.filter(m=>g.some(c=>c.id===m.clubId)))+membresSurplus(g.map(c=>c.id)),at=g.filter(c=>clubTone(c)!=="ok").length,va=String(v).replace(/'/g,"\\'");
     return `<tr class="vr-vh" style="--vc:${vrTeinte(v)}" tabindex="0" onclick="vrVille('${va}')" onkeydown="if(event.key==='Enter')vrVille('${va}')"><td colspan="5"><i></i><b>${esc(v)}</b><span>${g.length} groupe${g.length>1?"s":""} · ${nb} membre${nb>1?"s":""}${at?` · ${at} à traiter`:""}</span><em>Statistiques ›</em></td></tr>`};
   const lignesVille=()=>{let v=null,i=0;return tri.map(c=>{const t=c.ville!==v?(v=c.ville,villeTete(v)):"";return t+ligne(c,i++)}).join("")};
   const todo=[
@@ -4908,6 +4920,10 @@ function rowToggle(btn){const r=btn.closest(".rl-row"),o=!r.classList.contains("
   if(o){r.classList.add("open");btn.setAttribute("aria-expanded","true")}}
 function clubTone(c){if(!c.animId||!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"urgent";return clubNextAction(c).act?"todo":"ok"}
 function clubIco(c,ton){return !c.animId?"👤":ton==="urgent"?"📅":ton==="todo"?"🔔":"✓"}
+/* v1.84 : nombre de membres d'un ensemble de groupes = personnes des fiches saisies + ce que le national annonce en plus
+   pour les groupes dont les fiches manquent. Se met à jour seul : chaque fiche saisie remplace une unité du complément. */
+function membresSurplus(ids,avant){const S=ids instanceof Set?ids:new Set(ids),D=window._DBvrai||DB;
+  return D.clubs.filter(c=>S.has(c.id)&&c.pairs&&(!avant||!c.pairsLe||c.pairsLe<avant)).reduce((a,c)=>a+Math.max(0,c.pairs-D.membres.filter(m=>m.clubId===c.id).length),0)}
 function nbPersonnes(l){const nom=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();return new Set((l||[]).map(m=>m.animId?"a:"+m.animId:"n:"+nom(m.nom))).size} // v1.27
 function animsTerrain(){return DB.animateurs.filter(a=>a.ville||DB.clubs.some(c=>c.animId===a.id))} // v1.27 : sans la direction (ni ville ni groupe)
 function membreAJour(m){return m.formulaire&&m.contrat&&m.facture&&m.paiement}
@@ -5077,7 +5093,7 @@ function dashStats(clubs){
     actifs:clubs.filter(c=>c.statut==="actif").length,
     creation:clubs.filter(c=>c.statut==="creation").length,
     sansAnim:clubs.filter(c=>!c.animId).length,
-    membres:nbPersonnes(membres),
+    membres:nbPersonnes(membres)+membresSurplus(ids),
     payes:membres.filter(m=>m.paiement).length,
     membresMois:(b=>membres.filter(m=>m.createdAt&&String(m.createdAt)>=b.debut&&String(m.createdAt)<b.fin).length)(perBornes(perChoix(),0)), // v1.30 : sur la période choisie
     reunionsAvenir:reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee").length,
@@ -5985,7 +6001,7 @@ Une question, ou envie que je vous appelle avant ? Écrivez-moi ou appelez-moi a
 {prenom}`};
 function invModeleCle(t){return "cap-invtpl-"+(INV_MODELES[t]?t:"autre")}
 function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}const g=(DB.reglages||{})[invModeleCle(t).replace("cap-","")];return g||INV_MODELES[t]||INV_MODELES.autre}
-function invRemplir(tpl,m){const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
+function invRemplir(tpl,m){tpl=regMsg(tpl,(club(m.clubId)||{}).ville);const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
   const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
     adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",kit:m.nat?natKitLien(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
@@ -6560,7 +6576,14 @@ function mbCarteHTML(m){const u=mbCarteLien(m);if(!u)return"";setTimeout(natInvQ
   return `<div class="nat-box ni mb-carte"><div class="nat-t">Carte de visite · QR code</div>
     <div class="ni-row"><div class="ni-qr" data-niqr="${esc(u)}" role="img" aria-label="QR code de la carte de visite de ${esc(m.nom)}"></div><div class="ni-l">
       <div class="nat-v">Créée d'office avec la fiche. ${esc(pr)} la retrouve dans son espace membre, « Moi → Ma carte de visite ».</div>
-      <div class="ni-act"><a class="btn mini" href="https://wa.me/?text=${encodeURIComponent("Voici la carte de visite de "+m.nom+" : "+u)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="mbCarteCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(u)}" target="_blank" rel="noopener">Voir</a></div></div></div></div>`}
+      <div class="ni-act"><a class="btn mini" href="https://wa.me/?text=${encodeURIComponent("Voici la carte de visite de "+m.nom+" : "+u)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost mini" onclick="mbCarteCopier('${m.id}')">Copier le lien</button><button class="btn ghost mini" onclick="mbCarteVoir('${m.id}')">Voir</button></div></div></div></div>`}
+/* v1.84 : « Voir » ouvre la carte dans une petite fenêtre au format carte de visite, par-dessus le CRM (plus de nouvel onglet). */
+function mbCarteVoir(id){const m=(window._DBvrai||DB).membres.find(x=>x.id===id),u=mbCarteLien(m);if(!u)return;mbCarteFermer();
+  const o=document.createElement("div");o.id="carte-pop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Carte de visite de "+m.nom);
+  o.innerHTML=`<div class="cp-c"><button class="cp-x" aria-label="Fermer" onclick="mbCarteFermer()">✕</button><iframe src="${esc(u)}" title="Carte de visite de ${esc(m.nom)}" loading="eager"></iframe></div>`;
+  o.onclick=e=>{if(e.target===o)mbCarteFermer()};document.body.appendChild(o);document.addEventListener("keydown",mbCarteEchap,true);o.querySelector(".cp-x").focus()}
+function mbCarteEchap(e){if(e.key==="Escape"&&document.getElementById("carte-pop")){e.stopPropagation();mbCarteFermer()}}
+function mbCarteFermer(){const o=document.getElementById("carte-pop");if(o)o.remove();document.removeEventListener("keydown",mbCarteEchap,true)}
 async function mbCarteCopier(id){const u=mbCarteLien(DB.membres.find(x=>x.id===id));if(!u)return;try{await navigator.clipboard.writeText(u);toast("Lien de la carte copié")}catch(e){prompt("Carte de visite :",u)}}
 let _mbf={};
 function mbFicheForm(clubId,id){
@@ -7584,10 +7607,26 @@ function openRegions(){if(!canCreerStructure())return;const Z=regZones(),D=windo
   const hors=[...new Set(D.clubs.map(c=>c.ville))].filter(v=>!Z.some(z=>z.villes.includes(v)));
   document.getElementById("sheet-content").innerHTML=`
     <h3>Régions et villes</h3><div class="sheet-sub">Une région regroupe des villes ; un groupe se crée dans une ville. Tout ce qui est ajouté ici apparaît dans le menu des espaces, la constellation et les statistiques.</div>
-    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
+    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""} · ${regDirecteurs(z.id).length?"dirigée par "+esc(regDirecteurs(z.id).map(d=>d.nom).join(", ")):"sans directeur"}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
     ${hors.length?`<div class="nat-err">Ville${hors.length>1?"s":""} sans région : ${hors.map(esc).join(", ")}. Ouvre une région pour l'y ajouter, ou crée la sienne.</div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button><button class="btn ghost" onclick="clubForm(null)">＋ Nouveau groupe</button><button class="btn" onclick="regionForm('')">＋ Nouvelle région</button></div>`;
   openSheet()}
+/* v1.84 : directeur de région. Lu par toute l'équipe (RPC cap_regions_directeurs), nommé par le super admin (RPC cap_region_directeur) :
+   le compte passe au rôle « directeur » sur cette région ; le retirer le remet « animateur ». */
+function regDirecteurs(zid){return ((window._DBvrai||DB).directeurs||DB.directeurs||[]).filter(d=>d.zone_id===zid)}
+function regDirBloc(z){const L=regDirecteurs(z.id),sup=SESSION.role==="superadmin"&&!SESSION._voir&&DB.acces;
+  const cand=sup?DB.acces.filter(u=>!["superadmin","directeur_national","visiteur"].includes(u.role)&&!L.some(d=>d.profil===u.id)).sort((a,b)=>String(a.nom).localeCompare(String(b.nom))):[];
+  return `<div class="field reg-dir"><label for="rg-dir">Directeur de la région</label>
+    ${L.length?L.map(d=>`<div class="rg-d"><span><b>${esc(d.nom)}</b><small>Voit et modifie tous les groupes de la région</small></span>${sup?`<button type="button" class="btn ghost mini" onclick="regDirRetirer('${z.id}','${d.profil}')">Retirer</button>`:""}</div>`).join(""):`<p class="mut" style="margin:0 0 8px;font-size:13px">Personne pour l'instant.</p>`}
+    ${sup?(cand.length?`<div class="rg-aj"><select id="rg-dir"><option value="">Choisir un compte…</option>${cand.map(u=>`<option value="${u.id}">${esc(u.nom)}${u.role==="directeur"?" (déjà directeur ailleurs)":""}</option>`).join("")}</select><button type="button" class="btn ghost" onclick="regDirNommer('${z.id}')">Nommer</button></div><small class="mut">Seuls les comptes déjà créés apparaissent. Pour quelqu'un de nouveau : Équipe → « Donner l'accès », puis reviens ici.</small>`:`<small class="mut">Aucun compte disponible. Crée d'abord le compte dans Équipe → « Donner l'accès ».</small>`):`<small class="mut">Le directeur d'une région est nommé par le super admin.</small>`}</div>`}
+async function regDirNommer(zid){const pid=(document.getElementById("rg-dir")||{}).value;if(!pid){toast("Choisis un compte");return}
+  const {error}=await sb.rpc("cap_region_directeur",{p_zone:zid,p_profil:pid,p_oui:true});if(error){toast(rlsMsg(error));return}
+  const u=DB.acces.find(x=>x.id===pid);if(u){u.role="directeur";u.zone_id=zid}
+  const D=window._DBvrai||DB;D.directeurs=(D.directeurs||[]).filter(d=>d.profil!==pid);D.directeurs.push({zone_id:zid,profil:pid,nom:u?u.nom:"",animateur_id:u?u.animateur_id:null});if(D!==DB)DB.directeurs=D.directeurs;
+  toast((u?u.nom.split(/\s+/)[0]:"Le compte")+" dirige maintenant la région. Ça s'applique à sa prochaine ouverture du CRM.");regionForm(zid)}
+async function regDirRetirer(zid,pid){const {error}=await sb.rpc("cap_region_directeur",{p_zone:zid,p_profil:pid,p_oui:false});if(error){toast(rlsMsg(error));return}
+  const u=(DB.acces||[]).find(x=>x.id===pid);if(u)u.role="animateur";const D=window._DBvrai||DB;D.directeurs=(D.directeurs||[]).filter(d=>d.profil!==pid);if(D!==DB)DB.directeurs=D.directeurs;
+  toast("Direction retirée : le compte redevient animateur");regionForm(zid)}
 let _reg=null;
 function regionForm(id){if(!canCreerStructure())return;const z=id?regZones().find(x=>x.id===id):null;_reg={id:id||"",villes:z?[...z.villes]:[]};
   document.getElementById("sheet-content").innerHTML=`
@@ -7595,6 +7634,7 @@ function regionForm(id){if(!canCreerStructure())return;const z=id?regZones().fin
     <div class="field"><label for="rg-nom">Nom de la région</label><input id="rg-nom" value="${esc(z?z.nom:"")}" placeholder="ex. Fès · Meknès"></div>
     <div class="field"><label for="rg-ville">Villes de la région</label><div class="rg-v" id="rg-v"></div>
       <div class="rg-aj"><input id="rg-ville" placeholder="Nom d'une ville" onkeydown="if(event.key==='Enter'){event.preventDefault();regVilleAjouter()}"><button type="button" class="btn ghost" onclick="regVilleAjouter()">Ajouter</button></div></div>
+    ${z?regDirBloc(z):`<p class="mut" style="font-size:13px">Le directeur de la région se nomme une fois la région créée.</p>`}
     <div class="sheet-actions"><button class="btn ghost" onclick="openRegions()">Retour</button><button class="btn" onclick="regionSauver(this)">${z?"Enregistrer":"Créer la région"}</button></div>
     ${z?`<div class="del-link" onclick="regionSuppr()">Supprimer cette région</div>`:""}`;
   regVillesRendu();openSheet()}
@@ -7641,6 +7681,8 @@ function accLogin(a){const net=t=>String(t||"").normalize("NFD").replace(/[\u030
   const pris=l=>(DB.acces||[]).some(u=>u.animateur_id!==a.id&&String(u.email||"").split("@")[0]===l);
   for(const l of [base,base+net(p.slice(1).join("")).slice(0,1),base+net(p.slice(1).join(""))])if(l&&!pris(l))return l;return base+String(a.id).slice(0,4)}
 function accMessage(u,a,pwd){const pr=(a.nom||u.nom||"").split(/\s+/)[0],dr=ROLE_DROITS[u.role]||[];
+  return regMsg(accMessageTxt(u,a,pwd,pr,dr),a.ville)}
+function accMessageTxt(u,a,pwd,pr,dr){
   return `Bonjour ${pr},\nVoici ton accès au CRM du Club d'Affaires Protéine Rabat et Région :\n${SITE_PUBLIC}\n\nIdentifiant : ${(u.email||"").split("@")[0]}\nMot de passe provisoire : ${pwd}\n\nTon rôle : ${ROLES[u.role]||u.role}. Tu pourras :\n${dr.map(x=>"• "+x).join("\n")}\n\nÀ la première connexion, tu choisiras ton propre mot de passe, puis une visite guidée de deux minutes te montrera l'essentiel.\n\nPour l'avoir comme une appli sur ton téléphone, en 30 secondes :\n${INSTALLER_CRM}\n\nÀ très vite,\n${(SESSION.name||"").split(/\s+/)[0]}`}
 function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212")}
 function accDonner(animId){
@@ -8014,7 +8056,7 @@ function zoneStats(z){
   const rs=DB.reunions.filter(r=>ids.has(r.clubId));const inv=rs.flatMap(r=>r.guests||[]);
   return{clubs:cs.length,actifs:cs.filter(c=>c.statut==="actif").length,
     sante:cs.length?Math.round(cs.reduce((s,c)=>s+clubHealth(c).pct,0)/cs.length):0,
-    membres:DB.membres.filter(m=>ids.has(m.clubId)).length,
+    membres:DB.membres.filter(m=>ids.has(m.clubId)).length+membresSurplus(ids),
     tenues:rs.filter(r=>tenue(r)&&r.date>=d0).length,
     adh:(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&ids.has(adhClubId(a))&&a.created_at>=d0).length,
     conv:pct(inv.filter(g=>g.statut==="Membre").length,inv.length)};
@@ -9055,7 +9097,10 @@ Une question, ou envie d'en parler de vive voix ? Je suis joignable au {tel}.
 {moi}`;
 const SUIVI_REPERES=[["prenom","prénom de l'invité"],["groupe","nom du groupe"],["jour","date de la réunion"],["membres","nombre de membres"],["animateur","animateur du groupe"],["prochaine","prochaine réunion"],["lien","lien d'adhésion"],["tel","ton numéro"],["moi","ton nom"]];
 function suiviModele(){try{const v=localStorage.getItem("cap-suivitpl");if(v)return v}catch(e){}return (DB.reglages||{}).suivitpl||SUIVI_MODELE}
-function suiviRemplir(tpl,m,g){const c=club(m.clubId)||{},d=dObj(m.date),nb=DB.membres.filter(x=>x.clubId===c.id).length;
+/* v1.84 : « Protéine Rabat et Région » est le nom de la région de Rabat. Pour un groupe d'une autre région, le message porte le nom de la sienne. */
+function regMsg(txt,ville){if(!ville)return txt;const z=(window._DBvrai||DB).zones.find(x=>(x.villes||[]).includes(ville));
+  if(!z||z.villes.includes("Rabat"))return txt;return String(txt).replace(/Protéine Rabat et Région/g,"Protéine "+z.nom)}
+function suiviRemplir(tpl,m,g){tpl=regMsg(tpl,(club(m.clubId)||{}).ville);const c=club(m.clubId)||{},d=dObj(m.date),nb=DB.membres.filter(x=>x.clubId===c.id).length;
   const pro=DB.reunions.filter(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee").sort((a,b)=>a.date.localeCompare(b.date))[0],pd=pro&&dObj(pro.date);
   const v={prenom:String(g.nom||"").trim().split(/\s+/)[0]||"",groupe:(c.nom||"").replace(/^CAP\s+/,""),jour:`${JOURS_LONG[d.getDay()||7]} ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}`,
     membres:nb>1?nb+" membres":nb===1?"un premier membre":"un groupe en cours de constitution",animateur:c.animId?animNom(c.animId):"notre équipe",
@@ -9160,7 +9205,7 @@ function monPalmares(cl){const S=new Set(cl.map(c=>c.id)),G={};((_mon.data&&_mon
   return Object.values(G).sort((a,b)=>(b.ca_transmis-a.ca_transmis)||(b.donnees-a.donnees)||(b.ca_recu-a.ca_recu))}
 function monDerniers(n,fin){const l=[],d=fin?new Date(fin+"-01T00:00:00"):new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
   for(let i=n-1;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1);l.push(x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0"))}return l}
-function monPersonnes(cl){return new Set(cl.flatMap(c=>c.cles||[])).size}
+function monPersonnes(cl){return new Set(cl.flatMap(c=>c.cles||[])).size+cl.reduce((a,c)=>a+Number(c.surplus||0),0)}
 function monVal(k,v){return k==="ca"?madFmt(v):String(v)}
 function monEtin(vals){const mx=Math.max(1,...vals),w=64,h=18;return `<svg class="mon-etin" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${vals.map((v,i)=>{const bh=v?Math.max(2,v/mx*(h-2)):1;return `<rect x="${i*(w/vals.length)+.5}" y="${h-bh}" width="${w/vals.length-1.5}" height="${bh}" rx="1"/>`}).join("")}</svg>`}
 function monCourbe(ids,met){const mois=monDerniers(12),vals=mois.map(m=>monSomme(ids,[m])[met]),mx=Math.max(1,...vals),W=720,H=190,pl=8,pb=24,bw=(W-pl*2)/12;
@@ -9313,7 +9358,7 @@ function perDonnees(ids,b,strict){const S=ids instanceof Set?ids:new Set(ids),da
     invites:reu.flatMap(r=>(r.guests||[]).map(g=>({g,r}))),
     adh:(DB.adhesions||[]).filter(a=>{if(a.statut==="rejetee"||!dans(a.created_at))return false;const c=adhClubId(a);return c?S.has(c):!strict}),
     recos:(DB.recos||[]).filter(r=>S.has(r.club_id)&&dans(r.cree_le)),signees,ca:signees.reduce((a,r)=>a+Number(r.montant||0),0),
-    total:nbPersonnes(DB.membres.filter(m=>S.has(m.clubId)&&(!m.createdAt||String(m.createdAt)<b.fin)))}}
+    total:nbPersonnes(DB.membres.filter(m=>S.has(m.clubId)&&(!m.createdAt||String(m.createdAt)<b.fin)))+membresSurplus(S,b.fin)}}
 function perSeg(){const k=perChoix();return `<div class="per-seg" role="tablist" aria-label="Période">${Object.keys(PER_LIB).map(x=>`<button type="button" role="tab" aria-selected="${x===k}" class="${x===k?"on":""}" onclick="perChoisir('${x}')">${PER_LIB[x]}</button>`).join("")}</div>`}
 var _perScopes={};
 function perBloc(ids,cle,strict){const k=perChoix(),b=perBornes(k,0),p=perBornes(k,-1),D=perDonnees(ids,b,strict),P=perDonnees(ids,p,strict);

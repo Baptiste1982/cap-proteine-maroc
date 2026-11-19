@@ -40,6 +40,7 @@ h1{margin:6px 0 2px;font:800 26px/1.15 "Bricolage Grotesque",Inter,sans-serif;le
 .l{margin:14px 0 0;display:grid;gap:2px}.l a{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #EFEAE8;color:#1B1416;text-decoration:none;font-size:14.5px}.l a span:first-child{color:#5E5054}.l a span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
 .pied{margin:18px 0 0;text-align:center;color:#5E5054;font-size:13px}.pied img{height:30px;display:block;margin:0 auto 8px}.pied a{color:#D81B3F;font-weight:600}
 .vide{background:#fff;border-radius:24px;padding:36px 22px;text-align:center}.vide h1{font-size:22px}
+html.cadre body{padding:0;background:#fff;min-height:0}html.cadre .c{border-radius:0;box-shadow:none;animation:none}html.cadre .logo{right:54px}html.cadre .pied{padding:0 16px 18px}
 @media(prefers-reduced-motion:reduce){.c{animation:none}.btn{transition:none}}
 </style>
 </head>
@@ -49,6 +50,7 @@ h1{margin:6px 0 2px;font:800 26px/1.15 "Bricolage Grotesque",Inter,sans-serif;le
 /* v1.78 : carte de visite d'un membre, ouverte par son lien ou son QR code. Lecture par la RPC publique cap_carte_membre :
    seulement ce que le membre partage déjà dans l'annuaire du réseau. */
 (function(){
+  if(window.top!==window)document.documentElement.classList.add("cadre"); // ouverte dans la petite fenêtre du CRM : la carte seule, bord à bord
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const M=document.getElementById("m"),c=new URLSearchParams(location.search).get("c")||"";
   const DEMO={nom:"Salma Bennani",fonction:"Gérante",metier:"Architecte d'intérieur",entreprise:"Atelier Bennani",groupe:"CAP Rabat Agdal",ville:"Rabat",

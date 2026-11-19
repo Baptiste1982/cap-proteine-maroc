@@ -2248,6 +2248,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .cp-x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1B1416;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 @keyframes cpFond{from{opacity:0}to{opacity:1}}@keyframes cpCarte{from{opacity:0;transform:translateY(18px) scale(.94) rotate(-1.5deg)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){#carte-pop,.cp-c{animation:none}}
+.mbf-l{margin:8px 0 0;font-size:13.5px;white-space:pre-line}.mbf-l b{display:block;font:700 11px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 .c-stat{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}.c-stat .ck-pill{margin-right:6px}.c-fixe{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;min-height:44px;cursor:pointer}.c-fixe input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--crimson)}
 .mon-etin rect{fill:var(--crimson-txt,var(--crimson));opacity:.8}.lien-b{color:var(--crimson-txt,var(--crimson));font:inherit;font-weight:700;text-decoration:underline}
 .mon-prev{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mon-pv{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -2548,8 +2549,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.85.1";
+const APP_VERSION="1.86.0";
 const CHANGELOG=[
+  {v:"1.86.0",date:"19 novembre 2026",notes:{"Ajouté":["Fiche du membre : « Spécialité » (ce qu'il fait précisément), « Contacts recherchés » (ses cibles) et « Loisirs et hobbies ». Le membre les remplit dans son espace, l'équipe dans la fiche signalétique.","Espace membre : sur la fiche d'un autre membre, un loisir partagé est mis en avant (« Vous avez en commun : padel »). La recherche du réseau trouve aussi les loisirs et les spécialités."]}},
   {v:"1.85.1",date:"19 novembre 2026",notes:{"Corrigé":["Carte de visite : un membre dont le métier est « - Autre - » n'affiche plus cette étiquette."]}},
   {v:"1.85.0",date:"19 novembre 2026",notes:{"Modifié":["Menu : la rubrique de l'écran affiché reste ouverte. Dans les Ressources, le menu reste sur Ressources ; le repli automatique ne referme plus que les rubriques ouvertes pour jeter un œil.","Statistiques : une barre en haut de l'écran passe d'un toucher du réseau à une région, puis à un groupe de cette région, sans repasser par le menu."]}},
   {v:"1.84.0",date:"19 novembre 2026",notes:{"Ajouté":["Réseau → Régions et villes : le directeur de chaque région s'y lit, et le super admin le nomme ou le retire depuis la fiche de la région.","Dans la fiche d'un membre, « Voir » ouvre sa carte de visite dans une petite fenêtre, par-dessus le CRM, au lieu d'un nouvel onglet.","Visite guidée : la carte de visite du membre, « Nommer animateur », et la création des régions et des groupes."],"Modifié":["Synthèse, chiffres par période, comparaison des régions et statistiques : le nombre de membres reprend celui du bureau national pour les groupes dont les fiches ne sont pas saisies. Il s'ajuste seul à chaque fiche ajoutée.","Les messages d'invitation, de remerciement et d'accès portent le nom de la région du groupe (« Protéine Casablanca », « Protéine Tanger ») ; la région de Rabat garde « Protéine Rabat et Région »."]}},
@@ -3170,7 +3172,7 @@ function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,club
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
-function mapMembre(r){return{carte:r.carte_jeton||"",id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
+function mapMembre(r){return{speDetail:r.specialite_detail||"",loisirs:r.loisirs||"",carte:r.carte_jeton||"",id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -6575,11 +6577,11 @@ function mbLiens(f){const l=[];if(f.site)l.push(`<a href="${esc(mbUrl(f.site))}"
   String(f.reseaux||"").split(/[\s,;]+/).filter(x=>/\./.test(x)).slice(0,4).forEach(x=>l.push(`<a href="${esc(mbUrl(x))}" target="_blank" rel="noopener">${/instagram/i.test(x)?"Instagram":/facebook/i.test(x)?"Facebook":/tiktok/i.test(x)?"TikTok":/youtube/i.test(x)?"YouTube":"Réseau"}</a>`));
   return l.length?`<div class="mbf-liens">${l.join("")}</div>`:""}
 function mbFicheHTML(m,d,canEd){
-  const f=mbFiche(m,d),vide=!f.photo&&!f.logo&&!f.presentation&&!f.site&&!f.linkedin&&!f.reseaux;
+  const f=mbFiche(m,d),vide=!f.photo&&!f.logo&&!f.presentation&&!f.site&&!f.linkedin&&!f.reseaux&&!m.speDetail&&!m.cherche&&!m.loisirs;
   return `${secHead("Fiche signalétique",undefined,canEd?`<button class="btn ghost mini" onclick="mbFicheForm('${m.clubId}','${m.id}')">${vide?"+ Compléter":"Modifier"}</button>`:"")}
     ${vide?`<p class="fh-empty">Pas encore de fiche. ${canEd?"Le membre peut la remplir lui-même depuis son espace membre.":""}</p>`
     :`<div class="mbf"><div class="mbf-img">${f.photo?`<img class="mbf-ph" src="${esc(f.photo)}" alt="Photo de ${esc(m.nom)}">`:`<span class="mbf-ph vide">${esc(initiales(m.nom))}</span>`}${f.logo?`<img class="mbf-lg" src="${esc(f.logo)}" alt="Logo">`:""}</div>
-      <div class="mbf-t">${f.presentation?`<p>${esc(f.presentation)}</p>`:""}${mbLiens(f)}${f.preRempli?`<small class="fh-note">Repris de sa demande d'adhésion.</small>`:""}</div></div>`}${mbCarteHTML(m)}`;
+      <div class="mbf-t">${f.presentation?`<p>${esc(f.presentation)}</p>`:""}${m.speDetail?`<p class="mbf-l"><b>Spécialité</b>${esc(m.speDetail)}</p>`:""}${m.cherche?`<p class="mbf-l"><b>Contacts recherchés</b>${esc(m.cherche)}</p>`:""}${m.loisirs?`<p class="mbf-l"><b>Loisirs et hobbies</b>${esc(m.loisirs)}</p>`:""}${mbLiens(f)}${f.preRempli?`<small class="fh-note">Repris de sa demande d'adhésion.</small>`:""}</div></div>`}${mbCarteHTML(m)}`;
 }
 /* v1.79 : la carte de visite existe dès la création de la fiche (jeton posé par la base). L'équipe la voit ici, avec son QR. */
 function mbCarteLien(m){return m&&m.carte?`${SITE_PUBLIC}/carte.html?c=${m.carte}`:""}
@@ -6604,6 +6606,9 @@ function mbFicheForm(clubId,id){
     <div class="mbf-up"><span id="mbf-ph">${f.photo?`<img class="mbf-ph" src="${esc(f.photo)}" alt="">`:`<span class="mbf-ph vide">${esc(initiales(m.nom))}</span>`}</span><label class="btn ghost mini">Photo<input type="file" hidden accept="image/*" onchange="mbfImage(this,'photo')"></label>
       <span id="mbf-lg">${f.logo?`<img class="mbf-lg" src="${esc(f.logo)}" alt="">`:`<span class="mbf-lg vide">Logo</span>`}</span><label class="btn ghost mini">Logo<input type="file" hidden accept="image/*" onchange="mbfImage(this,'logo')"></label></div>
     <div class="field"><label>Présentation de l'activité</label><textarea id="mbf-pres" maxlength="1500">${esc(f.presentation)}</textarea></div>
+    <div class="field"><label>Spécialité : ce qu'il fait précisément</label><textarea id="mbf-spe" maxlength="800" placeholder="Ses prestations, ses points forts, les dossiers qu'il traite le mieux…">${esc(m.speDetail||"")}</textarea></div>
+    <div class="field"><label>Contacts recherchés : ses cibles</label><textarea id="mbf-cherche" maxlength="800" placeholder="Les clients, les métiers ou les entreprises qu'il veut rencontrer">${esc(m.cherche||"")}</textarea></div>
+    <div class="field"><label>Loisirs et hobbies</label><input id="mbf-loisirs" maxlength="300" value="${esc(m.loisirs||"")}" placeholder="Padel, golf, course à pied… séparés par des virgules"></div>
     <div class="field"><label>Site internet</label><input id="mbf-site" value="${esc(f.site)}" placeholder="www.societe.ma"></div>
     <div class="field"><label>LinkedIn</label><input id="mbf-li" value="${esc(f.linkedin)}" placeholder="linkedin.com/in/…"></div>
     <div class="field"><label>Autres réseaux</label><input id="mbf-rs" value="${esc(f.reseaux)}" placeholder="instagram.com/…, facebook.com/…"></div>
@@ -6623,10 +6628,10 @@ async function mbfImage(input,quoi){
 }
 async function mbFicheSauver(){
   const v=id=>document.getElementById(id).value.trim()||null;
-  const row={photo_url:_mbf.photo||null,logo_url:_mbf.logo||null,presentation:v("mbf-pres"),site:v("mbf-site"),linkedin:v("mbf-li"),reseaux:v("mbf-rs")};
+  const row={photo_url:_mbf.photo||null,logo_url:_mbf.logo||null,presentation:v("mbf-pres"),site:v("mbf-site"),linkedin:v("mbf-li"),reseaux:v("mbf-rs"),specialite_detail:v("mbf-spe"),cherche:v("mbf-cherche"),loisirs:v("mbf-loisirs")};
   const {error}=await sb.from("membres").update(row).eq("id",_mbf.id);
   if(error){toast("Non enregistrée : "+rlsMsg(error));return}
-  const m=DB.membres.find(x=>x.id===_mbf.id);if(m)Object.assign(m,{photo:row.photo_url||"",logo:row.logo_url||"",presentation:row.presentation||"",site:row.site||"",linkedin:row.linkedin||"",reseaux:row.reseaux||""});
+  const m=DB.membres.find(x=>x.id===_mbf.id);if(m)Object.assign(m,{photo:row.photo_url||"",logo:row.logo_url||"",presentation:row.presentation||"",site:row.site||"",linkedin:row.linkedin||"",reseaux:row.reseaux||"",speDetail:row.specialite_detail||"",cherche:row.cherche||"",loisirs:row.loisirs||""});
   toast("Fiche enregistrée");memberSheet(_mbf.clubId,_mbf.id);
 }
 /* v1.5.0 : la fiche membre de la personne connectée (animateur / directeur qui est aussi membre). */

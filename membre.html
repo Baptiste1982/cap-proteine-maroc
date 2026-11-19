@@ -398,6 +398,9 @@ a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(6
 .ct-aide{margin:0;color:var(--muted);font-size:13.5px;max-width:34ch}
 .ct-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.ct-act .btn{justify-content:center;text-align:center}.ct-act .btn:first-child{grid-column:1/-1}
 .ct-txt{margin:0 0 10px;color:var(--muted);font-size:14px;line-height:1.5}
+/*v1.86 loisirs*/
+.lo-chips{display:flex;flex-wrap:wrap;gap:6px}.lo-chips span{padding:5px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600}
+.lo-chips span.com{background:#1E9E63;border-color:#1E9E63;color:#fff}.lo-com{margin:0;font-size:13.5px;color:var(--muted)}.lo-com b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -537,11 +540,15 @@ function lienHash(){
 window.addEventListener("hashchange",()=>{if(S.moi)lienHash()});
 async function chargerAnnuaire(){let {data,error}=await sb.rpc("cap_annuaire_fiche");if(error)({data,error}=await sb.rpc("cap_annuaire"));if(!error)S.annuaire=data||[];
   /* v1.31 : coordonnées partagées entre membres (téléphone, e-mail), jamais les données légales */
+  try{const p=await sb.rpc("cap_annuaire_plus");if(!p.error&&Array.isArray(p.data)){const P=Object.fromEntries(p.data.map(x=>[x.id,x]));S.annuaire.forEach(m=>{const x=P[m.id];m.specialite=x&&x.specialite||"";m.loisirs=x&&x.loisirs||""})}}catch(e){}
   try{const c=await sb.rpc("cap_annuaire_contacts");if(!c.error){const C=Object.fromEntries((c.data||[]).map(x=>[x.id,x]));S.annuaire.forEach(m=>{const x=C[m.id];if(x){m.email=x.email||"";if(x.telephone)m.telephone=x.telephone}})}}catch(e){}
   try{const r=await sb.rpc("cap_annuaire_regions");if(!r.error)S.regions=Object.fromEntries((r.data||[]).map(x=>[x.club_id,x.region]))}catch(e){}annRegions()}
 /* v1.26 : annuaire par région. Chaque membre porte sa région (zone de son groupe, sinon sa ville). */
 function annRegions(){const R=S.regions||{};S.annuaire.forEach(m=>{m.region=R[m.club_id]||m.ville||"Autres"});const moi=S.annuaire.find(m=>m.moi);S.maRegion=moi?moi.region:null;if(!S.portee)S.portee=S.maRegion?"region":"national"}
-const annMots=m=>norm([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.region,m.cherche].join(" ")).split(/[^a-z0-9]+/).filter(Boolean);
+/* v1.86 : loisirs = mots séparés par des virgules ; deux membres « ont en commun » un loisir écrit pareil (sans accents ni majuscules). */
+const loisirsDe=m=>String(m&&m.loisirs||"").split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean).slice(0,12);
+const loisirsCommuns=(a,b)=>{const B=new Set(loisirsDe(b).map(norm));return loisirsDe(a).filter(x=>B.has(norm(x)))};
+const annMots=m=>norm([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.region,m.cherche,m.specialite,m.loisirs].join(" ")).split(/[^a-z0-9]+/).filter(Boolean);
 /* Recherche « premières lettres » : chaque mot tapé doit commencer un mot de la fiche. */
 function annMatch(m,mots){if(!mots.length)return true;const W=annMots(m);return mots.every(w=>W.some(x=>x.startsWith(w)))}
 const moiFiche=()=>S.annuaire.find(m=>m.moi)||{};
@@ -657,7 +664,7 @@ const auj=()=>new Date().toISOString().slice(0,10);
 function aTraiterRecos(){return (S.recos||[]).filter(r=>r.a===S.moi.id&&r.statut==="envoyee")}
 function relancesDues(){return (S.recos||[]).filter(r=>r.a===S.moi.id&&r.relance_le&&r.relance_le<=auj()&&!["signee","sans_suite"].includes(r.statut))}
 function ficheEtapes(){const f=moiFiche();return [["photo","Ajouter ma photo",!!f.photo],["logo","Ajouter le logo de ma société",!!f.logo],["pres","Présenter mon activité",!!f.presentation],
-  ["liens","Mon site ou mon LinkedIn",!!(f.site||f.linkedin)],["cherche","Dire ce que je cherche",!!(S.moi.cherche||f.cherche)]]}
+  ["liens","Mon site ou mon LinkedIn",!!(f.site||f.linkedin)],["cherche","Dire quels contacts je recherche",!!(S.moi.cherche||f.cherche)],["loisirs","Ajouter mes loisirs",!!f.loisirs]]}
 function fichePct(){const e=ficheEtapes();return Math.round(e.filter(x=>x[2]).length/e.length*100)}
 function mesChiffres(){const g=S.gv;return (g&&g.chiffres&&g.chiffres.moi)||(S.recosClub&&S.recosClub.moi)||null}
 function carteReunion(p,avecReponse){
@@ -860,7 +867,7 @@ function vueMoi(){
     <div class="la-l">
       ${ligneAct(`data-aller="recos"`,"Mes recommandations",`${nR} reçue${nR>1?"s":""} · ${nD} donnée${nD>1?"s":""}`,{fin:at?`<span class="badge">${at} à traiter</span>`:"",fort:!!at})}
       ${ligneAct(`data-aller="chiffres"`,"Mes chiffres",ch?`${esc(mad(ch.ca_transmis))} apportés · ${esc(mad(ch.ca_recu))} reçus`:"Moi, mon groupe, ma région")}
-      ${ligneAct(`data-aller="profil"`,"Ma fiche","Photo, logo, présentation, ce que je cherche",{fin:`<span class="pct${pct<100?" bas":""}">${pct} %</span>`})}
+      ${ligneAct(`data-aller="profil"`,"Ma fiche","Photo, logo, spécialité, contacts recherchés, loisirs",{fin:`<span class="pct${pct<100?" bas":""}">${pct} %</span>`})}
       ${ligneAct(`data-aller="carte"`,"Ma carte de visite","Un QR code à faire scanner, un lien à envoyer")}
       ${ligneAct(`data-aller="inviter"`,"Inviter quelqu'un","À la prochaine réunion du groupe")}
       ${ligneAct(`data-aller="mesdocs"`,"Mes documents","Facture, reçu, attestations : pour toi et ton comptable",{fin:mesDocsNouveaux()?`<span class="badge">${mesDocsNouveaux()} nouveau${mesDocsNouveaux()>1?"x":""}</span>`:(S.mesDocs&&S.mesDocs.length?`<span class="pct">${S.mesDocs.length}</span>`:""),fort:!!mesDocsNouveaux()})}
@@ -1016,7 +1023,10 @@ function vueFiche(){
     ${S.eq?"":`<button class="btn ghost" data-rdonner="${m.id}">🤝 Lui recommander un contact</button>`}
     ${!m.inscrit?`<p class="note">${esc(m.nom)} n'a pas encore activé son espace membre : les messages seront possibles dès sa première connexion.</p>`:""}
     ${m.entreprise||m.presentation||m.logo?`<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Son entreprise</span><div style="display:flex;gap:12px;align-items:center">${m.logo?`<img class="logo-ent" src="${esc(m.logo)}" alt="Logo ${esc(m.entreprise||"")}">`:""}<div style="min-width:0">${m.entreprise?`<span class="bri" style="font-size:18px;font-weight:700">${esc(m.entreprise)}</span>`:""}${m.fonction?`<p class="sub" style="margin:2px 0 0">${esc(m.fonction)}</p>`:""}</div></div>${m.presentation?`<span style="font-size:14px;white-space:pre-line">${esc(m.presentation)}</span>`:""}${liensHTML(m)}</div>`:liensHTML(m)?`<div class="card">${liensHTML(m)}</div>`:""}
-    ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Ce qu'il ou elle cherche</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
+    ${m.specialite?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Sa spécialité</span><span style="font-size:14px;white-space:pre-line">${esc(m.specialite)}</span></div>`:""}
+    ${m.cherche?`<div class="card" style="display:flex;flex-direction:column;gap:8px"><span class="label">Contacts recherchés</span><span style="font-size:14px;white-space:pre-line">${esc(m.cherche)}</span></div>`:""}
+    ${loisirsDe(m).length?(()=>{const moi=moiFiche(),com=m.moi?[]:loisirsCommuns(m,moi),C=new Set(com.map(norm));
+      return `<div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Loisirs et hobbies</span><div class="lo-chips">${loisirsDe(m).map(x=>`<span class="${C.has(norm(x))?"com":""}">${esc(x)}</span>`).join("")}</div>${com.length?`<p class="lo-com">Vous avez en commun : <b>${esc(com.join(", "))}</b>. Une bonne raison de vous écrire.</p>`:""}</div>`})():""}
     <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="label">Coordonnées</span>
       <div class="kv"><span>Ville</span><b>${esc(m.ville||"—")}</b></div>
       <div class="kv"><span>Téléphone</span><b>${tel?esc(telAff(m.telephone)):"non partagé"}</b></div>
@@ -1117,7 +1127,7 @@ function vueProfil(){
     ${carteNotif()}
     ${ficheForm()}
     <form id="f-profil" class="card" style="display:flex;flex-direction:column;gap:14px">
-      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ce que je cherche</span>
+      <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Contacts recherchés</span>
         <textarea class="champ" id="p-cherche" maxlength="600" placeholder="Ex. : des promoteurs qui lancent un programme à Rabat, des gérants de franchises…">${esc(m.cherche||"")}</textarea></label>
       <label class="switch"><span>Montrer mon téléphone et mon e-mail aux autres membres</span><input type="checkbox" id="p-tel" ${m.tel_visible?"checked":""}></label>
       <label class="switch"><span>Apparaître dans l'annuaire</span><input type="checkbox" id="p-annu" ${m.annuaire_visible!==false?"checked":""}></label>
@@ -1147,6 +1157,9 @@ function ficheForm(){
     <div class="up">${ph?`<span class="av img" style="width:64px;height:64px"><img src="${esc(ph)}" alt="Ma photo"></span>`:av({id:S.moi.id,nom:S.moi.nom},"")}<label class="btn ghost">${ph?"Changer ma photo":"Ajouter ma photo"}<input type="file" accept="image/*" id="f-ph" hidden></label></div>
     <div class="up">${lg?`<img class="logo-ent" src="${esc(lg)}" alt="Mon logo">`:`<span class="logo-ent" style="display:grid;place-items:center;color:var(--soft);font-size:11px">Logo</span>`}<label class="btn ghost">${lg?"Changer le logo":"Ajouter le logo de ma société"}<input type="file" accept="image/*" id="f-lg" hidden></label></div>
     <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Présentation de mon activité</span><textarea class="champ" id="f-pres" maxlength="1500" placeholder="Ce que fait ta société, pour qui, ce qui te distingue…">${esc(f.presentation||"")}</textarea></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Ma spécialité</span><textarea class="champ" id="f-spe" maxlength="800" placeholder="Ce que tu fais précisément dans ton entreprise : tes prestations, tes points forts, les dossiers que tu traites le mieux…">${esc(f.specialite||"")}</textarea></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Contacts recherchés</span><textarea class="champ" id="f-cherche" maxlength="800" placeholder="Tes cibles : les clients, les métiers ou les entreprises que tu veux rencontrer. Ex. : promoteurs qui lancent un programme à Rabat, gérants de franchises…">${esc(S.moi.cherche||f.cherche||"")}</textarea></label>
+    <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Loisirs et hobbies</span><input class="champ1" id="f-loisirs" maxlength="300" placeholder="Padel, golf, course à pied, cuisine… séparés par des virgules" value="${esc(f.loisirs||"")}"><span class="sub" style="font-size:12.5px">Les membres qui partagent un loisir avec toi le voient sur ta fiche.</span></label>
     <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Site internet</span><input class="champ1" id="f-site" maxlength="300" inputmode="url" placeholder="www.masociete.ma" value="${esc(f.site||"")}"></label>
     <label style="display:flex;flex-direction:column;gap:6px"><span class="label">LinkedIn</span><input class="champ1" id="f-li" maxlength="300" inputmode="url" placeholder="linkedin.com/in/…" value="${esc(f.linkedin||"")}"></label>
     <label style="display:flex;flex-direction:column;gap:6px"><span class="label">Autres réseaux</span><input class="champ1" id="f-rs" maxlength="300" placeholder="instagram.com/…, facebook.com/…" value="${esc(f.reseaux||"")}"></label>
@@ -1165,8 +1178,11 @@ async function televerser(file,quoi){
 }
 async function enregistrerFiche(){
   const v={p_presentation:$("f-pres").value,p_site:$("f-site").value,p_linkedin:$("f-li").value,p_reseaux:$("f-rs").value,p_photo:S.fPhoto||null,p_logo:S.fLogo||null};
-  if(!DEMO){const {error}=await sb.rpc("cap_membre_fiche_maj",v);if(error){toast("Non enregistrée : "+error.message);return}await chargerAnnuaire()}
-  else Object.assign(moiFiche(),{presentation:v.p_presentation,site:v.p_site,linkedin:v.p_linkedin,reseaux:v.p_reseaux,photo:v.p_photo||moiFiche().photo,logo:v.p_logo||moiFiche().logo});
+  const w={p_specialite:$("f-spe").value,p_cherche:$("f-cherche").value,p_loisirs:$("f-loisirs").value};
+  if(!DEMO){const {error}=await sb.rpc("cap_membre_fiche_maj",v);if(error){toast("Non enregistrée : "+error.message);return}
+    const r2=await sb.rpc("cap_membre_fiche_plus",w);if(r2.error){toast("Non enregistrée : "+r2.error.message);return}
+    S.moi.cherche=w.p_cherche.trim()||null;await chargerAnnuaire()}
+  else Object.assign(S.moi,{cherche:w.p_cherche.trim()||null}),Object.assign(moiFiche(),{specialite:w.p_specialite.trim(),loisirs:w.p_loisirs.trim(),cherche:w.p_cherche.trim()||null,presentation:v.p_presentation,site:v.p_site,linkedin:v.p_linkedin,reseaux:v.p_reseaux,photo:v.p_photo||moiFiche().photo,logo:v.p_logo||moiFiche().logo});
   S.fPhoto=S.fLogo=undefined;toast("Fiche enregistrée");rendu(true);
 }
 
@@ -1600,7 +1616,8 @@ function demo(){
   const A=[["d1","Tarek Amar","Expert-comptable","Amar Conseil","CAP Rabat Signature","Rabat",true],["d2","Nawal Mansouri","Architecte d'intérieur","Atelier NM","CAP Rabat Signature","Rabat",true,"Des promoteurs et des gérants de franchises qui ouvrent de nouveaux points de vente."],
     ["d3","Kamal Idrissi","Assureur","Idrissi Assurances","CAP Casablanca Doyen","Casablanca",true],["d4","Salma Bennani","Photographe","Studio Lumière","CAP Rabat Capital Circle","Rabat",false],["d5","Youssef Alami","Imprimeur","Imprimerie du Bouregreg","CAP Salé Déclic","Salé",true]];
   const annuaire=A.map(a=>({id:a[0],nom:a[1],metier:a[2],entreprise:a[3],club:a[4],ville:a[5],inscrit:a[6],cherche:a[7]||null,activite:null,telephone:a[0]==="d2"?"06 61 23 45 67":null,moi:a[0]==="d1",club_id:a[4]==="CAP Rabat Signature"?"c1":"c"+a[0]}));
-  Object.assign(annuaire[1],{presentation:"Aménagement de bureaux, boutiques et cafés, du plan à la livraison.",site:"www.atelier-nm.ma",linkedin:"linkedin.com/in/nawal-mansouri",reseaux:"instagram.com/ateliernm",fonction:"Gérante"});
+  Object.assign(annuaire[1],{presentation:"Aménagement de bureaux, boutiques et cafés, du plan à la livraison.",site:"www.atelier-nm.ma",linkedin:"linkedin.com/in/nawal-mansouri",reseaux:"instagram.com/ateliernm",fonction:"Gérante",specialite:"Agencement de commerces et de cafés : plans, suivi de chantier, mobilier sur mesure.",loisirs:"Padel, Photographie, Randonnée"});
+  Object.assign(annuaire[0],{loisirs:"Padel, Golf"});
   const t=m=>new Date(Date.now()-m*6e4).toISOString();
   const msgs=[{id:"m1",de:"d1",a:"d2",texte:"Bonjour Nawal, un client à moi ouvre une deuxième agence à Agdal. Il cherche quelqu'un pour l'aménagement.",cree_le:t(40),lu_le:t(35)},
     {id:"m2",de:"d2",a:"d1",texte:"Bonjour Tarek ! Avec plaisir. Quelle surface, et pour quand ?",cree_le:t(30),lu_le:null},

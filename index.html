@@ -2582,8 +2582,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.92.0";
+const APP_VERSION="1.93.0";
 const CHANGELOG=[
+  {v:"1.93.0",date:"19 novembre 2026",notes:{"Modifié":["Un animateur arrive directement sur sa boîte à outils à la connexion (une fois par session)."]}},
   {v:"1.92.0",date:"19 novembre 2026",notes:{"Ajouté":["Ma boîte à outils : tous les outils de l\u2019animateur au même endroit (slides de la réunion, invitation, planification, bilans, membres et accès, contacts confiés, annuaire, documents du Bureau national, kit de départ, slide « Qui suis-je ? », point avec le directeur). Bouton dans Mon groupe et dans le menu."]}},
   {v:"1.91.0",date:"19 novembre 2026",notes:{"Ajouté":["Annuaire du réseau ouvert de partout : bouton 📇 dans la barre du haut (et menu Réseau), quelle que soit la vue. Onglets Ma région, Maroc (régions puis groupes), France et Espagne (prêts, à enrichir). Recherche par nom, métier, entreprise ou ville."]}},
 {v:"1.90.1",date:"19 novembre 2026",notes:{"Corrigé":["Présentation : un animateur invité se présente avec son propre groupe sur sa slide « Qui suis-je ? »."]}},
@@ -3348,7 +3349,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
-  adhAnnonce();boiteAnnonce();
+  adhAnnonce();boiteAnnonce();boiteAccueil();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();
@@ -3667,6 +3668,12 @@ function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB
   t("Mes ressources","📅","Point avec mon directeur","Réserver un créneau de point sur activité","openPSA()",psaCompte());
   t("Mes ressources","❓","Visite guidée","Revoir le CRM pas à pas","openAide()");
   return o}
+/* v1.93 : l'animateur arrive sur sa boîte à outils — une fois par session, jamais par-dessus le mot de passe à changer, la visite guidée ou une fiche déjà ouverte. */
+function boiteAccueil(){try{if(!SESSION||SESSION._voir||SESSION.role!=="animateur"||!SESSION.clubIds.length||readOnly())return;
+  if(navigator.webdriver&&localStorage.getItem("cap-bo-force")!=="1")return;if(sessionStorage.getItem("cap-bo-vu"))return;
+  let n=0;const essai=()=>{if(sessionStorage.getItem("cap-bo-vu"))return;const libre=!_mdpForce&&!document.getElementById("sheet").classList.contains("open")&&!document.querySelector("#tuto.on,html.lanc-on");
+    if(libre&&tab==="reunions"){sessionStorage.setItem("cap-bo-vu","1");openOutils();return}if(++n<8&&tab==="reunions")setTimeout(essai,1500)};
+  setTimeout(essai,4600)}catch(e){}}
 function boiteProfil(rid){presOuvrir(rid);setTimeout(()=>{try{if(_pres)presAnimForm(SESSION.animId)}catch(e){}},400)}
 function openOutils(){if(!SESSION||readOnly())return;const O=boiteOutils(),S=[...new Set(O.map(x=>x.sec))],c=grpClub();
   document.getElementById("sheet-content").innerHTML=ficheHead({title:"Ma boîte à outils",ini:"🧰",sub:c?"Animateur · "+esc(String(c.nom).replace(/^CAP\s+/,"")):"Tes outils d'animateur"})+

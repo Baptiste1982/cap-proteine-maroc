@@ -103,6 +103,8 @@ async function invitationsListe(N: National): Promise<any[]> {
 const decH = (x: string) => x.replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
 async function hotesDuCompte(N: National, invs: any[]): Promise<Map<string, string>> {
   const m = new Map<string, string>(); for (const x of invs) if (x.idHote) m.set(n(x.nomHote), String(x.idHote));
+  // v21 : la liste complète des lieux du réseau (le formulaire d'une invitation ne propose que ceux déjà utilisés).
+  try { const j = await N.json('POST', '/hoteInvitation/lister', { draw: '1' }); for (const h of Object.values(j || {}) as any[]) if (h?.id && h?.nom) m.set(n(h.nom), String(h.id)); } catch { /* */ }
   const src = invs[0]?.id; if (!src) return m;
   const t = await (await N.req('GET', '/invitation/formulaireNew?id=' + encodeURIComponent(String(src)) + '&forcerCreation=true')).text();
   const sel = t.match(/<select[^>]*\sid="listeHote"[^>]*>([\s\S]*?)<\/select>/);

@@ -2442,6 +2442,26 @@ html.pres-on,html.pres-on body{overflow:hidden}
 .lg-aide{display:block;width:100%;margin-top:12px;background:none;border:0;color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:8px}.lg-aide:hover{color:var(--ink)}.ctc-btn{width:100%;margin:0 0 6px}.ctc-aide{margin:0 0 12px}.pr-phb{display:inline-grid;place-items:center;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px}.pr-phb:hover{border-color:var(--crimson)}.ar-seg{margin:0 0 12px}.mb-bar[hidden]{display:none}.ar-g{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--card,transparent)}.ar-g>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.ar-g>summary::-webkit-details-marker{display:none}.ar-g>summary b{font:700 15px "Bricolage Grotesque",sans-serif}.ar-g>summary small{color:var(--muted);font-size:12.5px}.ar-g>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.ar-g>.mb-grid{padding:0 12px 12px}
 .ar-c{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}.ar-c:hover{border-color:var(--crimson)}.ar-c i,.ar-c img{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:13px;background:var(--crimson);color:#fff}.ar-c span{display:flex;flex-direction:column;min-width:0}.ar-c b{font-size:14px}.ar-c small{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}.ar-ph{width:54px;height:54px;border-radius:50%;object-fit:cover;flex:none}
 /*v1.60 deux textes peu lisibles*/.dm-next.ok small{color:inherit;opacity:.85}html.dark .dm-seg button.on{background:#F1F1F2;border-color:#F1F1F2;color:#1B1416}
+/*v1.91 annuaire du réseau*/
+body.lecture .ann-btn{display:none}
+@media (max-width:1100px){.ann-btn span{display:none}.ann-btn{padding:0 9px}}
+.an-tabs{display:flex;gap:6px;margin:4px 0 12px;overflow-x:auto;scrollbar-width:none}
+.an-tabs button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;font:600 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.an-tabs button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.an-q{width:100%;margin-bottom:12px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;box-sizing:border-box}
+.an-reg{border:1px solid var(--line);border-radius:16px;margin-bottom:10px}
+.an-reg>summary{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;list-style:none}
+.an-reg>summary::-webkit-details-marker{display:none}
+.an-reg>summary b{font:700 16px "Bricolage Grotesque",sans-serif}
+.an-reg>summary small{color:var(--muted);font-size:12.5px}
+.an-reg>summary em{margin-left:auto;font-style:normal;font-weight:700;font-size:12.5px;padding:3px 10px;border-radius:99px;background:var(--crimson);color:#fff}
+.an-reg>.an-in{padding:0 10px 4px}
+.an-vide{padding:0 14px 14px;color:var(--muted);font-size:13px}
+.an-n{color:var(--muted);font-size:12.5px;margin-bottom:8px}
+.an-bientot{border:1px dashed var(--line);border-radius:16px;padding:28px 18px;text-align:center}
+.an-bientot i{font-style:normal;font-size:38px;display:block;margin-bottom:8px}
+.an-bientot b{font:700 17px "Bricolage Grotesque",sans-serif;display:block;margin-bottom:6px}
+.an-bientot p{color:var(--muted);font-size:13.5px;margin:0}
 </style>
 </head>
 <body>
@@ -2475,7 +2495,7 @@ html.pres-on,html.pres-on body{overflow:hidden}
       <div class="who"><b id="tb-name">—</b><span id="tb-region">—</span></div>
     </div>
     <div class="tb-row tb-row2">
-      <button type="button" id="esp-sel" class="esp-sel hidden" onclick="espMenu()" aria-haspopup="menu" aria-expanded="false"></button><div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
+      <button type="button" id="esp-sel" class="esp-sel hidden" onclick="espMenu()" aria-haspopup="menu" aria-expanded="false"></button><div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="ann-btn" class="dem-btn ann-btn" onclick="openAnnuaire()" aria-label="Annuaire du réseau" title="Annuaire du réseau">📇<span> Annuaire</span></button><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
       <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
@@ -2549,9 +2569,10 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.90.1";
+const APP_VERSION="1.91.0";
 const CHANGELOG=[
-  {v:"1.90.1",date:"19 novembre 2026",notes:{"Corrigé":["Présentation : un animateur invité se présente avec son propre groupe sur sa slide « Qui suis-je ? »."]}},
+  {v:"1.91.0",date:"19 novembre 2026",notes:{"Ajouté":["Annuaire du réseau ouvert de partout : bouton 📇 dans la barre du haut (et menu Réseau), quelle que soit la vue. Onglets Ma région, Maroc (régions puis groupes), France et Espagne (prêts, à enrichir). Recherche par nom, métier, entreprise ou ville."]}},
+{v:"1.90.1",date:"19 novembre 2026",notes:{"Corrigé":["Présentation : un animateur invité se présente avec son propre groupe sur sa slide « Qui suis-je ? »."]}},
 {v:"1.90.0",date:"19 novembre 2026",notes:{"Ajouté":["Présentation : une slide par personne présente à la réunion, à faire défiler une par une (bouton « Une slide par personne présente » dans le montage). Elles suivent les inscriptions en direct ; les membres des autres groupes sont reconnus, avec leur photo."]}},
 {v:"1.89.0",date:"19 novembre 2026",notes:{"Modifié":["Un seul volet ouvert à la fois : dans l'espace membre (volets des pages, groupes du réseau) et dans la fiche d'un membre au téléphone, ouvrir un volet referme les autres et le ramène en haut de l'écran."]}},
   {v:"1.88.0",date:"19 novembre 2026",notes:{"Corrigé":["Vue membre d'un groupe : le bouton « Fermer » ne faisait rien dans l'appli. Il ramène maintenant à l'espace du groupe.","Aperçu « voir comme un membre » : la croix d'une sous-page passait sous le bandeau bleu dès qu'on faisait défiler et ne répondait plus. Elle reste maintenant juste dessous, et le bandeau tient sur une ligne."]}},
@@ -3580,6 +3601,37 @@ function annResHTML(){
   const mien=new Set(scopedClubIds()),cles=Object.keys(G).sort((a,b)=>(mien.has(G[b][0].club_id)-mien.has(G[a][0].club_id))||a.localeCompare(b));
   return `<div class="mb-n">${l.length} membre${l.length>1?"s":""} dans ${cles.length} groupe${cles.length>1?"s":""}</div>`+cles.map(k=>{const g=G[k];
     return `<details class="ar-g" ${q.length||mien.has(g[0].club_id)||cles.length<4?"open":""}><summary><b>${esc(k.replace(/^CAP\s+/,""))}</b><small>${esc(g[0].region||g[0].ville||"")}</small><em>${g.length}</em></summary><div class="mb-grid">${g.map(m=>`<button type="button" class="ar-c" onclick="annResFiche('${m.id}')">${m.photo?`<img src="${esc(m.photo)}" alt="" loading="lazy">`:`<i>${esc(initiales(m.nom))}</i>`}<span><b>${esc(m.nom)}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}</small></span></button>`).join("")}</div></details>`}).join("")}
+/* v1.91 : l'annuaire du réseau, ouvert de partout (bouton de la barre du haut, menu Réseau), quelle que soit la vue.
+   Onglets : ma région (ses groupes), le Maroc (régions puis groupes), France et Espagne (prêts, pas encore de données).
+   Il montre la fiche de base (cap_annuaire_fiche), jamais le dossier ; les groupes viennent du vrai réseau, pas de la vue. */
+const ANN_TABS=[["reg","📍 Ma région"],["ma","🇲🇦 Maroc"],["fr","🇫🇷 France"],["es","🇪🇸 Espagne"]];
+function annuaireRegions(){const V=window._DBvrai||DB,Z=V.zones||[],R={};(V.clubs||[]).forEach(c=>{const z=Z.find(z=>(z.villes||[]).some(v=>mbNorm(v)===mbNorm(c.ville))),k=z?z.nom:(c.ville||"Autres villes");(R[k]=R[k]||{nom:k,ordre:z?Z.indexOf(z):99,clubs:[]}).clubs.push(c)});
+  return Object.values(R).sort((a,b)=>a.ordre-b.ordre||a.nom.localeCompare(b.nom)).map(r=>(r.clubs.sort((a,b)=>String(a.ville).localeCompare(String(b.ville))||a.nom.localeCompare(b.nom)),r))}
+function annuaireMaRegion(){try{return vueRegion().nom}catch(e){return ""}}
+function annuaireCarte(m,grp){return `<button type="button" class="ar-c" onclick="annResFiche('${m.id}')">${m.photo?`<img src="${esc(m.photo)}" alt="" loading="lazy">`:`<i>${esc(initiales(m.nom))}</i>`}<span><b>${esc(m.nom)}</b><small>${esc([m.metier,m.entreprise].filter(Boolean).join(" · ")||"Membre du réseau")}${grp?" · "+esc(String(m.club||"").replace(/^CAP\s+/,"")):""}</small></span></button>`}
+function annuaireCorps(){const t=window._annT||"reg";
+  if(t==="fr"||t==="es"){const p=t==="fr"?"France":"Espagne";return `<div class="an-bientot"><i>${t==="fr"?"🇫🇷":"🇪🇸"}</i><b>Réseau ${p}</b><p>L'annuaire des membres Protéine ${p} s'affichera ici, rangé par région puis par groupe. L'accès à leurs données n'est pas encore ouvert.</p></div>`}
+  const L=window._annRes;if(!L){annResCharger().then(annuaireMaj);return skLignes(6)}
+  if(window._annResErr)return emptyState("Annuaire indisponible",esc(window._annResErr));
+  let regs=annuaireRegions();const ma=annuaireMaRegion();if(t==="reg")regs=regs.filter(r=>r.nom===ma);
+  if(!regs.length)return emptyState("Aucun groupe","Aucun groupe dans cette région pour l'instant.");
+  const P={};L.forEach(m=>(P[m.club_id]=P[m.club_id]||[]).push(m));const ids=new Set(regs.flatMap(r=>r.clubs.map(c=>c.id)));
+  const q=predMots(window._annQ||"");
+  if(q.length){const l=L.filter(m=>ids.has(m.club_id)).filter(m=>{const W=predMots([m.nom,m.metier,m.entreprise,m.activite,m.club,m.ville,m.region,m.fonction].join(" "));return q.every(x=>W.some(w=>w.startsWith(x)))});
+    return l.length?`<div class="an-n">${l.length} membre${l.length>1?"s":""} trouvé${l.length>1?"s":""}</div><div class="mb-grid">${l.map(m=>annuaireCarte(m,1)).join("")}</div>`:emptyState("Aucun membre","Aucun membre ne correspond à « "+esc(window._annQ)+" » "+(t==="reg"?"dans ta région. Essaie l'onglet Maroc.":"au Maroc."))}
+  const grp=(c,nom)=>{const g=(P[c.id]||[]).slice().sort((a,b)=>a.nom.localeCompare(b.nom)),nb=Math.max(g.length,clubNb(c)||0),a=anim(c.animId);
+    return `<details class="ar-g" name="${nom}"><summary><b>${esc(String(c.nom).replace(/^CAP\s+/,""))}</b><small>${esc([c.ville,a?"animé par "+a.nom:""].filter(Boolean).join(" · "))}</small><em>${nb}</em></summary>${g.length?`<div class="mb-grid">${g.map(m=>annuaireCarte(m)).join("")}</div>${nb>g.length?`<div class="an-vide">${nb-g.length} autre${nb-g.length>1?"s":""} membre${nb-g.length>1?"s":""} d'après le national, fiche${nb-g.length>1?"s":""} pas encore saisie${nb-g.length>1?"s":""}.</div>`:""}`:`<div class="an-vide">${nb?nb+" membre"+(nb>1?"s":"")+" d'après le national, fiches pas encore saisies.":"Pas encore de membre."}</div>`}</details>`};
+  const tot=r=>r.clubs.reduce((n,c)=>n+Math.max((P[c.id]||[]).length,clubNb(c)||0),0);
+  if(t==="reg"){const r=regs[0];return `<div class="an-n">${esc(r.nom)} · ${r.clubs.length} groupe${r.clubs.length>1?"s":""} · ${tot(r)} membre${tot(r)>1?"s":""}</div>`+r.clubs.map(c=>grp(c,"an-g")).join("")}
+  return `<div class="an-n">${regs.length} régions · ${ids.size} groupes · ${regs.reduce((n,r)=>n+tot(r),0)} membres</div>`+regs.map((r,i)=>`<details class="an-reg" name="an-reg"${r.nom===ma?" open":""}><summary><b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}</small><em>${tot(r)}</em></summary><div class="an-in">${r.clubs.map(c=>grp(c,"an-g"+i)).join("")}</div></details>`).join("")}
+function annuaireMaj(){const z=document.getElementById("an-res");if(z)z.innerHTML=annuaireCorps();document.querySelectorAll(".an-tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===(window._annT||"reg")))}
+function annuaireOnglet(t){window._annT=t;annuaireMaj()}
+function openAnnuaire(t){if(!SESSION||SESSION.role==="visiteur")return;if(t)window._annT=t;const ma=annuaireMaRegion();
+  document.getElementById("sheet-content").innerHTML=ficheHead({title:"Annuaire du réseau",ini:"📇",sub:"Tous les membres, par région puis par groupe"})+
+    `<div class="an-tabs" role="tablist">${ANN_TABS.map(([k,l])=>`<button type="button" data-t="${k}" onclick="annuaireOnglet('${k}')">${k==="reg"&&ma?"📍 "+esc(ma):l}</button>`).join("")}</div>
+    <input class="an-q" id="an-q" type="search" placeholder="Nom, métier, entreprise, ville…" value="${esc(window._annQ||"")}" oninput="window._annQ=this.value;annuaireMaj()" aria-label="Chercher un membre">
+    <div id="an-res"></div>`;
+  annuaireMaj();openSheet()}
 function annResFiche(id){
   const m=(window._annRes||[]).find(x=>x.id===id);if(!m)return;const tel=String(m.telephone||"").trim(),mail=String(m.email||"").trim(),site=String(m.site||"").trim();
   const l=(k,v)=>v?`<div class="drow"><div class="tx"><div class="k">${k}</div><div class="v">${v}</div></div></div>`:"";
@@ -5547,7 +5599,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -9051,7 +9103,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

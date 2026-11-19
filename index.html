@@ -2558,6 +2558,7 @@ body.lecture .ann-btn{display:none}
 .sea-b.fait i{background:#1E9E63;border-color:#1E9E63;color:#fff;opacity:1}
 .sea-b:hover{transform:translateY(-1px)}@media (prefers-reduced-motion:reduce){.sea-b:hover{transform:none}}
 @media (max-width:700px){.sea-e,.sea-e.trois{grid-template-columns:1fr}}
+/*v1.99.2*/@media(min-width:900px){.tel-seul{display:none}}@media(max-width:899px){.fab{display:none!important}.page-head .fab-in{white-space:nowrap}.page-head>.fab-in{margin-left:auto}.pc-seul{display:none}.grp .bo-go{display:flex;gap:6px;flex-wrap:wrap;width:100%}.grp .bo-go .btn{white-space:nowrap;flex:1 1 auto;padding-left:10px;padding-right:10px}}
 </style>
 </head>
 <body>
@@ -2665,8 +2666,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.99.1";
+const APP_VERSION="1.99.2";
 const CHANGELOG=[
+  {v:"1.99.2",date:"19 novembre 2026",notes:{"Modifié":["Au téléphone, le « + » flottant qui recouvrait le contenu est remplacé par un bouton avec son libellé en haut de la page (＋ Réunion, ＋ Lieu, ＋ Groupe, ＋ Animateur)"]}},
   {v:"1.99.1",date:"19 novembre 2026",notes:{"Corrigé":["La réunion du jour apparaît dans les bilans et les comptes rendus à saisir dès son heure de début (avant : seulement le lendemain)"]}},
   {v:"1.99.0",date:"19 novembre 2026",notes:{"Ajouté":["Mon groupe s\u2019ouvre sur la réunion du jour (ou la dernière à clôturer) : pointer les présents, faire le bilan, remercier les invités, dans l\u2019ordre et sans ouvrir la fiche","À la fin du pointage, un bouton mène directement au bilan","Boîte à outils : « Pointer les présents »"]}},
   {v:"1.98.0",date:"19 novembre 2026",notes:{"Ajouté":["Compte du CRM national par animateur : chacun branche le sien (Ma boîte à outils → Mon compte national, ou fiche d\u2019accès dans Équipe). L\u2019invitation d\u2019une réunion part alors au national avec son compte : son nom, sa photo, son carnet d\u2019adresses. Le mot de passe est rangé chiffré et ne s\u2019affiche plus jamais. Sans compte branché, rien ne change."]}},
@@ -4525,7 +4527,7 @@ function viewGroupe(){
   const choix=clubs.length>1&&(isWide()||window._reuTous||!mine.length)?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.acr.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
-  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 Ma boîte à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier en série</button></span></div>
+  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte</span><span class="tel-seul">Boîte</span> à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
     ${bascule}${choix}${grpSeance(c)}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
@@ -4903,6 +4905,12 @@ async function crEnregistrer(id){
 function isWide(){return window.matchMedia("(min-width:900px)").matches}
 let _wasWide=null;
 window.addEventListener("resize",()=>{const w=isWide();if(_wasWide!==null&&w!==_wasWide&&document.getElementById("view").innerHTML)render();_wasWide=w});
+/* v1.99.2 : au téléphone, plus de « + » flottant par-dessus le contenu : un bouton avec son libellé dans l'en-tête de la page. */
+const FAB_LIB={agenda:"Réunion",reunions:"Réunion",lieux:"Lieu",clubs:"Groupe",team:"Animateur"};
+function fabEntete(){const f=document.getElementById("fab"),v=document.getElementById("view");if(!f||!v)return;const old=v.querySelector(".fab-in");if(old)old.remove();
+  if(isWide()||f.classList.contains("hidden")||!FAB_LIB[tab])return;const h=v.querySelector(".page-head");if(!h)return;
+  const b=document.createElement("button");b.className="btn ghost mini fab-in";b.type="button";b.textContent="＋ "+FAB_LIB[tab];b.onclick=fabAction;(h.querySelector(".bo-go")||h).appendChild(b)}
+{const _rd=render;render=function(){const r=_rd.apply(this,arguments);try{fabEntete()}catch(e){}return r}}
 function fabAction(){
   if(readOnly()||tab==="dash"||tab==="membres")return;
   if(tab==="agenda"||tab==="reunions")openMeeting();

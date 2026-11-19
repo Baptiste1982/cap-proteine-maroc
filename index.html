@@ -2547,6 +2547,17 @@ body.lecture .ann-btn{display:none}
 .nc-pt.ok{background:#1E9E63}.nc-pt.ko{background:var(--crimson)}.nc-pt.att{background:#E0A01B}
 .nc-qui{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 8px;font-size:12.5px;color:var(--muted)}
 .nc-qui b{color:var(--ink)}
+/*v1.99 séance : pointer puis bilan, en tête de Mon groupe*/
+.sea{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--crimson);border-radius:18px;padding:14px;margin-bottom:12px;display:grid;gap:10px}
+.sea-h{display:flex;align-items:center;gap:10px}.sea-h>div{min-width:0}.sea-h b{display:block;font:700 16px/1.2 "Bricolage Grotesque",sans-serif;color:var(--ink)}.sea-h small{color:var(--muted);font-size:13px}
+.sea-e{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sea-e.trois{grid-template-columns:1fr 1fr 1fr}
+.sea-b{display:flex;align-items:center;gap:10px;text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font:inherit;min-height:64px}
+.sea-b i{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 14px Inter,sans-serif;font-style:normal;border:2px solid currentColor;opacity:.75}
+.sea-b span{min-width:0}.sea-b b{display:block;font-size:14.5px;line-height:1.2}.sea-b small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.sea-b.go{background:var(--crimson);border-color:var(--crimson);color:#fff}.sea-b.go small{color:rgba(255,255,255,.88)}.sea-b.go i{opacity:1}
+.sea-b.fait i{background:#1E9E63;border-color:#1E9E63;color:#fff;opacity:1}
+.sea-b:hover{transform:translateY(-1px)}@media (prefers-reduced-motion:reduce){.sea-b:hover{transform:none}}
+@media (max-width:700px){.sea-e,.sea-e.trois{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -2654,8 +2665,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.98.0";
+const APP_VERSION="1.99.0";
 const CHANGELOG=[
+  {v:"1.99.0",date:"19 novembre 2026",notes:{"Ajouté":["Mon groupe s\u2019ouvre sur la réunion du jour (ou la dernière à clôturer) : pointer les présents, faire le bilan, remercier les invités, dans l\u2019ordre et sans ouvrir la fiche","À la fin du pointage, un bouton mène directement au bilan","Boîte à outils : « Pointer les présents »"]}},
   {v:"1.98.0",date:"19 novembre 2026",notes:{"Ajouté":["Compte du CRM national par animateur : chacun branche le sien (Ma boîte à outils → Mon compte national, ou fiche d\u2019accès dans Équipe). L\u2019invitation d\u2019une réunion part alors au national avec son compte : son nom, sa photo, son carnet d\u2019adresses. Le mot de passe est rangé chiffré et ne s\u2019affiche plus jamais. Sans compte branché, rien ne change."]}},
   {v:"1.97.0",date:"19 novembre 2026",notes:{"Modifié":["Pointage : tout le monde sur le même écran — membres du groupe, invités, membres d\u2019autres groupes, équipe inscrite. Une personne n\u2019apparaît qu\u2019une fois, même si elle est membre et inscrite par le lien."]}},
   {v:"1.96.0",date:"19 novembre 2026",notes:{"Ajouté":["Pointage des invités : le jour de la réunion, bouton « Pointer les invités » dans la fiche. Une ligne par invité, un toucher pour Présent ou Absent, compteur en direct, ajout d\u2019une personne arrivée sans inscription, et « les restants sont présents / absents ». La présence apparaît ensuite dans la liste des invités, le bilan et le remerciement."]}},
@@ -3738,6 +3750,7 @@ function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB
     t("Ma réunion","🎬","Préparer mes slides",pro?"Réunion du "+quand+" : monter et projeter la présentation":"Aucune réunion planifiée : commence par en planifier une",pro?`presOuvrir('${pro.id}')`:"openPlanSerie()");
     t("Ma réunion","✉️","Inviter à ma réunion",pro?"Lien d'inscription, QR code et message WhatsApp prêts":"Le lien se crée sur la fiche de la réunion",pro?`openMeeting('${pro.id}')`:"openPlanSerie()");
     t("Ma réunion","📆","Planifier mes réunions","Toute la série d'un coup, au rythme du groupe","openPlanSerie()");
+    {const se=seanceDuGroupe(c);if(se)t("Ma réunion","✅","Pointer les présents",(se.jour?"Réunion d'aujourd'hui":"Réunion du "+dateLongue(dObj(se.m.date)))+" : qui est là, puis le bilan",`openPointage('${se.m.id}')`,se.jour?1:0)}
     t("Ma réunion","📝","Bilans et comptes rendus",bil?bil+" réunion"+(bil>1?"s":"")+" passée"+(bil>1?"s":"")+" à saisir":"Tout est à jour","openBilan()",bil);
     t("Mes membres","👥","Mes membres et leurs accès",mb.length?esp+" sur "+mb.length+" ont leur espace membre":"Pas encore de membre dans le groupe",`grpAller('${c.id}','membres')`);
     t("Mes membres","🔗","Lien d'adhésion du groupe","Le formulaire à envoyer à un futur membre",`adhWhatsAppClub('${c.id}')`);
@@ -4510,7 +4523,7 @@ function viewGroupe(){
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.acr.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 Ma boîte à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier en série</button></span></div>
-    ${bascule}${choix}
+    ${bascule}${choix}${grpSeance(c)}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
@@ -4519,6 +4532,21 @@ function viewGroupe(){
     </section>
     ${onglets}<div class="grp-corps">${corps}</div><div style="height:8px"></div></div>`;
 }
+/* v1.99 : la séance à traiter, en tête de Mon groupe. La réunion d'aujourd'hui, sinon la dernière réunion passée sans bilan :
+   pointer les présents, faire le bilan, remercier les invités, dans l'ordre, sans ouvrir la fiche de la réunion. */
+function seanceDuGroupe(c){if(!c||readOnly()||(SESSION&&SESSION._voir))return null;const auj=isoJour(TODAY);
+  const l=DB.reunions.filter(r=>r.clubId===c.id&&r.statut!=="annulee"&&r.statut!=="archivee"&&canEditReunion(r));
+  const jour=l.find(r=>r.date===auj);if(jour)return{m:jour,jour:true};
+  const att=l.filter(r=>r.date<auj&&(r.statut==="planifiee"||r.statut==="confirmee")).sort((a,b)=>b.date.localeCompare(a.date));
+  return att.length?{m:att[0],jour:false,autres:att.length-1}:null}
+function grpSeance(c){const se=seanceDuGroupe(c);if(!se)return"";const m=se.m,d=dObj(m.date),p=ptCompte(m),fait=m.statut==="realisee",inv=(m.guests||[]).filter(g=>g.statut!=="Non intéressé").length;
+  const ptOk=p.n>0&&p.reste===0,et=(n,cls,act,ti,sous,id)=>`<button class="sea-b ${cls}" ${id?`id="${id}"`:""} onclick="${act}"><i>${cls.includes("fait")?"✓":n}</i><span><b>${ti}</b><small>${sous}</small></span></button>`;
+  return `<section class="sea" id="sea"><div class="sea-h"><span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span><div><b>${se.jour?"Ta réunion d'aujourd'hui":"Réunion à clôturer"}</b><small>${esc(typeLib(m))} du ${esc(dateLongue(d))}${m.heure?" · "+esc(m.heure):""}${se.autres?` · et ${se.autres} autre${se.autres>1?"s":""} sans bilan`:""}</small></div></div>
+    <div class="sea-e${inv?" trois":""}">
+      ${et(1,ptOk?"fait":fait?"":"go",`openPointage('${m.id}')`,"Pointer les présents",p.n?`${p.ok} présent${p.ok>1?"s":""} sur ${p.n}${p.reste?` · ${p.reste} à pointer`:""}`:"Personne d'inscrit : ajoute ceux qui arrivent","sea-pt")}
+      ${et(2,fait?"fait":ptOk?"go":"",`openBilan('${m.id}')`,fait?"Bilan saisi":"Faire le bilan",fait?"Tu peux le compléter":"Chiffres de la réunion et compte rendu","sea-bil")}
+      ${inv?et(3,"",`openRemercier('${m.id}')`,"Remercier les invités",`${inv} invité${inv>1?"s":""} · message WhatsApp prêt`,"sea-mer"):""}
+    </div></section>`}
 function grpStat(v,l,sub,cls,act){return `<${act?"button":"div"} class="grp-st ${cls||""}" ${act?`onclick="${act}"`:""}><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</${act?"button":"div"}>`}
 function grpMoisSerie(D){
   const out=[];for(let i=11;i>=0;i--){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()-i,1);const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
@@ -9460,7 +9488,7 @@ function openPointage(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;
     <div class="pt-l" id="pt-l">${ptCorps(mid)}</div>
     <div class="pt-plus"><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
     <div class="pt-lot" id="pt-lot"></div>
-    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button><button class="btn" onclick="closeSheet()">Terminé</button></div>`;
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button>${m.statut==="realisee"?`<button class="btn" onclick="closeSheet()">Terminé</button>`:`<button class="btn" id="pt-bilan" onclick="openBilan('${mid}')">Faire le bilan →</button>`}</div>`;
   ptLot(mid);openSheet();ptVisiteurs(mid)}
 /* Les membres d'autres groupes qui ont répondu « je viens » depuis leur espace : lus une fois, ajoutés à la liste. */
 async function ptVisiteurs(mid){window._ptVis=window._ptVis||{};if(window._ptVis[mid])return;

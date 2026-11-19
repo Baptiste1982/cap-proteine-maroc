@@ -402,6 +402,18 @@ a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(6
 /*v1.86 loisirs*/
 .lo-chips{display:flex;flex-wrap:wrap;gap:6px}.lo-chips span{padding:5px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600}
 .lo-chips span.com{background:#1E9E63;border-color:#1E9E63;color:#fff}.lo-com{margin:0;font-size:13.5px;color:var(--muted)}.lo-com b{color:var(--ink)}
+/*v1.94 chaleur d'une recommandation : du froid (1) au chaud (5)*/
+.chaleurs{position:relative;padding-top:12px}
+.chaleurs::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:9px;background:linear-gradient(90deg,#3F7FD1,#22A6A0,#E0A01B,#EE7A22,#D81B3F)}
+.chx:nth-child(1),.chaleur.c1{--cc:#3F7FD1}.chx:nth-child(2),.chaleur.c2{--cc:#22A6A0}.chx:nth-child(3),.chaleur.c3{--cc:#E0A01B}.chx:nth-child(4),.chaleur.c4{--cc:#EE7A22}.chx:nth-child(5),.chaleur.c5{--cc:#D81B3F}
+.chaleurs .chx span{border-bottom:4px solid var(--cc)}
+.chaleurs .chx span b{color:var(--cc)}
+.chaleurs .chx input:checked+span,html.dark .chaleurs .chx input:checked+span{background:var(--cc);border-color:var(--cc);color:#fff}
+.chaleurs .chx input:checked+span b{color:#fff}
+.chaleurs .chx:nth-child(3) input:checked+span,.chaleurs .chx:nth-child(3) input:checked+span b,html.dark .chaleurs .chx:nth-child(3) input:checked+span{color:#1B1416}
+.chaleurs .chx input:focus-visible+span{outline-color:var(--cc)}
+span.chaleur{display:inline-flex;align-items:center;gap:5px;background:var(--cc);color:#fff;border-radius:99px;padding:3px 10px;font-weight:700}
+span.chaleur.c3{color:#1B1416}
 </style>
 </head>
 <body>

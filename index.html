@@ -2494,6 +2494,35 @@ body.lecture .ann-btn{display:none}
 .chals button.on{background:var(--cc);border-color:var(--cc);color:#fff}
 .chals button.on b{color:#fff}
 .chals .c3.on,.chals .c3.on b,.chals .c4.on,.chals .c4.on b{color:#1B1416}
+/*v1.96 pointage des invités*/
+.g-venu{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#1E9E63;color:#fff;font-size:10.5px;font-weight:700;vertical-align:middle;white-space:nowrap}
+.g-venu.non{background:rgba(127,127,127,.28);color:var(--muted)}
+.pt-k{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 8px}
+.pt-k span{display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;font-size:12px;color:var(--muted)}
+.pt-k b{font:700 24px "Bricolage Grotesque",sans-serif;color:var(--ink);line-height:1.05}
+.pt-k .ok{border-color:#1E9E63}.pt-k .ok b{color:#1E9E63}
+.pt-bar{height:6px;border-radius:9px;background:rgba(127,127,127,.2);overflow:hidden;margin-bottom:12px}
+.pt-bar i{display:block;height:100%;background:#1E9E63;border-radius:9px;transition:width .35s}
+.pt-l{display:flex;flex-direction:column;gap:8px}
+.pt-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border:1px solid var(--line);border-left:5px solid var(--line);border-radius:14px;transition:border-color .2s,background .2s}
+.pt-r[hidden]{display:none}
+.pt-r.ok{border-color:#1E9E63;background:rgba(30,158,99,.09)}
+.pt-r.non{opacity:.62}
+.pt-n{flex:1 1 150px;min-width:0;display:flex;flex-direction:column}
+.pt-n b{font-size:15px}
+.pt-n small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.pt-b{display:inline-flex;gap:6px;flex:none}
+.pt-b button{min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 13.5px Inter,sans-serif;cursor:pointer;transition:transform .12s,background .2s}
+.pt-b button:active{transform:scale(.95)}
+.pt-b .p.on{background:#1E9E63;border-color:#1E9E63;color:#fff}
+.pt-b .a.on{background:rgba(127,127,127,.3);border-color:transparent;color:var(--ink)}
+.pt-plus{display:flex;gap:8px;margin-top:12px}
+.pt-plus input{flex:1;min-width:0;padding:11px 12px;border:1px dashed var(--line);border-radius:12px;background:transparent;color:var(--ink);font:inherit}
+.pt-plus .btn{flex:none;white-space:nowrap}
+.pt-lot{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pt-fin{color:#1E9E63;font-weight:700;font-size:13.5px}
+@media (max-width:480px){.pt-r{padding:8px 10px;gap:6px 8px}.pt-n{flex:1 1 110px}.pt-n b{font-size:14px}.pt-b{gap:5px}.pt-b button{padding:0 10px;font-size:13px}}
+@media (prefers-reduced-motion:reduce){.pt-bar i,.pt-r,.pt-b button{transition:none}}
 </style>
 </head>
 <body>
@@ -2601,8 +2630,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.95.1";
+const APP_VERSION="1.96.0";
 const CHANGELOG=[
+  {v:"1.96.0",date:"19 novembre 2026",notes:{"Ajouté":["Pointage des invités : le jour de la réunion, bouton « Pointer les invités » dans la fiche. Une ligne par invité, un toucher pour Présent ou Absent, compteur en direct, ajout d\u2019une personne arrivée sans inscription, et « les restants sont présents / absents ». La présence apparaît ensuite dans la liste des invités, le bilan et le remerciement."]}},
   {v:"1.95.1",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une recommandation s\u2019affiche sur deux lignes : les noms en entier, puis la chaleur et l\u2019état."]}},
   {v:"1.95.0",date:"19 novembre 2026",notes:{"Ajouté":["La chaleur des recommandations (1 à 5, du rouge au vert) s\u2019affiche dans le CRM : listes des recommandations, affaires du groupe, fiche membre. Elle se règle aussi depuis la fiche d\u2019une affaire."]}},
   {v:"1.94.2",date:"19 novembre 2026",notes:{"Corrigé":["Chaleur des recommandations : les cinq étiquettes ont la même hauteur, alignées."]}},
@@ -5999,11 +6029,11 @@ function meetingDetail(m,editable){
   const guests=m.guests||[];
   const gvl=guestVue()==="liste";
   const guestsHtml=guests.length&&gvl?`<div class="gl">${guests.map((g,i)=>{const t=String(g.tel||"").replace(/[^\d+]/g,"");return `<div class="gl-r" data-gi="${esc(g._id||"")}" title="${esc([g.entreprise,g.metier,g.par?"invité par "+g.par:"",g.note].filter(Boolean).join(" · "))}">
-      <span class="gl-n"><b>${esc(g.nom)}</b><small>${t?`<a class="gl-t" href="tel:${esc(t)}">${esc(telAff(g.tel))}</a>${g.entreprise||g.metier?" · ":""}`:""}${esc(g.entreprise||g.metier||"")}</small></span>
+      <span class="gl-n"><b>${esc(g.nom)}${ptBadge(g)}</b><small>${t?`<a class="gl-t" href="tel:${esc(t)}">${esc(telAff(g.tel))}</a>${g.entreprise||g.metier?" · ":""}`:""}${esc(g.entreprise||g.metier||"")}</small></span>
       <select class="gstat gl-s" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select></div>`}).join("")}</div>`
   :guests.length?guests.map((g,i)=>`
     <div class="guest" data-gi="${esc(g._id||"")}"><div class="gav">${initiales(g.nom)}</div>
-      <div class="gi"><b>${esc(g.nom)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel?telAff(g.tel):"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
+      <div class="gi"><b>${esc(g.nom)}${ptBadge(g)}${g.parMembre?` <span class="g-mb" title="Proposé depuis l'espace membre">espace membre</span>`:""}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||"")}${g.entreprise||g.metier?" · ":""}${esc(g.tel?telAff(g.tel):"—")}${g.par?" · invité par "+esc(g.par):""}</small>${g.note?`<small style="font-style:italic">« ${esc(g.note)} »</small>`:""}</div>
       <select class="gstat" ${editable?"":"disabled"} onchange="setGuestStatut('${m.id}',${i},this.value)">${GUEST_STATUTS.map(s=>`<option ${g.statut===s?"selected":""}>${s}</option>`).join("")}</select>
       ${editable?`<button class="gstat" title="Convertir en membre du club" style="color:var(--crimson-txt,var(--crimson));font-weight:700" onclick="convertGuest('${m.id}',${i})">→ membre</button>`:""}
       ${editable?invRelanceBtn(m,g,i):""}
@@ -6023,6 +6053,7 @@ function meetingDetail(m,editable){
       <select onchange="setReunionStatut('${m.id}',this.value)">${Object.keys(STATUTS).map(s=>`<option value="${s}" ${m.statut===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>`:""}
     ${bilanBloc(m,editable)}
     ${presencesBloc(m,editable)}
+    ${ptBloc(m,editable)}
     ${crBloc(m,editable)}
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -9185,7 +9216,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -9299,6 +9330,46 @@ function openRemercier(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return
       <p class="fh-note">Repères : ${SUIVI_REPERES.map(([k,l])=>`<code>{${k}}</code> ${l}`).join(" · ")}</p>
       <div class="emb-2"><button class="btn ghost mini" onclick="suiviGarder()">Garder comme modèle</button><button class="btn ghost mini" onclick="suiviOrigine('${mid}')">Revenir au texte d'origine</button>${L[0]?`<button class="btn ghost mini" onclick="suiviApercu('${mid}',${L[0].i})">Aperçu pour ${esc(String(L[0].g.nom).split(/\s+/)[0])}</button>`:""}</div></details>`:""}
     <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
+/* v1.96 : pointage des invités — le jour de la réunion (et après), une ligne par invité, un toucher = présent ou absent.
+   La présence est dans invites.venu (vrai | faux | vide), la même que celle du remerciement et du bilan. */
+function ptPeut(m){try{return !!m&&m.statut!=="annulee"&&m.date<=isoJour(TODAY)&&canEditReunion(m)&&!readOnly()&&!(SESSION&&SESSION._voir)}catch(e){return false}}
+function ptListe(m){return (m.guests||[]).map((g,i)=>({g,i})).filter(x=>x.g.statut!=="Non intéressé").sort((a,b)=>String(a.g.nom).localeCompare(String(b.g.nom)))}
+function ptCompte(m){const L=ptListe(m),ok=L.filter(x=>x.g.venu===true).length,non=L.filter(x=>x.g.venu===false).length;return{n:L.length,ok,non,reste:L.length-ok-non}}
+function ptBadge(g){return g.venu===true?` <span class="g-venu">✓ présent</span>`:g.venu===false?` <span class="g-venu non">absent</span>`:""}
+function ptBloc(m,editable){if(!editable||!ptPeut(m))return"";const c=ptCompte(m),jour=m.date===isoJour(TODAY);
+  return `<button class="btn${c.reste||!c.n?"":" ghost"}" id="pt-ouvrir" style="margin-top:10px;width:100%" onclick="openPointage('${m.id}')">✅ Pointer les invités${c.n?` · ${c.ok} présent${c.ok>1?"s":""} sur ${c.n}`:""}${jour&&c.reste?" · c'est aujourd'hui":""}</button>`}
+function ptTete(m){const c=ptCompte(m),pct=c.n?Math.round((c.ok+c.non)/c.n*100):0;
+  return `<div class="pt-k"><span class="ok"><b>${c.ok}</b>présent${c.ok>1?"s":""}</span><span class="non"><b>${c.non}</b>absent${c.non>1?"s":""}</span><span><b>${c.reste}</b>à pointer</span></div><div class="pt-bar"><i style="width:${pct}%"></i></div>`}
+function ptLigne(mid,x){const g=x.g;return `<div class="pt-r${g.venu===true?" ok":g.venu===false?" non":""}" data-pt="${x.i}" data-q="${esc(mbNorm([g.nom,g.entreprise,g.metier].join(" ")))}"><div class="pt-n"><b>${esc(String(g.nom).replace(/\.+$/,""))}</b><small>${esc([g.entreprise,g.metier].filter(Boolean).join(" · ")||(g.par?"invité par "+g.par:"Invité"))}</small></div>
+    <div class="pt-b" role="group" aria-label="Présence de ${esc(g.nom)}"><button type="button" class="p${g.venu===true?" on":""}" aria-pressed="${g.venu===true}" onclick="ptNoter('${mid}',${x.i},true)">✓ Présent</button><button type="button" class="a${g.venu===false?" on":""}" aria-pressed="${g.venu===false}" onclick="ptNoter('${mid}',${x.i},false)">Absent</button></div></div>`}
+function openPointage(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!ptPeut(m)){toast("Le pointage s'ouvre le jour de la réunion","w");return}
+  const c=club(m.clubId)||{},d=dObj(m.date),L=ptListe(m);window._ptQ="";
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Pointage des invités",sub:`${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${typeLib(m)} du ${dateLongue(d)}`})}
+    <div id="pt-tete">${ptTete(m)}</div>
+    ${L.length>6?`<input class="an-q" id="pt-q" type="search" placeholder="Chercher un invité…" oninput="ptFiltrer(this.value)" aria-label="Chercher un invité">`:""}
+    <div class="pt-l" id="pt-l">${L.length?L.map(x=>ptLigne(mid,x)).join(""):`<p class="fh-empty">Aucun invité inscrit. Ajoute ceux qui arrivent, juste en dessous.</p>`}</div>
+    <div class="pt-plus"><input id="pt-nom" maxlength="80" placeholder="Arrivé sans inscription" aria-label="Ajouter une personne arrivée sans inscription" onkeydown="if(event.key==='Enter')ptAjouter('${mid}')"><button class="btn mini" onclick="ptAjouter('${mid}')">＋ Présent</button></div>
+    <div class="pt-lot" id="pt-lot"></div>
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="openMeeting('${mid}')">← La réunion</button><button class="btn" onclick="closeSheet()">Terminé</button></div>`;
+  ptLot(mid);openSheet()}
+function ptLot(mid){const m=DB.reunions.find(x=>x.id===mid),z=document.getElementById("pt-lot");if(!m||!z)return;const c=ptCompte(m);
+  z.innerHTML=c.reste?`<button class="btn ghost mini" onclick="ptReste('${mid}',true,this)">Les ${c.reste} restants sont présents</button><button class="btn ghost mini" onclick="ptReste('${mid}',false,this)">Les ${c.reste} restants sont absents</button>`:c.n?`<span class="pt-fin">✓ Tout le monde est pointé</span>`:""}
+function ptMaj(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const t=document.getElementById("pt-tete");if(t)t.innerHTML=ptTete(m);
+  document.querySelectorAll("#pt-l .pt-r").forEach(r=>{const g=m.guests[Number(r.dataset.pt)];if(!g)return;r.classList.toggle("ok",g.venu===true);r.classList.toggle("non",g.venu===false);
+    const p=r.querySelector(".p"),a=r.querySelector(".a");p.classList.toggle("on",g.venu===true);p.setAttribute("aria-pressed",g.venu===true);a.classList.toggle("on",g.venu===false);a.setAttribute("aria-pressed",g.venu===false)});ptLot(mid)}
+async function ptNoter(mid,i,oui){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const av=g.venu,v=g.venu===oui?null:oui;g.venu=v;ptMaj(mid);
+  const {error}=await sb.from("invites").update({venu:v}).eq("id",g._id);if(error){g.venu=av;ptMaj(mid);toast(rlsMsg(error),"e")}}
+async function ptReste(mid,oui,btn){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : "+btn.textContent.toLowerCase();btn.classList.remove("ghost");return}
+  const R=ptListe(m).filter(x=>x.g.venu==null);if(!R.length)return;btn.disabled=true;
+  const {error}=await sb.from("invites").update({venu:oui}).in("id",R.map(x=>x.g._id));if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
+  R.forEach(x=>x.g.venu=oui);ptMaj(mid);toast(R.length+" invité"+(R.length>1?"s":"")+" noté"+(R.length>1?"s":"")+" "+(oui?"présent":"absent")+(R.length>1?"s":""))}
+async function ptAjouter(mid){const z=document.getElementById("pt-nom"),nom=(z&&z.value||"").trim();if(!nom){toast("Écris son prénom et son nom","w");if(z)z.focus();return}
+  const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const d=invMeme(m,nom,"");
+  if(d){const i=m.guests.indexOf(d);if(i>=0&&d.venu!==true){await ptNoter(mid,i,true);toast(d.nom+" était déjà inscrit : noté présent")}else toast(d.nom+" est déjà dans la liste");z.value="";return}
+  const {data,error}=await sb.from("invites").insert({reunion_id:mid,nom,tel:"",invite_par:"Sur place",statut:"Intéressé",venu:true}).select().single();
+  if(error){toast(/déjà inscrit/.test(error.message||"")?error.message:rlsMsg(error),"e");return}
+  m.guests=m.guests||[];m.guests.push(mapGuest(data));toast(nom+" ajouté et noté présent");openPointage(mid)}
+function ptFiltrer(q){const t=predMots(q);document.querySelectorAll("#pt-l .pt-r").forEach(r=>{const W=predMots(r.dataset.q||"");r.hidden=!t.every(x=>W.some(w=>w.startsWith(x)))})}
 function suiviTexte(){const t=document.getElementById("sv-txt");return (t&&t.value.trim())||window._svTpl||suiviModele()}
 async function suiviVenu(mid,i,oui){const m=DB.reunions.find(x=>x.id===mid),g=m&&m.guests[i];if(!g)return;const v=g.venu===oui?null:oui;
   const {error}=await sb.from("invites").update({venu:v}).eq("id",g._id);if(error){toast(rlsMsg(error),"e");return}g.venu=v;openRemercier(mid)}

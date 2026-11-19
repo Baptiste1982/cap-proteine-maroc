@@ -2484,7 +2484,9 @@ body.lecture .ann-btn{display:none}
 .chal b{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.28);font-size:11px}
 .chal i{font-style:normal}
 .chal.c3,.chal.c4{color:#1B1416}
-@media (max-width:600px){.chal i{display:none}.chal{padding:3px 4px}}
+@media (max-width:600px){.rank-row:has(.reco-st){flex-wrap:wrap;row-gap:8px}.rank-row:has(.reco-st) .rn{flex:1 1 100%;min-width:0}.rank-row:has(.reco-st) .rn,.rank-row:has(.reco-st) .rn small{white-space:normal;overflow:visible;text-overflow:clip}.rank-row:has(.reco-st) .reco-st{white-space:normal}}
+.grp-corps .rank-row:has(.reco-st){flex-wrap:wrap;row-gap:8px}.grp-corps .rank-row:has(.reco-st) .rn{flex:1 1 100%;min-width:0}.grp-corps .rank-row:has(.reco-st) .rn,.grp-corps .rank-row:has(.reco-st) .rn small{white-space:normal;overflow:visible;text-overflow:clip}
+@media (max-width:899px){.page.grp{padding-bottom:96px}}
 .chals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;position:relative;padding-top:12px}
 .chals::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:9px;background:linear-gradient(90deg,#D81B3F,#EE7A22,#E0A01B,#7DB83A,#1E9E63)}
 .chals button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;min-height:70px;padding:8px 3px;border:1px solid var(--line);border-bottom:4px solid var(--cc);border-radius:10px;background:transparent;color:var(--muted);font:500 10.5px/1.15 Inter,sans-serif;text-align:center;cursor:pointer}
@@ -2599,8 +2601,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.95.0";
+const APP_VERSION="1.95.1";
 const CHANGELOG=[
+  {v:"1.95.1",date:"19 novembre 2026",notes:{"Corrigé":["Au téléphone, une recommandation s\u2019affiche sur deux lignes : les noms en entier, puis la chaleur et l\u2019état."]}},
   {v:"1.95.0",date:"19 novembre 2026",notes:{"Ajouté":["La chaleur des recommandations (1 à 5, du rouge au vert) s\u2019affiche dans le CRM : listes des recommandations, affaires du groupe, fiche membre. Elle se règle aussi depuis la fiche d\u2019une affaire."]}},
   {v:"1.94.2",date:"19 novembre 2026",notes:{"Corrigé":["Chaleur des recommandations : les cinq étiquettes ont la même hauteur, alignées."]}},
   {v:"1.94.1",date:"19 novembre 2026",notes:{"Modifié":["Chaleur des recommandations : le dégradé va du rouge (1, simple piste) au vert (5, prêt à signer)."]}},

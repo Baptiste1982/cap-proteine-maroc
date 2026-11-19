@@ -6,7 +6,8 @@
 //        et la liste des membres. Contrat marqué signé, ou sorti de l'attente avec l'entreprise devenue membre
 //        → national.signe_le, et notification aux superadmins. Sinon, l'état de signature est noté.
 // Appel : session superadmin (bouton du CRM) ou en-tête x-suivi-jeton (coffre : national_suivi_jeton, appel programmé).
-// Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT / CAP_NATIONAL_MOT_DE_PASSE.
+// Identifiants du national : le compte de l'animateur du groupe s'il l'a branché (table national_comptes, mot de passe dans le coffre),
+// sinon le compte commun (secrets CAP_NATIONAL_IDENTIFIANT / CAP_NATIONAL_MOT_DE_PASSE).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
 
@@ -34,10 +35,10 @@ class National {
     if (!j?.succes) throw new Error(`${path} : refusé par le national${j?.message ? ' — ' + j.message : ''}`);
     return j;
   }
-  async connexion() {
+  async connexion(c?: { login: string; password: string; nom?: string } | null) {
     await this.req('GET', '/');
-    const r = await this.req('POST', '/connexion/extranet', { login: Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', password: Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '', autoConnect: 'true' });
-    if (!/Déconnexion/.test(await r.text())) throw new Error('Connexion au CRM national refusée (identifiants à vérifier dans les secrets).');
+    const r = await this.req('POST', '/connexion/extranet', { login: c ? c.login : Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', password: c ? c.password : Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '', autoConnect: 'true' });
+    if (!/Déconnexion/.test(await r.text())) throw new Error(c ? `Le national refuse la connexion avec le compte de ${c.nom || "l'animateur"} : identifiant ou mot de passe à remettre.` : 'Connexion au CRM national refusée (identifiants à vérifier dans les secrets).');
   }
   // Liste DataTables lue comme la page du national : on ouvre l'écran, puis on demande ses lignes.
   async liste(index: string, liste: string, colonnes: string[], nb = 500) {
@@ -49,6 +50,43 @@ class National {
     const v = Object.values(j.response || {}).find(x => x && typeof x === 'object') as any;
     return (Array.isArray(v) ? v : Object.values(v || {})) as any[];
   }
+}
+
+// Compte national d'un animateur (mot de passe lu dans le coffre), ou null s'il n'en a pas branché.
+async function compteAnim(admin: any, animId: string | null) {
+  if (!animId) return null;
+  const { data } = await admin.rpc('cap_national_compte_secret', { p_anim: animId });
+  if (!data?.identifiant || !data?.mdp) return null;
+  const { data: a } = await admin.from('animateurs').select('nom').eq('id', animId).single();
+  return { login: String(data.identifiant), password: String(data.mdp), nom: String(a?.nom || "l'animateur"), animId };
+}
+// Session au national pour un groupe : avec le compte de son animateur s'il est branché, sinon le compte commun.
+// L'état de la connexion est noté sur son compte ; au premier refus, les superadmins sont prévenus.
+async function sessionPour(admin: any, animId: string | null): Promise<{ N: National; compte: string | null; nom: string }> {
+  const c = await compteAnim(admin, animId); const N = new National();
+  if (!c) { await N.connexion(); return { N, compte: null, nom: '' }; }
+  try {
+    await N.connexion(c);
+    await admin.from('national_comptes').update({ ok_le: new Date().toISOString(), erreur: null, erreur_le: null }).eq('animateur_id', c.animId);
+  } catch (e) {
+    const { data: av } = await admin.from('national_comptes').select('erreur').eq('animateur_id', c.animId).single();
+    await admin.from('national_comptes').update({ erreur: 'Le national refuse la connexion : identifiant ou mot de passe à remettre.', erreur_le: new Date().toISOString() }).eq('animateur_id', c.animId);
+    if (!av?.erreur) await pousser(admin, '🔐 Compte national à rebrancher', `${c.nom} : le national refuse la connexion.`, '/?comptenat=' + c.animId, 'natc-' + c.animId);
+    throw e;
+  }
+  return { N, compte: c.animId, nom: c.nom };
+}
+// Inscrits de plusieurs réunions : chaque invitation est lue avec le compte qui l'a créée (national.compte, vide = compte commun).
+async function inscritsTous(admin: any, rs: any[]) {
+  const S = new Map<string, National | null>(); const out: any[] = [];
+  for (const r of rs || []) {
+    const k = String(r?.national?.compte || '');
+    if (!S.has(k)) { try { S.set(k, (await sessionPour(admin, k || null)).N); } catch { S.set(k, null); } }
+    const N = S.get(k);
+    if (!N) { out.push({ reunion_id: r.id, erreur: 'connexion au national refusée' }); continue; }
+    try { out.push({ reunion_id: r.id, ...(await inscritsSync(admin, N, r)) }); } catch (e) { out.push({ reunion_id: r.id, erreur: String((e as Error).message || e) }); }
+  }
+  return out;
 }
 
 // Invitations du national (liste « Gestion de mes invitations »), la plus récente d'abord.
@@ -146,35 +184,47 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL')!, service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, anon = Deno.env.get('SUPABASE_ANON_KEY')!;
   const admin = createClient(url, service);
   try {
-    let ok = false;
+    let ok = false, moiAnim: string | null = null;
     const jeton = req.headers.get('x-suivi-jeton');
     if (jeton) { const { data } = await admin.rpc('cap_national_jeton_ok', { p: jeton }); ok = data === true; }
     if (!ok) {
       const caller = createClient(url, anon, { global: { headers: { Authorization: req.headers.get('Authorization') || '' } } });
       const { data: { user } } = await caller.auth.getUser();
-      if (user) { const { data: p } = await admin.from('profiles').select('role').eq('id', user.id).single(); ok = p?.role === 'superadmin'; }
+      if (user) { const { data: p } = await admin.from('profiles').select('role, animateur_id').eq('id', user.id).single(); ok = p?.role === 'superadmin'; moiAnim = p?.animateur_id || null; }
     }
-    if (!ok) return json({ error: 'Non autorisé' }, 401);
-
     const body = await req.json().catch(() => ({}));
+    // Un animateur peut tester SON compte national ; tout le reste est réservé au super admin ou à l'appel programmé.
+    if (!ok && !(body.action === 'compte_tester' && moiAnim && String(body.animateur_id) === moiAnim)) return json({ error: 'Non autorisé' }, 401);
+
+    if (body.action === 'compte_tester') {
+      // Essai du compte national d'un animateur : connexion, puis ce qu'il a là-bas pour créer une invitation (modèles, lieux).
+      const animId = String(body.animateur_id || '');
+      if (!(await compteAnim(admin, animId))) return json({ ok: false, error: 'Aucun compte national enregistré pour cet animateur.' });
+      try {
+        const { N: Nt } = await sessionPour(admin, animId);
+        const invs = await invitationsListe(Nt);
+        const uniq = (k: string) => [...new Set(invs.map(x => String(x[k] || '').trim()).filter(Boolean))];
+        const infos = { invitations: invs.length, lieux: uniq('nomHote'), types: uniq('libelleType'), teste_le: new Date().toISOString() };
+        await admin.from('national_comptes').update({ infos }).eq('animateur_id', animId);
+        return json({ ok: true, infos });
+      } catch (e) { return json({ ok: false, error: String((e as Error).message || e) }); }
+    }
     if (body.action === 'inscrits') {
       // Inscrits d'une réunion (ou de toutes les réunions à venir qui ont une invitation) rapatriés dans les invités.
-      const N0 = new National(); await N0.connexion();
       let q = admin.from('reunions').select('id, date, national').not('national', 'is', null);
       q = body.reunion_id ? q.eq('id', body.reunion_id) : q.gte('date', new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10));
-      const { data: rs } = await q; const out: any[] = [];
-      for (const r of rs || []) out.push({ reunion_id: r.id, ...(await inscritsSync(admin, N0, r)) });
-      return json({ ok: true, reunions: out });
+      const { data: rs } = await q;
+      return json({ ok: true, reunions: await inscritsTous(admin, rs || []) });
     }
     if (body.action === 'regarder') {
       // Lecture seule d'une page du national, morceaux autour d'un motif (pour relever la navigation).
-      const N0 = new National(); await N0.connexion();
+      const N0 = (await sessionPour(admin, body.animateur_id ? String(body.animateur_id) : null)).N;
       const t = await (await N0.req('GET', String(body.page || '/connexion/extranet'))).text();
       return json({ ok: true, morceaux: [...t.matchAll(new RegExp(String(body.motif), 'g'))].slice(0, 6).map(m => t.slice(Math.max(0, m.index! - 200), m.index! + 700)) });
     }
     if (body.action === 'champs') {
       // Lecture seule : liste des champs de formulaire d'une page (nom, id, type, valeur, options d'une liste).
-      const N0 = new National(); await N0.connexion();
+      const N0 = (await sessionPour(admin, body.animateur_id ? String(body.animateur_id) : null)).N;
       const t = await (await N0.req('GET', String(body.page || '/'))).text();
       const at = (tag: string, a: string) => (tag.match(new RegExp(`\\s${a}="([^"]*)"`)) || [])[1] ?? '';
       const champs: any[] = [];
@@ -185,7 +235,7 @@ Deno.serve(async (req) => {
     }
     if (body.action === 'lister') {
       // Lecture seule d'une liste DataTables du national (ex. /invitation + /invitation/lister).
-      const N0 = new National(); await N0.connexion();
+      const N0 = (await sessionPour(admin, body.animateur_id ? String(body.animateur_id) : null)).N;
       await N0.req('GET', String(body.index));
       const nb = Number(body.nb) || 20, f: Record<string, string> = { draw: '1', start: '0', length: String(nb), 'search[value]': '', 'search[regex]': 'false', 'order[0][column]': '1', 'order[0][dir]': 'desc' };
       (body.colonnes || []).map(String).forEach((c: string, i: number) => Object.assign(f, { [`columns[${i}][data]`]: c, [`columns[${i}][name]`]: c, [`columns[${i}][searchable]`]: c ? 'true' : 'false', [`columns[${i}][orderable]`]: c ? 'true' : 'false', [`columns[${i}][search][value]`]: '', [`columns[${i}][search][regex]`]: 'false' }));
@@ -196,23 +246,27 @@ Deno.serve(async (req) => {
       // Nouvelle invitation au national à partir d'une existante (comme « Rédiger une nouvelle invitation à partir de celle-ci »).
       // Entrée : source (n° d'invitation), dateDebut / dateFin (« JJ/MM/AAAA à HH:MM »), dateReponse / dateRelance / dateRappel (« JJ/MM/AAAA »),
       // theme, idHote, idType facultatifs ; essai:true = rien n'est écrit, on renvoie ce qui serait envoyé.
-      const N0 = new National(); await N0.connexion();
+      const N0 = (await sessionPour(admin, body.animateur_id ? String(body.animateur_id) : null)).N;
       return json(await invitationEcrire(N0, body));
     }
     if (body.action === 'invitation_reunion') {
       // Invitation au national pour une réunion de notre CRM (création, ou mise à jour des dates si elle existe déjà).
       // Modèle : la dernière invitation du national du même type (SI → Réunion d'information, RL → Réunion de lancement).
-      const { data: r, error: e1 } = await admin.from('reunions').select('id, type, format, theme, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
+      const { data: r, error: e1 } = await admin.from('reunions').select('id, club_id, animateur_id, type, format, theme, date, heure, statut, lieu_id, national').eq('id', body.reunion_id).single();
       if (e1 || !r) throw new Error('Réunion introuvable');
       if (r.statut === 'annulee') throw new Error('Réunion annulée : pas d\'invitation.');
       const { data: l } = r.lieu_id ? await admin.from('lieux').select('nom').eq('id', r.lieu_id).single() : { data: null };
-      const N0 = new National(); await N0.connexion();
+      // Compte : une invitation existante reste dans le compte qui l'a créée ; une nouvelle (ou refaire:true) part dans celui de l'animateur.
+      const nat = r.national || {};
+      const garder = !!nat.invitation_id && !body.refaire;
+      const { data: cl } = await admin.from('clubs').select('animateur_id').eq('id', r.club_id).single();
+      const animId = garder ? (nat.compte || null) : (r.animateur_id || cl?.animateur_id || null);
+      const { N: N0, compte, nom: compteNom } = await sessionPour(admin, animId);
       const idType = r.format ? 3 : r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3; // v1.6.1 : réunion du cycle = « Réunion des membres »
       const invs = await invitationsListe(N0);
-      const nat = r.national || {};
-      const maj = nat.invitation_id && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';
+      const maj = garder && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';
       const source = maj || String((invs.find(x => +x.idType === idType) || invs[0] || {}).id || '');
-      if (!source) throw new Error('Aucune invitation au national à prendre pour modèle : crée la première là-bas.');
+      if (!source) throw new Error(`Aucune invitation au national à prendre pour modèle${compteNom ? ' dans le compte de ' + compteNom : ''} : crée la première là-bas.`);
       // Lieu : celui du national dont le nom correspond au nôtre, sinon on refuse (le national exige un lieu existant).
       const hotes = new Map<string, string>(); for (const x of invs) if (x.idHote) hotes.set(n(x.nomHote), String(x.idHote));
       const idHote = l?.nom ? hotes.get(n(l.nom)) : (invs.find(x => String(x.id) === source)?.idHote ? String(invs.find(x => String(x.id) === source).idHote) : '');
@@ -222,11 +276,12 @@ Deno.serve(async (req) => {
       const jour = j2(0);
       const res = await invitationEcrire(N0, { source, maj: !!maj, idType, idHote, dateDebut: `${jour} à ${h}`, dateFin: `${jour} à ${hf}`, dateReponse: j2(1), dateRappel: j2(2), dateRelance: j2(3), theme: r.theme || undefined, essai: body.essai });
       if (res.ok && !res.essai) {
-        const national = { invitation_id: res.id, lien: res.lien, qr: res.qr, date: r.date, heure: h, lieu: l?.nom || '', modele: maj ? nat.modele : source, cree_le: nat.cree_le || new Date().toISOString(), maj_le: new Date().toISOString() };
+        const national = { invitation_id: res.id, lien: res.lien, qr: res.qr, date: r.date, heure: h, lieu: l?.nom || '', modele: maj ? nat.modele : source, cree_le: maj ? (nat.cree_le || new Date().toISOString()) : new Date().toISOString(), maj_le: new Date().toISOString(), compte, compte_nom: compteNom,
+          ...(nat.invitation_id && !maj ? { ancienne: nat.invitation_id } : {}), ...(maj && nat.inscrits != null ? { inscrits: nat.inscrits, inscrits_le: nat.inscrits_le } : {}) };
         await admin.from('reunions').update({ national }).eq('id', r.id);
         return json({ ...res, national, mise_a_jour: !!maj });
       }
-      return json(res);
+      return json({ ...res, compte_nom: compteNom });
     }
     if (body.action === 'miroir') {
       // Ce que le national affiche dans « En attente de signature » et « Gestion des membres » (lecture seule).
@@ -314,10 +369,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2 bis · Inscrits des invitations des réunions à venir.
+    // 2 bis · Inscrits des invitations des réunions à venir (chaque invitation lue avec le compte qui l'a créée).
     try {
       const { data: rs } = await admin.from('reunions').select('id, date, national').not('national', 'is', null).gte('date', new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10));
-      for (const r of rs || []) await inscritsSync(admin, N, r);
+      for (const x of await inscritsTous(admin, rs || [])) if (x.erreur) res.erreurs.push('Inscrits : ' + x.erreur);
     } catch (e) { res.erreurs.push('Inscrits : ' + (e as Error).message); }
 
     // 3 · Notification des signatures aux superadmins.

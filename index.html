@@ -2302,6 +2302,12 @@ html :is(.rail-date,.reu-d,.rl-date,.mtg-date){transition:transform .35s cubic-b
 a.btn,a.btn:hover,a.btn:focus{text-decoration:none}
 h1.lien-d,h2.lien-d,h3.lien-d,h4.lien-d{text-decoration:none}h1.lien-d:hover,h2.lien-d:hover,h3.lien-d:hover,h4.lien-d:hover{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px}
 .tag.manq{background:var(--warn-tint);color:var(--warn);border-color:transparent}
+.mon-bar{display:grid;gap:8px;margin:0 0 16px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.mon-bl{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center}.mon-bl>span{font:700 11px Inter,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.mon-chs{display:flex;gap:6px;overflow-x:auto;padding:2px;scrollbar-width:thin}@media(min-width:900px){.mon-chs{flex-wrap:wrap;overflow:visible}}
+.mon-ch{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);font:600 13px Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,transform .15s}
+.mon-ch:hover{border-color:var(--crimson)}.mon-ch:active{transform:scale(.96)}.mon-ch.on{background:var(--crimson);border-color:var(--crimson);color:#fff}.mon-ch em{font-style:normal;font-size:11.5px;opacity:.7}
+@media(max-width:599px){.mon-bl{grid-template-columns:1fr;gap:4px}}@media print{.mon-bar{display:none}}
 .mon-fil[hidden]{display:none}.mon-courbe{max-height:250px}
 a[href^="tel:"]{white-space:nowrap}
 .dm-2 .btn{font-size:13.5px;padding:11px 8px;min-height:0;line-height:1.2}
@@ -2542,8 +2548,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.84.0";
+const APP_VERSION="1.85.0";
 const CHANGELOG=[
+  {v:"1.85.0",date:"19 novembre 2026",notes:{"Modifié":["Menu : la rubrique de l'écran affiché reste ouverte. Dans les Ressources, le menu reste sur Ressources ; le repli automatique ne referme plus que les rubriques ouvertes pour jeter un œil.","Statistiques : une barre en haut de l'écran passe d'un toucher du réseau à une région, puis à un groupe de cette région, sans repasser par le menu."]}},
   {v:"1.84.0",date:"19 novembre 2026",notes:{"Ajouté":["Réseau → Régions et villes : le directeur de chaque région s'y lit, et le super admin le nomme ou le retire depuis la fiche de la région.","Dans la fiche d'un membre, « Voir » ouvre sa carte de visite dans une petite fenêtre, par-dessus le CRM, au lieu d'un nouvel onglet.","Visite guidée : la carte de visite du membre, « Nommer animateur », et la création des régions et des groupes."],"Modifié":["Synthèse, chiffres par période, comparaison des régions et statistiques : le nombre de membres reprend celui du bureau national pour les groupes dont les fiches ne sont pas saisies. Il s'ajuste seul à chaque fiche ajoutée.","Les messages d'invitation, de remerciement et d'accès portent le nom de la région du groupe (« Protéine Casablanca », « Protéine Tanger ») ; la région de Rabat garde « Protéine Rabat et Région »."]}},
   {v:"1.83.0",date:"18 novembre 2026",notes:{"Ajouté":["Fiche d'un membre → « Nommer animateur » : sa fiche Équipe est créée d'office avec son nom, sa ville et son mobile, le groupe lui est confié, et tu arrives directement sur « Donner l'accès ».","Sur la fiche d'un membre déjà animateur : son état (compte créé ou non) et le bouton pour lui donner ou renvoyer son accès au CRM."],"Modifié":["Deux animateurs qui portent le même prénom reçoivent des identifiants différents."]}},
   {v:"1.82.1",date:"18 novembre 2026",notes:{"Modifié":["On parle de « membres » partout : le mot « pairs » disparaît de la constellation, des cartes et des fiches de groupe. Le nombre de membres d'un groupe reprend celui du bureau national tant que ses fiches ne sont pas saisies."]}},
@@ -5502,6 +5509,8 @@ function navDir(){return !!SESSION&&["superadmin","directeur_national","directeu
 const NAV_RUB_TAB={monitoring:"syn",espace:"grp",dash:"syn",reunions:"grp",agenda:"age",demandes:"adh",clubs:"res",membres:"res",lieux:"res",team:"equ"};
 const NAV_RUB_LIB={syn:"Synthèse",grp:"Mon groupe",age:"Agenda",adh:"Adhésions",res:"Réseau",equ:"Équipe",doc:"Ressources"};
 var _navRubOuverte=null,_navFerme=false,_navRepliT=null,_navSurvol=false;
+/* v1.85 : la rubrique de l'écran affiché. Les documents s'ouvrent dans l'onglet « espace » : leur rubrique est Ressources, pas Mon groupe. */
+function navRubActive(){if(tab==="espace")return /documents\.html/.test(window._espUrl||"")?"doc":"grp";return NAV_RUB_TAB[tab]||null}
 function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESSION.role,sup=role==="superadmin",nat=vuePeutBasculer();
   const it=(lb,act,o={})=>({lb,act,...o});
   if(r==="syn")return[it(vueMode()==="reg"&&role!=="visiteur"?"Vue de la région":"Vue d'ensemble","navVers('dash')",{on:tab==="dash"}),
@@ -5521,7 +5530,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
 function navSous(){const nav=document.getElementById("nav");if(!nav||!SESSION)return;
-  const actif=NAV_RUB_TAB[tab]||null,ouv=_navFerme?null:(_navRubOuverte||actif);
+  const actif=navRubActive(),ouv=_navFerme?null:(_navRubOuverte||actif);
   nav.querySelectorAll(".nav-sx").forEach(x=>{const h=navSousItems(x.dataset.sx).map(navItemHTML).join("");if(x.dataset.h!==h){x.innerHTML=h;x.dataset.h=h}});
   nav.querySelectorAll(".nav-sous").forEach(x=>{const r=x.dataset.rub,vide=!x.querySelector(".nav-sx").children.length&&r!=="res";x.classList.toggle("ouv",r===ouv&&!vide)});
   {const rc=nav.querySelector(".nav-reco");if(rc)rc.hidden=!recoFiche()} // v1.37 : « Reco » au centre de la barre du téléphone, pour qui a une fiche membre
@@ -5539,13 +5548,14 @@ function navOuvrir(r){const nav=document.getElementById("nav"),ouv=nav&&nav.data
    sinon les sous-menus se referment seuls après navRepliDelai() secondes, tant que la souris n'est pas sur le menu. */
 function navRepliArmer(){clearTimeout(_navRepliT);const d=navRepliDelai(),nav=document.getElementById("nav");
   if(!d||_navSurvol||!nav||!isWide()||nav.dataset.ouv==="null"||!nav.dataset.ouv)return;
-  _navRepliT=setTimeout(()=>{_navFerme=true;_navRubOuverte=null;navSous();setTimeout(navPill,320)},d*1000)}
+  // v1.85 : le repli automatique referme une rubrique ouverte « pour voir », jamais celle de l'écran affiché (JB : « il faut que ça reste déplié »)
+  _navRepliT=setTimeout(()=>{if(!_navRubOuverte||_navRubOuverte===navRubActive())return;_navRubOuverte=null;navSous();setTimeout(navPill,320)},d*1000)}
 (function(){const nav=document.getElementById("nav");if(!nav)return;
   nav.addEventListener("pointerenter",e=>{if(e.pointerType!=="mouse")return;_navSurvol=true;clearTimeout(_navRepliT)});
   nav.addEventListener("pointerleave",e=>{if(e.pointerType!=="mouse")return;_navSurvol=false;navRepliArmer()});
   nav.addEventListener("click",e=>{if(!isWide())return;const b=e.target.closest&&e.target.closest("button[data-rub]");if(!b||b.closest(".nav-sous"))return;
     if(nav.dataset.ouv===b.dataset.rub&&NAV_RUB_TAB[tab]===b.dataset.rub){e.preventDefault();e.stopImmediatePropagation();navOuvrir(b.dataset.rub)}
-    else if(nav.dataset.ouv!==b.dataset.rub&&NAV_RUB_TAB[tab]===b.dataset.rub){e.preventDefault();e.stopImmediatePropagation();_navFerme=false;_navRubOuverte=null;navSous();setTimeout(navPill,320)}},true)})();
+    else if(nav.dataset.ouv!==b.dataset.rub&&navRubActive()===b.dataset.rub){e.preventDefault();e.stopImmediatePropagation();_navFerme=false;_navRubOuverte=null;navSous();setTimeout(navPill,320)}},true)})();
 
 /* Au téléphone : tout le menu dans une feuille, rubrique par rubrique. */
 function openNavPlus(){tiroirOuvrir()}
@@ -9159,6 +9169,17 @@ async function monCharger(force){if(_mon.charge||(_mon.data&&!force))return;_mon
   if(tab==="monitoring")render()}
 function monAller(niv,cle){_mon.niv=niv;_mon.cle=cle||null;render();window.scrollTo({top:0,behavior:"smooth"})}
 function monZone(c){return c.zone||c.ville}
+/* v1.85 : changer de niveau sans repasser par le menu ni par le tableau — le réseau, chaque région, puis chaque groupe de la région affichée. */
+function monBascule(c0){const C=(_mon.data&&_mon.data.clubs)||[],po=monPortee(),q=s=>String(s).replace(/'/g,"\\'");
+  const zones=[...new Set(C.map(monZone))].sort((a,b)=>a.localeCompare(b)),zc=_mon.niv==="region"?_mon.cle:_mon.niv==="reseau"?null:monZone(c0||{});
+  const ch=(on,act,lib,n)=>`<button type="button" class="mon-ch${on?" on":""}" aria-pressed="${!!on}" onclick="${act}">${esc(lib)}${n!=null?`<em>${n}</em>`:""}</button>`;
+  let h="";
+  if(_mon.racine==="reseau"&&po!=="animateur"&&zones.length>1)
+    h+=`<div class="mon-bl"><span>Région</span><div class="mon-chs">${ch(_mon.niv==="reseau","monAller('reseau',null)","Tout le réseau",C.length)}${zones.map(z=>ch(zc===z,`monAller('region','${q(z)}')`,z,C.filter(c=>monZone(c)===z).length)).join("")}</div></div>`;
+  const G=(po==="animateur"?C:zc?C.filter(c=>monZone(c)===zc):[]).slice().sort((a,b)=>String(a.ville).localeCompare(String(b.ville))||a.nom.localeCompare(b.nom));
+  if(G.length>1){const tout=po==="animateur"?ch(_mon.niv==="reseau","monAller('reseau',null)","Tous mes groupes"):ch(_mon.niv==="region",`monAller('region','${q(zc)}')`,"Toute la région");
+    h+=`<div class="mon-bl"><span>Groupe</span><div class="mon-chs">${tout}${G.map(c=>ch(_mon.niv==="groupe"&&_mon.cle===c.id,`monAller('groupe','${c.id}')`,c.nom.replace(/^CAP\s+/,""))).join("")}</div></div>`}
+  return h?`<div class="mon-bar" role="group" aria-label="Changer de niveau">${h}</div>`:""}
 /* v1.48 — « Villes / Zones » et « Rapport du mois » sont des entrées de cet écran : même niveau que la vue affichée,
    tableau par ville (ou par région) pour l'un, tous les groupes à plat sur le mois pour l'autre. Le visiteur, qui n'a pas
    les statistiques, garde les anciennes fenêtres. */
@@ -9287,6 +9308,7 @@ function viewMonitoring(){
   return `<div class="page mon"><div class="page-head"><div><div class="eyebrow">${po==="animateur"?"Mon groupe · statistiques":po==="directeur"||_mon.racine==="region"?"Ma région · statistiques":"Direction · monitoring"}</div><h2>${esc(monTitre().replace(/^CAP\s+/,""))}</h2><p>${cl.length} groupe${cl.length>1?"s":""} · ${monPersonnes(cl)} membre${monPersonnes(cl)>1?"s":""}${pres!=null?` · ${pres} présents en moyenne par réunion`:""}</p></div>
       <div class="mon-act"><button class="btn ghost mini" onclick="monPresenter()">⤢ Présenter</button><button class="btn ghost mini" onclick="monExport()">⬇ Excel</button><button class="btn ghost mini" onclick="window.print()">🖨 PDF</button><button class="btn ghost mini" onclick="monCharger(true)" aria-label="Actualiser">🔄</button></div></div>
     <nav class="mon-fil" aria-label="Niveau"${fil.length<2?" hidden":""}>${fil.map(([n,c,l],i)=>i<fil.length-1?`<button type="button" onclick="monAller('${n}',${c==null?"null":"'"+String(c).replace(/'/g,"\\'")+"'"})">${esc(l)}</button><span aria-hidden="true">›</span>`:`<b aria-current="page">${esc(l)}</b>`).join("")}</nav>
+    ${monBascule(c0)}
     <section class="per"><div class="per-h"><div class="mon-per"><button type="button" class="mon-nav" onclick="_mon.decal--;render()" aria-label="Période précédente">‹</button><div><small>Période</small><b>${esc(b.lib)}</b></div><button type="button" class="mon-nav" onclick="_mon.decal=Math.min(0,_mon.decal+1);render()" ${_mon.decal>=0?"disabled":""} aria-label="Période suivante">›</button></div>${perSeg()}</div>
       <div class="per-g mon-g">${MON_MET.map(([key,lib])=>tuile(key,lib.toLowerCase())).join("")}</div>
       <div class="mon-cmpl">${monCmpSel()}<p class="per-n">Écarts calculés par rapport à ${esc(p.lib)} · touche un chiffre pour l'afficher en courbe</p></div></section>

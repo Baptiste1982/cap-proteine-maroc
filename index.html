@@ -2243,8 +2243,8 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .rg-aj{display:flex;gap:8px}.rg-aj input{flex:1;min-width:0}.acc-dr .c-fixe span{display:grid}.acc-dr .c-fixe small{color:var(--muted);font-size:12px}
 .mb-nomm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line)}.mb-nomm.on{border-style:solid}.mb-nomm span{display:grid;min-width:0}.mb-nomm b{font-size:13.5px}.mb-nomm small{color:var(--muted);font-size:12px}.mb-nomm .btn{flex:none}
 #carte-pop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:rgba(10,8,9,.55);backdrop-filter:blur(3px);animation:cpFond .2s ease-out}
-.cp-c{position:relative;width:min(400px,100%);height:min(660px,calc(100vh - 32px));border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);animation:cpCarte .38s cubic-bezier(.2,.9,.3,1.15)}
-.cp-c iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.cp-c{position:relative;width:min(420px,100%);height:min(480px,calc(100vh - 32px));transition:height .35s cubic-bezier(.3,.8,.25,1);border-radius:24px;overflow:hidden;background:#ECEAE9;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);animation:cpCarte .38s cubic-bezier(.2,.9,.3,1.15)}
+.cp-c iframe{width:100%;height:100%;border:0;display:block;background:#ECEAE9}
 .cp-x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1B1416;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 @keyframes cpFond{from{opacity:0}to{opacity:1}}@keyframes cpCarte{from{opacity:0;transform:translateY(18px) scale(.94) rotate(-1.5deg)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){#carte-pop,.cp-c{animation:none}}
@@ -2549,8 +2549,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.86.0";
+const APP_VERSION="1.87.0";
 const CHANGELOG=[
+  {v:"1.87.0",date:"19 novembre 2026",notes:{"Modifié":["Carte de visite recto verso. Recto au format d'une carte de visite : photo, nom, fonction, entreprise, groupe et le QR code de la carte. Un bouton en bas à droite la retourne : au verso, l'activité, la spécialité, les contacts recherchés, les loisirs et les coordonnées.","Dans le CRM, la petite fenêtre de la carte prend la taille de la carte et s'allonge quand on la retourne."]}},
   {v:"1.86.0",date:"19 novembre 2026",notes:{"Ajouté":["Fiche du membre : « Spécialité » (ce qu'il fait précisément), « Contacts recherchés » (ses cibles) et « Loisirs et hobbies ». Le membre les remplit dans son espace, l'équipe dans la fiche signalétique.","Espace membre : sur la fiche d'un autre membre, un loisir partagé est mis en avant (« Vous avez en commun : padel »). La recherche du réseau trouve aussi les loisirs et les spécialités."]}},
   {v:"1.85.1",date:"19 novembre 2026",notes:{"Corrigé":["Carte de visite : un membre dont le métier est « - Autre - » n'affiche plus cette étiquette."]}},
   {v:"1.85.0",date:"19 novembre 2026",notes:{"Modifié":["Menu : la rubrique de l'écran affiché reste ouverte. Dans les Ressources, le menu reste sur Ressources ; le repli automatique ne referme plus que les rubriques ouvertes pour jeter un œil.","Statistiques : une barre en haut de l'écran passe d'un toucher du réseau à une région, puis à un groupe de cette région, sans repasser par le menu."]}},
@@ -6594,9 +6595,10 @@ function mbCarteHTML(m){const u=mbCarteLien(m);if(!u)return"";setTimeout(natInvQ
 function mbCarteVoir(id){const m=(window._DBvrai||DB).membres.find(x=>x.id===id),u=mbCarteLien(m);if(!u)return;mbCarteFermer();
   const o=document.createElement("div");o.id="carte-pop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Carte de visite de "+m.nom);
   o.innerHTML=`<div class="cp-c"><button class="cp-x" aria-label="Fermer" onclick="mbCarteFermer()">✕</button><iframe src="${esc(u)}" title="Carte de visite de ${esc(m.nom)}" loading="eager"></iframe></div>`;
-  o.onclick=e=>{if(e.target===o)mbCarteFermer()};document.body.appendChild(o);document.addEventListener("keydown",mbCarteEchap,true);o.querySelector(".cp-x").focus()}
+  o.onclick=e=>{if(e.target===o)mbCarteFermer()};document.body.appendChild(o);document.addEventListener("keydown",mbCarteEchap,true);window.addEventListener("message",mbCarteHauteur);o.querySelector(".cp-x").focus()}
 function mbCarteEchap(e){if(e.key==="Escape"&&document.getElementById("carte-pop")){e.stopPropagation();mbCarteFermer()}}
-function mbCarteFermer(){const o=document.getElementById("carte-pop");if(o)o.remove();document.removeEventListener("keydown",mbCarteEchap,true)}
+function mbCarteHauteur(e){if(e.origin!==location.origin||!e.data||!e.data.carteH)return;const c=document.querySelector("#carte-pop .cp-c");if(c)c.style.height=Math.min(Math.max(260,Math.round(e.data.carteH)),innerHeight-32)+"px"}
+function mbCarteFermer(){const o=document.getElementById("carte-pop");if(o)o.remove();document.removeEventListener("keydown",mbCarteEchap,true);window.removeEventListener("message",mbCarteHauteur)}
 async function mbCarteCopier(id){const u=mbCarteLien(DB.membres.find(x=>x.id===id));if(!u)return;try{await navigator.clipboard.writeText(u);toast("Lien de la carte copié")}catch(e){prompt("Carte de visite :",u)}}
 let _mbf={};
 function mbFicheForm(clubId,id){

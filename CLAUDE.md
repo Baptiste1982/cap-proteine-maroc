@@ -596,7 +596,8 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
   - Fiche Équipe « Rita » créée (sans ville ni mobile, sans compte) : JB fait Équipe → « Donner l'accès » pour créer son compte, puis coche ses « Droits en plus ». ⚠ Le compte naît au rôle `animateur` sans groupe. Ghita reste le seul `directeur` en base (région de Rabat).
   - Carte de visite (JB : « une petite fenêtre, pas une grande, on a l'impression qu'un deuxième CRM s'est ouvert ») : `mbCarteVoir(id)` ouvre `#carte-pop` (carte de 400 × 660 px au plus, `carte.html` dans un cadre, fermeture par ✕, clic à côté ou Échap) ; `carte.html` pose `html.cadre` quand elle est dans un cadre (carte bord à bord, sans fond gris). ⚠ Règle : un aperçu ouvert depuis le CRM s'affiche par-dessus, pas dans un nouvel onglet.
   - Banc `scratchpad/audit/v184.mjs` 22/22, `v179.mjs` (fiche membre, fenêtre de la carte).
-- Le plan du 17/11 est entièrement livré. Reste hors plan : compte de Rita (infos attendues de JB), données de test (3 recos, Nawar).
+- **⚠ « Rita » = GHITA (19/11, JB : « Rita, c'est G-H-I-T-A ; quand je te dirai Rita et qu'on parle du bureau national, c'est Ghita »).** JB dicte : le prénom sort « Rita ». Il n'existe AUCUNE personne nommée Rita : partout dans ce fichier, « Rita » désigne Ghita, bureau national, compte `ghita`. Ne jamais créer de fiche ni de compte « Rita ». Fait en base le 19/11 : la fiche Équipe « Rita » créée par erreur est supprimée ; le compte `ghita` passe au rôle `directeur_national`, sans région (« tu la cales au national ») : elle voit tout le réseau, crée régions et groupes, gère les documents et voit le monitoring, comme Hassan. Plus aucun compte au rôle `directeur` : aucune région n'a de directeur nommé.
+- Le plan du 17/11 est entièrement livré. Reste hors plan : données de test (3 recos, Nawar).
 
 - ⚠ Les chiffres animés (compteurs `data-count`) faussent un relevé fait trop tôt après le rendu : lire `dataset.count` ou les fonctions, pas le texte.
 
@@ -605,5 +606,5 @@ CRM de pilotage du réseau d'animation régional CAP MA. Socle initial : le plan
 2. Donner leur code aux membres (fiche membre → Espace membre) et saisir les paiements.
 3. Planifier les réunions des groupes de la région (Planifier en série) et saisir le bilan du 12/11.
 4. Installer le script du Google Sheet des leads (`docs/leads-apps-script.gs`) et poser son adresse dans `reglages.leads_sheet_url`.
-5. Compte de Rita, données de test (3 recos, Nawar), contrat d'essai n° 119 et doublon d'entreprise de Reda au national : décisions de JB.
+5. Données de test (3 recos, Nawar), contrat d'essai n° 119 et doublon d'entreprise de Reda au national : décisions de JB.
 6. **Photos lieux** : en base64 dans `lieux.photo_url` ; à migrer vers le bucket `lieux` si le poids gêne.

@@ -68,7 +68,7 @@ html.cadre body{padding:0;background:#fff;min-height:0}html.cadre .c{border-radi
       <div class="b">
         <h1>${esc(d.nom||"")}</h1>
         ${d.fonction?`<p class="f">${esc(d.fonction)}</p>`:""}${d.entreprise?`<p class="e">${esc(d.entreprise)}</p>`:""}
-        <div class="tags">${[d.metier,d.ville].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+        <div class="tags">${[/^\s*-\s*autre/i.test(d.metier||"")?"":d.metier,d.ville].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("")}</div>
         ${d.presentation?`<p class="p">${esc(String(d.presentation).slice(0,600))}</p>`:""}
         <div class="act">
           <button class="btn plein" id="vcf" type="button">Ajouter à mes contacts</button>
@@ -87,7 +87,7 @@ html.cadre body{padding:0;background:#fff;min-height:0}html.cadre .c{border-radi
     document.getElementById("vcf").onclick=()=>{
       const v=x=>String(x||"").replace(/([\\;,])/g,"\\$1").replace(/\r?\n/g,"\\n"),p=String(d.nom||"").trim().split(/\s+/),pr=p.shift()||"",nm=p.join(" ");
       const L=["BEGIN:VCARD","VERSION:3.0","N:"+v(nm)+";"+v(pr)+";;;","FN:"+v(d.nom),d.entreprise?"ORG:"+v(d.entreprise):"",d.fonction||d.metier?"TITLE:"+v(d.fonction||d.metier):"",
-        tel?"TEL;TYPE=CELL:"+tel:"",d.email?"EMAIL;TYPE=WORK:"+v(d.email):"",site?"URL:"+site:"","NOTE:"+v([d.metier,d.groupe?"Club d'Affaires Protéine · "+d.groupe:""].filter(Boolean).join(" · ")),"END:VCARD"].filter(Boolean).join("\r\n");
+        tel?"TEL;TYPE=CELL:"+tel:"",d.email?"EMAIL;TYPE=WORK:"+v(d.email):"",site?"URL:"+site:"","NOTE:"+v([/^\s*-\s*autre/i.test(d.metier||"")?"":d.metier,d.groupe?"Club d'Affaires Protéine · "+d.groupe:""].filter(Boolean).join(" · ")),"END:VCARD"].filter(Boolean).join("\r\n");
       const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([L],{type:"text/vcard;charset=utf-8"}));a.download=(d.nom||"contact").replace(/[^\p{L}\p{N} -]/gu,"")+".vcf";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)};
     const pt=document.getElementById("part");if(pt)pt.onclick=()=>navigator.share({title:d.nom,text:[d.nom,d.entreprise].filter(Boolean).join(" · "),url:location.href}).catch(()=>{});
   }

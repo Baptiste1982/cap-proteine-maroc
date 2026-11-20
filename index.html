@@ -2719,7 +2719,11 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .grp-cr.avenir .gc-c b{font-weight:600}
 @media(max-width:1099.98px){.grp-cr{flex-wrap:wrap}.grp-cr .gc-t{flex:1 1 0}.gc-x{order:5;flex:1 1 100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;padding:8px 0 2px;border-top:1px dashed var(--line)}.gc-c:nth-child(3){grid-column:1 / -1}}
 /*v1.133 cartouche PSA du bandeau d'accueil*/
-.tool.psa{border-color:var(--gold)}.tool.psa em{font-style:normal;font-size:11px;font-weight:800;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--gold);color:#fff}
+.tool.psa em{font-style:normal;font-size:11.5px;font-weight:800;margin-left:8px;padding:3px 9px;border-radius:999px;background:#D81B3F;color:#fff}
+/*v1.134 responsable de région + animations*/
+.rg-hist{margin-top:10px;font-size:13px}.rg-hist summary{cursor:pointer;color:var(--muted);font-weight:600}.rg-h{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px dashed var(--line)}.rg-h small{color:var(--muted)}
+.psa-c.a,.vp-j{transition:transform .18s cubic-bezier(.22,.8,.24,1),background .18s,border-color .18s,color .18s}.psa-c.a:active,.vp-j:not(.vide):active{transform:scale(.92)}
+@media(prefers-reduced-motion:reduce){.psa-c.a,.vp-j{transition:none}}
 </style>
 </head>
 <body>
@@ -2830,8 +2834,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.133.0";
+const APP_VERSION="1.134.0";
 const CHANGELOG=[
+  {v:"1.134.0",date:"20 novembre 2026",notes:{"Ajouté":["Responsable de région : Réseau → Régions et villes → une région. La direction nationale attribue la région à un compte, le responsable peut la céder, et l'historique des passages de relais reste. Le responsable mène les PSA de sa région.","Points sur activité : en ouvrant des créneaux, la direction choisit la région concernée (celles dont elle est responsable d'abord).","Calendriers (PSA, planning de la région, page de réservation) : le volet du jour s'ouvre, se referme et change en glissant, les mois défilent sur le côté."],"Corrigé":["Pastille « à caler » du cartouche PSA : blanc sur rouge, lisible."]}},
   {v:"1.133.0",date:"20 novembre 2026",notes:{"Corrigé":["L'espace membre et les documents ouverts dans le CRM prennent le thème du CRM (ils pouvaient rester clairs dans un CRM sombre)."],"Ajouté":["Bandeau d'accueil : un cartouche « PSA » à droite ouvre les points sur activité, avec le nombre d'animateurs à caler, en vue nationale comme en vue régionale.","Planning de la région : un calendrier à gauche ; en touchant un jour, les groupes réunis ce jour-là s'affichent à droite avec le détail (type, heure, lieu, animateur, invités, résultat). Sans jour choisi, toutes les réunions du mois et les groupes sans réunion.","Bilans et archives d'un groupe : chaque ligne donne le groupe et son animateur, le jour, l'heure, le lieu, les invités inscrits ou le résultat."]}},
   {v:"1.132.0",date:"20 novembre 2026",notes:{"Corrigé":["Carte du réseau : les villes restent sur la terre et dans le bon ordre le long de la côte (Casablanca n'est plus dans l'océan)."],"Ajouté":["Sur ordinateur, la page de réservation des PSA (calendrier à gauche, heures à droite) et la page d'invitation à une réunion (la réunion à gauche, les explications à droite) prennent la largeur de l'écran. Rien ne change au téléphone."]}},
   {v:"1.131.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre sur ordinateur : la page prend toute la largeur. Les onglets passent en haut avec le bouton « Recommander quelqu'un » à droite, l'accueil et Mon groupe s'affichent en deux colonnes, le Réseau, les réunions et le menu Moi en grille. Rien ne change au téléphone."]}},
@@ -3538,6 +3543,7 @@ async function loadDB(){
   try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
   DB.directeurs=[];try{const dz=await sb.rpc("cap_regions_directeurs");if(!dz.error&&Array.isArray(dz.data))DB.directeurs=dz.data}catch(e){console.warn(e)} // v1.84
+  DB.responsables=[];try{const rz=await sb.rpc("cap_regions_responsables");if(!rz.error&&Array.isArray(rz.data))DB.responsables=rz.data}catch(e){console.warn(e)} /* v1.134 */
   DB.aEmbarquer=0; // v0.33.0 : comptes d'équipe à embarquer (superadmin seulement, jamais bloquant)
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
@@ -4384,8 +4390,8 @@ function vrMois(){const l=[];for(let i=-6;i<=3;i++){const d=new Date(TODAY.getFu
 function vrVille(v){if(typeof monPeut==="function"&&monPeut()){_mon.niv="ville";_mon.cle=v;go("monitoring")}else go("clubs")}
 /* v1.133 : planning de la région = calendrier à gauche, réunions du jour (ou du mois) à droite */
 function vrPlanMois(){return window._vrM||(TODAY.getFullYear()+"-"+String(TODAY.getMonth()+1).padStart(2,"0"))}
-function vrPlanAller(s){const[y,m]=vrPlanMois().split("-").map(Number),d=s?new Date(y,m-1+s,1):new Date(TODAY.getFullYear(),TODAY.getMonth(),1);window._vrM=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");window._vrJ="";vrPlanMaj()}
-function vrPlanJour(iso){window._vrJ=window._vrJ===iso?"":iso;vrPlanMaj()}
+function vrPlanAller(s){const[y,m]=vrPlanMois().split("-").map(Number),d=s?new Date(y,m-1+s,1):new Date(TODAY.getFullYear(),TODAY.getMonth(),1);window._vrM=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");window._vrJ="";const dr=document.querySelector("#vr-plan .vp-dr"),h0=dr?dr.offsetHeight:0;vrPlanMaj();glisseCote(document.querySelector("#vr-plan .vp-g"),s);glisseOuvre(document.querySelector("#vr-plan .vp-dr"),h0)}
+function vrPlanJour(iso){window._vrJ=window._vrJ===iso?"":iso;const dr=document.querySelector("#vr-plan .vp-dr"),h0=dr?dr.offsetHeight:0;vrPlanMaj();glisseOuvre(document.querySelector("#vr-plan .vp-dr"),h0)}
 function vrPlanMaj(){const z=document.getElementById("vr-plan");if(z)z.innerHTML=avecVue(vrPlanCorps)}
 function vrPlanEtat(r){return r.statut==="annulee"||r.statut==="archivee"?"x":r.statut==="realisee"?"f":reuFinie(r)?"b":"v"}
 function vrPlanCarte(r,peut,avecDate){const c=club(r.clubId),e=vrPlanEtat(r),a=anim(r.animId||c.animId),d=dObj(r.date);
@@ -6772,8 +6778,10 @@ function psaVue(){try{return localStorage.getItem("cap-psavue")==="liste"?"liste
 function psaVueChoisir(v){try{localStorage.setItem("cap-psavue",v)}catch(e){}psaRendu()}
 function psaVueSeg(){const v=psaVue();return `<div class="seg psa-vs" role="radiogroup" aria-label="Affichage des créneaux">${[["cal","🗓 Calendrier"],["liste","☰ Liste"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${v===k}" class="${v===k?"on":""}" onclick="psaVueChoisir('${k}')">${l}</button>`).join("")}</div>`}
 function psaEtat(cle,L){const S=window._psaSt=window._psaSt||{};if(!S[cle]){const p=L.find(c=>new Date(c.debut).getTime()>Date.now())||L[0],d=p?new Date(p.debut):new Date();S[cle]={m:d.getFullYear()+"-"+psa2(d.getMonth()+1),j:null}}return S[cle]}
-function psaMoisAller(cle,sens){const s=(window._psaSt||{})[cle];if(!s)return;const [y,m]=s.m.split("-").map(Number),d=new Date(y,m-1+sens,1);s.m=d.getFullYear()+"-"+psa2(d.getMonth()+1);s.j=null;psaRendu()}
-function psaJourChoisir(cle,iso){const s=(window._psaSt||{})[cle];if(!s)return;s.j=s.j===iso?null:iso;psaRendu();const e=document.querySelector(`[data-psacal="${cle}"] .psa-jp`);if(e)e.scrollIntoView({block:"nearest",behavior:"smooth"})}
+function psaMoisAller(cle,sens){const s=(window._psaSt||{})[cle];if(!s)return;const [y,m]=s.m.split("-").map(Number),d=new Date(y,m-1+sens,1);s.m=d.getFullYear()+"-"+psa2(d.getMonth()+1);s.j=null;psaRendu();glisseCote(document.querySelector(`[data-psacal="${cle}"] .psa-g`),sens)}
+function psaJourChoisir(cle,iso){const s=(window._psaSt||{})[cle];if(!s)return;const q=`[data-psacal="${cle}"] .psa-jp`,av=document.querySelector(q),h0=av?av.offsetHeight:0;
+  if(s.j===iso&&av){glisseFerme(av,()=>{s.j=null;psaRendu()});return} /* v1.134 : le volet du jour glisse au lieu de sauter */
+  s.j=s.j===iso?null:iso;psaRendu();const e=document.querySelector(q);if(e){glisseOuvre(e,h0);setTimeout(()=>e.scrollIntoView({block:"nearest",behavior:"smooth"}),h0?0:120)}}
 /* cle : l'état gardé (mois affiché, jour ouvert) ; f : la ligne d'un créneau ; compte(l) : le petit texte sous le numéro du jour. */
 function psaBloc(cle,L,f,compte){if(!L.length)return"";const parJ=new Map();L.forEach(c=>{const k=psaIsoJ(c.debut);(parJ.get(k)||parJ.set(k,[]).get(k)).push(c)});
   if(psaVue()==="liste"){let i=0;return `<div class="psa-jl" data-psaliste="${cle}">${[...parJ.entries()].map(([k,l])=>`<details class="psa-jd" name="psa-jd-${cle}" ${i++===0?"open":""}><summary><b>${esc(psaJourLib(l[0].debut))}</b><span>${esc(compte(l))}</span></summary>${l.map(f).join("")}</details>`).join("")}</div>`}
@@ -6890,10 +6898,16 @@ function psaRendu(){const L=psaFutur(),moi=SESSION.id,g=psaGere();
     <button class="btn ghost mini" id="psa-agenda" onclick="openAgendaAbo()">📅 Recevoir mes PSA et mes réunions dans mon agenda (Google, iPhone, Outlook)</button>
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`}
 function psaDir(c){const s=psaSuivi();let n="";if(s)(s.regions||[]).forEach(r=>(r.directeurs||[]).forEach(d=>{if(d.id===c.directeur_id)n=d.nom}));if(n)return n;const a=(DB.acces||[]).find(x=>x.id===c.directeur_id);return a&&a.nom||(c.directeur_id===SESSION.id?SESSION.name:"Le directeur de région")}
-function psaZoneId(){const n=vueRegion().nom,z=(DB.zones||[]).find(x=>x.nom===n);return z?z.id:(SESSION.zoneId||null)}
+function psaZoneVue(){const n=vueRegion().nom,z=(DB.zones||[]).find(x=>x.nom===n);return z?z.id:(SESSION.zoneId||null)}
+function psaZoneChoix(){return typeof vuePeutBasculer==="function"&&vuePeutBasculer()?regZones():[]}
+function psaZoneDefaut(){const Z=psaZoneChoix();if(!Z.length)return psaZoneVue();const mes=regMesRegions();let reg=false;try{reg=vueMode()==="reg"}catch(e){}
+  if(reg){const v=psaZoneVue();if(v)return v}return (mes[0]||Z[0]||{}).id||psaZoneVue()}
+function psaZoneId(){const Z=psaZoneChoix();return Z.length&&window._psaZone&&Z.some(z=>z.id===window._psaZone)?window._psaZone:psaZoneDefaut()}
+function psaZoneChamp(){const Z=psaZoneChoix();if(Z.length<2)return"";const mes=new Set(regMesRegions().map(z=>z.id)),sel=psaZoneId();
+  return `<div class="field"><label for="psa-zone">Région de ces créneaux</label><select id="psa-zone" onchange="window._psaZone=this.value">${Z.map(z=>`<option value="${z.id}" ${z.id===sel?"selected":""}>${esc(z.nom)}${mes.has(z.id)?" · tu en es responsable":(regResp(z.id)||{}).profil?" · "+esc(regResp(z.id).nom||""):" · sans responsable"}</option>`).join("")}</select></div>`}
 function psaForm(){const dm=new Date(Date.now()+864e5),iso=dm.getFullYear()+"-"+String(dm.getMonth()+1).padStart(2,"0")+"-"+String(dm.getDate()).padStart(2,"0");window._psaDuree=window._psaDuree||30;
-  document.getElementById("sheet-content").innerHTML=`<h3>Ouvrir des créneaux PSA</h3><div class="sheet-sub">Région ${esc(vueRegion().nom)} : la plage est découpée en créneaux</div>
-    <div class="field"><label>Quand</label><div class="seg" id="psa-rep">${[["jour","Un seul jour"],["fin","Fin de mois, en série"]].map(([k,l])=>`<button type="button" data-v="${k}" class="${(window._psaRep||"jour")===k?"on":""}" onclick="psaRepChoisir('${k}')">${l}</button>`).join("")}</div></div>
+  document.getElementById("sheet-content").innerHTML=`<h3>Ouvrir des créneaux PSA</h3><div class="sheet-sub">${psaZoneChoix().length>1?"Choisis la région, puis la plage : elle est découpée en créneaux":"Région "+esc(vueRegion().nom)+" : la plage est découpée en créneaux"}</div>
+    ${psaZoneChamp()}<div class="field"><label>Quand</label><div class="seg" id="psa-rep">${[["jour","Un seul jour"],["fin","Fin de mois, en série"]].map(([k,l])=>`<button type="button" data-v="${k}" class="${(window._psaRep||"jour")===k?"on":""}" onclick="psaRepChoisir('${k}')">${l}</button>`).join("")}</div></div>
     <div class="field"><label for="psa-j">${(window._psaRep||"jour")==="fin"?"À partir du mois de":"Jour"}</label><input type="date" id="psa-j" value="${iso}" min="${isoJour(TODAY)}" oninput="psaApercu()"></div>
     <div id="psa-rep-z" ${(window._psaRep||"jour")==="fin"?"":"hidden"}>
       <div class="psa-2"><div class="field"><label>Derniers jours du mois</label><div class="seg">${[3,4,5].map(n=>`<button type="button" class="${(window._psaRepN||4)===n?"on":""}" onclick="window._psaRepN=${n};this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===this));psaApercu()">${n} jours</button>`).join("")}</div></div>
@@ -8612,7 +8626,7 @@ function openRegions(){if(!canCreerStructure())return;const Z=regZones(),D=windo
   const hors=[...new Set(D.clubs.map(c=>c.ville))].filter(v=>!Z.some(z=>z.villes.includes(v)));
   document.getElementById("sheet-content").innerHTML=`
     <h3>Régions et villes</h3><div class="sheet-sub">Une région regroupe des villes ; un groupe se crée dans une ville. Tout ce qui est ajouté ici apparaît dans le menu des espaces, la constellation et les statistiques.</div>
-    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""} · ${regDirecteurs(z.id).length?"dirigée par "+esc(regDirecteurs(z.id).map(d=>d.nom).join(", ")):"sans directeur"}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
+    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""} · ${(regResp(z.id)||{}).profil?"responsable : "+esc(regResp(z.id).nom||""):"sans responsable"}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
     ${hors.length?`<div class="nat-err">Ville${hors.length>1?"s":""} sans région : ${hors.map(esc).join(", ")}. Ouvre une région pour l'y ajouter, ou crée la sienne.</div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button><button class="btn ghost" onclick="clubForm(null)">＋ Nouveau groupe</button><button class="btn" onclick="regionForm('')">＋ Nouvelle région</button></div>`;
   openSheet()}
@@ -8632,6 +8646,35 @@ async function regDirNommer(zid){const pid=(document.getElementById("rg-dir")||{
 async function regDirRetirer(zid,pid){const {error}=await sb.rpc("cap_region_directeur",{p_zone:zid,p_profil:pid,p_oui:false});if(error){toast(rlsMsg(error));return}
   const u=(DB.acces||[]).find(x=>x.id===pid);if(u)u.role="animateur";const D=window._DBvrai||DB;D.directeurs=(D.directeurs||[]).filter(d=>d.profil!==pid);if(D!==DB)DB.directeurs=D.directeurs;
   toast("Direction retirée : le compte redevient animateur");regionForm(zid)}
+/* v1.134 : ouvertures, fermetures et changements glissés (hauteur + fondu), sans saut. */
+function glisseOuvre(el,h0){if(!el||_calme()||!el.animate)return;const h=el.offsetHeight;if(h){el.style.overflow="hidden";const a=el.animate([{height:(h0||0)+"px",opacity:h0?1:0},{height:h+"px",opacity:1}],{duration:340,easing:"cubic-bezier(.22,.8,.24,1)"});a.onfinish=a.oncancel=()=>{el.style.overflow=""}}
+  [...el.children].forEach((c,i)=>c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:280,delay:Math.min(i,7)*30,easing:"cubic-bezier(.22,.8,.24,1)",fill:"backwards"}))}
+function glisseFerme(el,fin){if(!el||_calme()||!el.animate){fin();return}el.style.overflow="hidden";let fait=false;const f=()=>{if(!fait){fait=true;fin()}},a=el.animate([{height:el.offsetHeight+"px",opacity:1},{height:"0px",opacity:0}],{duration:230,easing:"cubic-bezier(.4,0,.6,1)",fill:"forwards"});a.onfinish=f;a.oncancel=f;setTimeout(f,400)}
+function glisseCote(el,sens){if(!el||_calme()||!el.animate)return;el.animate([{opacity:0,transform:`translateX(${sens>0?26:sens<0?-26:0}px) scale(${sens?1:.98})`},{opacity:1,transform:"none"}],{duration:300,easing:"cubic-bezier(.22,.8,.24,1)"})}
+/* v1.134 : responsable d'une région. Attribué par la direction (super admin, direction nationale), cessible par le
+   responsable lui-même ; l'historique reste. Un compte national peut tenir plusieurs régions sans changer de rôle. */
+function regResp(zid){return ((window._DBvrai||DB).responsables||DB.responsables||[]).find(r=>r.zone_id===zid)||null}
+async function regRespCharger(){try{const q=await sb.rpc("cap_regions_responsables");if(!q.error&&Array.isArray(q.data)){DB.responsables=q.data;if(window._DBvrai)window._DBvrai.responsables=q.data}}catch(e){console.warn(e)}}
+function regRespPeut(z){const r=regResp(z.id);return !!SESSION&&!SESSION._voir&&(["superadmin","directeur_national"].includes(SESSION.role)||!!(r&&r.profil===SESSION.id))}
+function regRespDate(iso){return iso?new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}):""}
+function regRespBloc(z){const r=regResp(z.id)||{},peut=regRespPeut(z),dir=["superadmin","directeur_national"].includes(SESSION.role),H=(r.historique||[]).filter(h=>h.au);
+  const cand=(DB.acces||[]).filter(u=>u.role!=="visiteur"&&u.id!==r.profil).sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
+  return `<div class="field reg-dir" id="rg-resp"><label for="rg-resp-sel">Responsable de la région</label>
+    ${r.profil?`<div class="rg-d"><span><b>${esc(r.nom||"")}</b><small>${esc(({superadmin:"Super admin",directeur_national:"Direction nationale",directeur:"Directeur de région"})[r.role]||"")}${r.depuis?" · depuis le "+esc(regRespDate(r.depuis)):""} · mène les PSA de la région</small></span>${dir?`<button type="button" class="btn ghost mini" id="rg-resp-ret" onclick="regRespRetirer('${z.id}',this)">Retirer</button>`:""}</div>`:`<p class="mut" style="margin:0 0 8px;font-size:13px">Personne pour l'instant : la direction nationale la suit en attendant.</p>`}
+    ${peut?(cand.length?`<div class="rg-aj"><select id="rg-resp-sel"><option value="">${r.profil?"Céder la région à…":"Attribuer la région à…"}</option>${cand.map(u=>`<option value="${u.id}">${esc(u.nom)}${["superadmin","directeur_national"].includes(u.role)?" (direction nationale)":u.role==="directeur"?" (directeur de région)":""}</option>`).join("")}</select><button type="button" class="btn ghost" id="rg-resp-ok" onclick="regRespAttribuer('${z.id}')">${r.profil?"Céder":"Attribuer"}</button></div>
+      <input id="rg-resp-note" placeholder="Un mot sur ce passage de relais (facultatif)" maxlength="200" style="margin-top:8px">
+      <small class="mut">Un animateur qui reçoit la région en devient le directeur : il voit et modifie tous ses groupes. Un compte de la direction nationale garde son rôle.</small>`:`<small class="mut">Pour céder la région, passe par la direction nationale : elle choisit le compte qui la reprend.</small>`):`<small class="mut">Le responsable d'une région est attribué par la direction nationale.</small>`}
+    ${H.length?`<details class="rg-hist"><summary>Historique · ${H.length} passage${H.length>1?"s":""} de relais</summary>${H.map(h=>`<div class="rg-h"><b>${esc(h.nom||"")}</b><small>du ${esc(regRespDate(h.du))} au ${esc(regRespDate(h.au))}${h.note?" · "+esc(h.note):""}</small></div>`).join("")}</details>`:""}</div>`}
+async function regRespAttribuer(zid){const pid=(document.getElementById("rg-resp-sel")||{}).value,note=((document.getElementById("rg-resp-note")||{}).value||"").trim();if(!pid){toast("Choisis un compte");return}
+  const b=document.getElementById("rg-resp-ok");if(b)b.disabled=true;const {error}=await sb.rpc("cap_region_attribuer",{p_zone:zid,p_profil:pid,p_note:note||null});if(b)b.disabled=false;if(error){toast(rlsMsg(error));return}
+  const u=(DB.acces||[]).find(x=>x.id===pid);if(u&&["animateur","directeur"].includes(u.role)){u.role="directeur";u.zone_id=zid}
+  await regRespCharger();try{await psaSuiviCharger()}catch(e){}
+  toast((u?u.nom.split(/\s+/)[0]:"Le compte")+" est maintenant responsable de la région");if(canCreerStructure())regionForm(zid);else closeSheet();render()}
+async function regRespRetirer(zid,btn){if(btn&&!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer le retrait";return}
+  const {error}=await sb.rpc("cap_region_attribuer",{p_zone:zid,p_profil:null,p_note:null});if(error){toast(rlsMsg(error));return}
+  await regRespCharger();try{await psaSuiviCharger()}catch(e){}toast("La région n'a plus de responsable");regionForm(zid);render()}
+/* Régions que je tiens (pour ouvrir des créneaux PSA au bon endroit). */
+function regMesRegions(){return regZones().filter(z=>{const r=regResp(z.id);return r&&r.profil===SESSION.id})}
 let _reg=null;
 function regionForm(id){if(!canCreerStructure())return;const z=id?regZones().find(x=>x.id===id):null;_reg={id:id||"",villes:z?[...z.villes]:[]};
   document.getElementById("sheet-content").innerHTML=`
@@ -8639,7 +8682,7 @@ function regionForm(id){if(!canCreerStructure())return;const z=id?regZones().fin
     <div class="field"><label for="rg-nom">Nom de la région</label><input id="rg-nom" value="${esc(z?z.nom:"")}" placeholder="ex. Fès · Meknès"></div>
     <div class="field"><label for="rg-ville">Villes de la région</label><div class="rg-v" id="rg-v"></div>
       <div class="rg-aj"><input id="rg-ville" placeholder="Nom d'une ville" onkeydown="if(event.key==='Enter'){event.preventDefault();regVilleAjouter()}"><button type="button" class="btn ghost" onclick="regVilleAjouter()">Ajouter</button></div></div>
-    ${z?regDirBloc(z):`<p class="mut" style="font-size:13px">Le directeur de la région se nomme une fois la région créée.</p>`}
+    ${z?regRespBloc(z):`<p class="mut" style="font-size:13px">Le responsable de la région s'attribue une fois la région créée.</p>`}
     <div class="sheet-actions"><button class="btn ghost" onclick="openRegions()">Retour</button><button class="btn" onclick="regionSauver(this)">${z?"Enregistrer":"Créer la région"}</button></div>
     ${z?`<div class="del-link" onclick="regionSuppr()">Supprimer cette région</div>`:""}`;
   regVillesRendu();openSheet()}

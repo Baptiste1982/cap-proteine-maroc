@@ -18,7 +18,9 @@
 <meta name="theme-color" content="#D81B3F">
 <meta name="color-scheme" content="light dark">
 <script>/* v1.26 : mêmes couleurs que le CRM (thème choisi dans le CRM, Graphite par défaut) */
-(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";
+(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(!{graphite:1,verre:1,verreclair:1,bordeaux:1,sombre:1,clair:1,auto:1}[t])t="graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";
+/* v1.133 : dans le cadre du CRM, on prend le thème réellement affiché par le CRM (une ancienne valeur enregistrée donnait un espace clair dans un CRM sombre) */
+try{if(window.top!==window.self){var pc=window.parent.document.documentElement.className||"",m=pc.match(/\bth-(\w+)/);t=m?m[1]:(/\bdark\b/.test(pc)?"sombre":"clair")}}catch(e){}
 var h=document.documentElement;h.className=h.className.replace(/\b(th-\S+|dark)\b/g,"").trim();h.classList.add("th-"+t);if({sombre:1,verre:1,bordeaux:1,graphite:1}[t])h.classList.add("dark")}catch(e){}})();
 addEventListener("storage",function(e){if(e.key==="cap-theme")location.reload()});</script>
 <meta name="description" content="Espace membre du Club d'affaires Protéine Maroc : annuaire et messages entre membres">

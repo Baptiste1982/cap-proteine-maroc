@@ -2666,6 +2666,10 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .ev-z{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:0 0 12px}
 .ev-c{display:flex;flex-direction:column;gap:2px;text-align:left;background:var(--crimson);color:#fff;border:0;border-radius:14px;padding:10px 14px;font-family:inherit;min-width:0;flex:1 1 240px;max-width:460px}button.ev-c{cursor:pointer}
 .ev-c .ev-g{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9}.ev-c b{font:800 16px "Bricolage Grotesque",sans-serif}.ev-c small{font-size:12px;opacity:.92}
+/*v1.129 événement du réseau dans la grille du calendrier*/
+.cal-evt{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;border-radius:8px;background:var(--crimson);color:#fff;padding:5px 8px;margin:0 0 4px;font-family:inherit;cursor:pointer;min-width:0}
+.cal-evt b{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.cal-evt span{font-size:12px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.cal-evt small{font-size:10.5px;opacity:.9}
+.cal-pts i.ev{background:var(--crimson);width:14px;border-radius:3px}.cal-det .cal-evt{padding:9px 12px;margin-bottom:8px}.cal-det .cal-evt span{font-size:14px}
 </style>
 </head>
 <body>
@@ -2774,8 +2778,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.128.0";
+const APP_VERSION="1.129.0";
 const CHANGELOG=[
+  {v:"1.129.0",date:"20 novembre 2026",notes:{"Ajouté":["Les événements du réseau (l'interclub du 4 décembre) apparaissent dans la grille du calendrier, au mois comme à la semaine, dans l'Agenda et dans Mon groupe : un bandeau rouge sur le jour. Un toucher ouvre l'événement."]}},
   {v:"1.128.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre → Réunions du réseau : « Calendrier en PDF », le calendrier des réunions à venir (mois en cours et mois suivant), à télécharger ou à partager, selon le choix « Mon groupe », « Ma région » ou « Tout le réseau »."]}},
   {v:"1.127.1",date:"20 novembre 2026",notes:{"Modifié":["Calendrier à présenter : les jours sont cernés d'un filet plus marqué, les numéros et les noms des jours sont plus foncés."]}},
   {v:"1.127.0",date:"20 novembre 2026",notes:{"Ajouté":["Événements du réseau (interclub, séminaire…) : en tête de l'Agenda de tous, dans le calendrier à présenter (bandeau rouge sur le jour) et dans les réunions du réseau de l'espace membre. La direction nationale les crée depuis l'Agenda. L'interclub « One team - One Community » du 4 décembre y est.","Espace membre → Réunions du réseau : un choix « Mon groupe », « Ma région », « Tout le réseau »."]}},
@@ -5347,6 +5352,14 @@ function calPuce(m){const c=club(m.clubId),dg=calBougeable(m),st={planifiee:"Pla
   return `<button type="button" class="cal-ev ${m.statut} ${m.type==="RL"?"rl":""}${dg?" dg":""}" style="--vc:${villeColor(c.ville)}" ${dg?`draggable="true" data-reu="${m.id}"`:""} onclick="event.stopPropagation();openMeeting('${m.id}')" title="${esc(c.nom)} · ${esc(typeLib(m))}${m.heure?" · "+esc(m.heure):""} · ${esc(lieuNom(m.lieuId))} · ${st}${dg?" · glisser pour changer de jour":""}">
   <span class="ce-top">${m.heure?`<span class="ce-h">${esc(m.heure.slice(0,5).replace(":","h"))}</span>`:""}<span class="ce-ty">${m.format?FORMAT_ICO[m.format]:m.type}</span><span class="ce-st" aria-label="${st}"></span></span>
   <b>${esc((c.nom||"").replace(/^CAP\s+/,""))}</b><small>${m.lieuId?"📍 "+esc(lieuNom(m.lieuId)):`<i>lieu à définir</i>`}</small></button>`}
+/* v1.129 : les événements du réseau (interclub…) dans la grille du calendrier, pas seulement en tête de l'Agenda. */
+function calEvtsJour(iso){return evts().filter(e=>e.date===iso)}
+function calEvt(e){return `<button type="button" class="cal-evt" data-ev="${e.id}" onclick="event.stopPropagation();evtOuvrir('${e.id}')" title="${esc(e.genre+" · "+e.titre)}"><b>${esc(e.genre)}</b><span>${esc(e.titre)}</span>${e.heure?`<small>${esc(e.heure)}</small>`:""}</button>`}
+function evtOuvrir(id){const e=evts().find(x=>x.id===id);if(!e)return;if(canCreerStructure()){evtForm(id);return}
+  document.getElementById("sheet-content").innerHTML=`<h3>${esc(e.titre)}</h3><p class="fh-note">${esc(e.genre)} · événement de tout le réseau</p>
+    <div class="drow"><div class="tx"><div class="k">Date</div><div class="v">${esc(jourLong(e.date))}${e.heure?" · "+esc(e.heure):""}</div></div></div>
+    <div class="drow"><div class="tx"><div class="k">Lieu</div><div class="v">${esc(e.lieu||"À préciser")}</div></div></div>
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
 function calendrier(list){
   window._calList=list;
   const v=calVue(),cur=calCur(),auj=isoJour(TODAY),parJour={};
@@ -5358,18 +5371,18 @@ function calendrier(list){
     const p=new Date(cur.getFullYear(),cur.getMonth(),1),deb=calLundi(p),wide=isWide();
     titre=MOIS_LONG[p.getMonth()]+" "+p.getFullYear();
     const n=list.filter(m=>m.date.slice(0,7)===isoJour(p).slice(0,7)).length;
-    let cells="";for(let i=0;i<42;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[],hors=d.getMonth()!==p.getMonth();
+    let cells="";for(let i=0;i<42;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[],hors=d.getMonth()!==p.getMonth(),EV=calEvtsJour(iso);
       if(i===35&&hors&&d.getDate()<=7)break;
-      cells+=`<div data-cal-iso="${iso}" class="cal-c${hors?" hors":""}${iso===auj?" auj":""}${window._calJour===iso?" sel":""}${ev.length?" a":""}" style="--i:${i}" ${wide?(peut?`ondblclick="calNouvelle('${iso}')"`:""):`onclick="calJour('${iso}')"`}>
-        <span class="cal-n">${d.getDate()}</span>${wide?ev.slice(0,3).map(calPuce).join("")+(ev.length>3?`<button type="button" class="cal-plus" onclick="event.stopPropagation();calJour('${iso}')">+${ev.length-3}</button>`:""):`<span class="cal-pts">${ev.slice(0,4).map(m=>`<i style="background:${villeColor(club(m.clubId).ville)}"></i>`).join("")}</span>`}</div>`}
+      cells+=`<div data-cal-iso="${iso}" class="cal-c${hors?" hors":""}${iso===auj?" auj":""}${window._calJour===iso?" sel":""}${ev.length||EV.length?" a":""}${EV.length?" evt":""}" style="--i:${i}" ${wide?(peut?`ondblclick="calNouvelle('${iso}')"`:""):`onclick="calJour('${iso}')"`}>
+        <span class="cal-n">${d.getDate()}</span>${wide?EV.map(calEvt).join("")+ev.slice(0,3).map(calPuce).join("")+(ev.length>3?`<button type="button" class="cal-plus" onclick="event.stopPropagation();calJour('${iso}')">+${ev.length-3}</button>`:""):`<span class="cal-pts">${EV.length?`<i class="ev"></i>`:""}${ev.slice(0,4).map(m=>`<i style="background:${villeColor(club(m.clubId).ville)}"></i>`).join("")}</span>`}</div>`}
     corps=`<div class="cal-tete">${jt.map(j=>`<span>${j}</span>`).join("")}</div><div class="cal-mois">${cells}</div>`+(!wide||window._calJour?calDetailJour(window._calJour,parJour):"");
     titre+=`<small>${n} réunion${n>1?"s":""}</small>`;
   }else{
     const deb=calLundi(cur),fin=new Date(deb);fin.setDate(deb.getDate()+6);
     titre=`${deb.getDate()}${deb.getMonth()!==fin.getMonth()?" "+MOIS[deb.getMonth()]:""} – ${fin.getDate()} ${MOIS_LONG[fin.getMonth()].toLowerCase()}`;
-    let cols="";for(let i=0;i<7;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[];
-      cols+=`<div data-cal-iso="${iso}" class="cal-j${iso===auj?" auj":""}${ev.length?" a":""}" style="--i:${i}"><div class="cal-jh"><span>${jt[i]}</span><b>${d.getDate()}</b></div>
-        <div class="cal-jl">${ev.map(calPuce).join("")||`<span class="cal-rien">—</span>`}${peut&&iso>=auj?`<button type="button" class="cal-ajout" onclick="calNouvelle('${iso}')" aria-label="Planifier le ${jourLong(iso)}">+</button>`:""}</div></div>`}
+    let cols="";for(let i=0;i<7;i++){const d=new Date(deb);d.setDate(deb.getDate()+i);const iso=isoJour(d),ev=parJour[iso]||[],EV=calEvtsJour(iso);
+      cols+=`<div data-cal-iso="${iso}" class="cal-j${iso===auj?" auj":""}${ev.length||EV.length?" a":""}" style="--i:${i}"><div class="cal-jh"><span>${jt[i]}</span><b>${d.getDate()}</b></div>
+        <div class="cal-jl">${EV.map(calEvt).join("")+ev.map(calPuce).join("")||`<span class="cal-rien">—</span>`}${peut&&iso>=auj?`<button type="button" class="cal-ajout" onclick="calNouvelle('${iso}')" aria-label="Planifier le ${jourLong(iso)}">+</button>`:""}</div></div>`}
     const n=list.filter(m=>m.date>=isoJour(deb)&&m.date<=isoJour(fin)).length;
     titre+=`<small>${n} réunion${n>1?"s":""} · semaine ${calNumSemaine(deb)}</small>`;
     corps=`<div class="cal-sem">${cols}</div>`;
@@ -5395,8 +5408,8 @@ async function reuDeplacer(id,iso,annulable){const r=DB.reunions.find(x=>x.id===
 function calNumSemaine(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const j=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-j);const a=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-a)/864e5+1)/7)}
 function calDetailJour(iso,parJour){
   if(!iso)return `<p class="cal-astuce">Touche un jour pour voir ses réunions.</p>`;
-  const ev=parJour[iso]||[];
-  return `<div class="cal-det"><div class="cal-det-h"><b>${jourLong(iso)}</b>${!readOnly()&&iso>=isoJour(TODAY)?`<button class="btn mini" onclick="calNouvelle('${iso}')">+ Planifier</button>`:""}</div>${ev.length?ev.map(calPuce).join(""):`<p class="cal-rien">Aucune réunion ce jour-là.</p>`}</div>`;
+  const ev=parJour[iso]||[],EV=calEvtsJour(iso);
+  return `<div class="cal-det"><div class="cal-det-h"><b>${jourLong(iso)}</b>${!readOnly()&&iso>=isoJour(TODAY)?`<button class="btn mini" onclick="calNouvelle('${iso}')">+ Planifier</button>`:""}</div>${EV.map(calEvt).join("")}${ev.length?ev.map(calPuce).join(""):EV.length?"":`<p class="cal-rien">Aucune réunion ce jour-là.</p>`}</div>`;
 }
 function calJour(iso){window._calJour=window._calJour===iso?null:iso;window._calSens=null;calMaj()}
 function calNouvelle(iso){meetingForm(null);const el=document.getElementById("f-date");if(el){el.value=iso;el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}))}}
@@ -10003,7 +10016,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

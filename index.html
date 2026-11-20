@@ -2724,6 +2724,17 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .rg-hist{margin-top:10px;font-size:13px}.rg-hist summary{cursor:pointer;color:var(--muted);font-weight:600}.rg-h{display:flex;flex-direction:column;padding:8px 0;border-bottom:1px dashed var(--line)}.rg-h small{color:var(--muted)}
 .psa-c.a,.vp-j{transition:transform .18s cubic-bezier(.22,.8,.24,1),background .18s,border-color .18s,color .18s}.psa-c.a:active,.vp-j:not(.vide):active{transform:scale(.92)}
 @media(prefers-reduced-motion:reduce){.psa-c.a,.vp-j{transition:none}}
+/*v1.135 créneau PSA réservé : une carte lisible*/
+.psa-l.pris{grid-template-columns:auto minmax(0,1fr);gap:8px 14px;align-items:start;padding:12px 14px;border-left:3px solid #3DAA74;border-radius:12px}
+.psa-l.pris>b{font:800 18px "Bricolage Grotesque",Inter,sans-serif;line-height:1.2}
+.psa-l.pris .psa-q strong{display:block;font-size:14.5px;line-height:1.25}.psa-l.pris .psa-q strong .lien-d{white-space:normal}
+.psa-qs{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}.psa-l.pris .psa-q em{margin-top:4px}
+.psa-modes{grid-column:1/-1;display:flex;gap:4px;padding:3px;border-radius:11px;background:color-mix(in srgb,var(--line) 55%,transparent)}
+.psa-modes button{flex:1;min-height:34px;border:0;background:none;color:var(--muted);border-radius:8px;font:600 12.5px Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s}
+.psa-modes button.on{background:var(--card);color:var(--ink);font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+@media(max-width:420px){.psa-modes button{font-size:11.5px;padding:0 2px}}
+.psa-l.pris .psa-acts{grid-column:1/-1;flex-wrap:wrap;gap:6px;justify-content:flex-end;padding-top:8px;border-top:1px dashed color-mix(in srgb,#3DAA74 40%,transparent)}
+.psa-l.pris .psa-acts .btn{min-height:34px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -2834,8 +2845,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.134.0";
+const APP_VERSION="1.135.0";
 const CHANGELOG=[
+  {v:"1.135.0",date:"20 novembre 2026",notes:{"Corrigé":["Points sur activité : un créneau réservé s'affiche en carte lisible (heure, nom entier, durée et mode, puis les boutons « Lien Zoom », « Agenda » et « Libérer » avec leur libellé) au lieu d'un nom écrasé sur une colonne.","Le nombre « à caler » du cartouche PSA et de la cloche se met à jour dès qu'un animateur réserve (dans la minute), sans recharger la page."],"Ajouté":["Sur un PSA réservé, celui qui le mène choisit comment il se tient : en ligne, sur place ou par téléphone ; l'animateur est prévenu (notification, et message WhatsApp prêt en touchant la confirmation).","Page de réservation de l'animateur : il peut changer le mode de son rendez-vous après coup, son directeur est prévenu."]}},
   {v:"1.134.0",date:"20 novembre 2026",notes:{"Ajouté":["Responsable de région : Réseau → Régions et villes → une région. La direction nationale attribue la région à un compte, le responsable peut la céder, et l'historique des passages de relais reste. Le responsable mène les PSA de sa région.","Points sur activité : en ouvrant des créneaux, la direction choisit la région concernée (celles dont elle est responsable d'abord).","Calendriers (PSA, planning de la région, page de réservation) : le volet du jour s'ouvre, se referme et change en glissant, les mois défilent sur le côté."],"Corrigé":["Pastille « à caler » du cartouche PSA : blanc sur rouge, lisible."]}},
   {v:"1.133.0",date:"20 novembre 2026",notes:{"Corrigé":["L'espace membre et les documents ouverts dans le CRM prennent le thème du CRM (ils pouvaient rester clairs dans un CRM sombre)."],"Ajouté":["Bandeau d'accueil : un cartouche « PSA » à droite ouvre les points sur activité, avec le nombre d'animateurs à caler, en vue nationale comme en vue régionale.","Planning de la région : un calendrier à gauche ; en touchant un jour, les groupes réunis ce jour-là s'affichent à droite avec le détail (type, heure, lieu, animateur, invités, résultat). Sans jour choisi, toutes les réunions du mois et les groupes sans réunion.","Bilans et archives d'un groupe : chaque ligne donne le groupe et son animateur, le jour, l'heure, le lieu, les invités inscrits ou le résultat."]}},
   {v:"1.132.0",date:"20 novembre 2026",notes:{"Corrigé":["Carte du réseau : les villes restent sur la terre et dans le bon ordre le long de la côte (Casablanca n'est plus dans l'océan)."],"Ajouté":["Sur ordinateur, la page de réservation des PSA (calendrier à gauche, heures à droite) et la page d'invitation à une réunion (la réunion à gauche, les explications à droite) prennent la largeur de l'écran. Rien ne change au téléphone."]}},
@@ -6814,7 +6826,12 @@ async function psaCopierMois(btn){const {plan}=psaCopiePlan();if(!plan.length){t
 /* v1.113 : suivi des PSA. Qui a calé le sien ce mois-ci (RPC cap_psa_suivi : tout le réseau pour la direction nationale,
    sa région pour un directeur, sa seule ligne pour un animateur), alertes, planning du réseau en lecture, report dans l'agenda. */
 async function psaSuiviCharger(){let d=null;try{if(SESSION&&SESSION.role!=="visiteur"){const q=await sb.rpc("cap_psa_suivi");if(!q.error)d=q.data}}catch(e){}
-  DB.psaSuivi=d;if(window._DBvrai)window._DBvrai.psaSuivi=d;return d}
+  DB.psaSuivi=d;if(window._DBvrai)window._DBvrai.psaSuivi=d;try{psaPastilleMaj()}catch(e){}return d}
+/* v1.135 : le nombre « à caler » du cartouche PSA et de la cloche suit le suivi dès qu'il est relu (avant : il restait
+   celui du dernier rendu de la page, même après une réservation). */
+function psaPastilleMaj(){const b=document.getElementById("tool-psa");if(b){let n=0;try{n=avecVue(()=>psaACaler().n)}catch(e){}let em=b.querySelector("em");
+    if(n){if(!em){em=document.createElement("em");b.appendChild(em)}em.textContent=n+" à caler"}else if(em)em.remove()}
+  try{avecVue(cnBadge)}catch(e){}}
 function psaSuivi(){return (window._DBvrai&&window._DBvrai.psaSuivi)||DB.psaSuivi||null}
 function psaNat(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
 /* Les régions qui ont des animateurs sans PSA ce mois-ci. En vue régionale, la direction ne voit que la région affichée. */
@@ -6885,8 +6902,12 @@ function psaLienWa(){const l=window._psaLien;if(!l)return;window.open("https://w
 async function psaLienCopier(){const t=document.getElementById("psa-msg").value;try{await navigator.clipboard.writeText(t);toast("Message copié","s")}catch(e){document.getElementById("psa-msg").select();toast("Sélectionné : copie-le à la main","w")}}
 function psaRendu(){const L=psaFutur(),moi=SESSION.id,g=psaGere();
   const miens=L.filter(c=>c.directeur_id===moi),pour=L.filter(c=>c.directeur_id!==moi),maRes=pour.find(c=>c.reserve_par===moi),libres=pour.filter(c=>!c.reserve_par);
-  const ligneDir=c=>`<div class="psa-l ${c.reserve_par?"pris":""}"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${c.reserve_par?`<strong>${esc(c.reserve_nom||"Réservé")}</strong> · ${esc(PSA_MODES[c.mode]||"")}${c.parLien?" · par le lien":""}${c.note?`<em>${esc(c.note)}</em>`:""}`:`<i>Libre</i>`}</span>
-    <span class="psa-acts"><button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗</button>${c.reserve_par?`<a class="btn ghost mini psa-ag" href="${esc(psaAgendaUrl(c,c.reserve_nom))}" target="_blank" rel="noopener" title="Reporter dans Google Agenda">📅</a><button class="btn ghost mini" onclick="psaAnnuler('${c.id}')">Libérer</button>`:`<button class="btn ghost mini" onclick="psaSupprimer('${c.id}')" aria-label="Supprimer le créneau">✕</button>`}</span></div>`;
+  /* v1.135 : un créneau réservé est une carte lisible (heure, nom entier, mode, puis les actions avec leur libellé) */
+  const ligneDir=c=>c.reserve_par?`<div class="psa-l pris"><b>${psaH(c.debut)}</b><span class="psa-q"><strong>${esc(c.reserve_nom||"Réservé")}</strong><span class="psa-qs">${c.duree_min} min · ${esc(PSA_MODES[c.mode]||"")}${c.parLien?" · réservé par le lien":""}${c.lien_visio?" · lien de la réunion posé":""}</span>${c.note?`<em>« ${esc(c.note)} »</em>`:""}</span>
+    <span class="psa-modes" role="radiogroup" aria-label="Comment se tient ce PSA">${Object.entries(PSA_MODES).map(([k,l])=>`<button type="button" role="radio" aria-checked="${c.mode===k}" class="${c.mode===k?"on":""}" data-mode="${k}" onclick="psaModeChoisir('${c.id}','${k}')">${l}</button>`).join("")}</span>
+    <span class="psa-acts">${c.mode==="visio"?`<button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗 ${c.lien_visio?"Lien Zoom ✓":"Ajouter le lien Zoom"}</button>`:""}<a class="btn ghost mini psa-ag" href="${esc(psaAgendaUrl(c,c.reserve_nom))}" target="_blank" rel="noopener" title="Reporter dans Google Agenda">📅 Agenda</a><button class="btn ghost mini" onclick="psaAnnuler('${c.id}')">Libérer</button></span></div>`
+    :`<div class="psa-l"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q"><i>Libre</i></span>
+    <span class="psa-acts"><button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗</button><button class="btn ghost mini" onclick="psaSupprimer('${c.id}')" aria-label="Supprimer le créneau">✕</button></span></div>`;
   const ligneAnim=c=>`<div class="psa-l"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${esc(psaDir(c))}${c.lieu?` · ${esc(c.lieu)}`:""}</span><button class="btn mini" onclick="psaReserverForm('${c.id}')">Réserver</button></div>`;
   const jours=(L2,f)=>psaParJour(L2).map(j=>`<div class="psa-j"><div class="psa-jt">${esc(psaJourLib(j[0].debut))}</div>${j.map(f).join("")}</div>`).join("");
   document.getElementById("sheet-content").innerHTML=`<h3 id="psa-liste">Points sur activité</h3><div class="sheet-sub">Entretiens de 30 à 45 minutes entre le directeur de région et chaque animateur</div>${L.length?psaVueSeg():""}
@@ -6947,6 +6968,17 @@ function psaReserverForm(id){const c=(DB.psa||[]).find(x=>x.id===id);if(!c)retur
     <div class="sheet-actions"><button class="btn ghost" onclick="psaRendu()">Retour</button><button class="btn" onclick="psaReserver('${id}',this)">Réserver ce créneau</button></div>`}
 async function psaReserver(id,btn){btn.disabled=true;const {error}=await sb.rpc("cap_psa_reserver",{p_id:id,p_mode:window._psaMode||"visio",p_note:document.getElementById("psa-note").value||null});btn.disabled=false;
   if(error){toast(rlsMsg(error),"e");await psaCharger();psaRendu();return}await Promise.all([psaCharger(),psaSuiviCharger()]);toast("PSA réservé : ton directeur est prévenu","s");psaRendu();navSous&&avecVue(()=>navSous())}
+/* v1.135 : celui qui mène le PSA choisit comment il se tient (en ligne, sur place, téléphone) */
+async function psaModeChoisir(id,mode){const c=(DB.psa||[]).find(x=>x.id===id);if(!c||c.mode===mode||!PSA_MODES[mode])return;const av=c.mode;c.mode=mode;psaRendu();
+  const {data,error}=await sb.rpc("cap_psa_mode",{p_id:id,p_mode:mode});if(error){c.mode=av;psaRendu();toast(rlsMsg(error),"e");return}
+  const lib=({visio:"en ligne",presentiel:"sur place",telephone:"par téléphone"})[mode],pr=String(c.reserve_nom||"").split(/\s+/)[0];
+  if(c.directeur_id!==SESSION.id&&c.reserve_par===SESSION.id){toast("PSA "+lib+" : ton directeur est prévenu","s");return}
+  /* L'animateur est prévenu par notification s'il a un compte ; dans tous les cas, un toucher prépare le message WhatsApp. */
+  toast("PSA "+lib+(data&&data.compte?" · "+pr+" reçoit une notification":"")+" · touche pour prévenir "+pr+" par WhatsApp","s",()=>psaModePrevenir(id))}
+function psaModePrevenir(id){const c=(DB.psa||[]).find(x=>x.id===id);if(!c)return;const A=((window._DBvrai||DB).animateurs||[]),cle=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(),a=A.find(x=>cle(x.nom)===cle(c.reserve_nom));
+  const tel=a&&a.tel?(typeof telE164==="function"?telE164(a.tel):String(a.tel)).replace(/\D/g,""):"",pr=String(c.reserve_nom||"").split(/\s+/)[0];
+  const txt="Bonjour "+pr+", pour notre point sur activité du "+psaQuand(c.debut)+", on le fait "+({visio:"en ligne (Zoom)",presentiel:"sur place"+(c.lieu?" ("+c.lieu+")":""),telephone:"par téléphone"})[c.mode]+". Dis-moi si ça te va.";
+  window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(txt),"_blank","noopener")}
 async function psaAnnuler(id){const {error}=await sb.rpc("cap_psa_annuler",{p_id:id});if(error){toast(rlsMsg(error),"e");return}await Promise.all([psaCharger(),psaSuiviCharger()]);toast("Créneau libéré","s");psaRendu();navSous&&avecVue(()=>navSous())}
 /* v1.23 : chaque compte de l'équipe s'inscrit lui-même à n'importe quelle réunion du réseau (RPC cap_equipe_inscrire) */
 function equipeViensBloc(m){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";
@@ -10160,6 +10192,7 @@ async function inscritsRelire(){
 async function adhRafraichir(){
   if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
   /* v1.121 : une alerte mise de côté sur un autre appareil disparaît ici aussi (dans la minute, ou au retour sur l'appli). */
+  psaSuiviCharger(); /* v1.135 : un PSA réservé par un animateur se voit ici dans la minute */
   alCharger().then(ch=>{if(!ch)return;try{const sh=document.getElementById("sheet"),a=document.activeElement;if(!(sh&&sh.classList.contains("open")&&!isRail())&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))render();else avecVue(cnBadge)}catch(e){}});
   try{
     const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);

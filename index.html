@@ -1409,7 +1409,7 @@ svg.focus .cst-l:not(.lit){opacity:.3}
   .dm-seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
   .dm-seg button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 12px;font-weight:700;font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
   .dm-seg button em{font-style:normal;background:var(--line);border-radius:99px;padding:0 7px;color:var(--ink)}
-  .dm-seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}.dm-seg button.on em{background:var(--crimson);color:#fff}
+  .dm-seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}.dm-seg button.on em{background:var(--crimson);color:#fff}
   .dm-cols{grid-template-columns:1fr}.dm-col{display:none}.dm-col.on{display:block;animation:dmEntre .35s ease both}
 }
 
@@ -1780,7 +1780,7 @@ body.vue-change .page{animation:vueFlash .6s ease}
 .vr-pn small{display:block;font-weight:500;color:var(--muted);font-size:11px}
 .vr-pt{width:26px;height:26px;border-radius:8px;display:inline-grid;place-items:center;font:700 11px Inter,sans-serif;border:0;cursor:pointer;position:relative;font-style:normal;transition:transform .15s}
 button.vr-pt:hover{transform:scale(1.15)}
-.vr-pt sup{position:absolute;top:-6px;right:-6px;background:var(--ink);color:#fff;border-radius:99px;font-size:9px;padding:1px 4px}
+.vr-pt sup{position:absolute;top:-6px;right:-6px;background:var(--ink);color:var(--paper);border-radius:99px;font-size:9px;padding:1px 4px}
 .vr-pt.f{background:var(--ok);color:#fff}.vr-pt.v{background:var(--crimson-tint);color:var(--crimson-txt,var(--crimson));border:1.5px solid var(--crimson)}
 .vr-pt.b{background:var(--warn-tint);color:var(--warn);border:1.5px dashed var(--warn)}.vr-pt.x{background:var(--soft);color:var(--muted)}
 .vr-pt.p{background:none;border:1.5px dashed var(--line);color:var(--muted)}.vr-pt.p:hover{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson))}
@@ -2150,6 +2150,10 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.118 cartes de notification : fond blanc et texte foncé dans tous les thèmes (le fond suivait --ink, clair en sombre : blanc sur blanc), posées juste au-dessus de la barre du bas au téléphone*/
+.annonce,#notifs .annonce{background:#fff;color:#1B1416;border:1px solid #E2DEDD;box-shadow:0 14px 34px -12px rgba(0,0,0,.5)}.annonce:hover{background:#F6F4F3}
+.annonce .an-t b{color:#1B1416;font-size:14.5px;line-height:1.25}.annonce .an-t small{color:#5E585A;white-space:normal}.annonce .an-go{color:#D81B3F}.annonce .an-ic{background:#EEF2F6}
+@media(max-width:899px){#notifs{bottom:calc(98px + env(safe-area-inset-bottom))}}
 /*v1.117 alertes à fermer ou reporter*/.al-w{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start;margin-bottom:12px}.al-w>:first-child{margin-bottom:0}
 .al-x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:14px;cursor:pointer}.al-x:hover{color:var(--ink);border-color:var(--ink)}
 .al-m{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;font-size:13px}.al-m span{color:var(--muted)}.al-m button{font:600 13px Inter,sans-serif;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}.al-m button:hover{border-color:var(--ink)}
@@ -2721,8 +2725,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.117.0";
+const APP_VERSION="1.118.0";
 const CHANGELOG=[
+  {v:"1.118.0",date:"20 novembre 2026",notes:{"Corrigé":["Cartes de notification : texte foncé sur fond blanc dans tous les thèmes (elles étaient illisibles en thème sombre), et placées juste au-dessus de la barre du bas au téléphone"]}},
   {v:"1.117.0",date:"20 novembre 2026",notes:{"Ajouté":["Chaque alerte de la Synthèse et de Mon groupe se ferme d\u2019un ✕, avec un rappel au choix : en fin de journée, demain ou dans une semaine. Une ligne « rappels en pause » permet de les réafficher"],"Modifié":["Le format « Conférence » s\u2019appelle désormais « Réunion thématique », comme sur le calendrier national"]}},
   {v:"1.116.0",date:"20 novembre 2026",notes:{"Modifié":["Lieux partagés : l\u2019onglet Lieux montre tous les lieux du réseau (bascule « Ma région / Tout le réseau ») avec les groupes qui s\u2019y réunissent ; en créant une réunion, on choisit parmi tous les lieux, ceux de sa ville d\u2019abord, ou on en ajoute un"]}},
   {v:"1.115.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda → « Réunions du réseau » : par région et par groupe, les réunions tenues (bilan en PDF), annulées, déplacées, sans bilan, et les réunions manquantes par rapport au rythme du groupe ; compteurs au mois, au trimestre, à l\u2019année","Direction : « Relancer » l\u2019animateur d\u2019un toucher pour un bilan manquant, un motif d\u2019annulation ou un groupe sans réunion récente","Une réunion annulée demande son motif (fête religieuse, jour férié, vacances, lieu ou animateur indisponible…) ; un déplacement est compté tout seul"]}},

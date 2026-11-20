@@ -15,7 +15,7 @@ Ce qui est livré sort de la liste et va dans `CLAUDE.md`.
 
 | Sujet | Ce qui manque |
 |---|---|
-| Synchronisation automatique des PSA avec Google Agenda | JB doit créer un accès Google (OAuth) ; aujourd'hui : lien prérempli et fichier .ics |
+| Agenda Google en temps réel (connexion du compte Google) | l'abonnement automatique est livré (v1.122) ; la connexion directe demanderait un accès Google au nom de JB et une validation par Google |
 | Rappel automatique la veille d'un PSA | à écrire (même mécanique que les rappels de réunion) |
 | Notification push pour l'alerte « réunions à verrouiller » | aujourd'hui visible seulement dans l'appli |
 | Écran pour ajouter un lien dans les documents du réseau | aujourd'hui par insertion en base |
@@ -47,3 +47,12 @@ Ce qui est livré sort de la liste et va dans `CLAUDE.md`.
 - Verrouiller ses réunions passées ; « Refaire au nom de Chrystel » sur la réunion du 17/12.
 - Installer le script du Google Sheet des leads.
 - Décider du sort des données de test (trois recommandations) et, au national, du doublon d'entreprise de Reda après sa signature.
+
+## Livré le 20/11 (v1.109 → v1.122)
+
+Bilan en PDF (marge rouge, membres d'autres groupes), coffre des comptes du national, planning des PSA par lien, suivi et alertes PSA, PSA en calendrier avec ouverture en série et report de mois, accès au CRM donnés par la direction nationale, réunions du réseau (bilans, réunions manquantes, motif d'annulation, relance), lieux partagés, planning national de novembre et décembre, alertes à reporter (partagées entre appareils), centre de notifications, visite guidée à jour, agenda par abonnement, vidéo de la direction nationale.
+
+## En suspens (décision de JB)
+
+- Interclub « One team - One Community » du 4/12 : pas dans le planning (une réunion exige un groupe).
+- Vidéos animateur et membre avec voix off.

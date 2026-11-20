@@ -56,6 +56,7 @@ button.cj.a.plein{background:transparent;border-style:dashed}button.cj.a.plein s
 button.cj.a.on{background:var(--rouge);border-color:var(--rouge);color:#fff}button.cj.a.on small{color:#fff}
 .msg{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1B1416;color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;max-width:calc(100vw - 32px);z-index:5;pointer-events:none}
 .msg.on{opacity:1;transform:translate(-50%,0)}.msg.ko{background:#8A1C1C}
+.monmode{display:grid;gap:6px}.monmode small{color:var(--muted);font-size:12.5px}
 .cg,.cg1,.cg2{display:contents}
 @media(min-width:900px){.page,.tete .in{max-width:1040px}.page:has(#moi){grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);align-items:start}
 .cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}.cg1,.cg2{display:grid;gap:10px;align-content:start}
@@ -94,6 +95,7 @@ async function rpc(nom,args){
   if(DEMO){demo=demo||demoBase();const c=demo.creneaux.find(x=>x.id===args.p_id);
     if(nom==="cap_psa_reserver_lien"){if(c.etat!=="libre")throw new Error("Créneau déjà pris");c.etat="moi";c.mode=args.p_mode}
     if(nom==="cap_psa_annuler_lien"){c.etat="libre";c.mode=null}
+    if(nom==="cap_psa_mode_lien"){c.mode=args.p_mode}
     return JSON.parse(JSON.stringify(demo))}
   const r=await fetch(SB+"/rest/v1/rpc/"+nom,{method:"POST",headers:{apikey:CLE,Authorization:"Bearer "+CLE,"Content-Type":"application/json"},body:JSON.stringify(args)});
   const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||"Le planning ne répond pas");return j}
@@ -139,6 +141,7 @@ function rendu(force){
     ${moi?`<section class="carte moi" id="moi"><h2>Ton rendez-vous</h2><div class="quand">${esc(jour(moi.debut))} à ${hh(moi.debut)}</div>
       <p class="note">${moi.duree} minutes avec ${esc(D.directeur||"ton directeur")} · ${esc(MODES[moi.mode]||"")}${moi.lieu?" · "+esc(moi.lieu):""}</p>
       ${moi.mode==="visio"?(moi.lien_visio?`<a class="btn" href="${esc(moi.lien_visio)}" target="_blank" rel="noopener">Rejoindre la réunion en ligne</a>`:`<p class="note">Le lien de la réunion en ligne apparaîtra ici avant le rendez-vous. Garde ce lien de planning.</p>`):""}
+      <div class="monmode"><small>Comment veux-tu faire ce point ?</small><div class="seg" role="radiogroup" aria-label="Comment">${Object.entries(MODES).map(([k,v])=>`<button type="button" role="radio" aria-checked="${moi.mode===k}" class="${moi.mode===k?"on":""}" data-monmode="${k}" data-id="${moi.id}">${v}</button>`).join("")}</div></div>
       <div class="deux"><a class="btn gh" id="ag-g" href="${esc(agendaUrl(moi))}" target="_blank" rel="noopener">Google Agenda</a><button class="btn gh" id="ag-ics" data-ics="${moi.id}">Autre agenda</button></div>
       <button class="btn gh" data-annuler="${moi.id}">Annuler ou changer de créneau</button></section>`:""}
     <section class="carte"><h2>${moi?"Les autres créneaux":"Créneaux proposés"}</h2>
@@ -152,7 +155,9 @@ function calme(){return window.matchMedia&&matchMedia("(prefers-reduced-motion: 
 function glisse(el,h0){if(!el||calme()||!el.animate)return;const h=el.offsetHeight;if(h){el.style.overflow="hidden";const a=el.animate([{height:(h0||0)+"px"},{height:h+"px"}],{duration:340,easing:"cubic-bezier(.22,.8,.24,1)"});a.onfinish=a.oncancel=()=>{el.style.overflow=""}}
   [...el.children].forEach((c,i)=>c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:280,delay:Math.min(i,7)*30,easing:"cubic-bezier(.22,.8,.24,1)",fill:"backwards"}))}
 document.addEventListener("click",async e=>{
-  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics],[data-jour],[data-mois]");if(!b)return;
+  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics],[data-jour],[data-mois],[data-monmode]");if(!b)return;
+  /* v1.135 : changer le mode après la réservation ; le directeur est prévenu */
+  if(b.dataset.monmode){if(b.classList.contains("on")||enCours)return;enCours=true;try{await rpc("cap_psa_mode_lien",{p_jeton:J,p_id:b.dataset.id,p_mode:b.dataset.monmode});enCours=false;await charger();dire("C'est noté : ton directeur est prévenu")}catch(x){enCours=false;await charger();dire(x.message,true)}return}
   if(b.dataset.jour){const c0=document.querySelector(".cg2"),h0=c0?c0.offsetHeight:0;jourSel=jourSel===b.dataset.jour?"":b.dataset.jour;ouvert=null;rendu();glisse(document.querySelector(".cg2"),h0);const z=document.getElementById("jour-sel");if(z)z.scrollIntoView({block:"nearest",behavior:"smooth"});return}
   if(b.dataset.mois){const [y,m]=moisAff.split("-").map(Number),d=new Date(y,m-1+(+b.dataset.mois),1);moisAff=d.getFullYear()+"-"+p2(d.getMonth()+1);jourSel="";ouvert=null;rendu();const g=document.querySelector(".calg");if(g&&g.animate&&!calme())g.animate([{opacity:0,transform:"translateX("+(+b.dataset.mois>0?26:-26)+"px)"},{opacity:1,transform:"none"}],{duration:300,easing:"cubic-bezier(.22,.8,.24,1)"});return}
   if(b.dataset.ics){const c=(D.creneaux||[]).find(x=>x.id===b.dataset.ics);if(c)agendaIcs(c);return}

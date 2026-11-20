@@ -55,3 +55,5 @@ Bilan en PDF (marge rouge, membres d'autres groupes), coffre des comptes du nati
 ## En suspens (décision de JB)
 
 - Vidéos animateur et membre avec voix off.
+- Étendre les animations glissées (`glisseOuvre`, `glisseFerme`, `glisseCote`) aux autres volets qui apparaissent d'un coup (détail d'un jour de l'Agenda au téléphone, lignes dépliées des listes compactes, onglets de Mon groupe).
+- Attribuer un responsable à Casablanca, Marrakech et Tanger (Réseau → Régions et villes).

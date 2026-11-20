@@ -147,10 +147,14 @@ function rendu(force){
       ${L.length&&!libres&&!moi?`<p class="note">Tous les créneaux sont pris. Préviens ton directeur pour qu'il en ouvre d'autres.</p>`:""}
       ${moi?`<p class="note">Pour changer d'heure, annule d'abord ton créneau.</p>`:""}</section>`;
   majDirect()}
+/* v1.134 : les heures du jour glissent au lieu d'apparaître d'un coup */
+function calme(){return window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches}
+function glisse(el,h0){if(!el||calme()||!el.animate)return;const h=el.offsetHeight;if(h){el.style.overflow="hidden";const a=el.animate([{height:(h0||0)+"px"},{height:h+"px"}],{duration:340,easing:"cubic-bezier(.22,.8,.24,1)"});a.onfinish=a.oncancel=()=>{el.style.overflow=""}}
+  [...el.children].forEach((c,i)=>c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:280,delay:Math.min(i,7)*30,easing:"cubic-bezier(.22,.8,.24,1)",fill:"backwards"}))}
 document.addEventListener("click",async e=>{
   const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics],[data-jour],[data-mois]");if(!b)return;
-  if(b.dataset.jour){jourSel=jourSel===b.dataset.jour?"":b.dataset.jour;ouvert=null;rendu();const z=document.getElementById("jour-sel");if(z)z.scrollIntoView({block:"nearest",behavior:"smooth"});return}
-  if(b.dataset.mois){const [y,m]=moisAff.split("-").map(Number),d=new Date(y,m-1+(+b.dataset.mois),1);moisAff=d.getFullYear()+"-"+p2(d.getMonth()+1);jourSel="";ouvert=null;rendu();return}
+  if(b.dataset.jour){const c0=document.querySelector(".cg2"),h0=c0?c0.offsetHeight:0;jourSel=jourSel===b.dataset.jour?"":b.dataset.jour;ouvert=null;rendu();glisse(document.querySelector(".cg2"),h0);const z=document.getElementById("jour-sel");if(z)z.scrollIntoView({block:"nearest",behavior:"smooth"});return}
+  if(b.dataset.mois){const [y,m]=moisAff.split("-").map(Number),d=new Date(y,m-1+(+b.dataset.mois),1);moisAff=d.getFullYear()+"-"+p2(d.getMonth()+1);jourSel="";ouvert=null;rendu();const g=document.querySelector(".calg");if(g&&g.animate&&!calme())g.animate([{opacity:0,transform:"translateX("+(+b.dataset.mois>0?26:-26)+"px)"},{opacity:1,transform:"none"}],{duration:300,easing:"cubic-bezier(.22,.8,.24,1)"});return}
   if(b.dataset.ics){const c=(D.creneaux||[]).find(x=>x.id===b.dataset.ics);if(c)agendaIcs(c);return}
   const ta=document.getElementById("note");if(ta)note=ta.value;
   if(b.dataset.ouvrir){ouvert=b.dataset.ouvrir;rendu();return}

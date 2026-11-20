@@ -65,6 +65,14 @@ let D=null,ouvert=null,mode="visio",enCours=false,dernier=0,note="";
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const hh=iso=>{const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")};
 const jour=iso=>new Date(iso).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+/* Report dans l'agenda : lien prérempli pour Google, fichier .ics pour les autres (Apple, Outlook). */
+const zz=x=>x.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+function agendaTxt(c){return ["Point sur activité (PSA) avec "+((D&&D.directeur)||"ton directeur de région"),MODES[c.mode]||"",c.lien_visio?"Lien de la réunion : "+c.lien_visio:""].filter(Boolean)}
+function agendaUrl(c){const d=new Date(c.debut),f=new Date(d.getTime()+c.duree*60e3);
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("PSA · "+((D&&D.directeur)||"Protéine"))+"&dates="+zz(d)+"/"+zz(f)+"&details="+encodeURIComponent(agendaTxt(c).join("\n"))+"&location="+encodeURIComponent(c.lieu||c.lien_visio||"")}
+function agendaIcs(c){const d=new Date(c.debut),f=new Date(d.getTime()+c.duree*60e3),e=t=>String(t).replace(/([,;\\])/g,"\\$1");
+  const t=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//CAP Proteine//PSA//FR","BEGIN:VEVENT","UID:psa-"+c.id+"@cap-proteine","DTSTAMP:"+zz(new Date()),"DTSTART:"+zz(d),"DTEND:"+zz(f),"SUMMARY:"+e("PSA · "+((D&&D.directeur)||"Protéine")),"DESCRIPTION:"+agendaTxt(c).map(e).join("\\n"),c.lieu||c.lien_visio?"LOCATION:"+e(c.lieu||c.lien_visio):"","BEGIN:VALARM","TRIGGER:-PT30M","ACTION:DISPLAY","DESCRIPTION:PSA","END:VALARM","END:VEVENT","END:VCALENDAR"].filter(Boolean).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/calendar"}));a.download="psa.ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
 function dire(t,ko){const m=document.getElementById("msg");m.textContent=t;m.className="msg on"+(ko?" ko":"");clearTimeout(dire.t);dire.t=setTimeout(()=>m.className="msg",ko?4600:2600)}
 /* Démonstration (psa.html?demo) : rien n'est lu ni écrit en base. */
 let demo=null;
@@ -106,6 +114,7 @@ function rendu(force){
     ${moi?`<section class="carte moi" id="moi"><h2>Ton rendez-vous</h2><div class="quand">${esc(jour(moi.debut))} à ${hh(moi.debut)}</div>
       <p class="note">${moi.duree} minutes avec ${esc(D.directeur||"ton directeur")} · ${esc(MODES[moi.mode]||"")}${moi.lieu?" · "+esc(moi.lieu):""}</p>
       ${moi.mode==="visio"?(moi.lien_visio?`<a class="btn" href="${esc(moi.lien_visio)}" target="_blank" rel="noopener">Rejoindre la réunion en ligne</a>`:`<p class="note">Le lien de la réunion en ligne apparaîtra ici avant le rendez-vous. Garde ce lien de planning.</p>`):""}
+      <div class="deux"><a class="btn gh" id="ag-g" href="${esc(agendaUrl(moi))}" target="_blank" rel="noopener">Google Agenda</a><button class="btn gh" id="ag-ics" data-ics="${moi.id}">Autre agenda</button></div>
       <button class="btn gh" data-annuler="${moi.id}">Annuler ou changer de créneau</button></section>`:""}
     <section class="carte"><h2>${moi?"Les autres créneaux":"Créneaux proposés"}</h2>
       <div class="direct" id="direct"><i></i><span></span></div>
@@ -114,7 +123,8 @@ function rendu(force){
       ${moi?`<p class="note">Pour changer d'heure, annule d'abord ton créneau.</p>`:""}</section>`;
   majDirect()}
 document.addEventListener("click",async e=>{
-  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler]");if(!b)return;
+  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics]");if(!b)return;
+  if(b.dataset.ics){const c=(D.creneaux||[]).find(x=>x.id===b.dataset.ics);if(c)agendaIcs(c);return}
   const ta=document.getElementById("note");if(ta)note=ta.value;
   if(b.dataset.ouvrir){ouvert=b.dataset.ouvrir;rendu();return}
   if(b.dataset.fermer){ouvert=null;rendu();return}

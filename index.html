@@ -2150,6 +2150,9 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.113 suivi des PSA*/button.va.psa-al{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;text-align:left;font:inherit;color:var(--ink);cursor:pointer}.psa-ch{font-size:18px;color:var(--muted)}
+.psa-et{flex:none;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}.psa-et.zero{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.psa-an.fait{opacity:.7}.psa-ok2{color:#1E9E63;font-weight:700}.psa-zt{font-weight:700;margin-top:6px}.psa-q em{display:block;font-style:normal;color:var(--muted);font-size:12px}a.psa-ag{text-decoration:none}
 /*v1.111*/.psa-l.psa-an{grid-template-columns:minmax(0,1fr) auto}.psa-an em{display:block;font-style:normal;color:var(--muted);font-size:12px}
 /*v1.25 PSA*/.psa-bloc{border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0;display:grid;gap:8px}.psa-moi{border-color:#3DAA74}
 .psa-bt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.psa-bt span{color:var(--muted);font-size:12.5px}.psa-bt .btn{margin-left:auto}
@@ -2705,8 +2708,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.112.0";
+const APP_VERSION="1.113.0";
 const CHANGELOG=[
+  {v:"1.113.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : suivi par région — qui a calé son PSA ce mois-ci, qui est à relancer (bouton « Relancer » = notification sur son téléphone), quelle région n\u2019a aucun créneau ouvert","Alerte « PSA à caler » sur la Synthèse et Mon groupe, pour l\u2019animateur comme pour les directeurs, et rappel automatique chaque lundi matin","Direction nationale : planning des PSA de tout le réseau, en lecture seule","Bouton pour reporter un PSA dans Google Agenda (ou un autre agenda depuis le lien de planning)"]}},
   {v:"1.112.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF : nouvelle mise en page — marge rouge étroite avec le numéro de la réunion, la date, l\u2019heure, le lieu et l\u2019animateur ; chiffres posés sur des filets ; membres, membres d\u2019autres groupes et invités en lignes"]}},
   {v:"1.111.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : « Envoyer le planning par lien » — l\u2019animateur qui n\u2019utilise pas encore le CRM ouvre son lien, voit les créneaux et réserve le sien sans compte. Un créneau pris se verrouille aussitôt pour tout le monde, et la liste se met à jour toute seule"]}},
   {v:"1.110.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi d\u2019une adhésion au CRM national : ouvert à toute l\u2019équipe (animateurs, directeurs de région, direction nationale), chacun avec son propre compte du national","Paramètres → Coffre des comptes du national (super admin seulement) : relire l\u2019identifiant et le mot de passe saisis par chacun, pour les redonner en cas d\u2019oubli"]}},
@@ -3395,6 +3399,7 @@ async function loadDB(){
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   await natComptesCharger();
+  await psaSuiviCharger(); // v1.113
   if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.psa=[];try{const ps=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!ps.error)DB.psa=psaNorm(ps.data||[])}catch(e){} // v1.25 PSA
@@ -3499,7 +3504,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
-  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();
+  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();psaAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);espPrecharger();
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();ouvrirLienCompteNat();
@@ -4581,7 +4586,7 @@ function viewGroupe(){
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.sansBilan.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte à outils</span><span class="tel-seul">Boîte à outils</span></button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
-    ${bascule}${choix}${grpSeance(c)}${verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id)}
+    ${bascule}${choix}${grpSeance(c)}${verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id)}${SESSION&&SESSION.role==="animateur"?psaAlerte():""}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
@@ -6164,7 +6169,7 @@ function viewDashboard(reg){
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -6501,13 +6506,54 @@ function psaJourLib(iso){const d=new Date(iso);return d.toLocaleDateString("fr-F
 function psaH(iso){const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")}
 function psaParJour(L){const g=new Map();L.forEach(c=>{const k=new Date(c.debut).toDateString();(g.get(k)||g.set(k,[]).get(k)).push(c)});return [...g.values()]}
 async function psaCharger(){const {data,error}=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!error)DB.psa=psaNorm(data||[]);return !error}
+/* v1.113 : suivi des PSA. Qui a calé le sien ce mois-ci (RPC cap_psa_suivi : tout le réseau pour la direction nationale,
+   sa région pour un directeur, sa seule ligne pour un animateur), alertes, planning du réseau en lecture, report dans l'agenda. */
+async function psaSuiviCharger(){let d=null;try{if(SESSION&&SESSION.role!=="visiteur"){const q=await sb.rpc("cap_psa_suivi");if(!q.error)d=q.data}}catch(e){}
+  DB.psaSuivi=d;if(window._DBvrai)window._DBvrai.psaSuivi=d;return d}
+function psaSuivi(){return (window._DBvrai&&window._DBvrai.psaSuivi)||DB.psaSuivi||null}
+function psaNat(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
+/* Les régions qui ont des animateurs sans PSA ce mois-ci. En vue régionale, la direction ne voit que la région affichée. */
+function psaACaler(){const s=psaSuivi();if(!s)return{n:0,regs:[],portee:""};let R=s.regions||[];
+  try{if(s.portee==="national"&&vueMode()==="reg"){const n=vueRegion().nom;R=R.filter(r=>r.nom===n)}}catch(e){}
+  const regs=R.map(r=>({r,l:(r.animateurs||[]).filter(a=>a.a_caler)})).filter(x=>x.l.length);return{n:regs.reduce((t,x)=>t+x.l.length,0),regs,portee:s.portee,toutes:R}}
+function psaQuand(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+" à "+psaH(iso)}
+function psaAlerte(){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";const k=psaACaler();if(!k.n)return"";
+  if(k.portee==="moi"){const r=k.regs[0].r;return `<button type="button" class="va psa-al" id="psa-al" onclick="openPSA()"><span class="va-i">📅</span><span class="va-s"><b>Ton point sur activité de ce mois n'est pas calé</b><small>${r.libres?r.libres+" créneau"+(r.libres>1?"x":"")+" libre"+(r.libres>1?"s":"")+" : choisis le tien":"Ton directeur n'a pas encore ouvert de créneau"}</small></span><span class="psa-ch">›</span></button>`}
+  const sans=k.regs.filter(x=>!x.r.libres).length;
+  return `<details class="va" id="psa-al" ${window._psaAlOuv?"open":""} ontoggle="window._psaAlOuv=this.open"><summary><span class="va-i">📅</span><span class="va-s"><b>${k.n} animateur${k.n>1?"s":""} sans point sur activité ce mois-ci</b><small>${sans?sans+" région"+(sans>1?"s":"")+" sans créneau ouvert":"Des créneaux sont ouverts : il reste à les relancer"}</small></span></summary>
+    <div class="va-l">${k.regs.map(x=>`<div class="va-r"><button type="button" class="va-t" onclick="openPSA()"><b>${esc(x.r.nom)} · ${x.l.length} à caler</b><small>${esc(x.l.map(a=>a.nom).join(", "))}</small></button><span class="psa-et ${x.r.libres?"":"zero"}">${x.r.libres?x.r.libres+" libre"+(x.r.libres>1?"s":""):"Aucun créneau"}</span></div>`).join("")}</div></details>`}
+function psaAnnonce(){try{if(!SESSION||SESSION.role==="visiteur"||SESSION._voir||sessionStorage.getItem("cap-psa-vu"))return;const k=psaACaler();if(!k.n)return;sessionStorage.setItem("cap-psa-vu","1");
+  setTimeout(()=>{try{annonce("📅",k.portee==="moi"?"Ton PSA de ce mois n'est pas calé":k.n+" animateur"+(k.n>1?"s":"")+" sans PSA ce mois-ci",k.portee==="moi"?"Touche pour choisir ton créneau":"Touche pour voir qui relancer",()=>openPSA())}catch(e){}},9000)}catch(e){}}
+/* Dans l'écran des PSA : le suivi par région (directeur et direction nationale). */
+function psaSuiviBloc(){const s=psaSuivi();if(!s||s.portee==="moi")return"";let R=s.regions||[];try{if(s.portee==="national"&&vueMode()==="reg"){const n=vueRegion().nom;R=R.filter(r=>r.nom===n)}}catch(e){}
+  R=R.filter(r=>(r.animateurs||[]).length);if(!R.length)return"";
+  const ligne=a=>{const et=a.prochain?`PSA le ${esc(psaQuand(a.prochain))}`:a.a_caler?(a.dernier?`Dernier PSA le ${esc(psaQuand(a.dernier))}`:"Aucun PSA encore"):`PSA tenu le ${esc(psaQuand(a.dernier))}`;
+    return `<div class="psa-l psa-an ${a.a_caler?"":"fait"}" data-psaan="${a.id}"><span class="psa-q"><strong>${esc(a.nom)}</strong><em>${esc((a.groupes||[]).map(g=>String(g).replace(/^CAP\s+/,"")).join(", "))} · ${et}</em></span>
+      ${a.a_caler?`<span class="psa-acts"><button class="btn ghost mini" title="Lui envoyer le planning par lien" onclick="psaLienFaire('${a.id}',null,this)">🔗</button><button class="btn mini" onclick="psaRelancer('${a.id}',this)">Relancer</button></span>`:`<span class="psa-ok2">✓</span>`}</div>`};
+  return R.map(r=>{const n=(r.animateurs||[]).filter(a=>a.a_caler).length,dirs=(r.directeurs||[]).map(d=>d.nom).join(", ");
+    return `<div class="psa-bloc psa-reg" data-psareg="${r.zone_id}"><div class="psa-bt"><b>${esc(r.nom)}</b><span>${n?n+" à caler":"Tous calés"} · ${r.libres} créneau${r.libres>1?"x":""} libre${r.libres>1?"s":""}</span></div>
+      <p class="fh-note">${dirs?"PSA menés par "+esc(dirs):"Pas de directeur de région : PSA à mener par la direction nationale"}${n&&!r.libres?" · <b>aucun créneau ouvert</b>":""}</p>${r.animateurs.map(ligne).join("")}</div>`}).join("")}
+async function psaRelancer(animId,btn){btn.disabled=true;const {data,error}=await sb.rpc("cap_psa_relancer",{p_anim:animId});btn.disabled=false;if(error){toast(rlsMsg(error),"e");return}
+  if(data&&data.compte===false){toast("Pas de compte sur le CRM : envoie-lui son lien de planning (🔗)","w");return}btn.textContent="Relancé ✓";btn.disabled=true;toast("Notification envoyée sur son téléphone","s")}
+/* Direction nationale : le planning de tous les directeurs, en lecture seule. */
+function psaZoneNom(id){const z=((window._DBvrai||DB).zones||[]).find(x=>x.id===id);return z?z.nom:"Hors région"}
+function psaPlanning(L){if(!L.length)return `<div class="psa-bloc" id="psa-plan"><div class="psa-bt"><b>Planning du réseau</b><span>lecture seule</span></div><p class="fh-note">Aucun autre directeur n'a de créneau à venir.</p></div>`;
+  const parZ=new Map();L.forEach(c=>{const k=psaZoneNom(c.zone_id);(parZ.get(k)||parZ.set(k,[]).get(k)).push(c)});
+  const l=c=>`<div class="psa-l ${c.reserve_par?"pris":""}"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${c.reserve_par?`<strong>${esc(c.reserve_nom||"Réservé")}</strong> · ${esc(PSA_MODES[c.mode]||"")}`:`<i>Libre</i>`}<em>avec ${esc(psaDir(c))}</em></span></div>`;
+  return `<div class="psa-bloc" id="psa-plan"><div class="psa-bt"><b>Planning du réseau</b><span>lecture seule · ${L.filter(c=>c.reserve_par).length} réservé${L.filter(c=>c.reserve_par).length>1?"s":""} sur ${L.length}</span></div>
+    ${[...parZ.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([z,cs])=>`<div class="psa-zt">${esc(z)}</div>${psaParJour(cs).map(j=>`<div class="psa-j"><div class="psa-jt">${esc(psaJourLib(j[0].debut))}</div>${j.map(l).join("")}</div>`).join("")}`).join("")}</div>`}
+/* Report dans Google Agenda : un lien prérempli, sans connexion de compte. */
+function psaAgendaUrl(c,avec){const d=new Date(c.debut),f=new Date(d.getTime()+(c.duree_min||30)*60e3),z=x=>x.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  const mode=c.mode?String(PSA_MODES[c.mode]||"").replace(/^\S+\s/,""):"";
+  const det=["Point sur activité (PSA)"+(avec?" avec "+avec:""),mode,c.lien_visio?"Lien de la réunion : "+c.lien_visio:"",c.note?"Note : "+c.note:""].filter(Boolean).join("\n");
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("PSA"+(avec?" · "+avec:""))+"&dates="+z(d)+"/"+z(f)+"&details="+encodeURIComponent(det)+"&location="+encodeURIComponent(c.lieu||c.lien_visio||"")}
 /* v1.111 : un créneau pris par un lien de planning (psa.html) n'a pas forcément de compte derrière : il compte comme pris. */
 function psaNorm(L){(L||[]).forEach(c=>{c.parLien=!!c.reserve_lien;if(!c.reserve_par&&c.reserve_lien)c.reserve_par="lien"});return L}
-async function openPSA(){document.getElementById("sheet-content").innerHTML=`<h3>Points sur activité</h3>${skLignes?skLignes(4):""}`;openSheet();await psaCharger();psaRendu();navSous&&avecVue(()=>navSous());psaDirect()}
+async function openPSA(){document.getElementById("sheet-content").innerHTML=`<h3>Points sur activité</h3>${skLignes?skLignes(4):""}`;openSheet();await Promise.all([psaCharger(),psaSuiviCharger()]);psaRendu();navSous&&avecVue(()=>navSous());psaDirect()}
 /* Tant que la liste est à l'écran, elle se relit toutes les 10 secondes : une réservation faite ailleurs apparaît sans rien toucher. */
 function psaDirect(){clearInterval(window._psaT);window._psaT=setInterval(async()=>{const el=document.getElementById("psa-liste");
   if(!el||!document.getElementById("sheet").classList.contains("open")){if(!document.getElementById("sheet").classList.contains("open"))clearInterval(window._psaT);return}
-  if(document.hidden)return;const av=JSON.stringify(DB.psa);if(await psaCharger()&&JSON.stringify(DB.psa)!==av&&document.getElementById("psa-liste")){psaRendu();navSous&&avecVue(()=>navSous())}},10000)}
+  if(document.hidden)return;const av=JSON.stringify(DB.psa);if(await psaCharger()&&JSON.stringify(DB.psa)!==av&&document.getElementById("psa-liste")){await psaSuiviCharger();psaRendu();navSous&&avecVue(()=>navSous())}},10000)}
 function psaLienUrl(j){return SITE_PUBLIC+"/psa.html?j="+j}
 function psaLienMsg(nom,j){return `Bonjour ${String(nom||"").split(/\s+/)[0]},\n\nVoici le planning de nos points sur activité (PSA). Choisis ton créneau ici, il se réserve en un toucher et se bloque aussitôt pour les autres :\n${psaLienUrl(j)}\n\n${SESSION.name||""}`}
 /* Les animateurs de la région du directeur (hors lui-même), pour leur envoyer leur lien. */
@@ -6535,17 +6581,17 @@ async function psaLienCopier(){const t=document.getElementById("psa-msg").value;
 function psaRendu(){const L=psaFutur(),moi=SESSION.id,g=psaGere();
   const miens=L.filter(c=>c.directeur_id===moi),pour=L.filter(c=>c.directeur_id!==moi),maRes=pour.find(c=>c.reserve_par===moi),libres=pour.filter(c=>!c.reserve_par);
   const ligneDir=c=>`<div class="psa-l ${c.reserve_par?"pris":""}"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${c.reserve_par?`<strong>${esc(c.reserve_nom||"Réservé")}</strong> · ${esc(PSA_MODES[c.mode]||"")}${c.parLien?" · par le lien":""}${c.note?`<em>${esc(c.note)}</em>`:""}`:`<i>Libre</i>`}</span>
-    <span class="psa-acts"><button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗</button>${c.reserve_par?`<button class="btn ghost mini" onclick="psaAnnuler('${c.id}')">Libérer</button>`:`<button class="btn ghost mini" onclick="psaSupprimer('${c.id}')" aria-label="Supprimer le créneau">✕</button>`}</span></div>`;
+    <span class="psa-acts"><button class="btn ghost mini${c.lien_visio?" psa-ok":""}" onclick="psaLienForm('${c.id}')" title="${c.lien_visio?"Lien de la réunion : "+esc(c.lien_visio):"Ajouter le lien de la réunion (Zoom)"}">🔗</button>${c.reserve_par?`<a class="btn ghost mini psa-ag" href="${esc(psaAgendaUrl(c,c.reserve_nom))}" target="_blank" rel="noopener" title="Reporter dans Google Agenda">📅</a><button class="btn ghost mini" onclick="psaAnnuler('${c.id}')">Libérer</button>`:`<button class="btn ghost mini" onclick="psaSupprimer('${c.id}')" aria-label="Supprimer le créneau">✕</button>`}</span></div>`;
   const ligneAnim=c=>`<div class="psa-l"><b>${psaH(c.debut)}</b><small>${c.duree_min} min</small><span class="psa-q">${esc(psaDir(c))}${c.lieu?` · ${esc(c.lieu)}`:""}</span><button class="btn mini" onclick="psaReserverForm('${c.id}')">Réserver</button></div>`;
   const jours=(L2,f)=>psaParJour(L2).map(j=>`<div class="psa-j"><div class="psa-jt">${esc(psaJourLib(j[0].debut))}</div>${j.map(f).join("")}</div>`).join("");
   document.getElementById("sheet-content").innerHTML=`<h3 id="psa-liste">Points sur activité</h3><div class="sheet-sub">Entretiens de 30 à 45 minutes entre le directeur de région et chaque animateur</div>
     ${g?`<div class="psa-bloc"><div class="psa-bt"><b>Mes créneaux</b><span>${miens.filter(c=>c.reserve_par).length} réservé${miens.filter(c=>c.reserve_par).length>1?"s":""} sur ${miens.length}</span><button class="btn mini" onclick="psaForm()">＋ Ouvrir des créneaux</button></div>
       <button class="btn ghost mini" id="psa-liens" onclick="psaLiens()">🔗 Envoyer le planning par lien à un animateur</button>
-      ${miens.length?jours(miens,ligneDir):`<p class="fh-note">Aucun créneau ouvert. Ouvre une plage (par exemple mardi de 9h à 12h) : elle est découpée en créneaux, et les animateurs de ta région réservent le leur.</p>`}</div>`:""}
-    ${maRes?`<div class="psa-bloc psa-moi"><div class="psa-bt"><b>Ton PSA</b></div><div class="psa-l pris"><b>${psaH(maRes.debut)}</b><small>${esc(psaJourLib(maRes.debut))}</small><span class="psa-q">avec ${esc(psaDir(maRes))} · ${esc(PSA_MODES[maRes.mode]||"")}${maRes.lieu?` · ${esc(maRes.lieu)}`:""}</span><button class="btn ghost mini" onclick="psaAnnuler('${maRes.id}')">Annuler</button></div>${maRes.mode==="visio"?(maRes.lien_visio?`<a class="btn psa-zoom" href="${esc(maRes.lien_visio)}" target="_blank" rel="noopener">🎥 Rejoindre la réunion</a>`:`<p class="fh-note">Le lien de la réunion en ligne sera ajouté ici par ton directeur avant le rendez-vous.</p>`):""}</div>`:""}
-    ${!maRes&&(libres.length||!g)?`<div class="psa-bloc"><div class="psa-bt"><b>Créneaux disponibles</b><span>${libres.length}</span></div>${libres.length?jours(libres,ligneAnim):`<p class="fh-note">Pas de créneau ouvert pour l'instant. Ton directeur de région en proposera bientôt ; tu seras prévenu ici.</p>`}</div>`:""}
+      ${miens.length?jours(miens,ligneDir):`<p class="fh-note">Aucun créneau ouvert. Ouvre une plage (par exemple mardi de 9h à 12h) : elle est découpée en créneaux, et les animateurs de ta région réservent le leur.</p>`}</div>${psaSuiviBloc()}`:""}
+    ${maRes?`<div class="psa-bloc psa-moi"><div class="psa-bt"><b>Ton PSA</b></div><div class="psa-l pris"><b>${psaH(maRes.debut)}</b><small>${esc(psaJourLib(maRes.debut))}</small><span class="psa-q">avec ${esc(psaDir(maRes))} · ${esc(PSA_MODES[maRes.mode]||"")}${maRes.lieu?` · ${esc(maRes.lieu)}`:""}</span><button class="btn ghost mini" onclick="psaAnnuler('${maRes.id}')">Annuler</button></div><a class="btn ghost mini psa-ag" id="psa-ag-moi" href="${esc(psaAgendaUrl(maRes,psaDir(maRes)))}" target="_blank" rel="noopener">📅 Reporter dans mon Google Agenda</a>${maRes.mode==="visio"?(maRes.lien_visio?`<a class="btn psa-zoom" href="${esc(maRes.lien_visio)}" target="_blank" rel="noopener">🎥 Rejoindre la réunion</a>`:`<p class="fh-note">Le lien de la réunion en ligne sera ajouté ici par ton directeur avant le rendez-vous.</p>`):""}</div>`:""}
+    ${psaNat()?psaPlanning(pour):!maRes&&(libres.length||!g)?`<div class="psa-bloc"><div class="psa-bt"><b>Créneaux disponibles</b><span>${libres.length}</span></div>${libres.length?jours(libres,ligneAnim):`<p class="fh-note">Pas de créneau ouvert pour l'instant. Ton directeur de région en proposera bientôt ; tu seras prévenu ici.</p>`}</div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`}
-function psaDir(c){const a=(DB.acces||[]).find(x=>x.id===c.directeur_id);return a&&a.nom||(c.directeur_id===SESSION.id?SESSION.name:"Le directeur de région")}
+function psaDir(c){const s=psaSuivi();let n="";if(s)(s.regions||[]).forEach(r=>(r.directeurs||[]).forEach(d=>{if(d.id===c.directeur_id)n=d.nom}));if(n)return n;const a=(DB.acces||[]).find(x=>x.id===c.directeur_id);return a&&a.nom||(c.directeur_id===SESSION.id?SESSION.name:"Le directeur de région")}
 function psaZoneId(){const n=vueRegion().nom,z=(DB.zones||[]).find(x=>x.nom===n);return z?z.id:(SESSION.zoneId||null)}
 function psaForm(){const dm=new Date(Date.now()+864e5),iso=dm.getFullYear()+"-"+String(dm.getMonth()+1).padStart(2,"0")+"-"+String(dm.getDate()).padStart(2,"0");window._psaDuree=window._psaDuree||30;
   document.getElementById("sheet-content").innerHTML=`<h3>Ouvrir des créneaux PSA</h3><div class="sheet-sub">Région ${esc(vueRegion().nom)} : la plage est découpée en créneaux</div>
@@ -6582,8 +6628,8 @@ function psaReserverForm(id){const c=(DB.psa||[]).find(x=>x.id===id);if(!c)retur
     <div class="field"><label>Un mot pour préparer <small>(facultatif)</small></label><textarea id="psa-note" rows="3" maxlength="400" placeholder="Ce dont tu veux parler"></textarea></div>
     <div class="sheet-actions"><button class="btn ghost" onclick="psaRendu()">Retour</button><button class="btn" onclick="psaReserver('${id}',this)">Réserver ce créneau</button></div>`}
 async function psaReserver(id,btn){btn.disabled=true;const {error}=await sb.rpc("cap_psa_reserver",{p_id:id,p_mode:window._psaMode||"visio",p_note:document.getElementById("psa-note").value||null});btn.disabled=false;
-  if(error){toast(rlsMsg(error),"e");await psaCharger();psaRendu();return}await psaCharger();toast("PSA réservé : ton directeur est prévenu","s");psaRendu();navSous&&avecVue(()=>navSous())}
-async function psaAnnuler(id){const {error}=await sb.rpc("cap_psa_annuler",{p_id:id});if(error){toast(rlsMsg(error),"e");return}await psaCharger();toast("Créneau libéré","s");psaRendu();navSous&&avecVue(()=>navSous())}
+  if(error){toast(rlsMsg(error),"e");await psaCharger();psaRendu();return}await Promise.all([psaCharger(),psaSuiviCharger()]);toast("PSA réservé : ton directeur est prévenu","s");psaRendu();navSous&&avecVue(()=>navSous())}
+async function psaAnnuler(id){const {error}=await sb.rpc("cap_psa_annuler",{p_id:id});if(error){toast(rlsMsg(error),"e");return}await Promise.all([psaCharger(),psaSuiviCharger()]);toast("Créneau libéré","s");psaRendu();navSous&&avecVue(()=>navSous())}
 /* v1.23 : chaque compte de l'équipe s'inscrit lui-même à n'importe quelle réunion du réseau (RPC cap_equipe_inscrire) */
 function equipeViensBloc(m){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";
   const avenir=m.date>=isoJour(TODAY)&&m.statut!=="annulee";if(!avenir)return"";

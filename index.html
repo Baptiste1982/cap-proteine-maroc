@@ -2773,8 +2773,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.127.0";
+const APP_VERSION="1.127.1";
 const CHANGELOG=[
+  {v:"1.127.1",date:"20 novembre 2026",notes:{"Modifié":["Calendrier à présenter : les jours sont cernés d'un filet plus marqué, les numéros et les noms des jours sont plus foncés."]}},
   {v:"1.127.0",date:"20 novembre 2026",notes:{"Ajouté":["Événements du réseau (interclub, séminaire…) : en tête de l'Agenda de tous, dans le calendrier à présenter (bandeau rouge sur le jour) et dans les réunions du réseau de l'espace membre. La direction nationale les crée depuis l'Agenda. L'interclub « One team - One Community » du 4 décembre y est.","Espace membre → Réunions du réseau : un choix « Mon groupe », « Ma région », « Tout le réseau »."]}},
   {v:"1.126.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda : chacun choisit ce qu'il regarde, « Mes groupes », sa région ou « Tout le réseau ». Tous les comptes voient les réunions régionales et nationales.","Agenda → « Calendrier à présenter » : le calendrier du mois en PDF, au format paysage, une page par mois, avec les réunions de chaque jour, le groupe, l'heure et le type. À projeter ou à distribuer en réunion nationale."]}},
   {v:"1.125.0",date:"20 novembre 2026",notes:{"Ajouté":["Un groupe peut être mis en pause, avec un motif et une date de reprise facultative (fiche du groupe). En pause, il ne réclame plus de réunion à planifier ni d'animateur, ses réunions manquantes ne sont plus comptées ; il reste dans les listes, grisé, avec un filtre « En pause », et se reprend d'un toucher."],"Modifié":["Un seul rouge sur les grands blocs de l'accueil : bandeau de bienvenue, carte des membres, affaires générées et période.","Accueil : « Activité » et « Le réseau en chiffres » ne font plus qu'un chapitre, avec la période en haut.","« À traiter » ne répète plus le total des bilans à saisir (il est dans la cloche et le bloc d'alertes) ; le détail par région reste.","Téléphone : boutons plus grands pour le doigt (À traiter, Membres, Équipe, Agenda, bilan), et plus de rangées qui défilent sur le côté (raccourcis de Mon groupe, onglets des Adhésions, pastilles des statistiques, filtres)."],"Corrigé":["Nettoyage de sept fonctions qui ne servaient plus."]}},
@@ -4296,7 +4297,7 @@ async function calPdfSortir(btn,partager){const mois=calPdfMois().filter(x=>wind
   if(partager){let f=null;try{f=new File([b],nom,{type:"application/pdf"})}catch(e){}if(f&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:nom});return}catch(e){if(e&&e.name==="AbortError")return}}}
   adhSauver(b,nom);toast("PDF téléchargé","s")}
 async function calPdf(mois){const L=await pdfLibCharger(),doc=await L.PDFDocument.create(),f=await doc.embedFont(L.StandardFonts.Helvetica),fb=await doc.embedFont(L.StandardFonts.HelveticaBold);
-  const W=842,H=595,MX=30,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.45,.43,.45),clair=L.rgb(.72,.70,.71),fond=L.rgb(.972,.957,.949),ombre=L.rgb(.925,.905,.895),blanc=L.rgb(1,1,1),rose=L.rgb(.992,.93,.94);
+  const W=842,H=595,MX=30,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.45,.43,.45),clair=L.rgb(.72,.70,.71),fond=L.rgb(.972,.957,.949),ombre=L.rgb(.925,.905,.895),blanc=L.rgb(1,1,1),rose=L.rgb(.992,.93,.94),filetF=L.rgb(.60,.57,.58),filetC=L.rgb(.80,.78,.78);
   const sur=t=>pdfTexteSur(String(t==null?"":t).replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/…/g,"...")).replace(/\s+/g," ").trim();
   const hex=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return gris;const n=parseInt(m[1],16);return L.rgb((n>>16)/255,((n>>8)&255)/255,(n&255)/255)};
   const coupe=(t,font,sz,lg)=>{t=sur(t);if(font.widthOfTextAtSize(t,sz)<=lg)return t;while(t.length>1&&font.widthOfTextAtSize(t+"...",sz)>lg)t=t.slice(0,-1);return t.trim()+"..."};
@@ -4316,11 +4317,11 @@ async function calPdf(mois){const L=await pdfLibCharger(),doc=await L.PDFDocumen
     const nb=new Date(y,m,0).getDate(),sem=[];let cur=null;
     for(let j=1;j<=nb;j++){const d=new Date(y,m-1,j),col=(d.getDay()+6)%7;if(!cur||col===0){cur=new Array(7).fill(null);sem.push(cur)}cur[col]=j}
     const lignes=sem.filter(s=>s.slice(0,NC).some(x=>x)),top=H-92,bas=44,eh=16,G=6,GH=top-eh-bas,CW=(W-2*MX-G*(NC-1))/NC,RH=(GH-G*(lignes.length-1))/lignes.length;
-    for(let c=0;c<NC;c++){const t=JN[c].toUpperCase();p.drawText(t,{x:MX+c*(CW+G)+4,y:top-eh+5,size:7,font:fb,color:clair})}
+    for(let c=0;c<NC;c++){const t=JN[c].toUpperCase();p.drawText(t,{x:MX+c*(CW+G)+4,y:top-eh+5,size:7.5,font:fb,color:gris})}
     lignes.forEach((s,ri)=>{const y0=top-eh-ri*(RH+G)-RH;for(let c=0;c<NC;c++){const j=s[c],x0=MX+c*(CW+G);if(!j)continue;
       const iso=mo.k+"-"+String(j).padStart(2,"0"),E=l.filter(r=>r.date===iso),EV=ev.filter(e=>e.date===iso),plein=E.length||EV.length;
-      if(plein){rond(p,x0+1.5,y0-1.5,CW,RH,9,{color:ombre});rond(p,x0,y0,CW,RH,9,{color:blanc})}else rond(p,x0,y0,CW,RH,9,{borderColor:ombre,borderWidth:.8});
-      const n=String(j);if(plein){p.drawCircle({x:x0+15,y:y0+RH-15,size:9,color:rouge});p.drawText(n,{x:x0+15-fb.widthOfTextAtSize(n,9.5)/2,y:y0+RH-18.4,size:9.5,font:fb,color:blanc})}else p.drawText(n,{x:x0+10,y:y0+RH-18,size:9.5,font:f,color:clair});
+      if(plein){rond(p,x0+1.5,y0-2,CW,RH,9,{color:ombre});rond(p,x0,y0,CW,RH,9,{color:blanc,borderColor:filetF,borderWidth:1.1})}else rond(p,x0,y0,CW,RH,9,{borderColor:filetC,borderWidth:.9});
+      const n=String(j);if(plein){p.drawCircle({x:x0+15,y:y0+RH-15,size:9,color:rouge});p.drawText(n,{x:x0+15-fb.widthOfTextAtSize(n,9.5)/2,y:y0+RH-18.4,size:9.5,font:fb,color:blanc})}else p.drawText(n,{x:x0+10,y:y0+RH-18,size:9.5,font:fb,color:gris});
       let yy=y0+RH-36;
       EV.forEach(e=>{if(E.length&&RH<100){rond(p,x0+6,yy-4,CW-12,13,6.5,{color:rouge});p.drawText(coupe(e.titre,fb,6.8,CW-26),{x:x0+13,y:yy-.4,size:6.8,font:fb,color:blanc});yy-=17;return}rond(p,x0+6,yy-15,CW-12,25,7,{color:rouge});p.drawText(coupe(e.genre.toUpperCase()+(e.heure?" · "+e.heure:""),fb,5.8,CW-26),{x:x0+13,y:yy+1,size:5.8,font:fb,color:rose});p.drawText(coupe(e.titre,fb,7.6,CW-26),{x:x0+13,y:yy-9,size:7.6,font:fb,color:blanc});yy-=30});
       /* une réunion = pastille de la ville, groupe en gras, type dessous quand la place le permet */

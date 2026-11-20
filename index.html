@@ -2638,6 +2638,26 @@ body.lecture .ann-btn{display:none}
 .grp-cr.avenir .reu-d{filter:grayscale(1);opacity:.7;transform:rotate(-5deg)}
 @media (max-width:520px){.grp-cr{gap:9px;padding:10px}.grp-cr .gc-a .btn{padding:7px 8px;min-width:36px}}
 /*v1.109*/.rv-i.q-reseau b{color:#1E9E63}.rv-i.q-reseau{border-left:3px solid #1E9E63;padding-left:9px}
+/*v1.125 un seul rouge sur les grands blocs*/
+html:root .hello,html:root .hello.vivant{background:radial-gradient(60% 130% at var(--hax,20%) 10%,rgba(255,255,255,.09) 0,transparent 60%),radial-gradient(50% 110% at var(--hbx,85%) 95%,rgba(0,0,0,.08) 0,transparent 65%),var(--crimson);background-size:auto}
+html:root .vb-big{background:var(--crimson)}html:root .h-blob.b1{background:radial-gradient(circle,rgba(255,255,255,.10),transparent 68%)}
+/*v1.125 téléphone : boutons assez grands pour le doigt, rangées qui passent à la ligne*/
+@media (max-width:899px){
+  .cel{min-width:38px;height:36px}.km-lien{min-height:36px;padding:8px 0}.vmode button{min-height:36px;min-width:40px;justify-content:center}
+  button.rl-fact{min-height:34px;padding:7px 11px}.acc-c .btn,.acc-go{min-height:36px;padding:8px 12px}.cal-ajout{min-height:36px;min-width:40px}
+  .bstep{padding:9px 5px}.bstep div button{width:30px;min-width:30px;height:36px}
+  .sheet-actions{flex-wrap:wrap}.sheet-actions>.btn{flex:1 1 auto}
+  .grp-raccourcis{flex-wrap:wrap;overflow:visible;margin:0;padding:0}.grp-raccourcis>*{flex:1 1 auto;white-space:nowrap;justify-content:center}
+  .dm-vue{display:flex;flex-wrap:wrap;overflow:visible}.dm-vue>*{flex:1 1 auto}
+  .dm-seg{flex-wrap:wrap;overflow:visible}.dm-seg>*{flex:1 1 auto}
+  .mon-chs{flex-wrap:wrap;overflow:visible}
+  .filters{flex-wrap:wrap;overflow:visible}
+}
+/*v1.125 groupe en pause : gris et pointillés, pas de nouvelle couleur*/
+.ck-pill.pause{background:transparent;color:var(--muted);border:1px dashed var(--muted)}
+tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{background:transparent!important;color:var(--muted)!important;border:1px dashed var(--line)}
+.cp-b{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1.5px dashed var(--muted);border-radius:14px;padding:12px 14px;margin:0 0 12px}
+.cp-b b{display:block;font-size:14px}.cp-b small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.cp-b p{margin:6px 0 0;font-size:13.5px}
 </style>
 </head>
 <body>
@@ -2745,8 +2765,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.124.0";
+const APP_VERSION="1.125.0";
 const CHANGELOG=[
+  {v:"1.125.0",date:"20 novembre 2026",notes:{"Ajouté":["Un groupe peut être mis en pause, avec un motif et une date de reprise facultative (fiche du groupe). En pause, il ne réclame plus de réunion à planifier ni d'animateur, ses réunions manquantes ne sont plus comptées ; il reste dans les listes, grisé, avec un filtre « En pause », et se reprend d'un toucher."],"Modifié":["Un seul rouge sur les grands blocs de l'accueil : bandeau de bienvenue, carte des membres, affaires générées et période.","Accueil : « Activité » et « Le réseau en chiffres » ne font plus qu'un chapitre, avec la période en haut.","« À traiter » ne répète plus le total des bilans à saisir (il est dans la cloche et le bloc d'alertes) ; le détail par région reste.","Téléphone : boutons plus grands pour le doigt (À traiter, Membres, Équipe, Agenda, bilan), et plus de rangées qui défilent sur le côté (raccourcis de Mon groupe, onglets des Adhésions, pastilles des statistiques, filtres)."],"Corrigé":["Nettoyage de sept fonctions qui ne servaient plus."]}},
   {v:"1.124.0",date:"20 novembre 2026",notes:{"Modifié":["Accueil : un seul bloc « N choses t\u2019attendent » qui se déplie, au lieu d\u2019un encart par sujet ; une même réunion n\u2019est plus comptée dans deux alertes","Au téléphone, les chapitres de l\u2019accueil se replient : un seul ouvert à la fois, « À traiter » d\u2019abord"],"Corrigé":["Lieux, au téléphone : la mention « Utilisé par … » était coupée"]}},
   {v:"1.123.0",date:"20 novembre 2026",notes:{"Ajouté":["La visite guidée peut être proposée à un compte à sa prochaine connexion : une fenêtre l\u2019invite à voir l\u2019essentiel ou la visite complète"]}},
   {v:"1.122.0",date:"20 novembre 2026",notes:{"Ajouté":["Mon agenda (Paramètres, ou dans les points sur activité) : tu t\u2019abonnes une fois, et tes PSA et tes réunions s\u2019inscrivent tout seuls dans Google Agenda, l\u2019iPhone ou Outlook"],"Modifié":["Visite guidée à jour : la cloche et les alertes à reporter, le jour de la réunion, le bilan verrouillé en PDF, les réunions du réseau et les bilans pour le bureau national, les lieux partagés, l\u2019envoi au national avec son propre compte, les points sur activité en calendrier"]}},
@@ -3403,7 +3424,7 @@ let DB=null,SESSION=null,tab="agenda",filter="all";
 /* ---- mappers : lignes Supabase (snake) <-> objets front (camel) ---- */
 function mapZone(r){return{id:r.id,nom:r.nom,villes:r.villes||[]}}
 function mapAnim(r){return{id:r.id,nom:r.nom,ville:r.ville||"",tel:r.tel||"",email:r.email||"",photo:r.photo||"",profil:r.profil||null}}
-function mapClub(r){return{pairs:r.pairs_declares??null,pairsLe:r.pairs_declares_le||"",id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
+function mapClub(r){return{pause:r.pause_le||null,pauseMotif:r.pause_motif||"",pausePar:r.pause_par||"",pauseReprise:r.pause_reprise||null,pairs:r.pairs_declares??null,pairsLe:r.pairs_declares_le||"",id:r.id,nom:r.nom,ville:r.ville,animId:r.animateur_id,statut:r.statut,statutFixe:!!r.statut_fixe,objectif:r.objectif??"",lieuHab:r.lieu_habituel_id||null,rJour:r.rythme_jour??null,rRang:r.rythme_rang??null,rPas:r.rythme_pas||1,rDepart:r.rythme_depart||null,heureHab:r.heure_habituelle||"",metRech:Array.isArray(r.metiers_recherches)?r.metiers_recherches:[],cycle:!!r.cycle}}
 const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_notifie,chaleur,note_suivi,type_reco,objet,origine,budget,date_limite,montant_devis,relance_le";
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
@@ -3492,7 +3513,6 @@ function toast(m,kind,act){const t=document.getElementById("toast");const k=kind
 function readOnly(){return SESSION.role==="visiteur"}
 function national(){return true} // tout le monde voit tout le réseau ; le filtrage est local à chaque onglet
 function scopedClubIds(){return DB.clubs.map(c=>c.id)}
-function scopedVilles(){return null}
 function isNationalEditor(){return SESSION.role==="superadmin"||SESSION.role==="directeur_national"}
 function canEditReunion(m){
   if(isNationalEditor())return true;
@@ -3919,9 +3939,9 @@ function tutoEtapes(partie){
       {go:"dash",c:"#ds-q",t:"Chercher partout",x:"Tape les premières lettres d'un nom, d'une entreprise, d'un métier ou d'un lieu : les résultats sortent dès la première lettre, membres, groupes, demandes et lieux mélangés. Chaque champ de recherche de l'appli marche pareil."}],
     synthese:[
       {k:1,go:"dash",c:"#view .hello",t:accueil,x:`Ton point de départ : la date, l'heure et le nombre d'actions qui t'attendent sur ${perim}. Touche le bandeau pour aller droit à la première.`},
-      {k:1,go:"dash",c:"#view .per",t:"Les chiffres de la période",x:"Mois, trimestre, semestre ou année : nouveaux membres, réunions tenues, invités, adhésions, recommandations et affaires signées, avec l'écart par rapport à la période d'avant. Chaque tuile ouvre la liste qu'elle compte."},
+      {k:1,go:"dash",av:()=>{if(!isWide()){window._dsOuv="chiffres";render()}},c:"#view .per",t:"Les chiffres de la période",x:"Mois, trimestre, semestre ou année : nouveaux membres, réunions tenues, invités, adhésions, recommandations et affaires signées, avec l'écart par rapport à la période d'avant. Chaque tuile ouvre la liste qu'elle compte."},
       {go:"dash",c:"#view .dsec-chiffres",t:"Quatre chapitres",x:"La page se lit en quatre blocs de couleur : les chiffres, ce qui est à traiter, la croissance, l'équipe. Tout ce qui affiche une donnée est cliquable et mène à sa fiche."},
-      {k:1,go:"dash",c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action, rangé par région : réunions à planifier, bilans à saisir, groupes sans animateur, adhésions, invités à relancer. Une région s'ouvre au toucher et se replie quand tu passes à autre chose."},
+      {k:1,go:"dash",av:()=>{if(!isWide()){window._dsOuv="todo";render()}},c:"#dash-todo",t:"À traiter",x:"Ce qui attend une action, rangé par région : réunions à planifier, bilans à saisir, groupes sans animateur, adhésions, invités à relancer. Une région s'ouvre au toucher et se replie quand tu passes à autre chose."},
       ...(stats?[{go:"monitoring",c:"#view .page-head",t:nat?"Le monitoring":"Les statistiques",x:"Un seul écran pour tous les chiffres : "+(anim?"tes groupes, puis chaque membre":"le réseau, la région, la ville, le groupe, puis le membre")+", en cliquant sur chaque ligne. Courbe sur 12 mois, comparaison de périodes, transformation des invités, assiduité, renouvellements, classements. Export pour Excel, impression PDF et mode présentation."}]:[]),
       {go:"dash",t:"Les alertes et les notifications",x:"En haut de l'accueil, chaque alerte a un ✕ : tu la mets de côté avec un rappel, et elle revient à l'heure dite. Une nouveauté (demande, inscrit, recommandation) arrive en carte en bas "+(pc?"à droite":"de l'écran")+" ; touche-la pour ouvrir la page. La cloche garde ce que tu as reçu. Sur téléphone, installe l'appli pour être prévenu même fermée."}],
     groupe:ed?[
@@ -4656,7 +4676,7 @@ function viewGroupe(){
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte à outils</span><span class="tel-seul">Boîte à outils</span></button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
     ${bascule}${choix}${grpSeance(c)}${alR("verrou",verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id))}${SESSION&&SESSION.role==="animateur"?alR("psa",psaAlerte()):""}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
-      <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
+      <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · ${clubPill(c)} · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
       <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
       <div class="grp-raccourcis"><button class="btn ghost mini" onclick="openClub('${c.id}')">Fiche du groupe</button>${maFiche(c.id)?`<a class="btn mini" href="membre.html#moi=${maFiche(c.id).id}" target="_blank" rel="noopener" title="Ton espace membre : tes recos, tes chiffres, ton groupe">🪪 Mon espace membre</a>`:""}<a class="btn ghost mini" href="membre.html#equipe=${c.id}" target="_blank" rel="noopener" title="Ce que voient les membres de ce groupe, dans leur espace membre">👁 Vue membre</a><button class="btn ghost mini" onclick="presGroupe('${c.id}')" title="Monter et projeter la présentation de la prochaine réunion">🎬 Présentation</button>${canEditClubId(c.id)?`<button class="btn ghost mini" onclick="openRythme('${c.id}')">Rythme</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${c.id}')">Lien d'adhésion</button>`:""}</div>
@@ -5330,23 +5350,6 @@ function meetingRow(m){
       <span class="rl-ind">${ng?guestStack(m.guests,ng):""}<span class="st ${m.statut}">${STATUTS[m.statut]}</span></span>
       <span class="rl-chev">›</span></button></div>`;
 }
-function meetingCard(m){
-  const c=club(m.clubId),dt=dObj(m.date),past=isPast(m.date),tbd=!m.lieuId,ng=(m.guests||[]).length;
-  return `<div class="mtg ${m.type==="RL"?"rl":""} ${past?"past":""} ${m.statut==="annulee"?"annulee":""}" onclick="openMeeting('${m.id}')">
-    <div class="mtg-date"><div class="d">${dt.getDate()}</div><div class="m">${MOIS[dt.getMonth()]}</div><div class="wd">${JOURS[dt.getDay()]}${m.heure?" · "+m.heure:""}</div></div>
-    <div class="mtg-body">
-      <div class="mtg-top"><div class="club">${esc(c.nom||"—")}</div><div class="badges"><span class="badge ${m.format?"si":m.type==="SI"?"si":"rl"}">${m.format?esc(typeCourt(m)):m.type==="SI"?"Session d'info":"Lancement"}</span></div></div>
-      <div class="mtg-meta">
-        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(c.ville||"")}</span>
-        <span class="${tbd?"tbd":""}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${esc(lieuNom(m.lieuId))}</span>
-        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>${esc(animNom(m.animId))}</span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:9px">
-        <span class="st ${m.statut}">${STATUTS[m.statut]}</span>
-        ${ng?`${guestStack(m.guests,ng)}<span class="guest-count">${ng} invité${ng>1?"s":""}</span>`:""}
-      </div>
-    </div></div>`;
-}
 
 /* ============================================================
    CLUBS
@@ -5375,6 +5378,7 @@ function clubHealth(c){
 }
 function clubNextAction(c){
   const membres=DB.membres.filter(m=>m.clubId===c.id);
+  if(c.pause)return{label:"En pause"+(c.pauseMotif?" · "+c.pauseMotif:""),pause:true};
   if(!c.animId)return{label:"Nommer un animateur",act:`clubForm('${c.id}')`};
   if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return{label:"Planifier une réunion",act:`meetingForm('','${c.id}')`};
   const relanceM=membres.find(m=>!m.formulaire||!m.contrat||!m.facture||!m.paiement);
@@ -5385,14 +5389,6 @@ function clubNextAction(c){
   if(c.objectif&&membres.length<c.objectif)return{label:"Recruter "+(c.objectif-membres.length)+" membre"+(c.objectif-membres.length>1?"s":""),act:`memberSheet('${c.id}')`};
   return{label:"Rien à signaler ✓",act:""};
 }
-function clubBadges(c){
-  const b=[];
-  if(!c.animId)b.push(`<span class="tag empty">Sans animateur</span>`);
-  if(!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))b.push(`<span class="tag empty">Sans réunion</span>`);
-  const relance=DB.membres.filter(m=>m.clubId===c.id&&(!m.formulaire||!m.contrat||!m.facture||!m.paiement)).length;
-  if(relance)b.push(`<span class="tag" style="background:var(--warn-tint);color:var(--warn);border-color:transparent">${relance} à relancer</span>`);
-  return b.join("");
-}
 /* v1.80 : « pairs déclarés » = effectif (animateur inclus) donné par le bureau national pour un groupe dont les fiches
    ne sont pas toutes saisies ici. On l'affiche à part, tant qu'il dépasse le nombre de fiches ; aucune fiche n'est inventée. */
 function clubFiches(c){return (window._DBvrai||DB).membres.filter(m=>m.clubId===c.id).length}
@@ -5400,31 +5396,6 @@ function clubDecl(c){const f=clubFiches(c);return c&&c.pairs>f?c.pairs:0}
 function clubNb(c){return Math.max(clubFiches(c),c&&c.pairs||0)}
 function clubDeclNote(c){const d=clubDecl(c);if(!d)return"";const f=clubFiches(c);
   return `<div class="ck-decl" title="Effectif donné par le bureau national${c.pairsLe?" le "+c.pairsLe.split("-").reverse().join("/"):""}, animateur inclus"><b>${d}</b> membre${d>1?"s":""} d'après le national · ${f?f+" fiche"+(f>1?"s":"")+" saisie"+(f>1?"s":""):"aucune fiche saisie"}</div>`}
-function clubTile(c,i){
-  const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date));
-  const a=anim(c.animId);const nbM=clubNb(c);const h=clubHealth(c);const na=clubNextAction(c);
-  const fill=c.objectif?Math.min(100,Math.round(nbM/c.objectif*100)):0;
-  const nom=c.nom.replace(/^CAP\s+/,"");
-  const prochaine=up[0]?(()=>{const d=dObj(up[0].date);return `${d.getDate()} ${MOIS[d.getMonth()]}`})():"";
-  const ton=!c.animId||!up.length?"urgent":na.act?"todo":"ok";
-  const ico=!c.animId?"👤":!up.length?"📅":na.act?"🔔":"✓";
-  const off=(113.1*(1-h.pct/100)).toFixed(1);
-  return `<div class="ck" style="--vc:${villeColor(c.ville)};--i:${i||0}" role="button" tabindex="0" onclick="openClub('${c.id}')" onkeydown="if(event.key==='Enter')openClub('${c.id}')">
-    <div class="ck-top">
-      <div class="ck-emb">${esc(initiales(nom))}</div>
-      <div class="ck-id"><h3>${esc(nom)}</h3><div class="ck-sub"><span>${esc(c.ville)}</span><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span></div>
-        <div class="ck-who ${a?"":"none"}"><span class="ck-av">${a?esc(initiales(a.nom)):"?"}</span><span>${a?esc(a.nom):"Animateur à nommer"}</span></div></div>
-      <div class="ck-ring ${h.level}" title="Santé du groupe : ${h.pct} %"><svg viewBox="0 0 46 46"><circle class="tr" cx="23" cy="23" r="18"/><circle class="fg" cx="23" cy="23" r="18" style="stroke-dashoffset:113.1" data-off="${off}"/></svg><b>${h.pct}<small>%</small></b></div>
-    </div>
-    <div class="ck-kpis">
-      <div class="ck-k"><div class="v">${nbM}${c.objectif?`<small>/${c.objectif}</small>`:""}</div><div class="l">membre${nbM>1?"s":""}</div></div>
-      <div class="ck-k ${up.length?"":"none"}"><div class="v">${up.length?esc(prochaine):"—"}</div><div class="l">${up.length?(up.length>1?"prochaine · "+up.length+" prévues":"prochaine réunion"):"aucune réunion"}</div></div>
-    </div>
-    ${c.objectif?`<div class="ck-prog" title="${nbM}/${c.objectif} membres"><i style="width:${fill}%"></i></div>`:""}
-    ${clubDeclNote(c)}
-    <button class="ck-act ${ton}" ${na.act?`onclick="event.stopPropagation();clubCardAction('${c.id}')"`:`onclick="event.stopPropagation()" tabindex="-1"`}><span class="ic">${ico}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
-  </div>`;
-}
 /* L'action proposée sur la carte = clubNextAction (même règle que la fiche du groupe). */
 function clubCardAction(id){const na=clubNextAction(club(id));if(na.act)(new Function(na.act))();}
 /* Anneaux de santé : partent de 0 et se remplissent jusqu'à leur valeur. */
@@ -5435,8 +5406,34 @@ function miniG(n,obj){const p=obj?Math.min(100,Math.round(n/obj*100)):0;return `
 function rowToggle(btn){const r=btn.closest(".rl-row"),o=!r.classList.contains("open");
   r.parentElement.querySelectorAll(".rl-row.open").forEach(x=>{x.classList.remove("open");x.querySelector(".rl-h").setAttribute("aria-expanded","false")});
   if(o){r.classList.add("open");btn.setAttribute("aria-expanded","true")}}
-function clubTone(c){if(!c.animId||!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"urgent";return clubNextAction(c).act?"todo":"ok"}
-function clubIco(c,ton){return !c.animId?"👤":ton==="urgent"?"📅":ton==="todo"?"🔔":"✓"}
+/* v1.125 : mettre un groupe en pause, avec un motif. En pause, le groupe ne réclame plus de réunion à planifier ni d'animateur,
+   et ses réunions manquantes ne sont plus comptées ; il reste dans les listes, grisé, et se reprend d'un toucher. */
+const CLUB_PAUSE_MOTIFS=["Pas assez de membres","Animateur indisponible","Changement d'animateur","Lieu à trouver","Vacances ou période creuse","Décision de la direction","Autre"];
+function clubPill(c){return c.pause?`<span class="ck-pill pause" title="${esc(c.pauseMotif||"En pause")}">⏸ En pause</span>`:`<span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span>`}
+function clubPauseBloc(c,canEd){
+  if(c.pause){const d=new Date(c.pause);return `<div class="cp-b" id="cp-bloc"><div><b>⏸ Groupe en pause</b><small>Depuis le ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()} ${d.getFullYear()}${c.pausePar?" · par "+esc(c.pausePar):""}</small><p>${esc(c.pauseMotif||"Motif non précisé")}${c.pauseReprise?` · reprise prévue le ${dObj(c.pauseReprise).getDate()} ${MOIS_LONG[dObj(c.pauseReprise).getMonth()].toLowerCase()}`:""}</p></div>${canEd?`<button class="btn mini" id="cp-rep" onclick="clubReprendre('${c.id}',this)">▶ Reprendre</button>`:""}</div>`}
+  return ""}
+function clubPauseForm(id){const c=club(id);if(!c||!canEditClubId(id)||SESSION._voir)return;
+  document.getElementById("sheet-content").innerHTML=`<h3>Mettre ${esc(c.nom)} en pause</h3>
+    <p class="fh-note">Le groupe reste dans le réseau, avec ses membres et son historique. Tant qu'il est en pause, il ne réclame plus de réunion à planifier et ses réunions manquantes ne sont plus comptées.</p>
+    <div class="field"><label for="cp-m">Motif</label><select id="cp-m">${[["","Choisir…"],...CLUB_PAUSE_MOTIFS.map(x=>[x,x])].map(([k,l])=>`<option value="${esc(k)}">${esc(l)}</option>`).join("")}</select>
+      <input id="cp-plus" maxlength="200" style="margin-top:6px" placeholder="Précision (facultatif)"></div>
+    <div class="field"><label for="cp-r">Reprise prévue le (facultatif)</label><input id="cp-r" type="date" min="${isoJour(TODAY)}"></div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openClub('${id}')">Annuler</button><button class="btn" id="cp-ok" onclick="clubPauseOk('${id}')">⏸ Mettre en pause</button></div>`;
+  openSheet()}
+async function clubPauseOk(id){const a=document.getElementById("cp-m").value,b=document.getElementById("cp-plus").value.trim(),r=document.getElementById("cp-r").value||null;
+  if(!a||(a==="Autre"&&!b)){toast(a?"Précise le motif":"Choisis un motif","w");return}
+  const motif=a==="Autre"?b:(b?a+" : "+b:a),btn=document.getElementById("cp-ok");btn.disabled=true;
+  const maj={pause_le:new Date().toISOString(),pause_motif:motif,pause_par:SESSION.nom||"",pause_reprise:r};
+  const {error}=await sb.from("clubs").update(maj).eq("id",id);btn.disabled=false;if(error){toast(rlsMsg(error),"e");return}
+  const c=(window._DBvrai||DB).clubs.find(x=>x.id===id);if(c)Object.assign(c,{pause:maj.pause_le,pauseMotif:motif,pausePar:maj.pause_par,pauseReprise:r});
+  toast("Groupe mis en pause","s");render();openClub(id)}
+async function clubReprendre(id,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer la reprise";return}
+  btn.disabled=true;const {error}=await sb.from("clubs").update({pause_le:null,pause_motif:null,pause_par:null,pause_reprise:null}).eq("id",id);btn.disabled=false;if(error){toast(rlsMsg(error),"e");return}
+  const c=(window._DBvrai||DB).clubs.find(x=>x.id===id);if(c)Object.assign(c,{pause:null,pauseMotif:"",pausePar:"",pauseReprise:null});
+  toast("Le groupe reprend","s");render();openClub(id)}
+function clubTone(c){if(c.pause)return"ok";if(!c.animId||!DB.reunions.some(r=>r.clubId===c.id&&!isPast(r.date)&&r.statut!=="annulee"))return"urgent";return clubNextAction(c).act?"todo":"ok"}
+function clubIco(c,ton){return c.pause?"⏸":!c.animId?"👤":ton==="urgent"?"📅":ton==="todo"?"🔔":"✓"}
 /* v1.84 : nombre de membres d'un ensemble de groupes = personnes des fiches saisies + ce que le national annonce en plus
    pour les groupes dont les fiches manquent. Se met à jour seul : chaque fiche saisie remplace une unité du complément. */
 function membresSurplus(ids,avant){const S=ids instanceof Set?ids:new Set(ids),D=window._DBvrai||DB;
@@ -5449,14 +5446,14 @@ function clubRow(c,i){
   const a=anim(c.animId),membres=DB.membres.filter(m=>m.clubId===c.id),nbM=membres.length,okM=membres.filter(membreAJour).length;
   const h=clubHealth(c),na=clubNextAction(c),ton=clubTone(c),nom=c.nom.replace(/^CAP\s+/,"");
   const pro=up[0]?(()=>{const d=dObj(up[0].date);return `${d.getDate()} ${MOIS[d.getMonth()]}`})():"";
-  return `<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${i||0}">
+  return `<div class="rl-row ${c.pause?"en-pause":""}" style="--vc:${villeColor(c.ville)};--i:${i||0}">
     <button class="rl-h" onclick="rowToggle(this)" aria-expanded="false">
       <span class="rl-emb">${esc(initiales(nom))}</span>
       <span class="rl-t"><b>${esc(nom)}</b><small><span class="rl-dot ${c.statut==="actif"?"ok":"warn"}"></span>${esc(c.ville)} · ${a?esc(a.nom.split(" ")[0]):`<span class="rl-no">sans animateur</span>`}</small></span>
       <span class="rl-ind">${miniG(nbM,c.objectif)}${ringSm(h)}<span class="rl-flag ${ton}" title="${esc(na.label)}"></span></span>
       <span class="rl-chev">›</span></button>
     <div class="rl-x"><div><div class="rl-in">
-      <div class="rl-facts"><span class="rl-fact ${c.statut==="actif"?"g":"y"}">${c.statut==="actif"?"Actif":"En création"}</span><span class="rl-fact">${okM}/${nbM} à jour</span><span class="rl-fact">${up.length?"Prochaine : "+esc(pro)+(up.length>1?` · ${up.length} prévues`:""):"Aucune réunion"}</span>${a?`<span class="rl-fact">${esc(a.nom)}</span>`:""}</div>
+      <div class="rl-facts">${c.pause?`<span class="rl-fact">⏸ En pause</span>`:`<span class="rl-fact ${c.statut==="actif"?"g":"y"}">${c.statut==="actif"?"Actif":"En création"}</span>`}<span class="rl-fact">${okM}/${nbM} à jour</span><span class="rl-fact">${up.length?"Prochaine : "+esc(pro)+(up.length>1?` · ${up.length} prévues`:""):"Aucune réunion"}</span>${a?`<span class="rl-fact">${esc(a.nom)}</span>`:""}</div>
       <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
       <div class="rl-links"><button onclick="openClub('${c.id}')">Ouvrir la fiche</button>${SESSION.role!=="visiteur"?`<button onclick="adhCopyClub('${c.id}')">Lien d'adhésion</button><button onclick="adhWhatsAppClub('${c.id}')">WhatsApp</button>`:""}</div>
     </div></div></div></div>`;
@@ -5472,7 +5469,7 @@ function viewClubs(){
   let all=DB.clubs.filter(c=>ids.includes(c.id));
   const q=(window._q2||"").toLowerCase();if(q)all=all.filter(c=>(c.nom+" "+c.ville).toLowerCase().includes(q));
   const villes=[...new Set(all.map(c=>c.ville))].sort();
-  const F={all:()=>true,todo:c=>clubTone(c)!=="ok",actif:c=>c.statut==="actif",creation:c=>c.statut!=="actif"};
+  const F={all:()=>true,todo:c=>clubTone(c)!=="ok",actif:c=>c.statut==="actif"&&!c.pause,creation:c=>c.statut!=="actif"&&!c.pause,pause:c=>!!c.pause};
   if(!F[filter]&&!(filter.startsWith("v:")&&villes.includes(filter.slice(2))))filter="all";
   const clubs=all.filter(F[filter]||(c=>c.ville===filter.slice(2)));
   const sansAnim=all.filter(c=>!c.animId).length;
@@ -5491,7 +5488,7 @@ function viewClubs(){
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Groupes</h2><p>${clubs.length} groupe${clubs.length>1?"s":""}${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="cl-q" type="search" data-pred="clubs" autocomplete="off" placeholder="Tape les premières lettres d'un groupe ou d'une ville…" value="${esc(window._q2||"")}" oninput="window._q2=this.value;render()"></div>
-    <div class="filters">${fchip("Tous","all",all.length)}${fchip("À traiter","todo",all.filter(F.todo).length)}${fchip("Actifs","actif",all.filter(F.actif).length)}${fchip("En création","creation",all.filter(F.creation).length)}${villes.map(v=>fchip(v,"v:"+v,all.filter(c=>c.ville===v).length)).join("")}</div>
+    <div class="filters">${fchip("Tous","all",all.length)}${fchip("À traiter","todo",all.filter(F.todo).length)}${fchip("Actifs","actif",all.filter(F.actif).length)}${fchip("En création","creation",all.filter(F.creation).length)}${all.some(F.pause)?fchip("En pause","pause",all.filter(F.pause).length):""}${villes.map(v=>fchip(v,"v:"+v,all.filter(c=>c.ville===v).length)).join("")}</div>
     ${sections||emptyState("Aucun club","Ajuste la recherche ou les filtres.")}<div style="height:8px"></div></div>`;
 }
 
@@ -5543,23 +5540,6 @@ function viewLieux(){
 /* ============================================================
    ÉQUIPE
    ============================================================ */
-function animTile(a){
-  const clubs=DB.clubs.filter(c=>c.animId===a.id);
-  const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
-  const nbM=DB.membres.filter(m=>clubs.some(c=>c.id===m.clubId)).length;
-  return `<div class="tile club-card" style="--vc:${villeColor(a.ville)}" onclick="openAnim('${a.id}')">
-    <div class="cc-head">
-      <div class="cc-emblem">${esc(initiales(a.nom))}</div>
-      <div class="cc-title"><h3>${esc(a.nom)}</h3><div class="cc-sub">${esc(a.ville)} · ${clubs.length} groupe${clubs.length>1?"s":""}</div></div>
-      ${nbUp?`<div class="cc-health ok">${nbUp}<small> à venir</small></div>`:""}
-    </div>
-    <div class="cc-stats">
-      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>${clubs.length} groupe${clubs.length>1?"s":""}</span>
-      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${nbM} membre${nbM>1?"s":""}</span>
-      ${a.tel?`<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(telAff(a.tel))}</span>`:""}
-    </div>
-    <div class="cc-badges">${clubs.map(c=>`<span class="tag">${esc(c.nom.replace("CAP ",""))}</span>`).join("")||`<span class="tag empty">Aucun groupe</span>`}</div></div>`;
-}
 function animRow(a,i){
   const clubs=DB.clubs.filter(c=>c.animId===a.id);
   const nbUp=DB.reunions.filter(m=>m.animId===a.id&&!isPast(m.date)&&m.statut!=="annulee").length;
@@ -5756,7 +5736,7 @@ function dashBlock(s,sc,sansTodo){
       ${dashTile(s.sansAnim,"Clubs sans animateur","sansAnim",sc,5)}
     </div>`}
     ${dashObjectif(sc)}
-    ${dashActivite(sc)}
+    ${sansTodo==="chiffres"?"":dashActivite(sc)}
     ${dashRecos(sc)}
     ${sansTodo==="chiffres"?"":(sansTodo?"":dashATraiter(sc))+dashCroissance(s,sc)}`;
 }
@@ -5943,10 +5923,10 @@ function regionsDe(clubs){
 }
 /* J — « À traiter » rangé par région : totaux cliquables (filtre), puis un tableau par région (une case = une action). */
 function todoClub(c){const up=DB.reunions.some(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee");
-  const bil=reunionsSansBilan().filter(r=>r.clubId===c.id);return {c,plan:!up,bil,anim:!c.animId,ed:canEditClubId(c.id)}}
+  const bil=reunionsSansBilan().filter(r=>r.clubId===c.id);return {c,plan:!up&&!c.pause,bil,anim:!c.animId&&!c.pause,ed:canEditClubId(c.id)}}
 function todoRegions(sc){
   const ids=new Set(_dashScope[sc]||[]),cl=DB.clubs.filter(c=>ids.has(c.id));if(!cl.length)return "";
-  const f=window._todoF||"",all=cl.map(todoClub),nP=all.filter(x=>x.plan).length,nB=all.reduce((a,x)=>a+x.bil.length,0),nA=all.filter(x=>x.anim).length;
+  if(window._todoF==="bil")window._todoF="";const f=window._todoF||"",all=cl.map(todoClub),nP=all.filter(x=>x.plan).length,nB=all.reduce((a,x)=>a+x.bil.length,0),nA=all.filter(x=>x.anim).length;
   if(!nP&&!nB&&!nA)return `<div class="tj-ok">✓ Tous les groupes ont leur prochaine réunion, leurs bilans et leur animateur.</div>`;
   const tb=(k,n,l)=>n?`<button type="button" class="${f===k?"on":""}" onclick="window._todoF=window._todoF==='${k}'?'':'${k}';render()" aria-pressed="${f===k}"><b>${n}</b>${l}</button>`:"";
   const ouvJ=window._todoOuv||(window._todoOuv=new Set());
@@ -5962,7 +5942,7 @@ function todoRegions(sc){
           <td>${x.plan?(x.ed?`<button type="button" class="cel k-plan" title="Planifier la prochaine réunion" aria-label="Planifier une réunion pour ${esc(c.nom)}" onclick="meetingForm('','${c.id}')">＋</button>`:`<span class="cel k-plan">!</span>`):`<span class="cel k-ok" title="Réunion planifiée">✓</span>`}</td>
           <td>${x.bil.length?`<button type="button" class="cel k-bil" title="Saisir ${x.bil.length} bilan${x.bil.length>1?"s":""}" onclick="openBilan('${x.bil[0].id}')">${x.bil.length}</button>`:'<span class="cel-vide">—</span>'}</td>
           <td>${a?`<span class="cel k-ok" title="${esc(a.nom)}">${esc(initiales(a.nom))}</span>`:`<button type="button" class="cel k-anim" title="Nommer un animateur" onclick="openClub('${c.id}')">!</button>`}</td></tr>`}).join("")}</tbody></table></details>`}).join("");
-  return `<div class="tj-tot">${tb("plan",nP,"réunion"+(nP>1?"s":"")+" à planifier")}${tb("bil",nB,"bilan"+(nB>1?"s":"")+" à saisir")}${tb("anim",nA,"groupe"+(nA>1?"s":"")+" sans animateur")}</div>
+  return `<div class="tj-tot">${tb("plan",nP,"réunion"+(nP>1?"s":"")+" à planifier")}${tb("anim",nA,"groupe"+(nA>1?"s":"")+" sans animateur")}</div>
     <div class="tj-regs">${reg||`<p class="fh-empty">Aucun groupe pour ce filtre.</p>`}</div>`;
 }
 /* K — Membres par région : région → groupes (jauge) → membres, en accordéon ; fil en pointillés qui se trace. */
@@ -6254,14 +6234,13 @@ function viewDashboard(reg){
   html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashAlertes():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashAlertes();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
-  const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
+  const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",isWide()?lieu+" · touche un chiffre pour voir la liste":`${st.membres} membre${st.membres>1?"s":""} · ${st.clubs} groupe${st.clubs>1?"s":""} · ${st.reunionsAvenir} réunion${st.reunionsAvenir>1?"s":""} à venir`,perBloc(per.map(c=>c.id),"syn")+dashBlock(st,sc,"chiffres"));
   const todo=dashSec("todo","⚡","À traiter","Ce qui attend une action, région par région",dashATraiter(sc),"dash-todo");
   const crois=dashSec("crois","📈","Croissance","Membres et invités : où ils en sont",dashCroissance(st,sc)+dashFunnel(per,sc));
   const equipe=dashSec("equipe","👥","L'équipe","Animateurs et dossiers des membres",dashByAnim(per)+dashRelancer(per));
   const band=reg?reg.band:seg,apres=reg?reg.apres:"";
-  const periode=perBloc(per.map(c=>c.id),"syn"); // v1.30 : activité sur la période choisie
-  if(large){html+=band+periode+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`+apres;return html+`<div style="height:8px"></div></div>`}
-  html+=band+periode+chiffres+todo+(reg?apres:"")+crois+equipe;
+  if(large){html+=band+`<div class="dash-cols"><div>`+chiffres+crois+`</div><div>`+todo+equipe+`</div></div>`+apres;return html+`<div style="height:8px"></div></div>`}
+  html+=band+chiffres+todo+(reg?apres:"")+crois+equipe;
   return html+`<div style="height:8px"></div></div>`;
 }
 
@@ -7254,9 +7233,9 @@ function openClub(id){
       <span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}</b><small>${esc(m.specialite||"Spécialité non renseignée")}</small></span>
       <span class="rl-ind">${dots4(m)}${m.paiement?`<span class="rl-fact g">payé</span>`:""}</span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:`<p class="fh-empty">Aucun membre pour l'instant.</p>`;
   document.getElementById("sheet-content").innerHTML=`
-    ${ficheHead({vc:villeColor(c.ville),ini:initiales(nom),title:nom,sub:`${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span>`,right:ringBig(h)})}
+    ${ficheHead({vc:villeColor(c.ville),ini:initiales(nom),title:nom,sub:`${esc(c.ville)} · ${clubPill(c)}`,right:ringBig(h)})}
     ${ficheKpis([[`${membres.length}${c.objectif?`<small>/${c.objectif}</small>`:""}`,"membres"],[`${okM}<small>/${membres.length}</small>`,"à jour",okM<membres.length?"warn":""],[esc(pro),up.length>1?`prochaine · ${up.length} prévues`:"prochaine",up.length?"":"warn"]])}
-    ${clubDeclNote(c)}
+    ${clubPauseBloc(c,canEd&&!SESSION._voir)}${clubDeclNote(c)}
     ${c.objectif?`<div class="ck-prog" style="--vc:${villeColor(c.ville)};margin:-4px 0 12px" title="${membres.length}/${c.objectif} membres"><i style="width:${Math.min(100,Math.round(membres.length/c.objectif*100))}%"></i></div>`:""}
     <button class="ck-act ${ton}" ${na.act?`onclick="clubCardAction('${c.id}')"`:`tabindex="-1"`}><span class="ic">${clubIco(c,ton)}</span><span class="tx">${esc(na.label)}</span>${na.act?`<span class="go">›</span>`:""}</button>
     <div class="drow" style="margin-top:12px"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></div><div class="tx"><div class="k">Animateur</div><div class="v">${a?esc(a.nom):"À pourvoir"}</div></div>${a?`<a href="#" onclick="openAnim('${a.id}');return false">Fiche</a>`:""}</div>
@@ -7266,7 +7245,7 @@ function openClub(id){
     ${secHead("Membres",membres.length,canEd?`<button class="btn ghost mini" onclick="memberSheet('${id}')">+ Ajouter</button>`:"")}
     ${mlist}
     ${readOnly()?"":`<div class="fh-link"><div><b>Lien d'adhésion du groupe</b><small>${esc(adhLink(id))}</small></div><button class="btn ghost mini" onclick="adhCopyClub('${id}')">Copier</button><button class="btn ghost mini" onclick="adhWhatsAppClub('${id}')">WhatsApp</button></div>`}
-    <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}${!readOnly()&&canEditClubId(id)?`<button class="btn ghost" onclick="closeSheet();grpAller('${id}','bord')">Espace du groupe</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+    <div class="sheet-actions">${canManageStructure()?`<button class="btn ghost" onclick="clubForm('${id}')">Modifier</button>`:""}${canEd&&!SESSION._voir&&!c.pause?`<button class="btn ghost" id="cp-go" onclick="clubPauseForm('${id}')">⏸ Mettre en pause</button>`:""}${!readOnly()&&canEditClubId(id)?`<button class="btn ghost" onclick="closeSheet();grpAller('${id}','bord')">Espace du groupe</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   ficheOpen();
 }
 function memberSheet(clubId,id){
@@ -7669,7 +7648,7 @@ function clubForm(id){
     <div class="field"><label>Ville</label><select data-pills id="c-ville">${villeOpt}</select>${canCreerStructure()?`<button type="button" class="lien-b" onclick="openRegions()">La ville n'est pas dans la liste ? Régions et villes ›</button>`:""}</div>
     <div class="field"><label>Animateur</label><select id="c-anim">${animOpt}</select></div>
     <div class="field"><label>Objectif de membres</label><input id="c-objectif" type="number" value="${c.objectif||""}" placeholder="ex. 25"></div>
-    <div class="field"><label>Statut</label><p class="c-stat"><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
+    <div class="field"><label>Statut</label><p class="c-stat">${clubPill(c)} Calculé tout seul : actif dès ${CLUB_ACTIF_MEMBRES} membres, ou dès qu'une réunion de lancement ou du cycle est tenue.</p>
       <label class="c-fixe"><input type="checkbox" id="c-fixe" ${c.statutFixe?"checked":""}> Groupe déjà actif, dont la vie n'est pas saisie ici : le garder « Actif »</label></div>
     ${vuePeutBasculer()?`<div class="field"><label for="c-pairs">Nombre de membres d'après le national (animateur inclus)</label><input id="c-pairs" type="number" min="0" max="99" inputmode="numeric" value="${c.pairs??""}" placeholder="Vide si les fiches sont saisies ici"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`openClub('${id}')`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveClub('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
@@ -7786,7 +7765,6 @@ const ADH_DOT={recue:"bad",traitee:"warn",integree:"ok",rejetee:""};
 function adhLink(clubId){const u=new URL("/adhesion.html",SITE_PUBLIC);if(clubId)u.searchParams.set("ref",clubId);return u.toString()}
 function adhNom(a){return((a.data.m_prenom||"")+" "+(a.data.m_nom||"")).trim()||"—"}
 function adhDate(iso){const d=new Date(iso);return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
-function adhNouvelles(){return(DB.adhesions||[]).filter(a=>a.statut==="recue").length}
 /* ── v0.11 : suivi des adhésions ──
    Une adhésion avance en 3 temps : reçue → intégrée au groupe → saisie dans le CRM national.
    « En retard » = en attente depuis plus de ADH_DELAI_J jours (à traiter ou à saisir). */
@@ -7802,44 +7780,6 @@ let _adhFiltre="todo";
 async function adhCharger(){const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});if(!error&&data)DB.adhesions=data;try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}}
 async function openAdhesions(f){const sh=document.getElementById("sheet");if(sh.classList.contains("open"))closeSheet();window._dmF=f==="retard"?"retard":"";window._dmQ="";
   if(f==="todo"||f==="saisie")window._dmCol=f;if(tab==="demandes")render();else go("demandes");await adhCharger();if(tab==="demandes")render()}
-async function openAdhesionsFiche(f){
-  if(f)_adhFiltre=f;
-  const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
-  if(error){console.error(error);toast(/does not exist|schema cache/i.test(error.message||"")?"Module adhésions pas encore installé":rlsMsg(error));return}
-  DB.adhesions=data||[];
-  try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}
-  const all=DB.adhesions;
-  const F={todo:["À intégrer",a=>a.statut==="recue"||a.statut==="traitee"],saisie:["À saisir",a=>a.statut!=="rejetee"&&!a.saisie_proteine_le],retard:["En retard",adhEnRetard],all:["Toutes",a=>true],rejetee:["Archives",a=>a.statut==="rejetee"]};
-  if(!F[_adhFiltre])_adhFiltre="todo";
-  const list=all.filter(F[_adhFiltre][1]).sort((a,b)=>b.created_at.localeCompare(a.created_at));
-  const chips=Object.entries(F).map(([k,[l,fn]])=>`<button class="chip ${_adhFiltre===k?"on":""}" onclick="openAdhesions('${k}')">${l}<em>${all.filter(fn).length}</em></button>`).join("");
-  const rows=list.length?`<div class="rl">${list.map((a,i)=>{const g=adhGroupe(a),c=DB.clubs.find(x=>x.nom===g);return `<div class="rl-row" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}"><button class="rl-h" onclick="adhDetail('${a.id}')">
-      <span class="rl-emb sm">${esc(initiales(a.data.ent_nom||adhNom(a)))}</span>
-      <span class="rl-t"><b>${esc(a.data.ent_nom||"—")}</b><small>${esc(adhNom(a))} · ${esc(g.replace(/^CAP\s+/,""))}</small></span>
-      <span class="rl-ind"><span class="adh-age ${adhEnRetard(a)?"late":""}">${adhAge(a.created_at)}</span>${adhSuivi(a)}</span><span class="rl-chev">›</span></button></div>`}).join("")}</div>`
-    :`<p class="fh-empty">${_adhFiltre==="todo"?"Rien à intégrer : tout est à jour ✓":"Aucune adhésion dans ce filtre."}</p>`;
-  // repères chiffrés + répartition par groupe (hors rejetées)
-  const vivantes=all.filter(a=>a.statut!=="rejetee");
-  const parGroupe={};vivantes.forEach(a=>{const g=adhGroupe(a);parGroupe[g]=(parGroupe[g]||0)+1});
-  const grp=Object.entries(parGroupe).sort((a,b)=>b[1]-a[1]);
-  const mx=Math.max(1,...grp.map(x=>x[1]));
-  const mois=vivantes.filter(a=>adhMoisCle(a.created_at)===adhMoisCle(new Date().toISOString())).length;
-  const clubOpts=DB.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom)).map(c=>`<option value="${c.id}">${esc(c.nom)} · ${esc(c.ville)}</option>`).join("");
-  document.getElementById("sheet-content").innerHTML=`
-    ${ficheHead({ini:"📝",title:"Adhésions",sub:"Formulaires remplis par les futurs membres depuis leur téléphone."})}
-    ${ficheKpis([[mois,"ce mois-ci"],[adhAIntegrer().length,"à intégrer",adhAIntegrer().length?"warn":""],[adhASaisir().length,"à saisir (national)",adhASaisir().length?"warn":""]])}
-    <div class="filters">${chips}</div>
-    ${rows}
-    <div class="adh-legend"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au groupe · saisie dans le CRM national${all.some(adhEnRetard)?` — <b>en retard</b> : en attente depuis plus de ${ADH_DELAI_J} jours`:""}</div>
-    ${grp.length?secHead("Par groupe",vivantes.length)+`<div class="rank">${grp.map(([g,n])=>`<div class="rank-row"><div class="rn">${esc(g.replace(/^CAP\s+/,""))}</div><div class="bar"><i style="width:${Math.round(n/mx*100)}%"></i></div><div class="rv">${n}</div></div>`).join("")}</div>`:""}
-    ${navDir()?`<button class="btn ghost" style="margin-top:14px;width:100%" onclick="openClasseur()">📁 Classeur des PDF</button>`:""}
-    ${readOnly()?"":`${secHead("Envoyer le lien")}
-    <div class="field"><label>Groupe concerné (facultatif)</label><select id="adh-club"><option value="">— Sans groupe —</option>${clubOpts}</select></div>
-    <div class="frow" style="display:flex;gap:8px"><button class="btn ghost" onclick="adhCopy()">Copier le lien</button><button class="btn" onclick="adhWhatsApp()">Envoyer par WhatsApp</button></div>
-    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="adhExportSaisie('csv')">Exporter pour saisie (${adhASaisir().length})</button><button class="btn ghost" style="flex:0 0 auto;width:auto" onclick="adhExportSaisie('json')" title="Fichier lu par le robot de saisie">JSON robot</button></div>`}
-    <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
-  ficheOpen();
-}
 /* À la connexion : prévient s'il est arrivé des adhésions depuis la dernière visite de la liste. */
 function adhAnnonce(){
   if(!SESSION||SESSION.role==="visiteur"||!(DB.adhesions||[]).length)return;
@@ -8906,6 +8846,7 @@ function rrGroupe(c,b){const auj=isoJour(TODAY),fin=b.d1<auj?b.d1:auj,pas=rrPas(
   for(let i=1;i<S.length;i++){const g=rrJours(S[i-1].date,S[i].date);if(S[i].date>=b.d0&&g>pas*1.6)trous.push({du:S[i-1].date,au:S[i].date,n:Math.max(1,Math.round(g/pas)-1)})}
   const der=S[S.length-1],proch=T.find(r=>r.date>auj&&r.statut!=="annulee");
   if(der&&fin===auj){const g=rrJours(der.date,auj);if(g>pas*1.6)trous.push({du:der.date,au:null,n:Math.max(1,Math.round(g/pas)-1)})}
+  if(c.pause){const pj=String(c.pause).slice(0,10);for(let i=trous.length-1;i>=0;i--){if(!trous[i].au||trous[i].du>=pj)trous.splice(i,1)}}
   const manq=trous.reduce((t,x)=>t+x.n,0);
   return{c,pas,P,tenues,annulees,archivees,sans,deplacees,trous,manq,jamais:!T.length,der,proch,prevues:tenues.length+annulees.length+archivees.length+sans.length+manq}}
 function rrTout(k){const b=rrBornes(k||"annee"),G=DB.clubs.map(c=>rrGroupe(c,b)),s=f=>G.reduce((t,g)=>t+f(g),0);
@@ -9413,13 +9354,13 @@ function clubsTable(list){
   return `<div class="tbl tbl-wrap"><table><thead><tr><th>Groupe</th><th>Animateur</th><th>Statut</th><th class="n">Membres</th><th>Prochaine réunion</th><th class="c">Santé</th><th>À faire</th></tr></thead><tbody>${list.map(c=>{
     const nom=c.nom.replace(/^CAP\s+/,""),nbM=DB.membres.filter(m=>m.clubId===c.id).length,h=clubHealth(c),na=clubNextAction(c),t=clubTone(c);
     const up=DB.reunions.filter(m=>m.clubId===c.id&&!isPast(m.date)&&m.statut!=="annulee").sort((x,y)=>x.date.localeCompare(y.date))[0];
-    return `<tr ${trOpen(`openClub('${c.id}')`)}><td><div class="who" style="--vc:${villeColor(c.ville)}"><span class="emb">${esc(initiales(nom))}</span><span><b>${esc(nom)}</b><small>${esc(c.ville)}</small></span></div></td>
+    return `<tr class="${c.pause?"en-pause":""}" ${trOpen(`openClub('${c.id}')`)}><td><div class="who" style="--vc:${villeColor(c.ville)}"><span class="emb">${esc(initiales(nom))}</span><span><b>${esc(nom)}</b><small>${esc(c.ville)}</small></span></div></td>
       <td class="${c.animId?"":"red"}">${c.animId?esc(animNom(c.animId)):"À nommer"}</td>
-      <td><span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span></td>
+      <td>${clubPill(c)}</td>
       <td class="n">${miniG(nbM,c.objectif)}</td>
       <td>${up?`<b>${dObj(up.date).getDate()} ${MOIS[dObj(up.date).getMonth()]}</b> <span class="mut">· ${up.type}</span>`:`<span class="red">aucune</span>`}</td>
       <td class="c">${ringSm(h)}</td>
-      <td>${na.act?`<button class="act ${t==="urgent"?"":"todo"}" onclick="event.stopPropagation();clubCardAction('${c.id}')">${esc(na.label)} ›</button>`:`<span class="act ok">✓ ${esc(na.label.replace(/\s*✓$/,""))}</span>`}</td></tr>`}).join("")}</tbody></table></div>`;
+      <td>${na.act?`<button class="act ${t==="urgent"?"":"todo"}" onclick="event.stopPropagation();clubCardAction('${c.id}')">${esc(na.label)} ›</button>`:na.pause?`<span class="act pause">⏸ ${esc(na.label)}</span>`:`<span class="act ok">✓ ${esc(na.label.replace(/\s*✓$/,""))}</span>`}</td></tr>`}).join("")}</tbody></table></div>`;
 }
 const AG_THEAD=`<thead><tr><th>Date</th><th>Heure</th><th>Groupe</th><th>Type</th><th>Lieu</th><th>Animateur</th><th>Invités</th><th>Statut</th></tr></thead>`;
 function meetingTr(m){
@@ -9999,7 +9940,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

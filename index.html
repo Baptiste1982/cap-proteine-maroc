@@ -2739,8 +2739,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.122.0";
+const APP_VERSION="1.123.0";
 const CHANGELOG=[
+  {v:"1.123.0",date:"20 novembre 2026",notes:{"Ajouté":["La visite guidée peut être proposée à un compte à sa prochaine connexion : une fenêtre l\u2019invite à voir l\u2019essentiel ou la visite complète"]}},
   {v:"1.122.0",date:"20 novembre 2026",notes:{"Ajouté":["Mon agenda (Paramètres, ou dans les points sur activité) : tu t\u2019abonnes une fois, et tes PSA et tes réunions s\u2019inscrivent tout seuls dans Google Agenda, l\u2019iPhone ou Outlook"],"Modifié":["Visite guidée à jour : la cloche et les alertes à reporter, le jour de la réunion, le bilan verrouillé en PDF, les réunions du réseau et les bilans pour le bureau national, les lieux partagés, l\u2019envoi au national avec son propre compte, les points sur activité en calendrier"]}},
   {v:"1.121.0",date:"20 novembre 2026",notes:{"Modifié":["Une alerte mise de côté l\u2019est sur tous tes appareils : reportée sur le téléphone, elle disparaît aussi sur l\u2019ordinateur","La carte « Nouvelle version disponible » et les autres notifications se posent tout en bas de l\u2019écran"]}},
   {v:"1.120.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité en calendrier : un mois à l\u2019écran, on touche un jour pour voir ses heures (ou une liste repliée par jour) ; le lien de planning des animateurs a le même calendrier","Ouvrir des créneaux en série : les 3, 4 ou 5 derniers jours du mois, du lundi au jeudi (vendredi en option), sur plusieurs mois","« Reporter les créneaux de ce mois sur le mois suivant »"]}},
@@ -3525,7 +3526,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring,gereReseau:!!prof.gere_reseau};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tutoProposer:!!prof.tuto_proposer,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring,gereReseau:!!prof.gere_reseau};
   if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
     if(prof.role!=="superadmin"){voirOublier()}
     else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
@@ -3967,7 +3968,21 @@ function tutoEtapes(partie){
   const tout=TUTO_PARTIES.flatMap(([k])=>P[k]||[]);
   return partie==="complet"?tout:partie==="essentiel"?tout.filter(e=>e.k):(P[partie]||[]);
 }
+/* v1.123 : la visite guidée PROPOSÉE à un compte (profiles.tuto_proposer, posé par le super admin en base) : à sa connexion, une fenêtre
+   l'invite à la voir ; « Plus tard » la repropose à la connexion suivante ; lancer la visite lève la proposition. */
+function tutoProposition(){try{if(!SESSION||!SESSION.tutoProposer||SESSION._voir||sessionStorage.getItem("cap-tp-vu"))return;let n=0;
+  const essai=()=>{if(sessionStorage.getItem("cap-tp-vu"))return;const libre=!_mdpForce&&!document.getElementById("sheet").classList.contains("open")&&!document.querySelector("#tuto.on,html.lanc-on,#ins-o");
+    if(libre){sessionStorage.setItem("cap-tp-vu","1");const pr=String(SESSION.name||"").split(/\s+/)[0];
+      document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🎓",title:"Bienvenue "+esc(pr),sub:"La visite guidée du CRM"})}
+        <p class="nc-intro" id="tp-intro">Le CRM a beaucoup évolué. Une visite guidée de deux minutes te montre l'essentiel, écran par écran : la cloche des notifications, les réunions du réseau et leurs bilans, les points sur activité, les adhésions. Tu peux l'arrêter à tout moment et la retrouver dans Paramètres, puis Aide.</p>
+        <button class="btn" id="tp-go" style="width:100%" onclick="tutoPropositionGo('essentiel')">▶ Voir l'essentiel (2 minutes)</button>
+        <button class="btn ghost" id="tp-tout" style="width:100%;margin-top:8px" onclick="tutoPropositionGo('complet')">Voir la visite complète (5 minutes)</button>
+        <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Plus tard</button></div>`;openSheet();return}
+    if(++n<400)setTimeout(essai,1500)};
+  setTimeout(essai,navigator.webdriver?300:5200)}catch(e){}}
+function tutoPropositionGo(partie){SESSION.tutoProposer=false;try{sb.rpc("cap_tuto_propose_fait").then(()=>{},()=>{})}catch(e){}closeSheet();setTimeout(()=>tutoLancer(partie,true),350)}
 function tutoAuDemarrage(){
+  if(SESSION.tutoProposer){tutoProposition();return}
   let vu=SESSION.tutoVu;try{vu=vu||localStorage.getItem("cap-tuto-"+SESSION.id)}catch(e){}
   if(vu)return;
   if(_mdpForce){_tutoEnAttente=true;return}

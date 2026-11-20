@@ -12,7 +12,7 @@
 //                      signature "papier" : contrat papier à imprimer (aucun e-mail ne part) ;
 //                      signature "aucune" : s'arrête une fois le contrat généré.
 //
-// Réservé au superadmin et à la direction nationale (qui agit avec son propre compte du national, v8). Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT et
+// Ouvert à l'équipe sauf visiteur (v9) : chacun agit avec son propre compte du national ; le super admin avec le compte commun. Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT et
 // CAP_NATIONAL_MOT_DE_PASSE (jamais dans le code). Chaque étape réussie est enregistrée dans
 // adhesions.national : un nouvel envoi reprend là où le précédent s'est arrêté, sans doublon.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -94,6 +94,8 @@ Deno.serve(async (req) => {
     // Appel programmé (national-suivi) : jeton du coffre, seulement pour l'action « prospect ».
     const jeton = req.headers.get('x-suivi-jeton');
     let user: { id: string | null } | null = null;
+    // deno-lint-ignore no-explicit-any
+    let appelant: any = null;
     // v8 : qui se connecte au national. Super admin et passages programmés = compte commun (secrets) ;
     // direction nationale = SON compte (table national_comptes, mot de passe dans le coffre), jamais le compte commun.
     let cnx: { login: string; password: string; anim: string | null; nom: string } = { login: Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', password: Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '', anim: null, nom: '' };
@@ -103,13 +105,14 @@ Deno.serve(async (req) => {
       const { data: { user: u } } = await caller.auth.getUser();
       if (!u) return json({ error: 'Session invalide' }, 401);
       const { data: prof } = await admin.from('profiles').select('role, animateur_id, nom').eq('id', u.id).single();
-      if (prof?.role !== 'superadmin' && prof?.role !== 'directeur_national') return json({ error: 'Réservé à la direction nationale' }, 403);
-      if (prof.role === 'directeur_national') {
+      // v9 : toute l'équipe (sauf visiteur) peut envoyer, chacun avec SON compte du national ; seul le super admin passe par le compte commun.
+      if (!prof || !['superadmin', 'directeur_national', 'directeur', 'animateur'].includes(String(prof.role))) return json({ error: 'Réservé à l\'équipe' }, 403);
+      if (prof.role !== 'superadmin') {
         const { data: c } = prof.animateur_id ? await admin.rpc('cap_national_compte_secret', { p_anim: prof.animateur_id }) : { data: null };
         if (!c?.identifiant || !c?.mdp) return json({ error: 'Branche d\'abord ton compte du CRM national (Paramètres, Mon compte national) : sans lui, rien ne part au national.' }, 400);
         cnx = { login: String(c.identifiant), password: String(c.mdp), anim: String(prof.animateur_id), nom: String(prof.nom || '') };
       }
-      user = { id: u.id };
+      user = { id: u.id }; appelant = caller;
     }
 
     const body = await req.json().catch(() => ({}));
@@ -119,6 +122,8 @@ Deno.serve(async (req) => {
     if (user.id === null && !['prospect', 'yousign'].includes(action)) return json({ error: 'Non autorisé' }, 401);
     if (!['electronique', 'papier', 'aucune'].includes(opt.signature)) return json({ error: 'Mode de signature inconnu' }, 400);
 
+    // L'appelant doit voir cette demande avec ses propres droits (RLS) : un animateur n'envoie pas celle d'un autre périmètre.
+    if (appelant) { const { data: vu } = await appelant.from('adhesions').select('id').eq('id', adhesion_id).maybeSingle(); if (!vu) return json({ error: 'Adhésion introuvable' }, 404); }
     const { data: a, error: aerr } = await admin.from('adhesions').select('*').eq('id', adhesion_id).single();
     if (aerr || !a) return json({ error: 'Adhésion introuvable' }, 404);
     const d = a.data || {};

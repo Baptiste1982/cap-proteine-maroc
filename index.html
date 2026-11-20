@@ -2701,8 +2701,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.107.0";
+const APP_VERSION="1.108.0";
 const CHANGELOG=[
+  {v:"1.108.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi des adhésions au CRM national : réservé au super admin et à la direction nationale, chacun avec son propre compte du national"]}},
   {v:"1.107.0",date:"20 novembre 2026",notes:{"Corrigé":["Archives des réunions au téléphone : les lignes ne débordent plus du cadre"],"Modifié":["Archives : les réunions à venir sont regroupées en tête, en pointillés et en gris, séparées des réunions passées"]}},
   {v:"1.106.0",date:"20 novembre 2026",notes:{"Ajouté":["Alerte « réunions passées à verrouiller » sur Mon groupe et sur la Synthèse, avec un bouton par réunion ; elle se vide au fur et à mesure"]}},
   {v:"1.105.0",date:"19 novembre 2026",notes:{"Modifié":["Chacun agit au CRM national avec son propre compte : le compte commun ne sert plus qu\u2019au super admin","Tant que le compte national n\u2019est pas branché, la demande revient à chaque connexion et rien ne part au national"]}},
@@ -7738,6 +7739,8 @@ async function adhPdf(id){
    La fonction crée ou complète prospect, entreprise et personne, génère le contrat et, en mode
    papier, le met à disposition pour impression ; en électronique (défaut), lance Yousign comme le bouton du national. */
 const NAT_STATUTS={contrat_genere:"Contrat généré",contrat_papier:"Contrat papier prêt à signer",yousign_envoye:"Yousign envoyé au membre, en attente de sa signature"};
+/* v1.108 : l'envoi des adhésions au national est réservé au super admin et à la direction nationale (chacun avec son compte). */
+function natAdhPeut(){return !!(SESSION&&!SESSION._voir&&(SESSION.role==="superadmin"||SESSION.role==="directeur_national"))}
 function adhNationalBloc(a){
   const n=a.national||{},lien=n.url_contrat_papier||n.url_contrat;
   return `<div class="nat-box">
@@ -7749,7 +7752,7 @@ function adhNationalBloc(a){
     ${n.contrat_pdf?`<button class="btn" onclick="mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📄 Ouvrir le contrat à signer</button><div class="nat-v">Rangé dans le dossier du membre.</div>`:lien?`<button class="btn" onclick="adhRangerContrat('${a.id}')">📥 Ranger le contrat dans le dossier</button>`:""}
     ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
     ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
-    <button class="btn ${n.contrat_id?"ghost":""}" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>
+    ${natAdhPeut()?`<button class="btn ${n.contrat_id?"ghost":""}" id="nat-envoi" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>`:`<div class="nat-v" id="nat-reserve">L'envoi au CRM national est fait par la direction nationale.</div>`}
   </div>`;
 }
 // Session fermée ailleurs (déconnexion sur un autre appareil) : le serveur la refuse alors que l'écran semble connecté.
@@ -7759,6 +7762,8 @@ async function natSessionOk(sc,id){const {error}=await sb.auth.getUser();if(!err
 const natErr=e=>e==="Session invalide"?NAT_SESSION_MSG:e;
 async function adhNational(id){
   const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
+  if(!natAdhPeut()){toast("L'envoi au CRM national est réservé à la direction nationale","w");return}
+  if(SESSION.role!=="superadmin"&&!natComptePret()){toast("Branche d'abord ton compte du CRM national","w");if(SESSION.animId){window._ncAccueil=1;openCompteNat(SESSION.animId)}return}
   const sc=document.getElementById("sheet-content");
   sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(a.data.ent_nom||adhNom(a))})}<p class="nat-v">Connexion au CRM national et vérification, sans rien y écrire…</p>`;
   if(!await natSessionOk(sc,id))return;
@@ -8127,7 +8132,7 @@ async function accMembreCreer(animId){const a=anim(animId);if(!a)return;
    ============================================================ */
 const ROLE_DROITS={
   superadmin:["voit et modifie tout le réseau","gère les comptes et les accès","envoie les adhésions au CRM national"],
-  directeur_national:["voit tout le réseau","suit les adhésions et qui est connecté","prépare les réunions avec les animateurs"],
+  directeur_national:["voit tout le réseau","suit les adhésions et qui est connecté","envoie les adhésions au CRM national, avec son propre compte","prépare les réunions avec les animateurs"],
   directeur:["voit tout le réseau","modifie les groupes, les réunions et les membres de sa zone","traite les demandes d'adhésion de sa zone"],
   animateur:["gère ses groupes : réunions, bilans, invités et membres","planifie ses réunions et écrit les comptes rendus","envoie le lien d'adhésion à ses futurs membres"],
   visiteur:["consulte le réseau en lecture seule"]};
@@ -9215,7 +9220,7 @@ function natCarte(a,i,col){
   if(col==="envoyer"&&n.prospect_id)lignes.push(["Annuaire",`fiche n° ${n.prospect_id}`]);
   if(n.signe_le)lignes.push(["Signé",adhDate(n.signe_le)]);
   if(n.erreur&&col==="envoyer")lignes.push(["Dernier essai",n.erreur]);
-  const act=col==="envoyer"?(su?`<button class="dm-go" onclick="event.stopPropagation();natEnvoyer('${a.id}')">Envoyer au national <span>›</span></button>`:`<button class="dm-go" onclick="event.stopPropagation();adhDetail('${a.id}')">Voir la demande <span>›</span></button>`)
+  const act=col==="envoyer"?(natAdhPeut()?`<button class="dm-go" onclick="event.stopPropagation();natEnvoyer('${a.id}')">Envoyer au national <span>›</span></button>`:`<button class="dm-go" onclick="event.stopPropagation();adhDetail('${a.id}')">Voir la demande <span>›</span></button>`)
     :col==="attente"?(readOnly()?"":`<button class="dm-go" onclick="event.stopPropagation();natSigne('${a.id}',true)">✓ Marquer signé <span>›</span></button>`)
     :(readOnly()?"":`<button class="dm-go nat-ghost" onclick="event.stopPropagation();natSigne('${a.id}',false)">Annuler la signature</button>`);
   return `<article class="dm-card nat-card" style="--vc:${c?villeColor(c.ville):"#8C8085"};--i:${i}" tabindex="0" onclick="adhDetail('${a.id}')" onkeydown="if(event.key==='Enter')adhDetail('${a.id}')">

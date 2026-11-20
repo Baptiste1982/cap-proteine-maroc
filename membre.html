@@ -421,6 +421,42 @@ span.chaleur.c3,span.chaleur.c4{color:#1B1416}
 .rr-seg{margin:0 0 12px}.rr-seg button{flex:1;min-height:38px;border:0;background:none;border-radius:10px;font:700 13px Inter,sans-serif;color:inherit;cursor:pointer}.rr-seg button.on{background:#D81B3F;color:#fff}
 .rr-ev{display:flex;flex-direction:column;gap:3px;background:#D81B3F;color:#fff;border-radius:16px;padding:14px 16px}.rr-ev small{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.rr-ev b{font-size:18px}.rr-ev span{font-size:13px;opacity:.95}
 .rr-pdf{display:block;width:100%;min-height:42px;margin:0 0 12px;border:1.5px solid currentColor;background:none;color:inherit;border-radius:12px;font:700 14px Inter,sans-serif;cursor:pointer;opacity:.9}
+/*v1.131 espace membre sur ordinateur : pleine largeur, onglets en haut, colonnes*/
+@media(min-width:1000px){
+.app{max-width:1240px}
+.page{padding-left:32px;padding-right:32px;padding-bottom:48px;gap:16px}
+nav.bas{top:var(--bande,0px);bottom:auto;border-top:0;border-bottom:1px solid var(--line2);padding:8px 32px;z-index:6}
+nav.bas .in{max-width:1176px;justify-content:flex-start;gap:6px;align-items:center}
+nav.bas button{flex:none;flex-direction:row;gap:9px;font-size:14.5px;padding:10px 16px;border-radius:12px;min-height:44px;cursor:pointer}
+nav.bas button>svg{width:21px;height:21px}
+nav.bas button:hover{background:var(--surf,rgba(127,127,127,.12))}
+nav.bas button.on{background:var(--surf,rgba(127,127,127,.14))}
+nav.bas .badge{position:static;margin-left:2px}
+nav.bas .nav-reco{order:9;margin-left:auto;background:#D81B3F;color:#fff;padding:0 20px 0 12px;border-radius:999px;font-size:0}
+nav.bas .nav-reco::after{content:"Recommander quelqu'un";font-size:14.5px}
+nav.bas .nav-reco:hover{background:#B5142F}
+nav.bas .nav-reco .nr-b{width:28px;height:28px;margin:0;background:none;box-shadow:none}
+nav.bas .nav-reco .nr-b svg{width:20px;height:20px}
+body:has(nav.bas:not([hidden])) .app{padding-top:61px}
+body:has(nav.bas:not([hidden])) .ariane{top:calc(var(--bande,0px) + 61px)}
+.ariane{margin-left:-32px;margin-right:-32px;padding-left:32px;padding-right:26px}
+.ac-g{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+.ac-c1,.ac-c2{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pc-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.pc-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.login{max-width:460px}
+body:not([data-pg="accueil"]):not([data-pg="mongroupe"]):not([data-pg="annuaire"]):not([data-pg="moi"]):not([data-pg="reunions"]):not([data-pg="recos"]):not([data-pg="docs"]):not([data-pg="messages"]):not([data-pg="chiffres"]) .page{max-width:860px;width:100%;margin-left:auto;margin-right:auto}
+[data-pg="moi"] .page>.la-l,[data-pg="messages"] .page>.la-l{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+[data-pg="moi"] .page>.btn{align-self:center;min-width:320px}
+.ag-l,.rr-l2{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+#res{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px!important;align-items:start}
+#res>details,#res>.label,#res>.vide{grid-column:1/-1}
+.ann-q,.page>.seg,.ann-barre{max-width:640px}
+.rr-pdf{max-width:320px}
+[data-pg="recos"] .page>.btn{align-self:flex-start;min-width:320px}
+.saisie form{max-width:796px}
+}
+@media(max-width:999.98px){.ac-g,.ac-c1,.ac-c2,.pc-2,.pc-3{display:contents}.ac-c1>*{order:1}.ac-c1>.ac-actions{order:3}.ac-c2>*{order:4}.ac-c2>:first-child{order:2}}
 </style>
 </head>
 <body>
@@ -641,6 +677,7 @@ function rendu(garderDefilement){
   const rc=aTraiterRecos().length;const br=$("nav-rc");br.hidden=!rc;br.textContent=rc;
   const v={accueil:vueAccueil,mongroupe:vueMonGroupe,annuaire:vueAnnuaire,fiche:vueFiche,messages:vueMessages,conv:vueConv,moi:vueMoi,profil:vueProfil,inviter:vueInviter,
     recos:vueRecos,reco:vueReco,chiffres:vueChiffres,docs:vueDocs,mesdocs:vueMesDocs,carte:vueCarte,reunions:vueReunions,reunion:vueReunion,gpage:vueGroupePage,presence:vuePresence,groupe:vueGroupe}[S.onglet]||vueAccueil;
+  document.body.dataset.pg=S.onglet;
   $("app").innerHTML=v();
   const pg=$("app").querySelector(".page");
   if(pg&&S.anim&&!garderDefilement)pg.classList.add(S.anim);
@@ -847,18 +884,18 @@ function vueAccueil(){
   return `<div class="page">
     ${S.viaCrm&&!S.voir&&!DANS_CRM?`<div class="eq-band">🪪 Ton espace membre, ouvert depuis le CRM<a class="btn mini ghost" href="/">↩ CRM</a></div>`:""}
     <div class="ac-tete">${av({id:S.moi.id,nom:S.moi.nom,photo:moiFiche().photo})}<div><h1>Bonjour ${esc(prenom)}</h1><p class="sub">${esc(nom)}${c.animateur?" · animé par "+esc(String(c.animateur).split(/\s+/)[0]):""}</p></div></div>
-    ${carteReunion(p,true)}
+    <div class="ac-g"><div class="ac-c1">${carteReunion(p,true)}
     ${S.eq?"":`<div class="la-l rr-entree">${ligneAct(`data-aller="reunions"`,"Les réunions du réseau",reseauSous())}</div>`}
-    ${volet("afaire","À faire",todo.length||"0",todo.length?`<div class="la-l">${todo.join("")}</div>`:`<p class="vide" style="padding:10px">Rien à faire pour l'instant. Tout est à jour.</p>`,{ouvert:true})}
     <div class="ac-actions">
       <button type="button" class="ac-a fort" data-rdonner=""><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Recommander quelqu'un</button>
       <button type="button" class="ac-a" data-aller="inviter"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M12 14v4M10 16h4"/></svg>Inviter à la réunion</button>
       <button type="button" class="ac-a" data-aller="groupe"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Écrire au groupe</button>
-    </div>
+    </div></div>
+    <div class="ac-c2">${volet("afaire","À faire",todo.length||"0",todo.length?`<div class="la-l">${todo.join("")}</div>`:`<p class="vide" style="padding:10px">Rien à faire pour l'instant. Tout est à jour.</p>`,{ouvert:true})}
     <button type="button" class="ac-bilan" data-aller="chiffres"><span class="label" style="color:#C9D6E3">Ton bilan ${new Date().getFullYear()}</span>
       <span class="ac-duo"><span><b class="bri">${esc(mad(m&&m.ca_transmis))}</b><small>d'affaires apportées au groupe</small></span><span><b class="bri">${esc(mad(m&&m.ca_recu))}</b><small>d'affaires reçues du groupe</small></span></span>
       <span class="ac-pied">${m?`${m.donnees||0} recommandation${m.donnees>1?"s":""} donnée${m.donnees>1?"s":""} · ${m.recues||0} reçue${m.recues>1?"s":""}`:"Tes chiffres"}<em>Détail ›</em></span></button>
-    ${faites<etapes.length?volet("demarrer","Bien démarrer",`${faites} sur ${etapes.length}`,`<div class="ac-prog"><i style="width:${Math.round(faites/etapes.length*100)}%"></i></div><div class="la-l">${etapes.map(([l,ok])=>ok?`<span class="ac-fait">✓ ${esc(l)}</span>`:ligneAct(`data-aller="profil"`,esc(l),"")).join("")}</div>`,{ouvert:true}):""}
+    ${faites<etapes.length?volet("demarrer","Bien démarrer",`${faites} sur ${etapes.length}`,`<div class="ac-prog"><i style="width:${Math.round(faites/etapes.length*100)}%"></i></div><div class="la-l">${etapes.map(([l,ok])=>ok?`<span class="ac-fait">✓ ${esc(l)}</span>`:ligneAct(`data-aller="profil"`,esc(l),"")).join("")}</div>`,{ouvert:true}):""}</div></div>
   </div>`;
 }
 
@@ -888,12 +925,12 @@ function vueMonGroupe(){
     <div class="gv-tete"><div class="eyebrow">Protéine · ${S.eq?"Vue membre":"Mon groupe"}</div><h1>${esc(nom)}</h1>
       <p class="sub">${esc(c.ville||"")}${c.animateur?" · animé par "+esc(c.animateur):""}</p>${rythmeTxt(c)?`<p class="gv-ry">🔁 ${esc(rythmeTxt(c))}</p>`:""}</div>
     ${carteReunion(p,false)}
-    ${volet("g-chiffres","Les chiffres du groupe",mad(gr.ca_mois),chiffres)}
-    ${volet("g-membres","Membres et métiers",mb.length,membres,{ouvert:true})}
-    ${mr.length?volet("g-recherches","Métiers recherchés",mr.length,`<div class="gv-chips">${mr.map(x=>`<span>${esc(x)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0">Tu connais quelqu'un ? Invite-le à la prochaine réunion.</p>${S.eq?"":`<button class="btn ghost" data-aller="inviter" style="margin-top:8px;width:100%">Inviter quelqu'un</button>`}`):""}
+    <div class="ac-g"><div class="ac-c1">${volet("g-chiffres","Les chiffres du groupe",mad(gr.ca_mois),chiffres)}
+    ${volet("g-membres","Membres et métiers",mb.length,membres,{ouvert:true})}</div>
+    <div class="ac-c2">    ${mr.length?volet("g-recherches","Métiers recherchés",mr.length,`<div class="gv-chips">${mr.map(x=>`<span>${esc(x)}</span>`).join("")}</div><p class="note" style="margin:8px 0 0">Tu connais quelqu'un ? Invite-le à la prochaine réunion.</p>${S.eq?"":`<button class="btn ghost" data-aller="inviter" style="margin-top:8px;width:100%">Inviter quelqu'un</button>`}`):""}
     ${p?volet("g-invites","Invités à la prochaine réunion",inv.length,invites):""}
     ${volet("g-recos","Recommandations du groupe",recos.length,lrecos)}
-    <button class="card gv-fil" data-aller="groupe"><span class="label">Fil du groupe</span>${(g.messages||[]).length?g.messages.slice(-3).map(x=>`<span><b>${esc(String(x.auteur_nom).split(" ")[0])}</b> ${esc(x.texte.slice(0,90))}</span>`).join(""):`<span>Aucun message. Lance la discussion.</span>`}<em>Ouvrir le fil ›</em></button>
+    <button class="card gv-fil" data-aller="groupe"><span class="label">Fil du groupe</span>${(g.messages||[]).length?g.messages.slice(-3).map(x=>`<span><b>${esc(String(x.auteur_nom).split(" ")[0])}</b> ${esc(x.texte.slice(0,90))}</span>`).join(""):`<span>Aucun message. Lance la discussion.</span>`}<em>Ouvrir le fil ›</em></button></div></div>
   </div>`;
 }
 

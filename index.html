@@ -2795,8 +2795,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.131.0";
+const APP_VERSION="1.132.0";
 const CHANGELOG=[
+  {v:"1.132.0",date:"20 novembre 2026",notes:{"Corrigé":["Carte du réseau : les villes restent sur la terre et dans le bon ordre le long de la côte (Casablanca n'est plus dans l'océan)."],"Ajouté":["Sur ordinateur, la page de réservation des PSA (calendrier à gauche, heures à droite) et la page d'invitation à une réunion (la réunion à gauche, les explications à droite) prennent la largeur de l'écran. Rien ne change au téléphone."]}},
   {v:"1.131.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre sur ordinateur : la page prend toute la largeur. Les onglets passent en haut avec le bouton « Recommander quelqu'un » à droite, l'accueil et Mon groupe s'affichent en deux colonnes, le Réseau, les réunions et le menu Moi en grille. Rien ne change au téléphone."]}},
   {v:"1.130.0",date:"20 novembre 2026",notes:{"Ajouté":["Un compte peut porter un titre affiché à la place du libellé de son rôle (Ghita : « Office Manager ») ; ses droits ne changent pas.","Journal, réservé au super admin (Paramètres → Administration, et menu Équipe) : qui a fait quoi et quand. Le fil complet jour par jour, ou rangé par personne, par région, par type ; recherche, période, détail de chaque action (les champs modifiés, avant et après), export pour Excel. Les connexions au CRM y sont notées aussi."]}},
   {v:"1.129.0",date:"20 novembre 2026",notes:{"Ajouté":["Les événements du réseau (l'interclub du 4 décembre) apparaissent dans la grille du calendrier, au mois comme à la semaine, dans l'Agenda et dans Mon groupe : un bandeau rouge sur le jour. Un toucher ouvre l'événement."]}},
@@ -9104,12 +9105,14 @@ function carteSvg(opts){
   const P=(a,o)=>[(o-lo0)*k*cl,(la1-a)*k];
   const land="M"+COTE.map(([a,o])=>P(a,o).map(n=>n.toFixed(1)).join(",")).join(" L")+` L${P(27,-11.1).map(n=>n.toFixed(1))} L${P(27,5).map(n=>n.toFixed(1))} L${P(37,5).map(n=>n.toFixed(1))} L${P(37,-5.92).map(n=>n.toFixed(1))} Z`;
   const rang={urgent:0,todo:1,ok:2};
-  const nodes=villes.map(v=>{const cs=DB.clubs.filter(c=>c.ville===v);const t=cs.map(clubTone).sort((a,b)=>rang[a]-rang[b])[0];const[x,y]=P(...VILLE_GPS[v]);return{v,n:cs.length,t,x,y,r:Math.min(22,7+cs.length*2.4)}});
-  for(let it=0;it<120;it++)for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j];let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;const need=a.r+b.r+(Math.abs(dy/d)>.5?30:22);if(d<need){const p=(need-d)/2;dx/=d;dy/=d;a.x-=dx*p;a.y-=dy*p;b.x+=dx*p;b.y+=dy*p}}
-  nodes.forEach(n=>{n.x=Math.max(n.r+2,Math.min(W-n.r-2,n.x));n.y=Math.max(n.r+2,Math.min(H-n.r-14,n.y))});
+  const nodes=villes.map(v=>{const cs=DB.clubs.filter(c=>c.ville===v);const t=cs.map(clubTone).sort((a,b)=>rang[a]-rang[b])[0];const[x,y]=P(...VILLE_GPS[v]);return{v,n:cs.length,t,x,y,ox:x,oy:y,r:Math.min(22,7+cs.length*2.4)}});
+  const cotePx=COTE.map(([a,o])=>P(a,o)),coteX=y=>{for(let i=0;i<cotePx.length-1;i++){const[x1,y1]=cotePx[i],[x2,y2]=cotePx[i+1];if(y>=y1&&y<=y2)return x1+(x2-x1)*(y-y1)/((y2-y1)||1)}return y<cotePx[0][1]?cotePx[0][0]:cotePx[cotePx.length-1][0]};
+  const aTerre=()=>nodes.forEach(n=>{const m=coteX(n.y)+n.r*.55;if(n.x<m)n.x=m}); /* v1.132 : une ville ne finit jamais dans l'océan */
+  for(let it=0;it<160;it++){aTerre();for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j];let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01;const need=a.r+b.r+(Math.abs(dy/d)>.5?30:40);if(d<need){const p=(need-d)/2;let gx=b.ox-a.ox,gy=b.oy-a.oy;const gd=Math.hypot(gx,gy);if(gd>.5){dx=gx/gd;dy=gy/gd}else{dx/=d;dy/=d}a.x-=dx*p;a.y-=dy*p;b.x+=dx*p;b.y+=dy*p}}}
+  nodes.forEach(n=>{n.x=Math.max(n.r+2,Math.min(W-n.r-2,n.x));n.y=Math.max(n.r+2,Math.min(H-n.r-14,n.y))});aTerre();
   const col=n=>TON_COUL[n.t]||"#8C8085";
   const g=nodes.map(n=>`<g class="city" data-v="${esc(n.v)}" tabindex="0" role="button" aria-label="${esc(n.v)} : ${n.n} groupe${n.n>1?"s":""}">${opts.calme?"":`<circle class="pulse" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${col(n)}"/>`}<circle class="b" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r}" fill="${col(n)}" stroke="${opts.dark?"#9A1028":"var(--card)"}" stroke-width="2"/><text x="${n.x.toFixed(1)}" y="${(n.y+4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" font-family="Inter,sans-serif">${n.n}</text><text x="${n.x.toFixed(1)}" y="${(n.y+n.r+12).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${opts.dark?"rgba(255,255,255,.8)":"var(--ink)"}" font-family="Inter,sans-serif">${esc(n.v)}</text></g>`).join("");
-  return `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Carte des groupes par ville"><path d="${land}" fill="${opts.dark?"rgba(255,255,255,.07)":"var(--land)"}" stroke="${opts.dark?"rgba(255,255,255,.18)":"var(--line)"}" stroke-width="1.5"/><text x="12" y="${(H-12).toFixed(0)}" font-size="10.5" font-style="italic" fill="${opts.dark?"rgba(255,255,255,.5)":"var(--muted)"}" font-family="Inter,sans-serif">Océan Atlantique</text>${g}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Carte des groupes par ville"><path d="${land}" fill="${opts.dark?"rgba(255,255,255,.07)":"var(--land)"}" stroke="${opts.dark?"rgba(255,255,255,.18)":"var(--line)"}" stroke-width="1.5"/><text x="12" y="20" font-size="10.5" font-style="italic" fill="${opts.dark?"rgba(255,255,255,.5)":"var(--muted)"}" font-family="Inter,sans-serif">Océan Atlantique</text>${g}</svg>`;
 }
 function openCarte(ville){
   const villes=[...new Set(DB.clubs.map(c=>c.ville))],hors=villes.filter(v=>!VILLE_GPS[v]);

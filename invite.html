@@ -45,6 +45,9 @@ ul li{padding-left:16px;position:relative}ul li::before{content:"";position:abso
 .btn{display:flex;align-items:center;justify-content:center;max-width:520px;margin:0 auto;min-height:54px;border-radius:16px;background:#D81B3F;color:#fff;font:700 17px Inter,sans-serif;text-decoration:none;box-shadow:0 12px 28px -12px rgba(216,27,63,.7);transition:transform .15s,background .15s}
 .btn:hover{background:#B5142F}.btn:active{transform:scale(.98)}.btn:focus-visible,.ou:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
 .pied{text-align:center;color:#5E5054;font-size:13px;margin:4px 0 0}
+@media(min-width:900px){main{max-width:1040px;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px 22px;align-items:start;padding-top:20px}
+main>.tete{grid-column:1;grid-row:1 / span 8;position:sticky;top:20px;padding:30px 28px}main>.tete h1{font-size:34px}main>.bloc,main>.pied{grid-column:2}
+main>.bloc:only-child{grid-column:1 / -1}.bas{background:none;pointer-events:none}.bas .btn{pointer-events:auto;box-shadow:0 10px 30px rgba(216,27,63,.35)}}
 @media(prefers-reduced-motion:reduce){main>*{animation:none}.btn{transition:none}}
 </style>
 </head>

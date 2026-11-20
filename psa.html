@@ -56,6 +56,10 @@ button.cj.a.plein{background:transparent;border-style:dashed}button.cj.a.plein s
 button.cj.a.on{background:var(--rouge);border-color:var(--rouge);color:#fff}button.cj.a.on small{color:#fff}
 .msg{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1B1416;color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;max-width:calc(100vw - 32px);z-index:5;pointer-events:none}
 .msg.on{opacity:1;transform:translate(-50%,0)}.msg.ko{background:#8A1C1C}
+.cg,.cg1,.cg2{display:contents}
+@media(min-width:900px){.page,.tete .in{max-width:1040px}.page:has(#moi){grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);align-items:start}
+.cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}.cg1,.cg2{display:grid;gap:10px;align-content:start}
+.page:has(#moi) .cg{grid-template-columns:minmax(0,1fr)}.carte{padding:22px}}
 @media (prefers-reduced-motion:reduce){.direct i{animation:none}.msg{transition:none}}
 </style>
 </head>
@@ -139,7 +143,7 @@ function rendu(force){
       <button class="btn gh" data-annuler="${moi.id}">Annuler ou changer de créneau</button></section>`:""}
     <section class="carte"><h2>${moi?"Les autres créneaux":"Créneaux proposés"}</h2>
       <div class="direct" id="direct"><i></i><span></span></div>
-      ${L.length?cal+(sel?`<div class="jour" id="jour-sel">${esc(jour(sel[0].debut))}</div>${sel.map(ligne).join("")}`:`<p class="note">${[...jours.keys()].some(k=>k.slice(0,7)===moisAff)?"Touche un jour marqué pour voir ses heures.":"Aucun créneau ce mois-ci. Le point près d'une flèche indique un mois qui en a."}</p>`):`<p class="note">Aucun créneau ouvert pour l'instant. Ton directeur va en proposer : cette page se met à jour toute seule.</p>`}
+      ${L.length?`<div class="cg"><div class="cg1">${cal}</div><div class="cg2">`+(sel?`<div class="jour" id="jour-sel">${esc(jour(sel[0].debut))}</div>${sel.map(ligne).join("")}`:`<p class="note">${[...jours.keys()].some(k=>k.slice(0,7)===moisAff)?"Touche un jour marqué pour voir ses heures.":"Aucun créneau ce mois-ci. Le point près d'une flèche indique un mois qui en a."}</p>`)+`</div></div>`:`<p class="note">Aucun créneau ouvert pour l'instant. Ton directeur va en proposer : cette page se met à jour toute seule.</p>`}
       ${L.length&&!libres&&!moi?`<p class="note">Tous les créneaux sont pris. Préviens ton directeur pour qu'il en ouvre d'autres.</p>`:""}
       ${moi?`<p class="note">Pour changer d'heure, annule d'abord ton créneau.</p>`:""}</section>`;
   majDirect()}

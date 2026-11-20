@@ -2594,6 +2594,7 @@ body.lecture .ann-btn{display:none}
 .grp-cr.avenir{border-style:dashed;background:transparent;opacity:1}.grp-cr.avenir .gc-t b{font-weight:600;color:var(--muted)}
 .grp-cr.avenir .reu-d{filter:grayscale(1);opacity:.7;transform:rotate(-5deg)}
 @media (max-width:520px){.grp-cr{gap:9px;padding:10px}.grp-cr .gc-a .btn{padding:7px 8px;min-width:36px}}
+/*v1.109*/.rv-i.q-reseau b{color:#1E9E63}.rv-i.q-reseau{border-left:3px solid #1E9E63;padding-left:9px}
 </style>
 </head>
 <body>
@@ -2701,8 +2702,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.108.0";
+const APP_VERSION="1.109.0";
 const CHANGELOG=[
+  {v:"1.109.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF, résumé WhatsApp et fiche de synthèse : les membres d\u2019autres groupes venus à la réunion ont leur rubrique, en vert, avec leur groupe, leur ville et leur région ; ils ne sont plus mêlés aux invités extérieurs"]}},
   {v:"1.108.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi des adhésions au CRM national : réservé au super admin et à la direction nationale, chacun avec son propre compte du national"]}},
   {v:"1.107.0",date:"20 novembre 2026",notes:{"Corrigé":["Archives des réunions au téléphone : les lignes ne débordent plus du cadre"],"Modifié":["Archives : les réunions à venir sont regroupées en tête, en pointillés et en gris, séparées des réunions passées"]}},
   {v:"1.106.0",date:"20 novembre 2026",notes:{"Ajouté":["Alerte « réunions passées à verrouiller » sur Mon groupe et sur la Synthèse, avec un bouton par réunion ; elle se vide au fur et à mesure"]}},
@@ -4700,21 +4702,37 @@ async function grpFilEcrire(id){
 function bilNumero(m){const V=window._DBvrai||DB,l=(V.reunions||[]).filter(r=>r.clubId===m.clubId&&(r.id===m.id||(r.statut!=="annulee"&&r.statut!=="archivee"))).sort((a,b)=>a.date.localeCompare(b.date)||String(a.heure||"").localeCompare(String(b.heure||"")));return Math.max(1,l.findIndex(r=>r.id===m.id)+1)}
 function bilDonnees(m){const V=window._DBvrai||DB,c=(V.clubs||[]).find(x=>x.id===m.clubId)||club(m.clubId)||{},b=(m.cr&&m.cr.bilan)||{};
   const ids=new Set((V.presences||DB.presences||[]).filter(p=>p.reunion_id===m.id).map(p=>p.membre_id));
-  const presents=(V.membres||[]).filter(x=>ids.has(x.id)).map(x=>x.nom).sort((a,b)=>a.localeCompare(b));
-  const venus=(m.guests||[]).filter(g=>g.venu===true).map(g=>[g.nom,[g.entreprise,g.metier].filter(Boolean).join(", ")]);
+  const presents=(V.membres||[]).filter(x=>ids.has(x.id)&&x.clubId===m.clubId).map(x=>x.nom).sort((a,b)=>a.localeCompare(b));
+  /* v1.109 : parmi les inscrits venus, les membres d'un AUTRE groupe sont listés à part (groupe, ville, région) ;
+     ceux du groupe sont déjà dans « membres présents ». Reconnus par la base (cap_reunion_qualites) ou par le nom. */
+  const Q=(window._bilQ||{})[m.id]||{},K=x=>ptCle(x),duGroupe=new Set((V.membres||[]).filter(x=>x.clubId===m.clubId).map(x=>K(x.nom)));
+  const regionDe=v=>{const z=(V.zones||DB.zones||[]).find(z=>(z.villes||[]).includes(v));return z?z.nom:""};
+  const fiche=(nom,cid,grp)=>{const cc=(V.clubs||[]).find(x=>x.id===cid)||(grp?(V.clubs||[]).find(x=>K(x.nom)===K(capNom(grp))||K(x.nom)===K(grp)):null)||{};return{nom,groupe:capNom(cc.nom||grp||""),ville:cc.ville||"",region:regionDe(cc.ville||"")}};
+  const venus=[],autres=[],vus=new Set();
+  (m.guests||[]).filter(g=>g.venu===true).forEach(g=>{const q=Q[g._id],k=K(g.nom);
+    if((q&&q.q==="groupe")||(!q&&duGroupe.has(k)))return;
+    const mb=q&&q.q==="reseau"?null:(V.membres||[]).find(x=>x.clubId!==m.clubId&&K(x.nom)===k);
+    if(q&&q.q==="reseau"){if(!vus.has(k)){vus.add(k);autres.push(fiche(g.nom,q.club_id,q.groupe))}}
+    else if(mb){if(!vus.has(k)){vus.add(k);autres.push(fiche(g.nom,mb.clubId,""))}}
+    else venus.push([g.nom,[g.entreprise,g.metier].filter(Boolean).join(", ")])});
+  (V.membres||[]).filter(x=>ids.has(x.id)&&x.clubId!==m.clubId).forEach(x=>{const k=K(x.nom);if(!vus.has(k)){vus.add(k);autres.push(fiche(x.nom,x.clubId,""))}});
   const rub=crChamps(m).map(([k,t])=>[t,m.cr&&typeof m.cr[k]==="string"?m.cr[k].trim():""]).filter(x=>x[1]);
   return{c,groupe:String(c.nom||"Groupe"),ville:c.ville||"",lieu:m.lieuId?lieuNom(m.lieuId):"",anim:animNom(m.animId||c.animId),d:dObj(m.date),
-    numero:bilNumero(m),nbMembres:(V.membres||[]).filter(x=>x.clubId===m.clubId).length,absents:presents.length?(V.membres||[]).filter(x=>x.clubId===m.clubId&&!ids.has(x.id)).map(x=>x.nom).sort((a,b)=>a.localeCompare(b)):[],nPres:m.presents??presents.length,nInv:m.invitesVenus??venus.length,nAdh:m.adhObt??0,recos:b.recos||0,montant:b.montant||0,notes:b.notes||"",presents,venus,rub,transmis:b.transmis_le||null}}
+    numero:bilNumero(m),nbMembres:(V.membres||[]).filter(x=>x.clubId===m.clubId).length,absents:presents.length?(V.membres||[]).filter(x=>x.clubId===m.clubId&&!ids.has(x.id)).map(x=>x.nom).sort((a,b)=>a.localeCompare(b)):[],nPres:m.presents??presents.length,nInv:m.invitesVenus??venus.length,nAdh:m.adhObt??0,recos:b.recos||0,montant:b.montant||0,notes:b.notes||"",presents,venus,autres,rub,transmis:b.transmis_le||null}}
+/* Qualité des inscrits lue en base (utile à un animateur, qui ne voit pas les fiches des autres groupes). */
+async function bilQualites(m){window._bilQ=window._bilQ||{};if(window._bilQ[m.id]||!SESSION||SESSION.role==="visiteur")return false;
+  try{const r=await sb.rpc("cap_reunion_qualites",{p_reunion:m.id});if(r.error||!Array.isArray(r.data))return false;const o={};r.data.forEach(x=>{if(x&&x.id)o[x.id]=x});window._bilQ[m.id]=o;return true}catch(e){return false}}
 function bilanNom(m){const D=bilDonnees(m);return (D.groupe+" - Réunion "+String(D.numero).padStart(2,"0")+" - "+m.date+" - "+typeLib(m)+".pdf").replace(/[\\/:*?"<>|]/g,"")}
 function bilanTexte(m){const D=bilDonnees(m),L=[];
   L.push("Bilan de réunion - "+D.groupe);L.push("Réunion n° "+D.numero);L.push(typeLib(m)+" du "+dateLongue(D.d)+(m.heure?" à "+m.heure:"")+(D.lieu?", "+D.lieu:""));L.push("Animée par "+D.anim);L.push("");
   L.push("Membres présents : "+D.nPres);L.push("Invités venus : "+D.nInv);L.push("Adhésions obtenues : "+D.nAdh);
   if(D.recos||D.montant)L.push("Recommandations : "+D.recos+(D.montant?" ("+madFmt(D.montant)+")":""));
+  if(D.autres.length){L.push("");L.push("Membres d'autres groupes : "+D.autres.map(x=>x.nom+" ("+[x.groupe,x.ville].filter(Boolean).join(", ")+")").join(" ; "))}
   if(D.venus.length){L.push("");L.push("Invités : "+D.venus.map(v=>v[0]+(v[1]?" ("+v[1]+")":"")).join(" ; "))}
   if(D.notes){L.push("");L.push(D.notes)}
   D.rub.forEach(([t,x])=>{L.push("");L.push(t+" : "+x)});
   return L.join("\n")}
-async function bilanPdf(m){const L=await pdfLibCharger(),doc=await L.PDFDocument.create(),f=await doc.embedFont(L.StandardFonts.Helvetica),fb=await doc.embedFont(L.StandardFonts.HelveticaBold);
+async function bilanPdf(m){await bilQualites(m);const L=await pdfLibCharger(),doc=await L.PDFDocument.create(),f=await doc.embedFont(L.StandardFonts.Helvetica),fb=await doc.embedFont(L.StandardFonts.HelveticaBold);
   const D=bilDonnees(m),W=595,H=842,M=44,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.43,.42,.44),filet=L.rgb(.87,.86,.87),pale=L.rgb(.968,.962,.958),blanc=L.rgb(1,1,1),vert=L.rgb(.118,.62,.388);
   const sur=t=>pdfTexteSur(String(t==null?"":t).replace(/[  ]/g," ").replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/…/g,"...")).replace(/\s+/g," ").trim();
   const larg=(t,font,sz)=>font.widthOfTextAtSize(t,sz),num=String(D.numero).padStart(2,"0"),grp=sur(D.groupe),dateC=String(D.d.getDate()).padStart(2,"0")+"/"+String(D.d.getMonth()+1).padStart(2,"0")+"/"+D.d.getFullYear();
@@ -4752,6 +4770,9 @@ async function bilanPdf(m){const L=await pdfLibCharger(),doc=await L.PDFDocument
     for(let r=0;r<rg;r++){place(16);[D.presents[r],D.presents[r+rg]].forEach((nm,c)=>{if(!nm)return;const x=M+c*col;pg.drawCircle({x:x+4,y:y-6.5,size:2.2,color:vert});pg.drawText(sur(nm),{x:x+13,y:y-10,size:10.5,font:f,color:noir})});y-=16}}
   if(D.absents.length){y-=4;txt("Absents : "+D.absents.join("  ·  "),{sz:9,c:gris})}
   /* Invités venus : nom, puis entreprise et métier. */
+  if(D.autres.length){const vr=L.rgb(.118,.62,.388);titre("Membres d'autres groupes",D.autres.length);D.autres.forEach((x,i)=>{place(19);if(i%2===0)pg.drawRectangle({x:M,y:y-16,width:W-2*M,height:18,color:pale});
+    pg.drawRectangle({x:M,y:y-16,width:3,height:18,color:vr});pg.drawText(sur(x.nom),{x:M+10,y:y-11,size:10,font:fb,color:vr});
+    const s2=[x.groupe,x.ville,x.region&&x.region!==x.ville?"région "+x.region:""].filter(Boolean).join("  ·  ");if(s2){const l=lignes(s2,f,9.5,W-M-(M+210)-8)[0];pg.drawText(l,{x:M+210,y:y-11,size:9.5,font:f,color:noir})}y-=18})}
   if(D.venus.length){titre("Invités venus",D.venus.length);D.venus.forEach(([nm,s],i)=>{place(19);if(i%2===0)pg.drawRectangle({x:M,y:y-16,width:W-2*M,height:18,color:pale});
     pg.drawText(sur(nm),{x:M+8,y:y-11,size:10,font:fb,color:noir});if(s){const l=lignes(s,f,9.5,W-M-(M+210)-8)[0];pg.drawText(l,{x:M+210,y:y-11,size:9.5,font:f,color:gris})}y-=18})}
   if(D.notes){titre("Notes du bilan");txt(D.notes)}
@@ -4768,7 +4789,7 @@ function bilDestPoser(v){const t=String(v||"").trim();try{t?localStorage.setItem
 async function bilTransmis(m){if(!canEditReunion(m)||readOnly()||(SESSION&&SESSION._voir))return;const cr={...(m.cr||{})};cr.bilan={...(cr.bilan||{}),transmis_le:new Date().toISOString(),transmis_par:(SESSION&&SESSION.name)||""};
   const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",m.id);if(!error){m.cr=cr;const e=document.getElementById("be-etat");if(e)e.innerHTML=bilEnvEtat(m)}}
 function bilEnvEtat(m){const t=m.cr&&m.cr.bilan&&m.cr.bilan.transmis_le;return t?`<span class="be-ok">✓ Transmis le ${esc(adhDate(t))}${m.cr.bilan.transmis_par?" par "+esc(m.cr.bilan.transmis_par):""}</span>`:`<span>Pas encore transmis</span>`}
-function openBilanEnvoi(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;const D=bilDonnees(m),c=D.c,d=D.d,de=bilDest(),sup=SESSION&&SESSION.role==="superadmin";
+function openBilanEnvoi(mid){const m=DB.reunions.find(x=>x.id===mid);if(!m)return;bilQualites(m);const D=bilDonnees(m),c=D.c,d=D.d,de=bilDest(),sup=SESSION&&SESSION.role==="superadmin";
   document.getElementById("sheet-content").innerHTML=`${ficheHead({vc:villeColor(c.ville),lead:`<span class="rl-date fh-date"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>`,title:"Transmettre le bilan",sub:`${esc(D.groupe.replace(/^CAP\s+/,""))} · réunion n° ${D.numero} · ${esc(typeLib(m))} du ${esc(dateLongue(d))}`})}
     <div class="bil-sum"><span class="rl-fact g">${D.nPres} présent${D.nPres>1?"s":""}</span><span class="rl-fact y">${D.nInv} invité${D.nInv>1?"s":""} venu${D.nInv>1?"s":""}</span><span class="rl-fact g">${D.nAdh} adhésion${D.nAdh>1?"s":""}</span>${D.recos?`<span class="rl-fact y">${D.recos} reco${D.recos>1?"s":""}${D.montant?" · "+esc(madFmt(D.montant)):""}</span>`:""}</div>
     <p class="be-etat" id="be-etat">${bilEnvEtat(m)}</p>
@@ -6258,7 +6279,8 @@ async function reuVerrouiller(mid,oui,sansFiche){const m=DB.reunions.find(x=>x.i
   const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",mid);if(error){toast(rlsMsg(error),"e");return false}
   m.cr=cr;toast(oui?"Réunion verrouillée":"Réunion déverrouillée : la fiche complète est de retour",oui?"s":undefined);
   render();if(!sansFiche)meetingDetail(m,true);return true}
-function reuResume(m,editable){const D=bilDonnees(m),c=D.c,d=D.d,v=reuVerrou(m),ca=D.montant?madFmt(D.montant):"0 MAD";
+function reuResume(m,editable){if(!(window._bilQ||{})[m.id])bilQualites(m).then(ok=>{if(ok&&document.getElementById("rv-etat")&&reuVerrou(m))reuResume(m,editable)});
+  const D=bilDonnees(m),c=D.c,d=D.d,v=reuVerrou(m),ca=D.montant?madFmt(D.montant):"0 MAD";
   const k=(n,l,cls)=>`<div class="rv-t ${cls||""}"><b>${n}</b><span>${l}</span></div>`;
   const vol=(t,n,corps)=>corps?`<details class="rv-d" name="rv-d"><summary><b>${t}</b>${n!=null?`<em>${n}</em>`:""}</summary><div class="rv-c">${corps}</div></details>`:"";
   const cr=[D.notes?`<p>${esc(D.notes)}</p>`:"",...D.rub.map(([t,x])=>`<h5>${esc(t)}</h5><p>${esc(x).replace(/\n/g,"<br>")}</p>`)].join("");
@@ -6267,6 +6289,7 @@ function reuResume(m,editable){const D=bilDonnees(m),c=D.c,d=D.d,v=reuVerrou(m),
     <p class="rv-l">${esc(dateLongue(d))} ${d.getFullYear()}${m.heure?" · "+esc(m.heure):""}${D.lieu?" · "+esc(D.lieu):""}<br>Animée par ${esc(D.anim)}</p>
     <div class="rv-k">${k(D.nPres,"membre"+(D.nPres>1?"s":"")+" présent"+(D.nPres>1?"s":""))}${k(D.nInv,"invité"+(D.nInv>1?"s":"")+" venu"+(D.nInv>1?"s":""))}${k(D.nAdh,"adhésion"+(D.nAdh>1?"s":""))}${k(D.recos,"recommandation"+(D.recos>1?"s":""))}${k(esc(ca),"d'affaires","ca")}</div>
     ${vol("Membres présents",D.presents.length,D.presents.length?D.presents.map(n=>`<span class="rv-p">${esc(n)}</span>`).join("")+(D.absents.length?`<p class="rv-abs">Absents : ${D.absents.map(esc).join(" · ")}</p>`:""):"")}
+    ${vol("Membres d'autres groupes",D.autres.length,D.autres.map(x=>`<div class="rv-i q-reseau"><b>${esc(x.nom)}</b><small>${esc([x.groupe,x.ville,x.region&&x.region!==x.ville?"région "+x.region:""].filter(Boolean).join(" · "))}</small></div>`).join(""))}
     ${vol("Invités venus",D.venus.length,D.venus.map(([n,s])=>`<div class="rv-i"><b>${esc(n)}</b>${s?`<small>${esc(s)}</small>`:""}</div>`).join(""))}
     ${vol("Compte rendu",null,cr)}
     <div class="be-act" style="margin-top:12px"><button class="btn" id="rv-envoi" onclick="openBilanEnvoi('${m.id}')">📤 Transmettre le bilan<small>PDF ou résumé WhatsApp</small></button></div>

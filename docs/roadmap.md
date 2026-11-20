@@ -7,7 +7,7 @@ Ce qui est livré sort de la liste et va dans `CLAUDE.md`.
 
 | # | Sujet | État |
 |---|---|---|
-| 1 | Réunions du réseau pour le bureau national : planning de tous les groupes, bilans en PDF par région et par groupe, réunions manquantes, motif d'annulation, relance de l'animateur, statistiques (prévues, tenues, annulées, déplacées) | à faire |
+| 1 | Réunions du réseau pour le bureau national | livré (v1.115) |
 | 2 | Lieux partagés : tous les lieux du réseau à disposition de chaque animateur, choisir une adresse déjà référencée ou en créer une | à faire |
 | 3 | Vidéos de prise en main avec voix off, à jour du menu et des ajouts récents : d'abord Hassan et Ghita (direction nationale), puis animateurs et membres | à faire |
 

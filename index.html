@@ -2494,6 +2494,8 @@ body.lecture .ann-btn{display:none}
 .chals button.on{background:var(--cc);border-color:var(--cc);color:#fff}
 .chals button.on b{color:#fff}
 .chals .c3.on,.chals .c3.on b,.chals .c4.on,.chals .c4.on b{color:#1B1416}
+/*v1.110 coffre*/.nc-coffre{margin-top:10px}.nc-cl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}.nc-cl small{grid-column:1/-1;color:var(--muted);font-size:11px}.nc-cl code{font:600 14px/1.3 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;user-select:all}
+.nc-cls{display:grid;gap:6px}.nc-cr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;cursor:pointer;font:inherit}.nc-cr small{display:block;color:var(--muted);font-size:12px}.nc-cr i{font-style:normal;color:var(--muted)}.nc-cr:hover{border-color:var(--ink)}
 /*v1.96 pointage des invités*/
 .g-venu{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#1E9E63;color:#fff;font-size:10.5px;font-weight:700;vertical-align:middle;white-space:nowrap}
 .g-venu.non{background:rgba(127,127,127,.28);color:var(--muted)}
@@ -2702,8 +2704,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.109.0";
+const APP_VERSION="1.110.0";
 const CHANGELOG=[
+  {v:"1.110.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi d\u2019une adhésion au CRM national : ouvert à toute l\u2019équipe (animateurs, directeurs de région, direction nationale), chacun avec son propre compte du national","Paramètres → Coffre des comptes du national (super admin seulement) : relire l\u2019identifiant et le mot de passe saisis par chacun, pour les redonner en cas d\u2019oubli"]}},
   {v:"1.109.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF, résumé WhatsApp et fiche de synthèse : les membres d\u2019autres groupes venus à la réunion ont leur rubrique, en vert, avec leur groupe, leur ville et leur région ; ils ne sont plus mêlés aux invités extérieurs"]}},
   {v:"1.108.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi des adhésions au CRM national : réservé au super admin et à la direction nationale, chacun avec son propre compte du national"]}},
   {v:"1.107.0",date:"20 novembre 2026",notes:{"Corrigé":["Archives des réunions au téléphone : les lignes ne débordent plus du cadre"],"Modifié":["Archives : les réunions à venir sont regroupées en tête, en pointillés et en gris, séparées des réunions passées"]}},
@@ -6582,7 +6585,7 @@ function openCompteNat(animId){if(!natComptePeut(animId)){toast("Ce compte natio
   const a=((window._DBvrai||DB).animateurs||[]).find(x=>x.id===animId)||{nom:"Animateur"},c=natCompte(animId),e=natCompteEtat(animId),moi=SESSION.animId===animId;
   const acc=window._ncAccueil;window._ncAccueil=0;
   document.getElementById("sheet-content").innerHTML=`${ficheHead({title:"Compte du CRM national",ini:"🔐",sub:esc(a.nom)})}
-    ${acc?`<p class="nc-intro" id="nc-intro">Bonjour ${esc(String(a.nom).split(/\s+/)[0])}. Pour agir au CRM national depuis ici (invitations, inscrits), il faut <b>ton propre compte</b> du national : indique une fois l'identifiant et le mot de passe que tu utilises là-bas. Tant que ce n'est pas fait, rien ne part au national, et la question revient à chaque connexion.</p>`:""}
+    ${acc?`<p class="nc-intro" id="nc-intro">Bonjour ${esc(String(a.nom).split(/\s+/)[0])}. Pour agir au CRM national depuis ici (invitations, inscrits, adhésions), il faut <b>ton propre compte</b> du national : indique une fois l'identifiant et le mot de passe que tu utilises là-bas. Tant que ce n'est pas fait, rien ne part au national, et la question revient à chaque connexion.</p>`:""}
     <div class="nc-etat ${e.k}"><b>${esc(e.lib)}</b><span>${c?`Identifiant ${esc(c.identifiant)}${c.ok_le?" · vérifié le "+esc(adhDate(c.ok_le)):""}`:esc(e.sous)}</span></div>
     ${c&&c.erreur?`<div class="nat-err">${esc(c.erreur)} Remets l'identifiant et le mot de passe ci-dessous.</div>`:""}
     ${natCompteInfos(c)}
@@ -6590,9 +6593,10 @@ function openCompteNat(animId){if(!natComptePeut(animId)){toast("Ce compte natio
     <div class="field"><label>Mot de passe</label><input id="nc-mdp" type="password" autocomplete="new-password" maxlength="200" onkeydown="if(event.key==='Enter')natCompteSauver('${animId}',document.getElementById('nc-go'))"></div>
     <button class="btn" id="nc-go" style="width:100%" onclick="natCompteSauver('${animId}',this)">${c?"Remplacer et tester":"Enregistrer et tester"}</button>
     ${c?`<div class="emb-2" style="margin-top:8px"><button class="btn ghost mini" onclick="natCompteTester('${animId}',this)">🔄 Retester la connexion</button><button class="btn ghost mini" onclick="natCompteRetirer('${animId}',this)">Débrancher ce compte</button></div>`:""}
+    ${c&&SESSION.role==="superadmin"&&!SESSION._voir?`<div class="nc-coffre" id="nc-coffre"><button class="btn ghost mini" onclick="natCoffreVoir('${animId}',this)">👁 Afficher l'identifiant et le mot de passe</button></div>`:""}
     <details class="ni-aide" style="margin-top:14px"><summary>Comment ça marche</summary>
       <p class="fh-note">Une fois le compte branché, quand tu crées l'invitation d'une réunion ${moi?"de ton groupe":"de son groupe"}, elle part au national avec ce compte : ${moi?"ton nom, ta photo":"son nom, sa photo"}, et les inscrits arrivent dans ${moi?"ton":"son"} carnet d'adresses.</p>
-      <p class="fh-note">Le mot de passe est rangé chiffré dans la base. Il ne s'affiche plus jamais, ni pour toi ni pour le super admin ; seul le serveur s'en sert pour se connecter.</p>
+      <p class="fh-note">L'identifiant et le mot de passe sont rangés chiffrés dans la base. Le serveur s'en sert pour se connecter au national ; en cas d'oubli, le super admin (lui seul) peut les relire pour te les redonner.</p>
       <p class="fh-note">Si tu changes ton mot de passe au national, reviens le remettre ici. Sans compte branché, tu ne peux rien envoyer au national depuis le CRM.</p></details>
     <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">${acc?"Plus tard":"Fermer"}</button></div>`;
   openSheet()}
@@ -6611,6 +6615,29 @@ async function natCompteSauver(animId,btn){const id=(document.getElementById("nc
 async function natCompteRetirer(animId,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : débrancher";return}
   btn.disabled=true;const {error}=await sb.rpc("cap_national_compte_retirer",{p_anim:animId});if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
   await natComptesCharger();toast("Compte débranché : tu ne peux plus rien envoyer au national tant qu'il n'est pas rebranché");openCompteNat(animId)}
+/* v1.110 : coffre du super admin. Il relit l'identifiant et le mot de passe d'un compte branché pour les redonner en cas d'oubli.
+   Rien n'est gardé dans la page : l'affichage s'efface au bout d'une minute ou à la fermeture. */
+async function natCoffreVoir(animId,btn){if(!SESSION||SESSION.role!=="superadmin"||SESSION._voir)return;const z=document.getElementById("nc-coffre");if(!z)return;
+  if(btn){btn.disabled=true;btn.textContent="Lecture du coffre…"}
+  const {data,error}=await sb.rpc("cap_national_compte_lire",{p_anim:animId});
+  if(error||!data){if(btn){btn.disabled=false;btn.textContent="👁 Afficher l'identifiant et le mot de passe"}toast((error&&rlsMsg(error))||"Lecture impossible","e");return}
+  const l=(t,k)=>`<div class="nc-cl"><small>${t}</small><code id="nc-c-${k}"></code><button class="btn ghost mini" onclick="natCoffreCopier('${k}')">Copier</button></div>`;
+  z.innerHTML=`${l("Identifiant","id")}${l("Mot de passe","mdp")}<p class="fh-note">Affiché pour une minute. À redonner de vive voix ou par un canal sûr, pas dans un groupe.</p><button class="btn ghost mini" onclick="natCoffreCacher('${animId}')">Masquer</button>`;
+  document.getElementById("nc-c-id").textContent=data.identifiant||"";document.getElementById("nc-c-mdp").textContent=data.mdp||"";
+  clearTimeout(window._ncCoffreT);window._ncCoffreT=setTimeout(()=>natCoffreCacher(animId),60000)}
+function natCoffreCacher(animId){clearTimeout(window._ncCoffreT);const z=document.getElementById("nc-coffre");if(z)z.innerHTML=`<button class="btn ghost mini" onclick="natCoffreVoir('${animId}',this)">👁 Afficher l'identifiant et le mot de passe</button>`}
+function natCoffreCopier(k){const e=document.getElementById("nc-c-"+k);if(!e)return;try{navigator.clipboard.writeText(e.textContent).then(()=>toast("Copié","s"),()=>toast("Copie impossible : sélectionne le texte","w"))}catch(x){toast("Copie impossible : sélectionne le texte","w")}}
+function openCoffreNat(){if(!SESSION||SESSION.role!=="superadmin"||SESSION._voir){toast("Réservé au super admin","w");return}
+  const V=window._DBvrai||DB,cs=V.natComptes||DB.natComptes||[],A=(V.animateurs||[]).slice().sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
+  const avec=A.filter(a=>cs.some(c=>c.animateur_id===a.id)),sans=A.filter(a=>!cs.some(c=>c.animateur_id===a.id)&&(V.acces||[]).some(u=>(u.animateur_id||u.animId)===a.id)&&a.id!==SESSION.animId);
+  const li=a=>{const e=natCompteEtat(a.id),c=natCompte(a.id);return `<button class="nc-cr" data-coffre="${a.id}" onclick="openCompteNat('${a.id}')"><span class="nc-pt ${e.k}"></span><span><b>${esc(a.nom)}</b><small>${c?esc(e.lib)+(c.ok_le?" · vérifié le "+esc(adhDate(c.ok_le)):""):"Pas encore branché"}</small></span><i>›</i></button>`};
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({title:"Coffre des comptes du national",ini:"🔐",sub:"Visible de toi seul"})}
+    <p class="fh-note">Les identifiants que chacun a saisis pour le CRM national. Ouvre une ligne puis « Afficher » pour les relire et les redonner en cas d'oubli. Chaque lecture est notée.</p>
+    <div class="sec-h"><span>Comptes branchés</span><span class="pill">${avec.length}</span></div>
+    ${avec.length?`<div class="nc-cls">${avec.map(li).join("")}</div>`:`<div class="empty">Personne n'a encore branché son compte.</div>`}
+    ${sans.length?`<details class="ni-aide" style="margin-top:14px"><summary>Pas encore branchés (${sans.length})</summary><div class="nc-cls">${sans.map(li).join("")}</div></details>`:""}
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet()}
 /* Dans la fiche d'accès d'un animateur (super admin) : où en est son compte national. */
 function natCompteBloc(animId){if(!natComptePeut(animId))return"";const e=natCompteEtat(animId);
   return `<div class="nat-box"><div class="nat-t">Compte du CRM national</div><div class="nc-ligne"><span class="nc-pt ${e.k}"></span><span><b>${esc(e.lib)}</b> · ${esc(e.sous)}</span><button class="btn ghost mini" onclick="openCompteNat('${animId}')">${natCompte(animId)?"Voir":"Brancher"}</button></div></div>`}
@@ -7763,7 +7790,7 @@ async function adhPdf(id){
    papier, le met à disposition pour impression ; en électronique (défaut), lance Yousign comme le bouton du national. */
 const NAT_STATUTS={contrat_genere:"Contrat généré",contrat_papier:"Contrat papier prêt à signer",yousign_envoye:"Yousign envoyé au membre, en attente de sa signature"};
 /* v1.108 : l'envoi des adhésions au national est réservé au super admin et à la direction nationale (chacun avec son compte). */
-function natAdhPeut(){return !!(SESSION&&!SESSION._voir&&(SESSION.role==="superadmin"||SESSION.role==="directeur_national"))}
+function natAdhPeut(){return !!(SESSION&&!SESSION._voir&&SESSION.role!=="visiteur")}
 function adhNationalBloc(a){
   const n=a.national||{},lien=n.url_contrat_papier||n.url_contrat;
   return `<div class="nat-box">
@@ -7775,7 +7802,7 @@ function adhNationalBloc(a){
     ${n.contrat_pdf?`<button class="btn" onclick="mbDocOuvrir('membres','${esc(n.contrat_pdf)}')">📄 Ouvrir le contrat à signer</button><div class="nat-v">Rangé dans le dossier du membre.</div>`:lien?`<button class="btn" onclick="adhRangerContrat('${a.id}')">📥 Ranger le contrat dans le dossier</button>`:""}
     ${n.identifiant?`<div class="nat-v">Accès à l'application Protéine du membre : <b>${esc(n.identifiant)}</b> · mot de passe <b>${esc(n.mot_de_passe||"")}</b></div>`:""}
     ${(n.etapes||[]).length?`<details class="nat-j"><summary>Journal de l'envoi${n.maj?" · "+esc(adhDate(n.maj)):""}</summary>${n.etapes.map(e=>`<div>${esc(e)}</div>`).join("")}</details>`:""}
-    ${natAdhPeut()?`<button class="btn ${n.contrat_id?"ghost":""}" id="nat-envoi" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>`:`<div class="nat-v" id="nat-reserve">L'envoi au CRM national est fait par la direction nationale.</div>`}
+    ${natAdhPeut()?`<button class="btn ${n.contrat_id?"ghost":""}" id="nat-envoi" onclick="adhNational('${a.id}')">${n.contrat_id?"Renvoyer au national":"🚀 Envoyer au CRM national"}</button>`:""}
   </div>`;
 }
 // Session fermée ailleurs (déconnexion sur un autre appareil) : le serveur la refuse alors que l'écran semble connecté.
@@ -7785,7 +7812,7 @@ async function natSessionOk(sc,id){const {error}=await sb.auth.getUser();if(!err
 const natErr=e=>e==="Session invalide"?NAT_SESSION_MSG:e;
 async function adhNational(id){
   const a=(DB.adhesions||[]).find(x=>x.id===id);if(!a)return;
-  if(!natAdhPeut()){toast("L'envoi au CRM national est réservé à la direction nationale","w");return}
+  if(!natAdhPeut()){toast("Tu es en lecture seule : l'envoi au CRM national n'est pas ouvert","w");return}
   if(SESSION.role!=="superadmin"&&!natComptePret()){toast("Branche d'abord ton compte du CRM national","w");if(SESSION.animId){window._ncAccueil=1;openCompteNat(SESSION.animId)}return}
   const sc=document.getElementById("sheet-content");
   sc.innerHTML=`${ficheHead({ini:"→",title:"Envoi au CRM national",sub:esc(a.data.ent_nom||adhNom(a))})}<p class="nat-v">Connexion au CRM national et vérification, sans rien y écrire…</p>`;
@@ -9081,7 +9108,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>
@@ -9578,7 +9605,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

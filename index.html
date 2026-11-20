@@ -2150,6 +2150,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.116 lieux partagés*/.lieu-qui{display:block;font-style:normal;color:var(--muted);font-size:12px;margin-top:2px}.lieu-seg{margin:0 0 10px}
 /*v1.115 réunions du réseau*/.rr-seg{margin:10px 0}.rr-ks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:8px}.rr-k{border:1px solid var(--line);border-radius:12px;padding:9px 8px;text-align:center;min-width:0}.rr-k b{display:block;font:800 22px/1.1 "Bricolage Grotesque",Inter,sans-serif}.rr-k span{font-size:11.5px;color:var(--muted)}.rr-k.al{background:var(--crimson);border-color:var(--crimson);color:#fff}.rr-k.al span{color:#fff}
 @media(max-width:600px){.rr-ks{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .rr-reg{margin-top:14px}.rr-rt{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:6px}.rr-rt b{font-size:16px}.rr-rt span{font-size:12px;color:var(--muted)}
@@ -2716,8 +2717,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.115.0";
+const APP_VERSION="1.116.0";
 const CHANGELOG=[
+  {v:"1.116.0",date:"20 novembre 2026",notes:{"Modifié":["Lieux partagés : l\u2019onglet Lieux montre tous les lieux du réseau (bascule « Ma région / Tout le réseau ») avec les groupes qui s\u2019y réunissent ; en créant une réunion, on choisit parmi tous les lieux, ceux de sa ville d\u2019abord, ou on en ajoute un"]}},
   {v:"1.115.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda → « Réunions du réseau » : par région et par groupe, les réunions tenues (bilan en PDF), annulées, déplacées, sans bilan, et les réunions manquantes par rapport au rythme du groupe ; compteurs au mois, au trimestre, à l\u2019année","Direction : « Relancer » l\u2019animateur d\u2019un toucher pour un bilan manquant, un motif d\u2019annulation ou un groupe sans réunion récente","Une réunion annulée demande son motif (fête religieuse, jour férié, vacances, lieu ou animateur indisponible…) ; un déplacement est compté tout seul"]}},
   {v:"1.114.0",date:"20 novembre 2026",notes:{"Modifié":["Équipe → « Donner l\u2019accès » : ouvert à la direction nationale, pour les comptes d\u2019animateur et de directeur de région","Message d\u2019invitation : le type de la réunion y figure (Réunion Business, Conférence et son thème, Visite d\u2019entreprise…), repère {type}"]}},
   {v:"1.113.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : suivi par région — qui a calé son PSA ce mois-ci, qui est à relancer (bouton « Relancer » = notification sur son téléphone), quelle région n\u2019a aucun créneau ouvert","Alerte « PSA à caler » sur la Synthèse et Mon groupe, pour l\u2019animateur comme pour les directeurs, et rappel automatique chaque lundi matin","Direction nationale : planning des PSA de tout le réseau, en lecture seule","Bouton pour reporter un PSA dans Google Agenda (ou un autre agenda depuis le lien de planning)"]}},
@@ -4922,7 +4924,16 @@ async function reuConfirmer(id){
   if(error){toast(rlsMsg(error));return}
   DB.reunions.find(x=>x.id===id).statut="confirmee";toast("Réunion confirmée");render();
 }
-function lieuOptions(sel,ville){const l=DB.lieux.slice().sort((a,b)=>(a.ville===ville?0:1)-(b.ville===ville?0:1)||a.nom.localeCompare(b.nom));return `<option value="">À définir</option>`+l.map(x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${esc(x.nom)} — ${esc(x.ville)}</option>`).join("")}
+/* v1.116 : lieux partagés. Tous les lieux du réseau sont proposés à chaque animateur, ceux de la ville du groupe d'abord,
+   avec le nom des groupes qui s'y réunissent. */
+function lieuxReseau(){return ((window._DBvrai||DB).lieux||DB.lieux||[])}
+function lieuQui(l){const V=window._DBvrai||DB,lim=isoJour(new Date(TODAY.getTime()-365*864e5)),ids=new Set();
+  (V.clubs||[]).forEach(c=>{if(c.lieuHab===l.id)ids.add(c.id)});(V.reunions||[]).forEach(r=>{if(r.lieuId===l.id&&r.date>=lim&&r.statut!=="annulee")ids.add(r.clubId)});
+  return [...ids].map(id=>(V.clubs||[]).find(c=>c.id===id)).filter(Boolean).map(c=>({nom:String(c.nom).replace(/^CAP\s+/,""),anim:(()=>{const a=(V.animateurs||[]).find(x=>x.id===c.animId);return a?String(a.nom).split(/\s+/)[0]:""})()}))}
+function lieuQuiTxt(l){const q=lieuQui(l);return q.length?"Utilisé par "+q.map(x=>x.nom+(x.anim?" ("+x.anim+")":"")).join(", "):""}
+function lieuOptions(sel,ville){const L=lieuxReseau().slice().sort((a,b)=>a.nom.localeCompare(b.nom)),o=x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${esc(x.nom)}${x.ville===ville?"":" — "+esc(x.ville)}</option>`;
+  const ici=L.filter(x=>ville&&x.ville===ville),parV=new Map();L.filter(x=>!ville||x.ville!==ville).forEach(x=>{const k=x.ville||"Autre";(parV.get(k)||parV.set(k,[]).get(k)).push(x)});
+  return `<option value="">À définir</option>`+(ici.length?`<optgroup label="${esc(ville)}">${ici.map(o).join("")}</optgroup>`:"")+[...parV.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([v,xs])=>`<optgroup label="${esc(ville?"Ailleurs : "+v:v)}">${xs.map(o).join("")}</optgroup>`).join("")}
 function changerJour(id){
   const r=DB.reunions.find(x=>x.id===id),c=club(r.clubId);
   document.getElementById("sheet-content").innerHTML=`
@@ -5433,7 +5444,8 @@ function viewClubs(){
    ============================================================ */
 function lieuVilleChip(l,v,n){return `<button class="chip ${(window._lieuVille||"")===v?"on":""}" onclick="window._lieuVille='${v}';render()">${esc(l)}${n!==undefined?`<em>${n}</em>`:""}</button>`}
 function viewLieux(){
-  let lieux=[...DB.lieux];
+  const tousN=lieuxReseau().length,plus=tousN>DB.lieux.length,tous=plus&&window._lieuTous!==false; // v1.116 : par défaut, tout le réseau
+  let lieux=[...(tous?lieuxReseau():DB.lieux)];
   lieux.sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
   const q=(window._q3||"").toLowerCase();if(q)lieux=lieux.filter(l=>(l.nom+" "+l.ville+" "+l.adresse).toLowerCase().includes(q));
   const villesDispo=[...new Set(lieux.map(l=>l.ville).filter(Boolean))].sort();
@@ -5446,7 +5458,7 @@ function viewLieux(){
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     return `<div class="rl-row" style="--vc:${villeColor(l.ville)};--i:${i}"><button class="rl-h" onclick="openLieu('${l.id}')">
       <span class="rl-thumb" style="${l.photo?`background-image:url('${l.photo}')`:""}">${l.photo?"":`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`}</span>
-      <span class="rl-t"><b>${esc(l.nom)}</b><small>${esc(l.ville)}${l.capacite?` · ${l.capacite} places`:""} · ${nbR?`${nbR} réunion${nbR>1?"s":""} à venir`:"aucune réunion"}</small></span>
+      <span class="rl-t"><b>${esc(l.nom)}</b><small>${esc(l.ville)}${l.capacite?` · ${l.capacite} places`:""} · ${nbR?`${nbR} réunion${nbR>1?"s":""} à venir`:"aucune réunion"}${lieuQuiTxt(l)?`<em class="lieu-qui">${esc(lieuQuiTxt(l))}</em>`:""}</small></span>
       <span class="rl-ind"><span class="rl-gps ${l.lat?"ok":""}" title="${l.lat?"Géolocalisé":"Géolocalisation manquante"}">${l.lat?"📍 GPS":"Sans GPS"}</span></span>
       <span class="rl-chev">›</span></button></div>`;}).join("");
   const cards=!wide?"":lieux.map(l=>{
@@ -5460,12 +5472,14 @@ function viewLieux(){
         <div class="lieu-name">${esc(l.nom)}</div></div>
       <div class="lieu-info">
         <div class="sub"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(l.ville)}${l.adresse&&!/^https?:/i.test(l.adresse.trim())?` <span class="dot"></span> ${esc(l.adresse.length>32?l.adresse.slice(0,32)+"…":l.adresse)}`:""}</div>
+        ${lieuQuiTxt(l)?`<div class="lieu-qui">${esc(lieuQuiTxt(l))}</div>`:""}
         <div class="foot"><span class="tag ${nbR?"crim":""}">${nbR} réunion${nbR>1?"s":""} à venir</span>${l.lat?`<span class="tag ok">📍 Géolocalisé</span>`:`<span class="tag manq">📍 À localiser</span>`}</div>
       </div></div>`;
   }).join("");
-  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""}</p></div></div>
+  return `<div class="page"><div class="page-head"><div><div class="eyebrow">Terrain</div><h2>Lieux de réunion</h2><p>${lieux.length} lieu${lieux.length>1?"x":""} référencé${lieux.length>1?"s":""} · partagés entre tous les animateurs</p></div></div>
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="li-q" type="search" data-pred="lieux" autocomplete="off" placeholder="Tape les premières lettres d'un lieu ou d'une ville…" value="${esc(window._q3||"")}" oninput="window._q3=this.value;render()"></div>
+    ${plus?`<div class="seg lieu-seg" role="radiogroup"><button type="button" role="radio" aria-checked="${!tous}" class="${tous?"":"on"}" onclick="window._lieuTous=false;render()">Ma région (${DB.lieux.length})</button><button type="button" role="radio" aria-checked="${tous}" class="${tous?"on":""}" onclick="window._lieuTous=true;render()">Tout le réseau (${tousN})</button></div>`:""}
     ${villeChips}
     ${lieux.length?(wide?`<div class="lieux-grid">${cards}</div>`:`<div class="rl">${rows}</div>`):emptyState("Aucun lieu","Ajoute ton premier lieu avec le bouton +.")}<div style="height:8px"></div></div>`;
 }
@@ -6859,7 +6873,7 @@ function meetingForm(id,presetClub){
   const scopedC=DB.clubs.filter(c=>canEditClubId(c.id)||c.id===m.clubId); // v1.22 : seulement les groupes que l'on peut modifier
   const clubsOpt=scopedC.map(c=>`<option value="${c.id}" ${c.id===m.clubId?"selected":""}>${esc(c.nom)}</option>`).join("");
   const animOpt=DB.animateurs.map(a=>`<option value="${a.id}" ${a.id===m.animId?"selected":""}>${esc(a.nom)}</option>`).join("");
-  const lieuOpt=`<option value="">À définir</option>`+DB.lieux.map(l=>`<option value="${l.id}" ${l.id===m.lieuId?"selected":""}>${esc(l.nom)} — ${esc(l.ville)}</option>`).join("");
+  const lieuOpt=lieuOptions(m.lieuId,(club(m.clubId)||{}).ville||"");
   document.getElementById("sheet-content").innerHTML=`
     <h3>${editing?"Modifier la réunion":"Nouvelle réunion"}</h3><div class="sheet-sub">Planifie une session pour un groupe de ton périmètre.</div>
     <div class="mprev"><div class="lab">Aperçu dans l'agenda</div><div class="rl" id="f-prev"></div></div>
@@ -6869,7 +6883,7 @@ function meetingForm(id,presetClub){
     <div class="field" id="f-theme-f" ${["conference","visite"].includes(m.format)?"":"hidden"}><label id="f-theme-l">${esc(FORMAT_THEME[m.format]||"")}</label><input id="f-theme" maxlength="200" value="${esc(m.theme||"")}" placeholder="Ex. Me Alaoui, la fiscalité des TPE · ou : usine Lesieur, Aïn Harrouda"></div>
     <div class="field"><label>Groupe</label><select id="f-club"><option value="">— choisir —</option>${clubsOpt}</select></div>
     <div class="field"><label>Date</label><input id="f-date" type="date" value="${m.date}"></div><div class="field"><label>Heure</label>${heureChamp("f-heure",m.heure||(club(m.clubId)||{}).heureHab||HEURE_DEF)}</div>
-    <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
+    <div class="field"><label>Lieu <small>tous les lieux du réseau</small></label><select id="f-lieu">${lieuOpt}</select><button type="button" class="lien-b" style="margin-top:6px" onclick="closeSheet();go('lieux');setTimeout(()=>lieuForm(),300)">＋ Le lieu n'est pas dans la liste : l'ajouter</button></div>
     <div class="field"><label>Animateur</label><select id="f-anim"><option value="">— choisir —</option>${animOpt}</select></div>
     <div class="field"><label>Statut</label><select data-pills id="f-statut">${Object.keys(STATUTS).filter(s=>s!=="archivee").map(s=>`<option value="${s}" ${(m.statutBase||m.statut)===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
     <div id="f-motif-bloc" ${(m.statutBase||m.statut)==="annulee"?"":"hidden"}>${reuMotifChamp(m.motif||"","","f-motif")}</div>

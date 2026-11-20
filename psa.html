@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Points sur activité · Club d'Affaires Protéine</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Points sur activité · planning">
+<meta property="og:description" content="Choisis ton créneau avec ton directeur de région.">
+<meta property="og:image" content="https://cap-proteine-maroc.vercel.app/icone-512.png?v=2">
+<link rel="apple-touch-icon" href="icone-180.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Planning des PSA ouvert par un lien personnel (v1.111) : pas de compte, pas de connexion. */
+:root{--bg:#ECEAE9;--card:#fff;--ink:#1B1416;--muted:#6B6466;--line:#D9D5D4;--rouge:#D81B3F;--vert:#1E9E63;--pale:#F4F2F1}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(32px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.page{max-width:560px;margin:0 auto;display:grid;gap:14px}
+.tete{background:var(--rouge);color:#fff;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:calc(18px + env(safe-area-inset-top,0px)) 20px 20px}
+.tete .in{max-width:560px;margin:0 auto}
+.tete img{height:34px;display:block;margin-bottom:14px}
+.tete h1{font:800 26px/1.1 "Bricolage Grotesque",Inter,sans-serif;margin:0}
+.tete p{margin:6px 0 0;opacity:.92}
+.direct{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.direct i{width:8px;height:8px;border-radius:50%;background:var(--vert);box-shadow:0 0 0 0 rgba(30,158,99,.5);animation:pouls 2s infinite}
+.direct.ko i{background:#B08A1B;animation:none}
+@keyframes pouls{70%{box-shadow:0 0 0 8px rgba(30,158,99,0)}100%{box-shadow:0 0 0 0 rgba(30,158,99,0)}}
+.carte{background:var(--card);border-radius:16px;padding:16px;display:grid;gap:10px}
+.carte h2{font:800 17px/1.2 "Bricolage Grotesque",Inter,sans-serif;margin:0}
+.moi{border:2px solid var(--vert)}
+.moi .quand{font:800 22px/1.15 "Bricolage Grotesque",Inter,sans-serif}
+.jour{font-weight:700;text-transform:capitalize;margin-top:4px}
+.cr{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--pale)}
+.cr b{font-size:17px}.cr small{color:var(--muted)}
+.cr.pris{background:transparent;border:1px dashed var(--line);color:var(--muted)}.cr.pris b{text-decoration:line-through;font-weight:600}
+.cr.amoi{background:#E6F4EC;border:1px solid var(--vert)}
+.btn{font:600 14px Inter,sans-serif;border:0;border-radius:10px;padding:10px 14px;background:var(--rouge);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px}
+.btn.gh{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.55}
+.btn:focus-visible,.seg button:focus-visible,textarea:focus-visible{outline:3px solid #3F7FD1;outline-offset:2px}
+.choix{grid-column:1/-1;display:grid;gap:10px;padding-top:6px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{font:600 13px Inter,sans-serif;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+textarea{width:100%;font:15px Inter,sans-serif;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;background:#fff;color:var(--ink)}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.note{color:var(--muted);font-size:13.5px;margin:0}
+.msg{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1B1416;color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;max-width:calc(100vw - 32px);z-index:5;pointer-events:none}
+.msg.on{opacity:1;transform:translate(-50%,0)}.msg.ko{background:#8A1C1C}
+@media (prefers-reduced-motion:reduce){.direct i{animation:none}.msg{transition:none}}
+</style>
+</head>
+<body>
+<div class="tete"><div class="in"><img src="logo-proteine-blanc.png" alt="Club d'Affaires Protéine"><h1>Points sur activité</h1><p id="sous">Chargement du planning…</p></div></div>
+<main class="page" id="page" style="margin-top:14px"></main>
+<div class="msg" id="msg" role="status" aria-live="polite"></div>
+<script>
+const SB="https://xsppsqjigdgaybmowzaq.supabase.co",CLE="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
+const J=(new URLSearchParams(location.search).get("j")||"").trim(),DEMO=new URLSearchParams(location.search).has("demo");
+const MODES={visio:"En ligne (Zoom)",presentiel:"Sur place",telephone:"Téléphone"};
+let D=null,ouvert=null,mode="visio",enCours=false,dernier=0,note="";
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hh=iso=>{const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")};
+const jour=iso=>new Date(iso).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+function dire(t,ko){const m=document.getElementById("msg");m.textContent=t;m.className="msg on"+(ko?" ko":"");clearTimeout(dire.t);dire.t=setTimeout(()=>m.className="msg",ko?4600:2600)}
+/* Démonstration (psa.html?demo) : rien n'est lu ni écrit en base. */
+let demo=null;
+function demoBase(){const t=k=>{const d=new Date();d.setDate(d.getDate()+3+Math.floor(k/4));d.setHours(9+Math.floor((k%4)/2),(k%2)*30,0,0);return d.toISOString()};
+  return {ok:true,pour:"Zoubida Labdi",directeur:"Jean-Baptiste Chiotti",creneaux:[0,1,2,3,4,5,6,7].map(k=>({id:"d"+k,debut:t(k),duree:30,etat:k===1||k===4?"pris":"libre",lieu:null,mode:null,lien_visio:null}))}}
+async function rpc(nom,args){
+  if(DEMO){demo=demo||demoBase();const c=demo.creneaux.find(x=>x.id===args.p_id);
+    if(nom==="cap_psa_reserver_lien"){if(c.etat!=="libre")throw new Error("Créneau déjà pris");c.etat="moi";c.mode=args.p_mode}
+    if(nom==="cap_psa_annuler_lien"){c.etat="libre";c.mode=null}
+    return JSON.parse(JSON.stringify(demo))}
+  const r=await fetch(SB+"/rest/v1/rpc/"+nom,{method:"POST",headers:{apikey:CLE,Authorization:"Bearer "+CLE,"Content-Type":"application/json"},body:JSON.stringify(args)});
+  const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||"Le planning ne répond pas");return j}
+async function charger(silence){
+  if(enCours)return;
+  try{const d=await rpc("cap_psa_planning",{p_jeton:J});D=d;dernier=Date.now();document.body.dataset.direct="1";rendu()}
+  catch(e){document.body.dataset.direct="0";if(!silence||!D){if(!D)vide("Le planning ne répond pas. Vérifie ta connexion, la page réessaie toute seule.")}majDirect()}}
+function vide(t){document.getElementById("page").innerHTML=`<div class="carte"><p class="note">${esc(t)}</p></div>`}
+function majDirect(){const e=document.getElementById("direct");if(!e)return;const ok=document.body.dataset.direct==="1";e.className="direct"+(ok?"":" ko");
+  e.lastElementChild.textContent=ok?"En direct · un créneau pris par quelqu'un d'autre se verrouille ici tout seul":"Connexion perdue · nouvelle tentative…"}
+let _vu="";
+function rendu(force){
+  const p=document.getElementById("page"),ta=document.getElementById("note");if(ta)note=ta.value;
+  const cle=JSON.stringify(D)+"|"+ouvert+"|"+mode;if(!force&&cle===_vu){majDirect();return}_vu=cle;
+  if(!D||!D.ok){document.getElementById("sous").textContent="Lien inconnu";vide("Ce lien n'est plus valable. Demande-en un nouveau à ton directeur de région.");return}
+  const prenom=String(D.pour||"").split(/\s+/)[0];
+  document.getElementById("sous").textContent=`Bonjour ${prenom}. Choisis ton créneau avec ${D.directeur||"ton directeur de région"}.`;
+  const L=D.creneaux||[],moi=L.find(c=>c.etat==="moi"),libres=L.filter(c=>c.etat==="libre").length;
+  if(ouvert&&!L.some(c=>c.id===ouvert&&c.etat==="libre")){ouvert=null}
+  const jours=new Map();L.forEach(c=>{const k=new Date(c.debut).toDateString();(jours.get(k)||jours.set(k,[]).get(k)).push(c)});
+  const ligne=c=>{
+    if(c.etat==="pris")return `<div class="cr pris" data-c="${c.id}" data-etat="pris"><b>${hh(c.debut)}</b><span>${c.duree} min</span><small>🔒 Déjà pris</small></div>`;
+    if(c.etat==="moi")return `<div class="cr amoi" data-c="${c.id}" data-etat="moi"><b>${hh(c.debut)}</b><span>${c.duree} min · <strong>ton créneau</strong></span><small>✓</small></div>`;
+    const o=ouvert===c.id;
+    return `<div class="cr" data-c="${c.id}" data-etat="libre"><b>${hh(c.debut)}</b><span>${c.duree} min${c.lieu?" · "+esc(c.lieu):""}</span>${moi?`<small>Libre</small>`:o?`<small>Libre</small>`:`<button class="btn" data-ouvrir="${c.id}">Réserver</button>`}
+      ${o?`<div class="choix"><div class="seg" role="radiogroup" aria-label="Comment">${Object.entries(MODES).map(([k,v])=>`<button type="button" role="radio" aria-checked="${mode===k}" class="${mode===k?"on":""}" data-mode="${k}">${v}</button>`).join("")}</div>
+        <textarea id="note" rows="2" maxlength="400" placeholder="Un mot pour préparer (facultatif)">${esc(note)}</textarea>
+        <div class="deux"><button class="btn gh" data-fermer="1">Retour</button><button class="btn" data-reserver="${c.id}">Confirmer ${hh(c.debut)}</button></div></div>`:""}</div>`};
+  p.innerHTML=`
+    ${moi?`<section class="carte moi" id="moi"><h2>Ton rendez-vous</h2><div class="quand">${esc(jour(moi.debut))} à ${hh(moi.debut)}</div>
+      <p class="note">${moi.duree} minutes avec ${esc(D.directeur||"ton directeur")} · ${esc(MODES[moi.mode]||"")}${moi.lieu?" · "+esc(moi.lieu):""}</p>
+      ${moi.mode==="visio"?(moi.lien_visio?`<a class="btn" href="${esc(moi.lien_visio)}" target="_blank" rel="noopener">Rejoindre la réunion en ligne</a>`:`<p class="note">Le lien de la réunion en ligne apparaîtra ici avant le rendez-vous. Garde ce lien de planning.</p>`):""}
+      <button class="btn gh" data-annuler="${moi.id}">Annuler ou changer de créneau</button></section>`:""}
+    <section class="carte"><h2>${moi?"Les autres créneaux":"Créneaux proposés"}</h2>
+      <div class="direct" id="direct"><i></i><span></span></div>
+      ${L.length?[...jours.values()].map(j=>`<div class="jour">${esc(jour(j[0].debut))}</div>${j.map(ligne).join("")}`).join(""):`<p class="note">Aucun créneau ouvert pour l'instant. Ton directeur va en proposer : cette page se met à jour toute seule.</p>`}
+      ${L.length&&!libres&&!moi?`<p class="note">Tous les créneaux sont pris. Préviens ton directeur pour qu'il en ouvre d'autres.</p>`:""}
+      ${moi?`<p class="note">Pour changer d'heure, annule d'abord ton créneau.</p>`:""}</section>`;
+  majDirect()}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler]");if(!b)return;
+  const ta=document.getElementById("note");if(ta)note=ta.value;
+  if(b.dataset.ouvrir){ouvert=b.dataset.ouvrir;rendu();return}
+  if(b.dataset.fermer){ouvert=null;rendu();return}
+  if(b.dataset.mode){mode=b.dataset.mode;rendu();return}
+  if(b.dataset.reserver){b.disabled=true;enCours=true;
+    try{await rpc("cap_psa_reserver_lien",{p_jeton:J,p_id:b.dataset.reserver,p_mode:mode,p_note:note||null});enCours=false;ouvert=null;note="";await charger();dire("Créneau réservé : ton directeur est prévenu");scrollTo({top:0,behavior:"smooth"})}
+    catch(x){enCours=false;ouvert=null;await charger();dire(/déjà pris/i.test(x.message)?"Trop tard, ce créneau vient d'être pris. Choisis-en un autre.":x.message,true)}
+    return}
+  if(b.dataset.annuler){if(!b.dataset.sur){b.dataset.sur="1";b.textContent="Confirmer : libérer mon créneau";return}
+    b.disabled=true;enCours=true;try{await rpc("cap_psa_annuler_lien",{p_jeton:J,p_id:b.dataset.annuler});enCours=false;await charger();dire("Créneau libéré")}catch(x){enCours=false;await charger();dire(x.message,true)}}
+});
+/* « En direct » : relecture toutes les 6 secondes, tout de suite au retour sur la page. La base refuse de toute façon un créneau déjà pris. */
+function tic(){if(document.hidden||ouvert&&document.activeElement&&document.activeElement.id==="note")return;charger(true)}
+if(!J&&!DEMO){document.getElementById("sous").textContent="Lien incomplet";vide("Ce lien est incomplet. Rouvre celui que ton directeur de région t'a envoyé.")}
+else{charger();setInterval(tic,6000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)charger(true)});addEventListener("focus",()=>charger(true))}
+</script>
+</body>
+</html>

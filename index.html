@@ -2136,7 +2136,7 @@ html :is(.rail-date,.reu-d,.rl-date) b,html .mtg-date .d{flex:1;display:flex;ali
 .ldf-pt.on i{border-color:#3DAA74;background:#3DAA74;color:#fff}.ldf-pt.on b{color:var(--ink)}
 .ldf-pt.att i{border-color:var(--crimson);color:var(--crimson-txt,var(--crimson))}.ldf-pt.att b{color:var(--crimson-txt,var(--crimson))}.ldf-pt.ko i{border-color:var(--muted);background:var(--line)}
 @media(max-width:899px){.ldf-r{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}.ldf-fr{grid-column:1/-1;order:3}}
-/*v1.43 espace membre et documents dans l'appli*/#esp-host{position:fixed;z-index:6;background:var(--paper)}#esp-host iframe{display:block;width:100%;height:100%;border:0;background:var(--bg)}
+/*v1.43 espace membre et documents dans l'appli*/#esp-host{position:fixed;z-index:6;background:var(--paper)}#esp-host iframe{display:block;width:100%;height:100%;border:0;background:var(--paper)}
 body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{display:none!important}
 .mr-it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
 .mr-tx{flex:1;min-width:0}.mr-tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mr-tx small{color:var(--muted)}
@@ -2150,6 +2150,12 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.124 accueil regroupé*/.da{border:1px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:12px}.da>summary{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;list-style:none}.da>summary::-webkit-details-marker{display:none}
+.da>summary::after{content:"›";font-size:18px;color:var(--muted);transition:transform .2s}.da[open]>summary::after{transform:rotate(90deg)}
+.da-n{flex:none;min-width:34px;height:34px;padding:0 8px;border-radius:99px;background:var(--crimson);color:#fff;font:800 16px/34px "Bricolage Grotesque",Inter,sans-serif;text-align:center}.da-t{flex:1;min-width:0}.da-t b{display:block;font-size:15px}.da-t small{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da>.cn-l{padding:0 12px 10px}.da>.al-p{margin:0 12px 12px;width:calc(100% - 24px)}
+details.dsec-r>summary{cursor:pointer;list-style:none}details.dsec-r>summary::-webkit-details-marker{display:none}details.dsec-r:not([open])>summary{margin-bottom:0;padding-bottom:0;border-bottom:0}details.dsec-r:not([open]){padding-bottom:16px;margin-bottom:10px}
+.dsec-ch{margin-left:auto;font-style:normal;font-size:20px;color:var(--muted);transition:transform .2s}details.dsec-r[open] .dsec-ch{transform:rotate(90deg)}.lieu-qui{white-space:normal}
 /*v1.122 agenda*/.ag-l{display:grid;gap:8px}.ag-l a.btn{text-decoration:none;text-align:center}
 /*v1.121 notifications au ras du bas de l'écran*/@media(min-width:900px){#notifs{bottom:16px}}
 /*v1.120 PSA en calendrier*/.psa-vs{margin:10px 0 0}.psa-cal{display:grid;gap:8px}.psa-ch2{display:flex;align-items:center;justify-content:space-between}.psa-ch2 b{font-size:15px;text-transform:capitalize}.psa-ch2 .btn{position:relative;min-width:40px}.psa-ch2 .btn i{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--crimson)}
@@ -2739,8 +2745,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.123.0";
+const APP_VERSION="1.124.0";
 const CHANGELOG=[
+  {v:"1.124.0",date:"20 novembre 2026",notes:{"Modifié":["Accueil : un seul bloc « N choses t\u2019attendent » qui se déplie, au lieu d\u2019un encart par sujet ; une même réunion n\u2019est plus comptée dans deux alertes","Au téléphone, les chapitres de l\u2019accueil se replient : un seul ouvert à la fois, « À traiter » d\u2019abord"],"Corrigé":["Lieux, au téléphone : la mention « Utilisé par … » était coupée"]}},
   {v:"1.123.0",date:"20 novembre 2026",notes:{"Ajouté":["La visite guidée peut être proposée à un compte à sa prochaine connexion : une fenêtre l\u2019invite à voir l\u2019essentiel ou la visite complète"]}},
   {v:"1.122.0",date:"20 novembre 2026",notes:{"Ajouté":["Mon agenda (Paramètres, ou dans les points sur activité) : tu t\u2019abonnes une fois, et tes PSA et tes réunions s\u2019inscrivent tout seuls dans Google Agenda, l\u2019iPhone ou Outlook"],"Modifié":["Visite guidée à jour : la cloche et les alertes à reporter, le jour de la réunion, le bilan verrouillé en PDF, les réunions du réseau et les bilans pour le bureau national, les lieux partagés, l\u2019envoi au national avec son propre compte, les points sur activité en calendrier"]}},
   {v:"1.121.0",date:"20 novembre 2026",notes:{"Modifié":["Une alerte mise de côté l\u2019est sur tous tes appareils : reportée sur le téléphone, elle disparaît aussi sur l\u2019ordinateur","La carte « Nouvelle version disponible » et les autres notifications se posent tout en bas de l\u2019écran"]}},
@@ -5507,7 +5514,7 @@ function viewLieux(){
     const nbR=DB.reunions.filter(m=>m.lieuId===l.id&&!isPast(m.date)).length;
     return `<div class="rl-row" style="--vc:${villeColor(l.ville)};--i:${i}"><button class="rl-h" onclick="openLieu('${l.id}')">
       <span class="rl-thumb" style="${l.photo?`background-image:url('${l.photo}')`:""}">${l.photo?"":`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`}</span>
-      <span class="rl-t"><b>${esc(l.nom)}</b><small>${esc(l.ville)}${l.capacite?` · ${l.capacite} places`:""} · ${nbR?`${nbR} réunion${nbR>1?"s":""} à venir`:"aucune réunion"}${lieuQuiTxt(l)?`<em class="lieu-qui">${esc(lieuQuiTxt(l))}</em>`:""}</small></span>
+      <span class="rl-t"><b>${esc(l.nom)}</b><small>${esc(l.ville)}${l.capacite?` · ${l.capacite} places`:""} · ${nbR?`${nbR} réunion${nbR>1?"s":""} à venir`:"aucune réunion"}</small>${lieuQuiTxt(l)?`<em class="lieu-qui">${esc(lieuQuiTxt(l))}</em>`:""}</span>
       <span class="rl-ind"><span class="rl-gps ${l.lat?"ok":""}" title="${l.lat?"Géolocalisé":"Géolocalisation manquante"}">${l.lat?"📍 GPS":"Sans GPS"}</span></span>
       <span class="rl-chev">›</span></button></div>`;}).join("");
   const cards=!wide?"":lieux.map(l=>{
@@ -5622,6 +5629,8 @@ let _dashScope={};
 function dashTile(n,l,kind,sc,i,tr){return `<div class="stat link" style="--i:${i}" role="button" tabindex="0" onclick="dashDrill('${kind}','${sc}')" onkeydown="if(event.key==='Enter')dashDrill('${kind}','${sc}')"><div class="n" data-count="${n}">${n}</div><div class="l">${l}</div>${tr?`<div class="tr">▲ ${tr}</div>`:""}</div>`}
 function dashSec(ton,ico,titre,sous,html,id){
   if(!html||!html.trim())return "";
+  if(!isWide()){const o=(window._dsOuv===undefined?"todo":window._dsOuv)===ton; // v1.124 : au téléphone, un chapitre ouvert à la fois
+    return `<details class="dsec dsec-${ton} dsec-r" name="dsec"${id?` id="${id}"`:""} ${o?"open":""} ontoggle="if(this.open)window._dsOuv='${ton}';else if(window._dsOuv==='${ton}')window._dsOuv=''"><summary class="dsec-h"><span class="dsec-ic" aria-hidden="true">${ico}</span><div><h3>${titre}</h3>${sous?`<p>${sous}</p>`:""}</div><i class="dsec-ch" aria-hidden="true">›</i></summary><div class="dsec-b">${html}</div></details>`}
   return `<section class="dsec dsec-${ton}"${id?` id="${id}"`:""}><header class="dsec-h"><span class="dsec-ic" aria-hidden="true">${ico}</span><div><h3>${titre}</h3>${sous?`<p>${sous}</p>`:""}</div></header><div class="dsec-b">${html}</div></section>`;
 }
 /* ============================================================
@@ -6050,7 +6059,7 @@ function navSous(){const nav=document.getElementById("nav");if(!nav||!SESSION)re
   const nb=reunionsSansBilan().length,ag=nav.querySelector('button[data-tab="agenda"]');
   if(ag){let e=ag.querySelector(".nav-badge");if(!nb||readOnly()){if(e)e.remove()}else{if(!e){e=document.createElement("span");e.className="nav-badge";ag.appendChild(e)}e.textContent=nb;e.title=nb+" réunion"+(nb>1?"s":"")+" sans bilan"}}}
 function navVers(t,ancre){_navRubOuverte=null;if(tab!==t)go(t);else{render();window.scrollTo({top:0,behavior:"smooth"})}
-  if(ancre)setTimeout(()=>{const e=document.querySelector(ancre);if(e)e.scrollIntoView({behavior:"smooth",block:"start"})},120)}
+  if(ancre)setTimeout(()=>{const e=document.querySelector(ancre);if(e){if(e.tagName==="DETAILS")e.open=true;e.scrollIntoView({behavior:"smooth",block:"start"})}},120)}
 function navDem(v){window._dmVue=v;_navRubOuverte=null;if(tab!=="demandes")go("demandes");else render()}
 function navOuvrir(r){const nav=document.getElementById("nav"),ouv=nav&&nav.dataset.ouv;
   if(ouv===r){_navFerme=true;_navRubOuverte=null}else{_navFerme=false;_navRubOuverte=r}navSous();setTimeout(navPill,320)}
@@ -6235,14 +6244,14 @@ function dashCountUp(root){
 }
 function viewDashboard(reg){
   _dashScope={nat:DB.clubs.map(c=>c.id),reg:DB.clubs.filter(c=>REGION_RSK.includes(c.ville)).map(c=>c.id)};
-  let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>${reg?"Ma région":"Synthèse"}</h2></div>
+  let html=`<div class="page dash"><div class="page-head"><div><div class="eyebrow">Pilotage</div><h2>${reg?(SESSION.role==="animateur"?"Mes groupes":"Ma région"):"Synthèse"}</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;min-width:0"><button class="btn ghost mini" onclick="exportMembres()">Export</button></div></div>
     <div class="searchbar dash-q">${ICO_LOUPE}<input id="ds-q" type="search" data-pred="tout" autocomplete="off" placeholder="Rechercher partout : membre, groupe, demande, animateur, lieu…"></div>`;
   /* Un seul bloc, et un interrupteur National / Régional (mémorisé) au lieu de deux blocs empilés. */
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+alR("bilans",dashBilanAlerte())+alR("verrou",verrouAlerte())+alR("psa",psaAlerte())+alR("reunions",rrAlerte())+alPauseLigne():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+alR("bilans",dashBilanAlerte())+alR("verrou",verrouAlerte())+alR("psa",psaAlerte())+alR("reunions",rrAlerte())+alPauseLigne();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashAlertes():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashAlertes();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -8779,9 +8788,9 @@ function cnAlertes(){if(!SESSION||SESSION.role==="visiteur")return[];const L=[],
   const a=(cle,ico,n,titre,sous,act)=>{if(n>0)L.push({cle,ico,n,titre,sous,act})},t=f=>{try{return f()}catch(e){return 0}},pl=(n,s,p)=>n+" "+(n>1?p:s);
   if(!voir){
     const b=t(()=>reunionsSansBilan().length);a("bilans","📝",b,pl(b,"bilan de réunion à saisir","bilans de réunion à saisir"),"Une question par réunion","openBilan()");
-    const v=t(()=>reuAVerrouiller(reuMesClubs().map(c=>c.id)).length);a("verrou","🔒",v,pl(v,"réunion passée à verrouiller","réunions passées à verrouiller"),"Verrouillée, une réunion est classée","go('reunions')");
+    const v=t(()=>reuAVerrouiller(reuMesClubs().map(c=>c.id)).filter(r=>r.statut==="realisee").length); /* v1.124 : sans bilan = déjà compté dans « bilans » */ a("verrou","🔒",v,pl(v,"réunion passée à verrouiller","réunions passées à verrouiller"),"Verrouillée, une réunion est classée","go('reunions')");
     const k=t(()=>psaACaler());if(k&&k.n)a("psa","📅",k.n,k.portee==="moi"?"Ton point sur activité de ce mois n'est pas calé":pl(k.n,"animateur sans PSA ce mois-ci","animateurs sans PSA ce mois-ci"),k.portee==="moi"?"Choisis ton créneau":"Voir qui relancer","openPSA()");
-    if(t(()=>rrPeutRelancer())){const X=t(()=>rrTout("annee"));if(X)a("reunions","🗓",(X.sans||0)+(X.ouverts||0),[X.sans?pl(X.sans,"réunion sans bilan","réunions sans bilan"):"",X.ouverts?pl(X.ouverts,"groupe sans réunion récente","groupes sans réunion récente"):""].filter(Boolean).join(" · "),"Groupe par groupe, avec la relance","openReunionsReseau()")}
+    if(t(()=>rrPeutRelancer())){const X=t(()=>rrTout("annee"));if(X){X.sans=Math.max(0,(X.sans||0)-b); /* v1.124 : celles que je peux saisir moi-même sont déjà dans « bilans » */ a("reunions","🗓",(X.sans||0)+(X.ouverts||0),[X.sans?pl(X.sans,"réunion sans bilan chez les animateurs","réunions sans bilan chez les animateurs"):"",X.ouverts?pl(X.ouverts,"groupe sans réunion récente","groupes sans réunion récente"):""].filter(Boolean).join(" · "),"Groupe par groupe, avec la relance","openReunionsReseau()")}}
     const d=t(()=>demListe().length);a("demandes","📥",d,pl(d,"demande d'adhésion à intégrer","demandes d'adhésion à intégrer"),"Reçues par le formulaire en ligne","openDemandes()");
     if(t(()=>navDir())){const e=t(()=>natAEnvoyer().length);a("national","🚀",e,pl(e,"adhésion à envoyer au CRM national","adhésions à envoyer au CRM national"),"Intégrées, pas encore envoyées","navDem('nat')")}
     const c=t(()=>mesContactsAFaire().length);a("contacts","📬",c,pl(c,"contact confié à traiter","contacts confiés à traiter"),"Des contacts à appeler ou à inviter","openBoite()");
@@ -8815,6 +8824,15 @@ function cnMenu(cle,btn){const i=btn.closest(".cn-i");let m=i.nextElementSibling
 function cnReporter(cle,q){alReporter(cle,q);avecVue(()=>openCentre())}
 function cnReprendre(cle){alPoser(cle,0);render();avecVue(()=>openCentre())}
 function cnVider(){try{localStorage.removeItem(cnJCle())}catch(e){}avecVue(()=>openCentre())}
+/* v1.124 : sur l'accueil, UN bloc « N choses t'attendent » qui se déplie (les mêmes lignes que la cloche), au lieu d'un encart par sujet. */
+function dashAlertes(){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return"";const A=cnAlertes(),act=A.filter(x=>!alEnPause(x.cle)),np=A.length-act.length;if(!A.length)return"";
+  const ouv=window._daOuv===undefined?isWide()&&act.length<=4:window._daOuv;
+  const li=x=>`<div class="cn-i" data-da="${x.cle}"><button type="button" class="cn-m" onclick="${x.act}"><span class="cn-ic">${x.ico}</span><span class="cn-t"><b>${esc(x.titre)}</b><small>${esc(x.sous)}</small></span></button><button type="button" class="cn-r" aria-label="Reporter" title="Me le rappeler plus tard" onclick="daMenu('${x.cle}',this)">⏰</button></div>`;
+  if(!act.length)return `<button type="button" class="al-p" id="al-p" onclick="alToutRevoir()">⏰ ${np} rappel${np>1?"s":""} en pause · les réafficher</button>`;
+  return `<details class="da" id="dash-al" ${ouv?"open":""} ontoggle="window._daOuv=this.open"><summary><span class="da-n">${act.length}</span><span class="da-t"><b>${act.length>1?act.length+" choses t'attendent":"Une chose t'attend"}</b><small>${esc(act.map(x=>AL_NOMS[x.cle]||x.titre).join(" · "))}</small></span></summary>
+    <div class="cn-l">${act.map(li).join("")}</div>${np?`<button type="button" class="al-p" id="al-p" onclick="alToutRevoir()">⏰ ${np} rappel${np>1?"s":""} en pause · les réafficher</button>`:""}</details>`}
+function daMenu(cle,btn){const i=btn.closest(".cn-i");let m=i.nextElementSibling;if(m&&m.classList.contains("al-m")){m.remove();return}
+  m=document.createElement("div");m.className="al-m";m.innerHTML=`<span>Me le rappeler</span><button type="button" onclick="alReporter('${cle}','soir')">en fin de journée</button><button type="button" onclick="alReporter('${cle}','demain')">demain</button><button type="button" onclick="alReporter('${cle}','semaine')">dans une semaine</button>`;i.after(m)}
 function dashBilanAlerte(){
   const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
   return `<button class="bil-alert" onclick="openBilan()"><span class="n">${l.length}</span><span><b>${l.length} réunion${l.length>1?"s attendent leur":" attend son"} bilan</b><small>La plus ancienne date du ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Une question par réunion.</small></span><span class="go">›</span></button>`;

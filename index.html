@@ -2580,6 +2580,14 @@ body.lecture .ann-btn{display:none}
 .rv-i{padding:7px 0;border-top:1px solid var(--line)}.rv-i:first-child{border-top:0}.rv-i small{display:block;color:var(--muted);font-size:12.5px}
 @media (max-width:420px){.rv-k{grid-template-columns:repeat(2,1fr)}}
 .pt-lot .pt-fin+#pt-verrou{margin-left:8px}
+/*v1.106 réunions à verrouiller*/
+.va{border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:16px;background:var(--card);margin-bottom:12px}
+.va>summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}.va>summary::-webkit-details-marker{display:none}.va-i{font-size:20px}
+.va-s{min-width:0;flex:1}.va-s b{display:block;font-size:15px}.va-s small{display:block;color:var(--muted);font-size:12.5px}
+.va>summary::after{content:"›";font-size:18px;color:var(--muted);transition:transform .2s}.va[open]>summary::after{transform:rotate(90deg)}
+.va-l{padding:0 12px 10px}.va-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.va-t{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;color:var(--ink);font:inherit;cursor:pointer}.va-t b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.va-t small{display:block;color:var(--muted);font-size:12.5px}
+.va-r .btn{flex:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2687,8 +2695,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.105.0";
+const APP_VERSION="1.106.0";
 const CHANGELOG=[
+  {v:"1.106.0",date:"20 novembre 2026",notes:{"Ajouté":["Alerte « réunions passées à verrouiller » sur Mon groupe et sur la Synthèse, avec un bouton par réunion ; elle se vide au fur et à mesure"]}},
   {v:"1.105.0",date:"19 novembre 2026",notes:{"Modifié":["Chacun agit au CRM national avec son propre compte : le compte commun ne sert plus qu\u2019au super admin","Tant que le compte national n\u2019est pas branché, la demande revient à chaque connexion et rien ne part au national"]}},
   {v:"1.104.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion verrouillée dès que son bilan est enregistré : la fiche ne montre plus qu\u2019une synthèse (présents, invités, adhésions, recommandations, chiffre d\u2019affaires) ; « Déverrouiller » rend la fiche complète, « Verrouiller » la referme"],"Corrigé":["Pointage déjà complet : le bouton « Verrouiller le pointage » manquait ; « Faire le bilan » verrouille le pointage"]}},
   {v:"1.103.0",date:"19 novembre 2026",notes:{"Ajouté":["À la connexion, la direction et les animateurs qui n\u2019ont pas encore branché leur compte du CRM national sont invités à le faire (une fois par session)"],"Corrigé":["Lieux du national : la liste complète du compte est lue, un lieu déjà créé n\u2019est plus recréé en double"]}},
@@ -3474,7 +3483,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
-  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();
+  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);espPrecharger();
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();ouvrirLienCompteNat();
@@ -4556,7 +4565,7 @@ function viewGroupe(){
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.sansBilan.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte</span><span class="tel-seul">Boîte</span> à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
-    ${bascule}${choix}${grpSeance(c)}
+    ${bascule}${choix}${grpSeance(c)}${verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id)}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
@@ -6109,7 +6118,7 @@ function viewDashboard(reg){
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -6224,11 +6233,21 @@ function openMeeting(id){
 function reuVerrou(m){const v=m&&m.cr&&m.cr.verrou;return v&&v.le?v:null}
 function reuVerrouPose(m,cr){const par=(SESSION&&SESSION.name)||"",le=new Date().toISOString();cr.verrou={le,par};
   if(!(cr.pointage&&cr.pointage.verrouille_le)){let abs=[];try{abs=ptListe(m).filter(e=>e.etat!==true).map(e=>e.k)}catch(e){}cr.pointage={verrouille_le:le,par,absents:abs}}return cr}
-async function reuVerrouiller(mid,oui){const m=DB.reunions.find(x=>x.id===mid);if(!m||!canEditReunion(m)||readOnly()||(SESSION&&SESSION._voir))return false;
+/* v1.106 : réunions passées pas encore verrouillées. Alerte sur Mon groupe et sur la Synthèse (groupes que j'anime),
+   une ligne par réunion ; elle disparaît dès que la réunion est verrouillée. */
+function reuAVerrouiller(ids,sauf){const S=new Set(ids);return DB.reunions.filter(r=>S.has(r.clubId)&&r.id!==sauf&&reuFinie(r)&&r.statut!=="annulee"&&r.statut!=="archivee"&&!reuVerrou(r)&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
+function verrouAlerte(ids,sauf){if(!SESSION||readOnly()||SESSION._voir)return"";ids=ids||reuMesClubs().map(c=>c.id);const l=reuAVerrouiller(ids,sauf);if(!l.length)return"";
+  const plus=new Set(l.map(r=>r.clubId)).size>1||new Set(ids).size>1;
+  return `<details class="va" ${window._vaOuv===false?"":"open"} ontoggle="window._vaOuv=this.open"><summary><span class="va-i">🔒</span><span class="va-s"><b>${l.length} réunion${l.length>1?"s":""} passée${l.length>1?"s":""} à verrouiller</b><small>Verrouillée, une réunion est classée et sort de cette liste</small></span></summary>
+    <div class="va-l">${l.map(r=>{const d=dObj(r.date),fait=r.statut==="realisee",c=club(r.clubId)||{};
+      return `<div class="va-r" data-va="${r.id}"><span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span><button type="button" class="va-t" onclick="openMeeting('${r.id}')"><b>${esc(typeLib(r))}${plus?" · "+esc(String(c.nom||"").replace(/^CAP\s+/,"")):""}</b><small>${fait?"Bilan fait, reste à verrouiller":"Bilan à saisir"}</small></button>${fait?`<button class="btn mini" onclick="reuVerrouiller('${r.id}',true,true)">🔒 Verrouiller</button>`:`<button class="btn mini" onclick="openBilan('${r.id}')">Saisir le bilan</button>`}</div>`}).join("")}</div></details>`}
+function verrouAnnonce(){try{if(!SESSION||readOnly()||SESSION._voir||sessionStorage.getItem("cap-va-vu"))return;const n=reuAVerrouiller(reuMesClubs().map(c=>c.id)).length;if(!n)return;
+  sessionStorage.setItem("cap-va-vu","1");setTimeout(()=>{try{annonce("🔒",n+" réunion"+(n>1?"s":"")+" passée"+(n>1?"s":"")+" à verrouiller","Touche pour les classer",()=>go("reunions"))}catch(e){}},6500)}catch(e){}}
+async function reuVerrouiller(mid,oui,sansFiche){const m=DB.reunions.find(x=>x.id===mid);if(!m||!canEditReunion(m)||readOnly()||(SESSION&&SESSION._voir))return false;
   const cr={...(m.cr||{})};if(oui)reuVerrouPose(m,cr);else cr.verrou={le:null};
   const {error}=await sb.from("reunions").update({compte_rendu:cr}).eq("id",mid);if(error){toast(rlsMsg(error),"e");return false}
   m.cr=cr;toast(oui?"Réunion verrouillée":"Réunion déverrouillée : la fiche complète est de retour",oui?"s":undefined);
-  render();meetingDetail(m,true);return true}
+  render();if(!sansFiche)meetingDetail(m,true);return true}
 function reuResume(m,editable){const D=bilDonnees(m),c=D.c,d=D.d,v=reuVerrou(m),ca=D.montant?madFmt(D.montant):"0 MAD";
   const k=(n,l,cls)=>`<div class="rv-t ${cls||""}"><b>${n}</b><span>${l}</span></div>`;
   const vol=(t,n,corps)=>corps?`<details class="rv-d" name="rv-d"><summary><b>${t}</b>${n!=null?`<em>${n}</em>`:""}</summary><div class="rv-c">${corps}</div></details>`:"";

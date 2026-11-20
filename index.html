@@ -2708,8 +2708,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.113.0";
+const APP_VERSION="1.114.0";
 const CHANGELOG=[
+  {v:"1.114.0",date:"20 novembre 2026",notes:{"Modifié":["Équipe → « Donner l\u2019accès » : ouvert à la direction nationale, pour les comptes d\u2019animateur et de directeur de région","Message d\u2019invitation : le type de la réunion y figure (Réunion Business, Conférence et son thème, Visite d\u2019entreprise…), repère {type}"]}},
   {v:"1.113.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : suivi par région — qui a calé son PSA ce mois-ci, qui est à relancer (bouton « Relancer » = notification sur son téléphone), quelle région n\u2019a aucun créneau ouvert","Alerte « PSA à caler » sur la Synthèse et Mon groupe, pour l\u2019animateur comme pour les directeurs, et rappel automatique chaque lundi matin","Direction nationale : planning des PSA de tout le réseau, en lecture seule","Bouton pour reporter un PSA dans Google Agenda (ou un autre agenda depuis le lien de planning)"]}},
   {v:"1.112.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF : nouvelle mise en page — marge rouge étroite avec le numéro de la réunion, la date, l\u2019heure, le lieu et l\u2019animateur ; chiffres posés sur des filets ; membres, membres d\u2019autres groupes et invités en lignes"]}},
   {v:"1.111.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : « Envoyer le planning par lien » — l\u2019animateur qui n\u2019utilise pas encore le CRM ouvre son lien, voit les créneaux et réserve le sien sans compte. Un créneau pris se verrouille aussitôt pour tout le monde, et la liste se met à jour toute seule"]}},
@@ -3400,7 +3401,7 @@ async function loadDB(){
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   await natComptesCharger();
   await psaSuiviCharger(); // v1.113
-  if(SESSION&&SESSION.role==="superadmin")try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}catch(e){console.warn(e)}
+  if(accGere())try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];if(SESSION.role==="superadmin"){const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.psa=[];try{const ps=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!ps.error)DB.psa=psaNorm(ps.data||[])}catch(e){} // v1.25 PSA
   DB.leads=[];DB.reglages={}; // v1.18.0 : leads nationaux + réglages partagés (jamais bloquant)
@@ -6441,7 +6442,7 @@ function natInvPerime(m){const n=m.nat;if(!n)return"";const r=[];
   return r.length?r.join(", ").replace(/, ([^,]*)$/," et $1"):""}
 function normTxt(t){return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim()}
 /* v0.47.0 : message d'accueil par type de réunion, modifiable avant l'envoi. Un modèle gardé (par type, sur l'appareil)
-   remplace le texte d'origine ; les repères {jour} {heure} {lieu} {adresse} {groupe} {lien} {prenom} sont remplis à l'envoi. */
+   remplace le texte d'origine ; les repères {type} {jour} {heure} {lieu} {adresse} {groupe} {lien} {prenom} sont remplis à l'envoi. */
 const INV_MODELES={
   SI:`Bonjour,
 
@@ -6479,6 +6480,7 @@ Au plaisir de vous y retrouver,
 
 Je vous invite à la prochaine réunion du groupe {groupe} du Club d'Affaires Protéine Rabat et Région.
 
+{type}
 {jour} à {heure}
 {lieu}{adresse}
 
@@ -6491,9 +6493,11 @@ Une question, ou envie que je vous appelle avant ? Écrivez-moi ou appelez-moi a
 {prenom}`};
 function invModeleCle(t){return "cap-invtpl-"+(INV_MODELES[t]?t:"autre")}
 function invModele(t){try{const v=localStorage.getItem(invModeleCle(t));if(v)return v}catch(e){}const g=(DB.reglages||{})[invModeleCle(t).replace("cap-","")];return g||INV_MODELES[t]||INV_MODELES.autre}
+/* v1.114 : le type de la réunion dans le message ({type}) : « Réunion Business », « Conférence : <thème> », « Visite d'entreprise : <entreprise> »… */
+function invType(m){const t=typeLib(m)||"Réunion";return m&&m.theme?t+" : "+m.theme:t}
 function invRemplir(tpl,m){tpl=regMsg(tpl,(club(m.clubId)||{}).ville);const dt=dObj(m.date),c=club(m.clubId)||{},l=m.lieuId?lieu(m.lieuId):null;
   const v={jour:`${JOURS[dt.getDay()]} ${dt.getDate()} ${MOIS_LONG[dt.getMonth()].toLowerCase()}`,heure:m.heure?m.heure.replace(":","h"):"",lieu:l?l.nom:"Lieu communiqué à l'inscription",
-    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",kit:m.nat?natKitLien(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0],tel:leadMonTel()};
+    adresse:l&&l.adresse?", "+l.adresse:"",groupe:(c.nom||"").replace(/^CAP\s+/,""),lien:m.nat?natInvSuivi(m):"",kit:m.nat?natKitLien(m):"",prenom:(SESSION&&SESSION.name||"").split(/\s+/)[0],tel:leadMonTel(),type:invType(m)};
   return tpl.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x).replace(/ à \n/," \n")}
 function natInvMessage(m){return invRemplir(invModele(m.format?"autre":m.type),m)}
 /* v1.25 : PSA (points sur activité). Le directeur ouvre des plages découpées en créneaux de 30 ou 45 min,
@@ -6816,7 +6820,7 @@ function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)retur
 function invTexte(){const t=document.getElementById("inv-txt");return t?t.value:""}
 function invEnvoyer(){window.open("https://wa.me/?text="+encodeURIComponent(invTexte()),"_blank","noopener")}
 async function invCopier(){const t=invTexte();try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
-function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{tel}|{prenom}",m).split("|"),k=["jour","heure","lieu","adresse","groupe","lien","tel","prenom"];
+function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{type}|{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{tel}|{prenom}",m).split("|"),k=["type","jour","heure","lieu","adresse","groupe","lien","tel","prenom"];
   k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
   /* v1.22 : un numéro écrit à la main redevient {tel}, pour que chaque animateur signe avec le sien */
   const tc=String(leadMonTel()).replace(/\D/g,"").slice(-9);if(tc.length===9)t=t.replace(/(\+?212|0)[\s.\-]?\d(?:[\s.\-]?\d){8}/g,x=>x.replace(/\D/g,"").slice(-9)===tc?"{tel}":x);
@@ -8343,7 +8347,10 @@ async function regionSuppr(){const z=regZones().find(x=>x.id===_reg.id);if(!z)re
   if(!_reg.conf){_reg.conf=1;toast("Touche encore « Supprimer » pour confirmer","warn");return}
   const {error}=await sb.from("zones").delete().eq("id",z.id);if(error){toast(/foreign|violates/i.test(error.message)?"Des comptes sont rattachés à cette région : change d'abord leur région.":rlsMsg(error));return}
   const Z=regZones();Z.splice(Z.indexOf(z),1);toast("Région supprimée");render();openRegions()}
-function accVisible(){return !!(SESSION&&SESSION.role==="superadmin"&&DB&&DB.acces)}
+/* v1.114 : la direction nationale donne aussi les accès (comptes d'animateur et de directeur de région ; jamais la direction). */
+function accGere(){return !!(SESSION&&!SESSION._voir&&(SESSION.role==="superadmin"||SESSION.role==="directeur_national"))}
+function accIntouchable(u){return !!(u&&SESSION.role!=="superadmin"&&!["animateur","directeur"].includes(u.role))}
+function accVisible(){return !!(accGere()&&DB&&DB.acces)}
 function accDe(animId){return (DB.acces||[]).find(u=>u.animateur_id===animId)||null}
 function accEtat(u){
   if(!u)return["n","Pas de compte"];
@@ -8356,6 +8363,7 @@ function accEtat(u){
 function accCellule(a){
   const u=accDe(a.id),[t,txt]=accEtat(u),moi=u&&u.id===SESSION.id;
   if(moi)return `<span class="acc-e ok">C'est toi</span>`;
+  if(accIntouchable(u))return `<span class="acc-e ${t}">${esc(txt)}</span>`;
   const neuf=!u||u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire);
   return `<div class="acc-c"><span class="acc-e ${t}">${esc(txt)}</span><button class="btn ${neuf?"":"ghost"} acc-go" onclick="event.stopPropagation();accDonner('${a.id}')">🔑 ${neuf?"Donner l'accès":"Renvoyer"}</button></div>`;
 }
@@ -8371,6 +8379,7 @@ function accTelWa(t){return String(t||"").replace(/[^\d]/g,"").replace(/^0/,"212
 function accDonner(animId){
   const a=anim(animId);if(!a||!accVisible())return;
   const u=accDe(animId),r=_acc.res[animId],[t,txt]=accEtat(u);
+  if(accIntouchable(u)){toast("Ce compte de direction se gère avec le super admin","w");return}
   const role=u?u.role:"animateur",dr=ROLE_DROITS[role]||[],login=u?(u.email||"").split("@")[0]:accLogin(a);
   const tel=a.tel||"",remplace=u&&!u.mdp_initial&&(u.derniere_connexion||u.mdp_provisoire);
   document.getElementById("sheet-content").innerHTML=`
@@ -8393,7 +8402,7 @@ function accDonner(animId){
 async function accTel(animId,v){const {error}=await sb.from("animateurs").update({tel:v.trim()}).eq("id",animId);if(error){toast(rlsMsg(error));return}const a=anim(animId);if(a)a.tel=v.trim();
   const u=accDe(animId);if(u)u.tel=v.trim();toast("Mobile enregistré");if(_acc.res[animId])accDonner(animId)}
 async function accCreer(animId){
-  const a=anim(animId);let u=accDe(animId);
+  const a=anim(animId);let u=accDe(animId);if(!accGere()||accIntouchable(u))return;
   const remplace=u&&!u.mdp_initial&&(u.derniere_connexion||u.mdp_provisoire);
   if(remplace&&!_acc.conf[animId]){_acc.conf[animId]=true;accDonner(animId);return}
   const pwd=mdpProvisoire();

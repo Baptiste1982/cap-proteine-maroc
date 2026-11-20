@@ -9,7 +9,7 @@ Ce qui est livré sort de la liste et va dans `CLAUDE.md`.
 |---|---|---|
 | 1 | Réunions du réseau pour le bureau national | livré (v1.115) |
 | 2 | Lieux partagés entre tous les animateurs | livré (v1.116) |
-| 3 | Vidéos de prise en main avec voix off, à jour du menu et des ajouts récents : d'abord Hassan et Ghita (direction nationale), puis animateurs et membres | à faire |
+| 3 | Vidéos de prise en main avec voix off | direction nationale livrée le 20/11 ; restent animateur et membre |
 
 ## Ensuite
 

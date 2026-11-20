@@ -2150,6 +2150,10 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.117 alertes à fermer ou reporter*/.al-w{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start;margin-bottom:12px}.al-w>:first-child{margin-bottom:0}
+.al-x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:14px;cursor:pointer}.al-x:hover{color:var(--ink);border-color:var(--ink)}
+.al-m{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;font-size:13px}.al-m span{color:var(--muted)}.al-m button{font:600 13px Inter,sans-serif;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}.al-m button:hover{border-color:var(--ink)}
+.al-p{display:block;width:100%;text-align:left;margin-bottom:12px;padding:8px 12px;border:1px dashed var(--line);border-radius:12px;background:transparent;color:var(--muted);font:500 13px Inter,sans-serif;cursor:pointer}
 /*v1.116 lieux partagés*/.lieu-qui{display:block;font-style:normal;color:var(--muted);font-size:12px;margin-top:2px}.lieu-seg{margin:0 0 10px}
 /*v1.115 réunions du réseau*/.rr-seg{margin:10px 0}.rr-ks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:8px}.rr-k{border:1px solid var(--line);border-radius:12px;padding:9px 8px;text-align:center;min-width:0}.rr-k b{display:block;font:800 22px/1.1 "Bricolage Grotesque",Inter,sans-serif}.rr-k span{font-size:11.5px;color:var(--muted)}.rr-k.al{background:var(--crimson);border-color:var(--crimson);color:#fff}.rr-k.al span{color:#fff}
 @media(max-width:600px){.rr-ks{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -2705,11 +2709,11 @@ const ROLES={superadmin:"Super admin",directeur_national:"Directeur national",di
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 /* v1.6.0 : cycle des réunions d'un groupe en activité. La 1re réunion de la série est une réunion business, puis
    conférence (intervenant extérieur), visite d'entreprise, business, et on recommence. Le type (SI/RL) reste, lu par le national. */
-const FORMATS={business:"Réunion business",conference:"Conférence",visite:"Visite d'entreprise"};
+const FORMATS={business:"Réunion business",conference:"Réunion thématique",visite:"Visite d'entreprise"}; // v1.117 : « thématique », le mot du calendrier national (clé inchangée : conference)
 const FORMAT_ICO={business:"🤝",conference:"🎤",visite:"🏭"};
-const FORMAT_THEME={conference:"Intervenant et sujet",visite:"Entreprise visitée"};
+const FORMAT_THEME={conference:"Thème et intervenant",visite:"Entreprise visitée"};
 const CYCLE=["business","conference","visite","business"];
-function typeCourt(m){return m&&m.format?FORMAT_ICO[m.format]+" "+({business:"Business",conference:"Conférence",visite:"Visite"})[m.format]:(m&&m.type)||""}
+function typeCourt(m){return m&&m.format?FORMAT_ICO[m.format]+" "+({business:"Business",conference:"Thématique",visite:"Visite"})[m.format]:(m&&m.type)||""}
 function typeLib(m){return m&&m.format?FORMATS[m.format]:(TYPES[m&&m.type]||(m&&m.type)||"")}
 /* Position dans le cycle : nombre de réunions du cycle (non annulées) avant la date donnée, modulo 4. */
 function cyclePos(clubId,avant){return DB.reunions.filter(r=>r.clubId===clubId&&r.format&&r.statut!=="annulee"&&r.date<avant).length%CYCLE.length}
@@ -2717,8 +2721,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.116.0";
+const APP_VERSION="1.117.0";
 const CHANGELOG=[
+  {v:"1.117.0",date:"20 novembre 2026",notes:{"Ajouté":["Chaque alerte de la Synthèse et de Mon groupe se ferme d\u2019un ✕, avec un rappel au choix : en fin de journée, demain ou dans une semaine. Une ligne « rappels en pause » permet de les réafficher"],"Modifié":["Le format « Conférence » s\u2019appelle désormais « Réunion thématique », comme sur le calendrier national"]}},
   {v:"1.116.0",date:"20 novembre 2026",notes:{"Modifié":["Lieux partagés : l\u2019onglet Lieux montre tous les lieux du réseau (bascule « Ma région / Tout le réseau ») avec les groupes qui s\u2019y réunissent ; en créant une réunion, on choisit parmi tous les lieux, ceux de sa ville d\u2019abord, ou on en ajoute un"]}},
   {v:"1.115.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda → « Réunions du réseau » : par région et par groupe, les réunions tenues (bilan en PDF), annulées, déplacées, sans bilan, et les réunions manquantes par rapport au rythme du groupe ; compteurs au mois, au trimestre, à l\u2019année","Direction : « Relancer » l\u2019animateur d\u2019un toucher pour un bilan manquant, un motif d\u2019annulation ou un groupe sans réunion récente","Une réunion annulée demande son motif (fête religieuse, jour férié, vacances, lieu ou animateur indisponible…) ; un déplacement est compté tout seul"]}},
   {v:"1.114.0",date:"20 novembre 2026",notes:{"Modifié":["Équipe → « Donner l\u2019accès » : ouvert à la direction nationale, pour les comptes d\u2019animateur et de directeur de région","Message d\u2019invitation : le type de la réunion y figure (Réunion Business, Conférence et son thème, Visite d\u2019entreprise…), repère {type}"]}},
@@ -4598,7 +4603,7 @@ function viewGroupe(){
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.sansBilan.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte à outils</span><span class="tel-seul">Boîte à outils</span></button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
-    ${bascule}${choix}${grpSeance(c)}${verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id)}${SESSION&&SESSION.role==="animateur"?psaAlerte():""}
+    ${bascule}${choix}${grpSeance(c)}${alR("verrou",verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id))}${SESSION&&SESSION.role==="animateur"?alR("psa",psaAlerte()):""}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
         <p class="grp-ry">${rythmeTexte(c)?"🔁 "+esc(rythmeTexte(c)):`<span class="reu-warn">Rythme non défini</span>`}${c.lieuHab?" · 📍 "+esc(lieuNom(c.lieuHab)):""}</p></div></div>
@@ -6193,7 +6198,7 @@ function viewDashboard(reg){
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte()+rrAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte()+rrAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+alR("bilans",dashBilanAlerte())+alR("verrou",verrouAlerte())+alR("psa",psaAlerte())+alR("reunions",rrAlerte())+alPauseLigne():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+alR("bilans",dashBilanAlerte())+alR("verrou",verrouAlerte())+alR("psa",psaAlerte())+alR("reunions",rrAlerte())+alPauseLigne();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -6316,7 +6321,7 @@ function verrouAlerte(ids,sauf){if(!SESSION||readOnly()||SESSION._voir)return"";
   return `<details class="va" ${window._vaOuv===false?"":"open"} ontoggle="window._vaOuv=this.open"><summary><span class="va-i">🔒</span><span class="va-s"><b>${l.length} réunion${l.length>1?"s":""} passée${l.length>1?"s":""} à verrouiller</b><small>Verrouillée, une réunion est classée et sort de cette liste</small></span></summary>
     <div class="va-l">${l.map(r=>{const d=dObj(r.date),fait=r.statut==="realisee",c=club(r.clubId)||{};
       return `<div class="va-r" data-va="${r.id}"><span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span><button type="button" class="va-t" onclick="openMeeting('${r.id}')"><b>${esc(typeLib(r))}${plus?" · "+esc(String(c.nom||"").replace(/^CAP\s+/,"")):""}</b><small>${fait?"Bilan fait, reste à verrouiller":"Bilan à saisir"}</small></button>${fait?`<button class="btn mini" onclick="reuVerrouiller('${r.id}',true,true)">🔒 Verrouiller</button>`:`<button class="btn mini" onclick="openBilan('${r.id}')">Saisir le bilan</button>`}</div>`}).join("")}</div></details>`}
-function verrouAnnonce(){try{if(!SESSION||readOnly()||SESSION._voir||sessionStorage.getItem("cap-va-vu"))return;const n=reuAVerrouiller(reuMesClubs().map(c=>c.id)).length;if(!n)return;
+function verrouAnnonce(){try{if(!SESSION||readOnly()||SESSION._voir||sessionStorage.getItem("cap-va-vu")||alEnPause("verrou"))return;const n=reuAVerrouiller(reuMesClubs().map(c=>c.id)).length;if(!n)return;
   sessionStorage.setItem("cap-va-vu","1");setTimeout(()=>{try{annonce("🔒",n+" réunion"+(n>1?"s":"")+" passée"+(n>1?"s":"")+" à verrouiller","Touche pour les classer",()=>go("reunions"))}catch(e){}},6500)}catch(e){}}
 async function reuVerrouiller(mid,oui,sansFiche){const m=DB.reunions.find(x=>x.id===mid);if(!m||!canEditReunion(m)||readOnly()||(SESSION&&SESSION._voir))return false;
   const cr={...(m.cr||{})};if(oui)reuVerrouPose(m,cr);else cr.verrou={le:null};
@@ -6549,7 +6554,7 @@ function psaAlerte(){if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)retur
   const sans=k.regs.filter(x=>!x.r.libres).length;
   return `<details class="va" id="psa-al" ${window._psaAlOuv?"open":""} ontoggle="window._psaAlOuv=this.open"><summary><span class="va-i">📅</span><span class="va-s"><b>${k.n} animateur${k.n>1?"s":""} sans point sur activité ce mois-ci</b><small>${sans?sans+" région"+(sans>1?"s":"")+" sans créneau ouvert":"Des créneaux sont ouverts : il reste à les relancer"}</small></span></summary>
     <div class="va-l">${k.regs.map(x=>`<div class="va-r"><button type="button" class="va-t" onclick="openPSA()"><b>${esc(x.r.nom)} · ${x.l.length} à caler</b><small>${esc(x.l.map(a=>a.nom).join(", "))}</small></button><span class="psa-et ${x.r.libres?"":"zero"}">${x.r.libres?x.r.libres+" libre"+(x.r.libres>1?"s":""):"Aucun créneau"}</span></div>`).join("")}</div></details>`}
-function psaAnnonce(){try{if(!SESSION||SESSION.role==="visiteur"||SESSION._voir||sessionStorage.getItem("cap-psa-vu"))return;const k=psaACaler();if(!k.n)return;sessionStorage.setItem("cap-psa-vu","1");
+function psaAnnonce(){try{if(!SESSION||SESSION.role==="visiteur"||SESSION._voir||sessionStorage.getItem("cap-psa-vu")||alEnPause("psa"))return;const k=psaACaler();if(!k.n)return;sessionStorage.setItem("cap-psa-vu","1");
   setTimeout(()=>{try{annonce("📅",k.portee==="moi"?"Ton PSA de ce mois n'est pas calé":k.n+" animateur"+(k.n>1?"s":"")+" sans PSA ce mois-ci",k.portee==="moi"?"Touche pour choisir ton créneau":"Touche pour voir qui relancer",()=>openPSA())}catch(e){}},9000)}catch(e){}}
 /* Dans l'écran des PSA : le suivi par région (directeur et direction nationale). */
 function psaSuiviBloc(){const s=psaSuivi();if(!s||s.portee==="moi")return"";let R=s.regions||[];try{if(s.portee==="national"&&vueMode()==="reg"){const n=vueRegion().nom;R=R.filter(r=>r.nom===n)}}catch(e){}
@@ -8636,6 +8641,23 @@ function dashOutils(){
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}
+/* v1.117 : une alerte se ferme, avec un rappel « en fin de journée », « demain » ou « dans une semaine ». Le choix est gardé
+   sur l'appareil, par compte. Tant qu'elle est en pause, l'alerte et sa carte d'annonce ne s'affichent pas. */
+function alCle(c){return "cap-al-"+((SESSION&&SESSION.id)||"x")+"-"+c}
+function alEnPause(c){try{const v=+localStorage.getItem(alCle(c));if(v&&v>Date.now())return v;if(v)localStorage.removeItem(alCle(c))}catch(e){}return 0}
+const AL_NOMS={bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau"};
+function alR(c,html){if(!html)return"";if(alEnPause(c))return"";
+  return `<div class="al-w" data-al="${c}">${html}<button type="button" class="al-x" aria-label="Fermer ou reporter cette alerte" title="Fermer ou reporter" onclick="alMenu('${c}',this)">✕</button></div>`}
+function alMenu(c,btn){const w=btn.closest(".al-w");let m=w.querySelector(".al-m");if(m){m.remove();return}
+  m=document.createElement("div");m.className="al-m";m.innerHTML=`<span>Me le rappeler</span><button type="button" onclick="alReporter('${c}','soir')">en fin de journée</button><button type="button" onclick="alReporter('${c}','demain')">demain</button><button type="button" onclick="alReporter('${c}','semaine')">dans une semaine</button>`;w.appendChild(m)}
+function alQuand(q){const d=new Date();if(q==="soir"){const s=new Date(d);s.setHours(17,30,0,0);return s.getTime()>d.getTime()+30*60e3?s.getTime():d.getTime()+3*3600e3}
+  const j=new Date(d);j.setDate(j.getDate()+(q==="semaine"?7:1));j.setHours(8,0,0,0);return j.getTime()}
+function alReporter(c,q){const t=alQuand(q);try{localStorage.setItem(alCle(c),String(t))}catch(e){}const d=new Date(t);
+  toast("Rappel "+(q==="soir"?"à "+String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0"):q==="demain"?"demain matin":"dans une semaine"),"s");render()}
+function alPauses(){return Object.keys(AL_NOMS).filter(c=>alEnPause(c))}
+function alPauseLigne(){const p=alPauses();if(!p.length||!SESSION||SESSION._voir)return"";
+  return `<button type="button" class="al-p" id="al-p" onclick="alToutRevoir()">⏰ ${p.length} rappel${p.length>1?"s":""} en pause (${p.map(c=>AL_NOMS[c].toLowerCase()).join(", ")}) · les réafficher</button>`}
+function alToutRevoir(){alPauses().forEach(c=>{try{localStorage.removeItem(alCle(c))}catch(e){}});render()}
 function dashBilanAlerte(){
   const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
   return `<button class="bil-alert" onclick="openBilan()"><span class="n">${l.length}</span><span><b>${l.length} réunion${l.length>1?"s attendent leur":" attend son"} bilan</b><small>La plus ancienne date du ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Une question par réunion.</small></span><span class="go">›</span></button>`;

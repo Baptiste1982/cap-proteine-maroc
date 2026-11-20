@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="light">
 <script>/* thème posé avant l'affichage : clair par défaut, sombre ou automatique si choisi dans Paramètres */
-(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";var d={sombre:1,verre:1,bordeaux:1,graphite:1}[t],h=document.documentElement;if(t!=="sombre"&&t!=="clair")h.classList.add("th-"+t);if(d){h.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
+(function(){try{var t=localStorage.getItem("cap-theme")||"graphite";if(!{graphite:1,verre:1,verreclair:1,bordeaux:1,sombre:1,clair:1,auto:1}[t])t="graphite";if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"graphite":"verreclair";var d={sombre:1,verre:1,bordeaux:1,graphite:1}[t],h=document.documentElement;if(t!=="sombre"&&t!=="clair")h.classList.add("th-"+t);if(d){h.classList.add("dark");document.querySelector('meta[name="color-scheme"]').content="dark"}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>CAP · Protéine Maroc — CRM Animation</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -2718,6 +2718,8 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .gc-c{display:flex;flex-direction:column;gap:1px;min-width:0}.gc-c small{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.gc-c b{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gc-c em{font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .grp-cr.avenir .gc-c b{font-weight:600}
 @media(max-width:1099.98px){.grp-cr{flex-wrap:wrap}.grp-cr .gc-t{flex:1 1 0}.gc-x{order:5;flex:1 1 100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;padding:8px 0 2px;border-top:1px dashed var(--line)}.gc-c:nth-child(3){grid-column:1 / -1}}
+/*v1.133 cartouche PSA du bandeau d'accueil*/
+.tool.psa{border-color:var(--gold)}.tool.psa em{font-style:normal;font-size:11px;font-weight:800;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--gold);color:#fff}
 </style>
 </head>
 <body>
@@ -2830,7 +2832,7 @@ const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégre
 /* ---- Version & notes de mise à jour ---- */
 const APP_VERSION="1.133.0";
 const CHANGELOG=[
-  {v:"1.133.0",date:"20 novembre 2026",notes:{"Ajouté":["Planning de la région : un calendrier à gauche ; en touchant un jour, les groupes réunis ce jour-là s'affichent à droite avec le détail (type, heure, lieu, animateur, invités, résultat). Sans jour choisi, toutes les réunions du mois et les groupes sans réunion.","Bilans et archives d'un groupe : chaque ligne donne le groupe et son animateur, le jour, l'heure, le lieu, les invités inscrits ou le résultat."]}},
+  {v:"1.133.0",date:"20 novembre 2026",notes:{"Corrigé":["L'espace membre et les documents ouverts dans le CRM prennent le thème du CRM (ils pouvaient rester clairs dans un CRM sombre)."],"Ajouté":["Bandeau d'accueil : un cartouche « PSA » à droite ouvre les points sur activité, avec le nombre d'animateurs à caler, en vue nationale comme en vue régionale.","Planning de la région : un calendrier à gauche ; en touchant un jour, les groupes réunis ce jour-là s'affichent à droite avec le détail (type, heure, lieu, animateur, invités, résultat). Sans jour choisi, toutes les réunions du mois et les groupes sans réunion.","Bilans et archives d'un groupe : chaque ligne donne le groupe et son animateur, le jour, l'heure, le lieu, les invités inscrits ou le résultat."]}},
   {v:"1.132.0",date:"20 novembre 2026",notes:{"Corrigé":["Carte du réseau : les villes restent sur la terre et dans le bon ordre le long de la côte (Casablanca n'est plus dans l'océan)."],"Ajouté":["Sur ordinateur, la page de réservation des PSA (calendrier à gauche, heures à droite) et la page d'invitation à une réunion (la réunion à gauche, les explications à droite) prennent la largeur de l'écran. Rien ne change au téléphone."]}},
   {v:"1.131.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre sur ordinateur : la page prend toute la largeur. Les onglets passent en haut avec le bouton « Recommander quelqu'un » à droite, l'accueil et Mon groupe s'affichent en deux colonnes, le Réseau, les réunions et le menu Moi en grille. Rien ne change au téléphone."]}},
   {v:"1.130.0",date:"20 novembre 2026",notes:{"Ajouté":["Un compte peut porter un titre affiché à la place du libellé de son rôle (Ghita : « Office Manager ») ; ses droits ne changent pas.","Journal, réservé au super admin (Paramètres → Administration, et menu Équipe) : qui a fait quoi et quand. Le fil complet jour par jour, ou rangé par personne, par région, par type ; recherche, période, détail de chaque action (les champs modifiés, avant et après), export pour Excel. Les connexions au CRM y sont notées aussi."]}},
@@ -8922,7 +8924,7 @@ function adhClubId(a){const mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_i
 function pct(a,b){return b?Math.round(a/b*100):null}
 function dashOutils(){
   const t=(ic,l,fn,hl)=>`<button class="tool ${hl?"hl":""}" onclick="${fn}">${ic} ${l}</button>`;
-  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","monOuvrir('rapport')")}</div>`; // v1.27 : le reste est dans le menu
+  return `<div class="tools" role="toolbar" aria-label="Outils du réseau">${t("▶","Présenter","openPresentation()",1)}${t("🗺","Carte","openCarte()")}${t("📄","Rapport du mois","monOuvrir('rapport')")}${readOnly()?"":(()=>{let n=0;try{n=psaACaler().n}catch(e){}return `<button class="tool psa" id="tool-psa" onclick="openPSA()" title="Points sur activité : caler les rendez-vous avec les animateurs">📅 PSA${n?`<em>${n} à caler</em>`:""}</button>`})()}</div>`; // v1.27 : le reste est dans le menu
 }
 /* ---------- 1. Bilan de réunion ---------- */
 function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=>reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>a.date.localeCompare(b.date))}

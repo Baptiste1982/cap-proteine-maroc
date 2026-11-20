@@ -2150,6 +2150,12 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.119 centre de notifications*/.cn-btn{position:relative;width:38px;padding:0;justify-content:center;font-size:16px}.cn-btn em{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:var(--crimson);color:#fff;font:700 11px/19px Inter,sans-serif;font-style:normal;text-align:center}
+.cn-l{display:grid;gap:6px;margin-bottom:6px}.cn-i{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:stretch}.cn-i.j{grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px}
+.cn-m{display:flex;align-items:center;gap:11px;min-width:0;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}.cn-m:hover{border-color:var(--ink)}
+.cn-ic{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:color-mix(in srgb,var(--line) 55%,transparent)}.cn-t{min-width:0}.cn-t b{display:block;font-size:14px;line-height:1.3}.cn-t small{display:block;color:var(--muted);font-size:12.5px}
+.cn-r{flex:none;min-width:44px;padding:0 10px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:600 12.5px Inter,sans-serif;cursor:pointer}.cn-i.p .cn-m{opacity:.65;border-style:dashed}.cn-l .al-m{grid-column:auto}
+@media(max-width:899px){#dem-btn{display:none!important}}
 /*v1.118 cartes de notification : fond blanc et texte foncé dans tous les thèmes (le fond suivait --ink, clair en sombre : blanc sur blanc), posées juste au-dessus de la barre du bas au téléphone*/
 .annonce,#notifs .annonce{background:#fff;color:#1B1416;border:1px solid #E2DEDD;box-shadow:0 14px 34px -12px rgba(0,0,0,.5)}.annonce:hover{background:#F6F4F3}
 .annonce .an-t b{color:#1B1416;font-size:14.5px;line-height:1.25}.annonce .an-t small{color:#5E585A;white-space:normal}.annonce .an-go{color:#D81B3F}.annonce .an-ic{background:#EEF2F6}
@@ -2652,7 +2658,7 @@ body.lecture .ann-btn{display:none}
     </div>
     <div class="tb-row tb-row2">
       <button type="button" id="esp-sel" class="esp-sel hidden" onclick="espMenu()" aria-haspopup="menu" aria-expanded="false"></button><div id="vue-bascule" class="vue-bas hidden" role="tablist" aria-label="Vue"></div><span id="tb-clock" class="tb-clock" aria-live="off"></span><button id="ann-btn" class="dem-btn ann-btn" onclick="openAnnuaire()" aria-label="Annuaire du réseau" title="Annuaire du réseau">📇<span> Annuaire</span></button><button id="dem-btn" class="dem-btn hidden" onclick="openDemandes()" aria-label="Demandes à traiter"></button><button id="online-pill" class="online-pill hidden" onclick="openQuiConnecte()" aria-label="Qui est connecté"></button><span id="tb-role" class="role-pill">—</span>
-      <div class="tb-actions"><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
+      <div class="tb-actions"><button type="button" class="set-btn cn-btn hidden" id="cn-btn" onclick="openCentre()" aria-label="Notifications"><span aria-hidden="true">🔔</span><em hidden>0</em></button><button class="set-btn" id="set-btn" onclick="openParametres()" aria-label="Paramètres"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="l">Paramètres</span><span class="notif-dot hidden" id="set-dot"></span></button>
         <span class="hidden">
         <button id="ver-pill" class="verpill" onclick="openChangelog()" aria-label="Notes de version">v0.1.0</button>
         <button id="notif-btn" class="icon-btn hidden" onclick="openNotifs()" aria-label="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot hidden"></span></button>
@@ -2725,8 +2731,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.118.0";
+const APP_VERSION="1.119.0";
 const CHANGELOG=[
+  {v:"1.119.0",date:"20 novembre 2026",notes:{"Ajouté":["Centre de notifications : la cloche en haut à droite réunit tout ce qui t\u2019attend (bilans, réunions à verrouiller, PSA, demandes, contacts confiés, recommandations…), ce que tu as reporté, la discussion de ton groupe et les messages reçus récemment sur l\u2019appareil"]}},
   {v:"1.118.0",date:"20 novembre 2026",notes:{"Corrigé":["Cartes de notification : texte foncé sur fond blanc dans tous les thèmes (elles étaient illisibles en thème sombre), et placées juste au-dessus de la barre du bas au téléphone"]}},
   {v:"1.117.0",date:"20 novembre 2026",notes:{"Ajouté":["Chaque alerte de la Synthèse et de Mon groupe se ferme d\u2019un ✕, avec un rappel au choix : en fin de journée, demain ou dans une semaine. Une ligne « rappels en pause » permet de les réafficher"],"Modifié":["Le format « Conférence » s\u2019appelle désormais « Réunion thématique », comme sur le calendrier national"]}},
   {v:"1.116.0",date:"20 novembre 2026",notes:{"Modifié":["Lieux partagés : l\u2019onglet Lieux montre tous les lieux du réseau (bascule « Ma région / Tout le réseau ») avec les groupes qui s\u2019y réunissent ; en créant une réunion, on choisit parmi tous les lieux, ceux de sa ville d\u2019abord, ou on en ajoute un"]}},
@@ -8629,7 +8636,7 @@ function annonce(ico,titre,sous,act){
   d.innerHTML=`<span class="an-ic">${ico}</span><span class="an-t"><b>${esc(titre)}</b>${sous?`<small>${esc(sous)}</small>`:""}</span>${act?'<span class="an-go" aria-hidden="true">›</span>':""}`;
   const fin=()=>{d.classList.add("out");setTimeout(()=>d.remove(),350)};
   d.onclick=()=>{fin();if(act)act()};
-  notifPile().appendChild(d);setTimeout(fin,6500);
+  notifPile().appendChild(d);setTimeout(fin,6500);try{cnNoter(ico,titre,sous);cnBadge()}catch(e){}
 }
 
 /* ============================================================
@@ -8650,7 +8657,7 @@ function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=
    sur l'appareil, par compte. Tant qu'elle est en pause, l'alerte et sa carte d'annonce ne s'affichent pas. */
 function alCle(c){return "cap-al-"+((SESSION&&SESSION.id)||"x")+"-"+c}
 function alEnPause(c){try{const v=+localStorage.getItem(alCle(c));if(v&&v>Date.now())return v;if(v)localStorage.removeItem(alCle(c))}catch(e){}return 0}
-const AL_NOMS={bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau"};
+const AL_NOMS={bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau",demandes:"Demandes d'adhésion",national:"Envoi au national",contacts:"Contacts confiés",recos:"Recommandations reçues",comptes:"Comptes d'équipe",comptenat:"Compte national"};
 function alR(c,html){if(!html)return"";if(alEnPause(c))return"";
   return `<div class="al-w" data-al="${c}">${html}<button type="button" class="al-x" aria-label="Fermer ou reporter cette alerte" title="Fermer ou reporter" onclick="alMenu('${c}',this)">✕</button></div>`}
 function alMenu(c,btn){const w=btn.closest(".al-w");let m=w.querySelector(".al-m");if(m){m.remove();return}
@@ -8663,6 +8670,48 @@ function alPauses(){return Object.keys(AL_NOMS).filter(c=>alEnPause(c))}
 function alPauseLigne(){const p=alPauses();if(!p.length||!SESSION||SESSION._voir)return"";
   return `<button type="button" class="al-p" id="al-p" onclick="alToutRevoir()">⏰ ${p.length} rappel${p.length>1?"s":""} en pause (${p.map(c=>AL_NOMS[c].toLowerCase()).join(", ")}) · les réafficher</button>`}
 function alToutRevoir(){alPauses().forEach(c=>{try{localStorage.removeItem(alCle(c))}catch(e){}});render()}
+/* v1.119 : centre de notifications. Une cloche en haut à droite (téléphone et ordinateur) réunit tout ce qui attend la personne :
+   les alertes en cours, celles qu'elle a reportées, et ce qu'elle a reçu récemment sur cet appareil. */
+function cnAlertes(){if(!SESSION||SESSION.role==="visiteur")return[];const L=[],voir=!!SESSION._voir;
+  const a=(cle,ico,n,titre,sous,act)=>{if(n>0)L.push({cle,ico,n,titre,sous,act})},t=f=>{try{return f()}catch(e){return 0}},pl=(n,s,p)=>n+" "+(n>1?p:s);
+  if(!voir){
+    const b=t(()=>reunionsSansBilan().length);a("bilans","📝",b,pl(b,"bilan de réunion à saisir","bilans de réunion à saisir"),"Une question par réunion","openBilan()");
+    const v=t(()=>reuAVerrouiller(reuMesClubs().map(c=>c.id)).length);a("verrou","🔒",v,pl(v,"réunion passée à verrouiller","réunions passées à verrouiller"),"Verrouillée, une réunion est classée","go('reunions')");
+    const k=t(()=>psaACaler());if(k&&k.n)a("psa","📅",k.n,k.portee==="moi"?"Ton point sur activité de ce mois n'est pas calé":pl(k.n,"animateur sans PSA ce mois-ci","animateurs sans PSA ce mois-ci"),k.portee==="moi"?"Choisis ton créneau":"Voir qui relancer","openPSA()");
+    if(t(()=>rrPeutRelancer())){const X=t(()=>rrTout("annee"));if(X)a("reunions","🗓",(X.sans||0)+(X.ouverts||0),[X.sans?pl(X.sans,"réunion sans bilan","réunions sans bilan"):"",X.ouverts?pl(X.ouverts,"groupe sans réunion récente","groupes sans réunion récente"):""].filter(Boolean).join(" · "),"Groupe par groupe, avec la relance","openReunionsReseau()")}
+    const d=t(()=>demListe().length);a("demandes","📥",d,pl(d,"demande d'adhésion à intégrer","demandes d'adhésion à intégrer"),"Reçues par le formulaire en ligne","openDemandes()");
+    if(t(()=>navDir())){const e=t(()=>natAEnvoyer().length);a("national","🚀",e,pl(e,"adhésion à envoyer au CRM national","adhésions à envoyer au CRM national"),"Intégrées, pas encore envoyées","navDem('nat')")}
+    const c=t(()=>mesContactsAFaire().length);a("contacts","📬",c,pl(c,"contact confié à traiter","contacts confiés à traiter"),"Des contacts à appeler ou à inviter","openBoite()");
+    const r=t(()=>mesRecosATraiter());if(r&&r.length)a("recos","🤝",r.length,pl(r.length,"recommandation reçue à suivre","recommandations reçues à suivre"),"Dans ton espace membre",`espaceOuvrir('membre.html#moi=${r[0].a}&r=recues')`);
+    if(SESSION.role==="superadmin"){const e=DB.aEmbarquer||0;a("comptes","🔑",e,pl(e,"compte d'équipe jamais ouvert","comptes d'équipe jamais ouverts"),"Donner ou renvoyer l'accès","openEmbarquer()")}
+    if(SESSION.role!=="superadmin"&&SESSION.animId&&!t(()=>natComptePret()))a("comptenat","🔐",1,"Ton compte du CRM national n'est pas branché","Sans lui, rien ne part au national",`openCompteNat('${SESSION.animId}')`);
+  }
+  return L}
+function cnActives(){return cnAlertes().filter(x=>!alEnPause(x.cle))}
+function cnBadge(){const b=document.getElementById("cn-btn");if(!b)return;const ok=!!SESSION&&SESSION.role!=="visiteur";b.classList.toggle("hidden",!ok);if(!ok)return;
+  const n=cnActives().length,e=b.querySelector("em");e.textContent=n>9?"9+":String(n);e.hidden=!n;b.classList.toggle("on",n>0);b.setAttribute("aria-label",n?n+" notification"+(n>1?"s":"")+" à voir":"Notifications")}
+/* Ce qui a été reçu sur cet appareil (les cartes qui apparaissent en bas de l'écran), gardé 30 lignes par compte. */
+function cnJCle(){return "cap-cn-j-"+((SESSION&&SESSION.id)||"x")}
+function cnJournal(){try{return JSON.parse(localStorage.getItem(cnJCle())||"[]")}catch(e){return[]}}
+function cnNoter(ico,titre,sous){try{if(!SESSION)return;const j=cnJournal();if(j[0]&&j[0].t===titre&&Date.now()-j[0].le<600e3)return;j.unshift({i:ico,t:titre,s:sous||"",le:Date.now()});localStorage.setItem(cnJCle(),JSON.stringify(j.slice(0,30)))}catch(e){}}
+function cnIlYA(ms){const m=Math.round((Date.now()-ms)/60e3);if(m<1)return"à l'instant";if(m<60)return"il y a "+m+" min";const h=Math.round(m/60);if(h<24)return"il y a "+h+" h";const d=new Date(ms);return "le "+d.getDate()+" "+MOIS[d.getMonth()].toLowerCase()}
+function openCentre(){const A=cnAlertes(),act=A.filter(x=>!alEnPause(x.cle)),pause=A.filter(x=>alEnPause(x.cle)),J=cnJournal(),c=(()=>{try{return grpClub()}catch(e){return null}})();
+  const li=(x,p)=>`<div class="cn-i ${p?"p":""}" data-cn="${x.cle}"><button type="button" class="cn-m" onclick="closeSheet();${x.act}"><span class="cn-ic">${x.ico}</span><span class="cn-t"><b>${esc(x.titre)}</b><small>${p?"En pause jusqu'"+(()=>{const d=new Date(alEnPause(x.cle)),auj=d.toDateString()===new Date().toDateString();return (auj?"à ":"au "+d.getDate()+" "+MOIS[d.getMonth()].toLowerCase()+" à ")+String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")})():esc(x.sous)}</small></span></button>
+      ${p?`<button type="button" class="cn-r" onclick="cnReprendre('${x.cle}')">Réafficher</button>`:`<button type="button" class="cn-r" aria-label="Reporter" title="Me le rappeler plus tard" onclick="cnMenu('${x.cle}',this)">⏰</button>`}</div>`;
+  document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"🔔",title:"Notifications",sub:act.length?act.length+" à voir":"Tout est à jour"})}
+    ${act.length?`<div class="cn-l" id="cn-act">${act.map(x=>li(x)).join("")}</div>`:`<div class="empty" id="cn-vide">Rien n'attend ton action pour l'instant.</div>`}
+    ${pause.length?`<div class="sec-h"><span>Reportées</span><span class="pill">${pause.length}</span></div><div class="cn-l" id="cn-pause">${pause.map(x=>li(x,1)).join("")}</div>`:""}
+    ${c?`<div class="sec-h"><span>En direct</span></div><div class="cn-l"><div class="cn-i"><button type="button" class="cn-m" onclick="closeSheet();grpAller('${c.id}','fil')"><span class="cn-ic">💬</span><span class="cn-t"><b>Discussion du groupe ${esc(String(c.nom).replace(/^CAP\s+/,""))}</b><small>Le fil entre l'animateur et les membres</small></span></button></div></div>`:""}
+    <div class="sec-h"><span>Reçu récemment sur cet appareil</span>${J.length?`<button type="button" class="lien-b" onclick="cnVider()">Effacer</button>`:""}</div>
+    ${J.length?`<div class="cn-l cn-j" id="cn-j">${J.map(x=>`<div class="cn-i j"><span class="cn-ic">${esc(x.i||"🔔")}</span><span class="cn-t"><b>${esc(x.t)}</b><small>${x.s?esc(x.s)+" · ":""}${cnIlYA(x.le)}</small></span></div>`).join("")}</div>`:`<p class="fh-note">Les messages qui apparaissent en bas de l'écran (nouvelle demande, nouvel inscrit, rappel…) sont gardés ici.</p>`}
+    <div class="sec-h"><span>Sur le téléphone</span></div><div class="cn-l"><div class="cn-i"><button type="button" class="cn-m" onclick="openNotifs()"><span class="cn-ic">📲</span><span class="cn-t"><b>Notifications sur cet appareil</b><small>Les activer, ou voir comment faire sur iPhone</small></span></button></div></div>
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet()}
+function cnMenu(cle,btn){const i=btn.closest(".cn-i");let m=i.nextElementSibling;if(m&&m.classList.contains("al-m")){m.remove();return}
+  m=document.createElement("div");m.className="al-m";m.innerHTML=`<span>Me le rappeler</span><button type="button" onclick="cnReporter('${cle}','soir')">en fin de journée</button><button type="button" onclick="cnReporter('${cle}','demain')">demain</button><button type="button" onclick="cnReporter('${cle}','semaine')">dans une semaine</button>`;i.after(m)}
+function cnReporter(cle,q){alReporter(cle,q);avecVue(()=>openCentre())}
+function cnReprendre(cle){try{localStorage.removeItem(alCle(cle))}catch(e){}render();avecVue(()=>openCentre())}
+function cnVider(){try{localStorage.removeItem(cnJCle())}catch(e){}avecVue(()=>openCentre())}
 function dashBilanAlerte(){
   const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
   return `<button class="bil-alert" onclick="openBilan()"><span class="n">${l.length}</span><span><b>${l.length} réunion${l.length>1?"s attendent leur":" attend son"} bilan</b><small>La plus ancienne date du ${d.getDate()} ${MOIS_LONG[d.getMonth()].toLowerCase()}. Une question par réunion.</small></span><span class="go">›</span></button>`;
@@ -9721,7 +9770,7 @@ function viewDemandes(){
         ${grp.length?`<section class="dm-box"><h3>📊 Par groupe</h3><div class="dm-grps">${grp.map(([g,n],i)=>`<div><span>${esc(g.replace(/^CAP\s+/,""))}</span><i><b style="width:${Math.round(n/mx*100)}%;--i:${i}"></b></i><em>${n}</em></div>`).join("")}</div></section>`:""}
         <p class="dm-leg"><span class="adh-steps"><i class="on"></i><i></i><i></i></span> reçue · intégrée au groupe · saisie au national</p></aside></div></div>`}`;
 }
-function demBadge(){
+function demBadge(){try{cnBadge()}catch(e){}
   const b=document.getElementById("dem-btn");if(!b)return;
   const nb=document.querySelector('.nav button[data-tab="demandes"]');
   if(nb){nb.hidden=!SESSION||SESSION.role==="visiteur";const n2=demListe().length;let e=nb.querySelector(".nav-badge");
@@ -9827,7 +9876,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -9887,7 +9936,7 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
    (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
    recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
    (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
-["openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+["openCentre","openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 /* v1.42 : écrans lourds — au téléphone, un mot avant d'ouvrir (une fois par écran). */

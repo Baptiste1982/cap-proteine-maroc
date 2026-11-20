@@ -2662,6 +2662,10 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .ag-seg{margin:0 0 12px;max-width:100%;flex-wrap:wrap;background:var(--card)}.ag-seg button{flex:1 1 auto;min-height:36px}
 .cp-mois{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cp-m{display:flex;flex-direction:column;gap:2px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;position:relative}
 .cp-m input{position:absolute;right:10px;top:10px;width:18px;height:18px}.cp-m.on{border-color:var(--crimson)}.cp-m small{color:var(--muted);font-size:12px}
+/*v1.127 événements du réseau*/
+.ev-z{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:0 0 12px}
+.ev-c{display:flex;flex-direction:column;gap:2px;text-align:left;background:var(--crimson);color:#fff;border:0;border-radius:14px;padding:10px 14px;font-family:inherit;min-width:0;flex:1 1 240px;max-width:460px}button.ev-c{cursor:pointer}
+.ev-c .ev-g{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9}.ev-c b{font:800 16px "Bricolage Grotesque",sans-serif}.ev-c small{font-size:12px;opacity:.92}
 </style>
 </head>
 <body>
@@ -2769,8 +2773,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.126.0";
+const APP_VERSION="1.127.0";
 const CHANGELOG=[
+  {v:"1.127.0",date:"20 novembre 2026",notes:{"Ajouté":["Événements du réseau (interclub, séminaire…) : en tête de l'Agenda de tous, dans le calendrier à présenter (bandeau rouge sur le jour) et dans les réunions du réseau de l'espace membre. La direction nationale les crée depuis l'Agenda. L'interclub « One team - One Community » du 4 décembre y est.","Espace membre → Réunions du réseau : un choix « Mon groupe », « Ma région », « Tout le réseau »."]}},
   {v:"1.126.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda : chacun choisit ce qu'il regarde, « Mes groupes », sa région ou « Tout le réseau ». Tous les comptes voient les réunions régionales et nationales.","Agenda → « Calendrier à présenter » : le calendrier du mois en PDF, au format paysage, une page par mois, avec les réunions de chaque jour, le groupe, l'heure et le type. À projeter ou à distribuer en réunion nationale."]}},
   {v:"1.125.0",date:"20 novembre 2026",notes:{"Ajouté":["Un groupe peut être mis en pause, avec un motif et une date de reprise facultative (fiche du groupe). En pause, il ne réclame plus de réunion à planifier ni d'animateur, ses réunions manquantes ne sont plus comptées ; il reste dans les listes, grisé, avec un filtre « En pause », et se reprend d'un toucher."],"Modifié":["Un seul rouge sur les grands blocs de l'accueil : bandeau de bienvenue, carte des membres, affaires générées et période.","Accueil : « Activité » et « Le réseau en chiffres » ne font plus qu'un chapitre, avec la période en haut.","« À traiter » ne répète plus le total des bilans à saisir (il est dans la cloche et le bloc d'alertes) ; le détail par région reste.","Téléphone : boutons plus grands pour le doigt (À traiter, Membres, Équipe, Agenda, bilan), et plus de rangées qui défilent sur le côté (raccourcis de Mon groupe, onglets des Adhésions, pastilles des statistiques, filtres)."],"Corrigé":["Nettoyage de sept fonctions qui ne servaient plus."]}},
   {v:"1.124.0",date:"20 novembre 2026",notes:{"Modifié":["Accueil : un seul bloc « N choses t\u2019attendent » qui se déplie, au lieu d\u2019un encart par sujet ; une même réunion n\u2019est plus comptée dans deux alertes","Au téléphone, les chapitres de l\u2019accueil se replient : un seul ouvert à la fois, « À traiter » d\u2019abord"],"Corrigé":["Lieux, au téléphone : la mention « Utilisé par … » était coupée"]}},
@@ -3473,6 +3478,7 @@ async function loadDB(){
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   await natComptesCharger();
+  try{const ev=await sb.from("evenements_reseau").select("*").order("date");DB.evenements=ev.error?[]:(ev.data||[])}catch(e){DB.evenements=[]}
   await psaSuiviCharger(); // v1.113
   await alCharger(); // v1.121
   if(accGere())try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];if(SESSION.role==="superadmin"){const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}}catch(e){console.warn(e)}
@@ -4244,6 +4250,31 @@ function espVue(m){if(tab!=="dash")go("dash");if(vueMode()!==m)vueChoisir(m);els
 function espRegion(id){if(tab!=="dash")go("dash");let k=null;try{k=localStorage.getItem("cap-region")}catch(e){}if(vueMode()==="reg"&&k===id){render();return}vueRegionChoisir(id)}
 /* v1.126 : dans l'Agenda, chacun choisit ce qu'il regarde (ses groupes, sa région, tout le réseau),
    et sort le calendrier du mois en PDF, à projeter ou à distribuer en réunion nationale. */
+/* v1.127 : événements du réseau (interclub, séminaire…) : ils ne sont la réunion d'aucun groupe.
+   Affichés en tête de l'Agenda et dans le calendrier en PDF ; créés par la direction nationale. */
+const EVT_GENRES=["Interclub","Séminaire","Soirée du réseau","Formation","Autre"];
+function evts(){return ((window._DBvrai||DB).evenements||[]).slice().sort((a,b)=>a.date.localeCompare(b.date))}
+function evtsAVenir(){const a=isoJour(TODAY);return evts().filter(e=>e.date>=a)}
+function evtQuand(e){const d=dObj(e.date);return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]+(e.heure?" · "+e.heure:"")}
+function agEvts(){const L=evtsAVenir(),peut=canCreerStructure();if(!L.length&&!peut)return"";
+  return `<div class="ev-z" id="ev-z">${L.map(e=>`<${peut?`button type="button" onclick="evtForm('${e.id}')"`:"div"} class="ev-c" data-ev="${e.id}"><span class="ev-g">${esc(e.genre)}</span><b>${esc(e.titre)}</b><small>${esc(evtQuand(e))}${e.lieu?" · "+esc(e.lieu):""} · tout le réseau</small></${peut?"button":"div"}>`).join("")}${peut?`<button type="button" class="btn ghost mini" id="ev-plus" onclick="evtForm()">＋ Événement du réseau</button>`:""}</div>`}
+function evtForm(id){if(!canCreerStructure())return;const e=id?evts().find(x=>x.id===id):null;
+  document.getElementById("sheet-content").innerHTML=`<h3>${e?"Modifier l'événement":"Nouvel événement du réseau"}</h3>
+    <p class="fh-note">Un événement commun à tout le réseau, qui n'est la réunion d'aucun groupe : interclub, séminaire… Il apparaît dans l'Agenda de tous et dans le calendrier à présenter.</p>
+    <div class="field"><label for="ev-t">Titre</label><input id="ev-t" maxlength="90" value="${esc(e?e.titre:"")}" placeholder="One team - One Community"></div>
+    <div class="field"><label for="ev-g">Type</label><select id="ev-g">${EVT_GENRES.map(g=>`<option ${e&&e.genre===g?"selected":""}>${esc(g)}</option>`).join("")}</select></div>
+    <div class="field"><label for="ev-d">Date</label><input id="ev-d" type="date" value="${e?e.date:""}"></div>
+    <div class="field"><label for="ev-h">Heure (facultatif)</label><input id="ev-h" maxlength="5" inputmode="numeric" placeholder="18:30" value="${esc(e&&e.heure||"")}"></div>
+    <div class="field"><label for="ev-l">Lieu (facultatif)</label><input id="ev-l" maxlength="120" value="${esc(e&&e.lieu||"")}"></div>
+    <div class="sheet-actions">${e?`<button class="btn ghost" id="ev-sup" onclick="evtRetirer('${e.id}',this)">Retirer</button>`:""}<button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" id="ev-ok" onclick="evtSauver('${e?e.id:""}')">Enregistrer</button></div>`;
+  openSheet()}
+async function evtSauver(id){const t=document.getElementById("ev-t").value.trim(),d=document.getElementById("ev-d").value,h=document.getElementById("ev-h").value.trim().replace("h",":");
+  if(!t||!d){toast("Il faut un titre et une date","w");return}if(h&&!/^([01]?\d|2[0-3]):[0-5]\d$/.test(h)){toast("Heure à écrire comme 18:30","w");return}
+  const ligne={titre:t,genre:document.getElementById("ev-g").value,date:d,heure:h||null,lieu:document.getElementById("ev-l").value.trim()||null},V=window._DBvrai||DB;
+  const q=id?sb.from("evenements_reseau").update(ligne).eq("id",id).select():sb.from("evenements_reseau").insert(ligne).select(),{data,error}=await q;if(error){toast(rlsMsg(error),"e");return}
+  V.evenements=(V.evenements||[]).filter(x=>x.id!==id).concat(data||[]);toast("Événement enregistré","s");closeSheet();render()}
+async function evtRetirer(id,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer le retrait";return}
+  const {error}=await sb.from("evenements_reseau").delete().eq("id",id);if(error){toast(rlsMsg(error),"e");return}const V=window._DBvrai||DB;V.evenements=(V.evenements||[]).filter(x=>x.id!==id);toast("Événement retiré","s");closeSheet();render()}
 function agMes(){return SESSION&&SESSION.animId?(window._DBvrai||DB).clubs.filter(c=>c.animId===SESSION.animId):[]}
 function agPortee(){let k=window._agP;if(!["moi","reg","nat"].includes(k))k=SESSION.role==="animateur"?"nat":vueMode()==="reg"?"reg":"nat";if(k==="moi"&&!agMes().length)k="reg";return k}
 function agPorteeChoisir(k){window._agP=k;filter="all";render()}
@@ -4265,39 +4296,45 @@ async function calPdfSortir(btn,partager){const mois=calPdfMois().filter(x=>wind
   if(partager){let f=null;try{f=new File([b],nom,{type:"application/pdf"})}catch(e){}if(f&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:nom});return}catch(e){if(e&&e.name==="AbortError")return}}}
   adhSauver(b,nom);toast("PDF téléchargé","s")}
 async function calPdf(mois){const L=await pdfLibCharger(),doc=await L.PDFDocument.create(),f=await doc.embedFont(L.StandardFonts.Helvetica),fb=await doc.embedFont(L.StandardFonts.HelveticaBold);
-  const W=842,H=595,MX=28,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.43,.42,.44),filet=L.rgb(.84,.83,.84),pale=L.rgb(.962,.955,.951),blanc=L.rgb(1,1,1);
+  const W=842,H=595,MX=30,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.45,.43,.45),clair=L.rgb(.72,.70,.71),fond=L.rgb(.972,.957,.949),ombre=L.rgb(.925,.905,.895),blanc=L.rgb(1,1,1),rose=L.rgb(.992,.93,.94);
   const sur=t=>pdfTexteSur(String(t==null?"":t).replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/…/g,"...")).replace(/\s+/g," ").trim();
   const hex=h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h||"");if(!m)return gris;const n=parseInt(m[1],16);return L.rgb((n>>16)/255,((n>>8)&255)/255,(n&255)/255)};
   const coupe=(t,font,sz,lg)=>{t=sur(t);if(font.widthOfTextAtSize(t,sz)<=lg)return t;while(t.length>1&&font.widthOfTextAtSize(t+"...",sz)>lg)t=t.slice(0,-1);return t.trim()+"..."};
-  let logo=null;try{logo=await doc.embedPng(await (await fetch("logo-proteine-blanc.png")).arrayBuffer())}catch(e){}
-  const R=calPdfDonnees(),portee=sur(agPorteeLib()),JN=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+  /* rectangle aux coins arrondis : (x, y) = coin bas gauche, comme drawRectangle */
+  const rond=(p,x,y,w,h,r,o)=>{r=Math.min(r,w/2,h/2);p.drawSvgPath(`M ${r} 0 H ${w-r} Q ${w} 0 ${w} ${r} V ${h-r} Q ${w} ${h} ${w-r} ${h} H ${r} Q 0 ${h} 0 ${h-r} V ${r} Q 0 0 ${r} 0 Z`,{x,y:y+h,...o})};
+  let logo=null;try{logo=await doc.embedPng(await (await fetch("logo-proteine.png")).arrayBuffer())}catch(e){}
+  const R=calPdfDonnees(),EVS=evts(),portee=sur(agPorteeLib()),JN=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
   mois.forEach(mo=>{const p=doc.addPage([W,H]),[y,m]=mo.k.split("-").map(Number),l=R.filter(r=>r.date.slice(0,7)===mo.k),actives=l.filter(r=>r.statut!=="annulee");
-    const we=l.some(r=>{const w=dObj(r.date).getDay();return w===0||w===6}),NC=we?7:5;
-    /* bandeau */
-    p.drawRectangle({x:0,y:H-64,width:W,height:64,color:rouge});
-    let tx=MX;if(logo){const lh=34,lw=logo.width*lh/logo.height;p.drawImage(logo,{x:MX,y:H-49,width:lw,height:lh});tx=MX+lw+18}
-    p.drawText("Calendrier des réunions",{x:tx,y:H-33,size:19,font:fb,color:blanc});p.drawText(sur("Clubs d'Affaires Protéine · "+portee),{x:tx,y:H-49,size:10,font:f,color:blanc});
-    const tm=sur(mo.lib).toUpperCase();p.drawText(tm,{x:W-MX-fb.widthOfTextAtSize(tm,24),y:H-40,size:24,font:fb,color:blanc});
-    const cpt=sur(actives.length+" réunion"+(actives.length>1?"s":"")+" · "+new Set(actives.map(r=>r.groupe)).size+" groupe"+(new Set(actives.map(r=>r.groupe)).size>1?"s":""));p.drawText(cpt,{x:W-MX-f.widthOfTextAtSize(cpt,10),y:H-54,size:10,font:f,color:blanc});
-    /* grille */
+    const ev=EVS.filter(e=>e.date.slice(0,7)===mo.k),we=l.concat(ev).some(r=>{const w=dObj(r.date).getDay();return w===0||w===6}),NC=we?7:5;
+    p.drawRectangle({x:0,y:0,width:W,height:H,color:fond});
+    /* en-tête : le mois en grand, un trait rouge, le logo à droite */
+    const tm=sur(MOIS_LONG[m-1]),an=String(y);p.drawText(tm,{x:MX,y:H-58,size:38,font:fb,color:rouge});p.drawText(an,{x:MX+fb.widthOfTextAtSize(tm,38)+10,y:H-58,size:38,font:f,color:clair});
+    rond(p,MX,H-72,46,4,2,{color:rouge});
+    const ng=new Set(actives.map(r=>r.groupe)).size,st=sur("Calendrier des réunions · "+portee+" · "+actives.length+" réunion"+(actives.length>1?"s":"")+" dans "+ng+" groupe"+(ng>1?"s":""));p.drawText(st,{x:MX+56,y:H-73,size:10,font:f,color:gris});
+    if(logo){const lh=40,lw=logo.width*lh/logo.height;p.drawImage(logo,{x:W-MX-lw,y:H-66,width:lw,height:lh})}
+    /* grille : une carte par jour, sans traits */
     const nb=new Date(y,m,0).getDate(),sem=[];let cur=null;
     for(let j=1;j<=nb;j++){const d=new Date(y,m-1,j),col=(d.getDay()+6)%7;if(!cur||col===0){cur=new Array(7).fill(null);sem.push(cur)}cur[col]=j}
-    const lignes=sem.filter(s=>s.slice(0,NC).some(x=>x)),top=H-64-14,bas=46,eh=16,GH=top-eh-bas,CW=(W-2*MX)/NC,RH=GH/lignes.length;
-    for(let c=0;c<NC;c++){p.drawRectangle({x:MX+c*CW,y:top-eh,width:CW,height:eh,color:noir});const t=JN[c].toUpperCase();p.drawText(t,{x:MX+c*CW+(CW-fb.widthOfTextAtSize(t,7.5))/2,y:top-eh+5,size:7.5,font:fb,color:blanc})}
-    lignes.forEach((s,ri)=>{const y0=top-eh-(ri+1)*RH;for(let c=0;c<NC;c++){const j=s[c],x0=MX+c*CW;
-      p.drawRectangle({x:x0,y:y0,width:CW,height:RH,color:j?blanc:pale,borderColor:filet,borderWidth:.6});if(!j)continue;
-      const iso=mo.k+"-"+String(j).padStart(2,"0"),E=l.filter(r=>r.date===iso);
-      p.drawText(String(j),{x:x0+6,y:y0+RH-14,size:11,font:fb,color:E.length?rouge:gris});
-      const lh=E.length>4?9.4:11,sz=E.length>4?6.8:7.6,max=Math.max(1,Math.floor((RH-22)/lh));
-      E.slice(0,E.length>max?max-1:max).forEach((r,i)=>{const yy=y0+RH-27-i*lh,an=r.statut==="annulee";
-        p.drawRectangle({x:x0+6,y:yy-.5,width:5,height:5,color:an?filet:hex(villeColor(r.ville))});
-        const g=coupe((r.heure?r.heure.slice(0,5).replace(/^0/,"").replace(":","h").replace(/h00$/,"h")+" ":"")+r.groupe,fb,sz,CW-20),lg=fb.widthOfTextAtSize(g,sz);
-        p.drawText(g,{x:x0+14,y:yy,size:sz,font:fb,color:an?gris:noir});
-        const reste=CW-20-lg-4;if(reste>24)p.drawText(coupe("· "+(an?"annulée":r.type),f,sz,reste),{x:x0+14+lg+3,y:yy,size:sz,font:f,color:gris})});
-      if(E.length>max)p.drawText("+ "+(E.length-max+1)+" autres",{x:x0+14,y:y0+RH-27-(max-1)*lh,size:sz,font:f,color:gris})}});
+    const lignes=sem.filter(s=>s.slice(0,NC).some(x=>x)),top=H-92,bas=44,eh=16,G=6,GH=top-eh-bas,CW=(W-2*MX-G*(NC-1))/NC,RH=(GH-G*(lignes.length-1))/lignes.length;
+    for(let c=0;c<NC;c++){const t=JN[c].toUpperCase();p.drawText(t,{x:MX+c*(CW+G)+4,y:top-eh+5,size:7,font:fb,color:clair})}
+    lignes.forEach((s,ri)=>{const y0=top-eh-ri*(RH+G)-RH;for(let c=0;c<NC;c++){const j=s[c],x0=MX+c*(CW+G);if(!j)continue;
+      const iso=mo.k+"-"+String(j).padStart(2,"0"),E=l.filter(r=>r.date===iso),EV=ev.filter(e=>e.date===iso),plein=E.length||EV.length;
+      if(plein){rond(p,x0+1.5,y0-1.5,CW,RH,9,{color:ombre});rond(p,x0,y0,CW,RH,9,{color:blanc})}else rond(p,x0,y0,CW,RH,9,{borderColor:ombre,borderWidth:.8});
+      const n=String(j);if(plein){p.drawCircle({x:x0+15,y:y0+RH-15,size:9,color:rouge});p.drawText(n,{x:x0+15-fb.widthOfTextAtSize(n,9.5)/2,y:y0+RH-18.4,size:9.5,font:fb,color:blanc})}else p.drawText(n,{x:x0+10,y:y0+RH-18,size:9.5,font:f,color:clair});
+      let yy=y0+RH-36;
+      EV.forEach(e=>{if(E.length&&RH<100){rond(p,x0+6,yy-4,CW-12,13,6.5,{color:rouge});p.drawText(coupe(e.titre,fb,6.8,CW-26),{x:x0+13,y:yy-.4,size:6.8,font:fb,color:blanc});yy-=17;return}rond(p,x0+6,yy-15,CW-12,25,7,{color:rouge});p.drawText(coupe(e.genre.toUpperCase()+(e.heure?" · "+e.heure:""),fb,5.8,CW-26),{x:x0+13,y:yy+1,size:5.8,font:fb,color:rose});p.drawText(coupe(e.titre,fb,7.6,CW-26),{x:x0+13,y:yy-9,size:7.6,font:fb,color:blanc});yy-=30});
+      /* une réunion = pastille de la ville, groupe en gras, type dessous quand la place le permet */
+      const dispo=yy-(y0+5),deux=E.length*19<=dispo+8,lh=deux?19:E.length*11<=dispo+4?11:9.4,sz=lh<10?6.8:7.6,max=Math.max(1,Math.floor((dispo+lh-6)/lh));
+      E.slice(0,E.length>max?max-1:max).forEach((r,i)=>{const an=r.statut==="annulee",y1=yy-i*lh,h=r.heure?r.heure.slice(0,5).replace(/^0/,"").replace(":","h").replace(/h00$/,"h"):"";
+        p.drawCircle({x:x0+10,y:y1+2.6,size:2.8,color:an?clair:hex(villeColor(r.ville))});
+        const g=coupe(r.groupe,fb,sz,CW-22-(deux?0:0)),lg=fb.widthOfTextAtSize(g,sz);p.drawText(g,{x:x0+17,y:y1,size:sz,font:fb,color:an?gris:noir});
+        const sous=[h,an?"annulée":r.type].filter(Boolean).join(" · ");
+        if(deux)p.drawText(coupe(sous,f,6.6,CW-22),{x:x0+17,y:y1-8,size:6.6,font:f,color:gris});
+        else{const reste=CW-22-lg-4;if(reste>26)p.drawText(coupe("· "+sous,f,sz,reste),{x:x0+17+lg+3,y:y1,size:sz,font:f,color:gris})}});
+      if(E.length>max)p.drawText("+ "+(E.length-max+1)+" autres",{x:x0+17,y:yy-(max-1)*lh,size:sz,font:f,color:gris})}});
     /* légende et pied */
-    let lx=MX;[...new Set(l.map(r=>r.ville).filter(Boolean))].sort().forEach(v=>{const t=sur(v);p.drawRectangle({x:lx,y:27,width:7,height:7,color:hex(villeColor(v))});p.drawText(t,{x:lx+11,y:27,size:8.5,font:f,color:noir});lx+=11+f.widthOfTextAtSize(t,8.5)+16});
-    const pied=sur("Club d'Affaires Protéine Maroc · établi le "+new Date().toLocaleDateString("fr-FR"));p.drawText(pied,{x:W-MX-f.widthOfTextAtSize(pied,8),y:27,size:8,font:f,color:gris})});
+    let lx=MX;[...new Set(l.map(r=>r.ville).filter(Boolean))].sort().forEach(v=>{const t=sur(v);p.drawCircle({x:lx+3.5,y:27.5,size:3.5,color:hex(villeColor(v))});p.drawText(t,{x:lx+11,y:24.5,size:8.5,font:f,color:noir});lx+=11+f.widthOfTextAtSize(t,8.5)+16});
+    const pied=sur("Club d'Affaires Protéine Maroc · établi le "+new Date().toLocaleDateString("fr-FR"));p.drawText(pied,{x:W-MX-f.widthOfTextAtSize(pied,8),y:24.5,size:8,font:f,color:gris})});
   return new Blob([await doc.save()],{type:"application/pdf"})}
 function vuePortee(){if(!DB)return null;const ag=tab==="agenda"&&SESSION&&SESSION.role!=="visiteur"?agPortee():null;if(ag==="nat"||(!ag&&vueMode()!=="reg"))return null;const {villes}=vueRegion();
   /* v1.29 : un animateur travaille sur ses groupes ; seul l'agenda lui montre tout le réseau (il peut s'inscrire à n'importe quelle réunion) */
@@ -5306,7 +5343,7 @@ function viewAgenda(){
   return `<div class="page">
     <div class="page-head"><div><div class="eyebrow">${SESSION.role==="visiteur"?"Tout le réseau":esc(agPorteeLib())}</div><h2>Agenda</h2></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost mini" id="cal-pdf" onclick="openCalPdf()">📄 Calendrier à présenter</button>${SESSION.role!=="animateur"?`<button class="btn ghost mini" onclick="exportCSV()">Export</button>`:""}</div></div>
-    ${SESSION.role==="visiteur"?"":agPorteeSeg()}
+    ${SESSION.role==="visiteur"?"":agPorteeSeg()}${agEvts()}
     <div class="stats">
       <div class="stat link ${filter==="up"?"on":""}" onclick="filter='up';render()"><div class="n">${upcoming.length}</div><div class="l">À venir</div></div>
       <div class="stat link" onclick="filter='all';render()"><div class="n">${villesActives.size}</div><div class="l">Villes actives</div></div>
@@ -10003,7 +10040,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

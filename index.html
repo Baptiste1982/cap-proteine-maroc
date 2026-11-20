@@ -2586,8 +2586,14 @@ body.lecture .ann-btn{display:none}
 .va-s{min-width:0;flex:1}.va-s b{display:block;font-size:15px}.va-s small{display:block;color:var(--muted);font-size:12.5px}
 .va>summary::after{content:"›";font-size:18px;color:var(--muted);transition:transform .2s}.va[open]>summary::after{transform:rotate(90deg)}
 .va-l{padding:0 12px 10px}.va-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
-.va-t{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;color:var(--ink);font:inherit;cursor:pointer}.va-t b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.va-t small{display:block;color:var(--muted);font-size:12.5px}
+.va-t{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;color:var(--ink);font:inherit;cursor:pointer}.va-t b{display:block;font-size:14px;line-height:1.25}.va-t small{display:block;color:var(--muted);font-size:12.5px}
 .va-r .btn{flex:none;white-space:nowrap}
+/*v1.107 archives : rien ne déborde au téléphone ; à venir en pointillés, sans couleur*/
+.grp-crl{grid-template-columns:minmax(0,1fr)}.grp-cr{min-width:0}.grp-cr .gc-t b{overflow-wrap:anywhere}
+.arc-h{display:flex;align-items:center;gap:8px;margin:8px 2px 0;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.arc-h::after{content:"";flex:1;height:1px;background:var(--line)}.arc-h em{font-style:normal}
+.grp-cr.avenir{border-style:dashed;background:transparent;opacity:1}.grp-cr.avenir .gc-t b{font-weight:600;color:var(--muted)}
+.grp-cr.avenir .reu-d{filter:grayscale(1);opacity:.7;transform:rotate(-5deg)}
+@media (max-width:520px){.grp-cr{gap:9px;padding:10px}.grp-cr .gc-a .btn{padding:7px 8px;min-width:36px}}
 </style>
 </head>
 <body>
@@ -2695,8 +2701,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.106.0";
+const APP_VERSION="1.107.0";
 const CHANGELOG=[
+  {v:"1.107.0",date:"20 novembre 2026",notes:{"Corrigé":["Archives des réunions au téléphone : les lignes ne débordent plus du cadre"],"Modifié":["Archives : les réunions à venir sont regroupées en tête, en pointillés et en gris, séparées des réunions passées"]}},
   {v:"1.106.0",date:"20 novembre 2026",notes:{"Ajouté":["Alerte « réunions passées à verrouiller » sur Mon groupe et sur la Synthèse, avec un bouton par réunion ; elle se vide au fur et à mesure"]}},
   {v:"1.105.0",date:"19 novembre 2026",notes:{"Modifié":["Chacun agit au CRM national avec son propre compte : le compte commun ne sert plus qu\u2019au super admin","Tant que le compte national n\u2019est pas branché, la demande revient à chaque connexion et rien ne part au national"]}},
   {v:"1.104.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion verrouillée dès que son bilan est enregistré : la fiche ne montre plus qu\u2019une synthèse (présents, invités, adhésions, recommandations, chiffre d\u2019affaires) ; « Déverrouiller » rend la fiche complète, « Verrouiller » la referme"],"Corrigé":["Pointage déjà complet : le bouton « Verrouiller le pointage » manquait ; « Faire le bilan » verrouille le pointage"]}},
@@ -4564,7 +4571,7 @@ function viewGroupe(){
   const choix=clubs.length>1&&(isWide()||window._reuTous||!mine.length)?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.sansBilan.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
-  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte</span><span class="tel-seul">Boîte</span> à outils</button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
+  return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte à outils</span><span class="tel-seul">Boîte à outils</span></button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>
     ${bascule}${choix}${grpSeance(c)}${verrouAlerte([c.id],(seanceDuGroupe(c)||{m:{}}).m.id)}
     <section class="grp-tete" style="--vc:${villeColor(c.ville)}">
       <div class="grp-id">${ringBig(h)}<div><h3>${esc(nom)}</h3><p>${esc(c.ville)} · <span class="ck-pill ${c.statut==="actif"?"actif":"creation"}">${c.statut==="actif"?"Actif":"En création"}</span> · Animé par ${a?esc(a.nom):"<b>personne</b>"}</p>
@@ -4789,13 +4796,15 @@ function grpCR(c,D){const auj=isoJour(TODAY),l=D.reu.slice().sort((a,b)=>b.date.
   const an0=ans.includes(String(TODAY.getFullYear()))?String(TODAY.getFullYear()):ans[0];
   const ligne=(r,i)=>{const d=dObj(r.date),ed=canEditReunion(r)&&!readOnly(),fait=r.statut==="realisee",att=reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee"),b=(r.cr&&r.cr.bilan)||{};
     const sous=fait?[(r.presents??0)+" présent"+((r.presents||0)>1?"s":""),(r.invitesVenus??0)+" invité"+((r.invitesVenus||0)>1?"s":""),r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":""):"",r.crLe?"compte rendu écrit":"",b.transmis_le?"transmis":""].filter(Boolean).join(" · "):att?"Bilan à saisir":r.date>=auj&&r.statut!=="annulee"?"À venir"+(r.lieuId?" · "+lieuNom(r.lieuId):""):(STATUTS[r.statut]||"");
-    return `<div class="grp-cr ${fait?"ok":att?"todo":"neutre"}" role="button" tabindex="0" style="--i:${Math.min(i,14)}" onclick="openMeeting('${r.id}')" onkeydown="if(event.key==='Enter')openMeeting('${r.id}')">
+    const futur=!fait&&!att&&r.date>=auj&&r.statut!=="annulee";
+    return `<div class="grp-cr ${fait?"ok":att?"todo":"neutre"}${futur?" avenir":""}" role="button" tabindex="0" style="--i:${Math.min(i,14)}" onclick="openMeeting('${r.id}')" onkeydown="if(event.key==='Enter')openMeeting('${r.id}')">
       <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>
       <span class="gc-t"><b>${reuVerrou(r)?"🔒 ":""}${r.statut!=="annulee"&&r.statut!=="archivee"?"N° "+bilNumero(r)+" · ":""}${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${esc(sous)}</small></span>
       <span class="gc-a">${att&&ed?`<button class="btn mini" onclick="event.stopPropagation();openBilan('${r.id}')">Saisir</button>`:fait?`<button class="btn ghost mini" title="Télécharger le bilan en PDF" aria-label="Télécharger le bilan en PDF" onclick="event.stopPropagation();bilEnvTelecharger('${r.id}',this)">📄</button><button class="btn ghost mini" title="Transmettre le bilan" aria-label="Transmettre le bilan" onclick="event.stopPropagation();openBilanEnvoi('${r.id}')">📤</button>`:""}</span></div>`};
   return `<p class="grp-note">${l.length} réunion${l.length>1?"s":""} au total, ${faites} avec bilan${D.sansBilan.length?`, <b style="color:var(--crimson-txt,var(--crimson))">${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir</b>`:""}. Chaque bilan se ressort en PDF.</p>
     ${l.length?ans.map(a=>{const la=l.filter(r=>r.date.startsWith(a)),fa=la.filter(r=>r.statut==="realisee").length;
-      return `<details class="arc-an" name="arc-an" ${a===an0?"open":""}><summary><b>${a}</b><span>${la.length} réunion${la.length>1?"s":""} · ${fa} bilan${fa>1?"s":""}</span></summary><div class="grp-crl">${la.map(ligne).join("")}</div></details>`}).join(""):`<p class="fh-empty">Aucune réunion pour l'instant.</p>`}`}
+      return `<details class="arc-an" name="arc-an" ${a===an0?"open":""}><summary><b>${a}</b><span>${la.length} réunion${la.length>1?"s":""} · ${fa} bilan${fa>1?"s":""}</span></summary>${(()=>{const av=la.filter(r=>r.statut!=="realisee"&&r.statut!=="annulee"&&r.date>=auj&&!reuFinie(r)).sort((x,y)=>x.date.localeCompare(y.date)),pa=la.filter(r=>!av.includes(r));
+        return `<div class="grp-crl">${av.length?`<div class="arc-h" data-arc="avenir"><span>À venir</span><em>${av.length}</em></div>`+av.map(ligne).join(""):""}${pa.length?(av.length?`<div class="arc-h" data-arc="passees"><span>Passées</span><em>${pa.length}</em></div>`:"")+pa.map(ligne).join(""):""}</div>`})()}</details>`}).join(""):`<p class="fh-empty">Aucune réunion pour l'instant.</p>`}`}
 function grpAffaires(c,D){
   const ed=canEditClubId(c.id),etapes=["envoyee","contact","devis","signee","sans_suite"];
   const cnt=k=>D.recos.filter(r=>r.statut===k).length,mx=Math.max(1,...etapes.map(cnt));

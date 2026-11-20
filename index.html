@@ -2687,8 +2687,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.104.0";
+const APP_VERSION="1.105.0";
 const CHANGELOG=[
+  {v:"1.105.0",date:"19 novembre 2026",notes:{"Modifié":["Chacun agit au CRM national avec son propre compte : le compte commun ne sert plus qu\u2019au super admin","Tant que le compte national n\u2019est pas branché, la demande revient à chaque connexion et rien ne part au national"]}},
   {v:"1.104.0",date:"19 novembre 2026",notes:{"Ajouté":["Réunion verrouillée dès que son bilan est enregistré : la fiche ne montre plus qu\u2019une synthèse (présents, invités, adhésions, recommandations, chiffre d\u2019affaires) ; « Déverrouiller » rend la fiche complète, « Verrouiller » la referme"],"Corrigé":["Pointage déjà complet : le bouton « Verrouiller le pointage » manquait ; « Faire le bilan » verrouille le pointage"]}},
   {v:"1.103.0",date:"19 novembre 2026",notes:{"Ajouté":["À la connexion, la direction et les animateurs qui n\u2019ont pas encore branché leur compte du CRM national sont invités à le faire (une fois par session)"],"Corrigé":["Lieux du national : la liste complète du compte est lue, un lieu déjà créé n\u2019est plus recréé en double"]}},
   {v:"1.102.0",date:"19 novembre 2026",notes:{"Modifié":["Bilan en PDF redessiné : logo, numéro de la réunion, nom du groupe en grand, type, date, heure, lieu, animateur, membres présents et absents, invités venus","Fichier nommé « Groupe - Réunion 05 - date - type » pour se trier tout seul ; numéro de réunion dans les archives et le résumé WhatsApp"]}},
@@ -3796,6 +3797,7 @@ function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB
   return o}
 /* v1.93 : l'animateur arrive sur sa boîte à outils — une fois par session, jamais par-dessus le mot de passe à changer, la visite guidée ou une fiche déjà ouverte. */
 function boiteAccueil(){try{if(!SESSION||SESSION._voir||SESSION.role!=="animateur"||!SESSION.clubIds.length||readOnly())return;
+  if(SESSION.animId&&!natComptePret())return; // v1.105 : d'abord le compte national
   if(navigator.webdriver&&localStorage.getItem("cap-bo-force")!=="1")return;if(sessionStorage.getItem("cap-bo-vu"))return;
   let n=0;const essai=()=>{if(sessionStorage.getItem("cap-bo-vu"))return;const libre=!_mdpForce&&!document.getElementById("sheet").classList.contains("open")&&!document.querySelector("#tuto.on,html.lanc-on");
     if(libre&&tab==="reunions"){sessionStorage.setItem("cap-bo-vu","1");openOutils();return}if(++n<8&&tab==="reunions")setTimeout(essai,1500)};
@@ -6505,7 +6507,7 @@ function natCompte(animId){return ((window._DBvrai||DB).natComptes||DB.natCompte
 function natComptePeut(animId){return !!SESSION&&!SESSION._voir&&!readOnly()&&!!animId&&(SESSION.role==="superadmin"||SESSION.animId===animId)}
 async function natComptesCharger(){if(!SESSION||SESSION._voir||!(SESSION.role==="superadmin"||SESSION.animId))return;
   try{const {data,error}=await sb.rpc("cap_national_comptes_etat");if(!error){const l=Array.isArray(data)?data:[];DB.natComptes=l;if(window._DBvrai)window._DBvrai.natComptes=l}}catch(e){}}
-function natCompteEtat(animId){const c=natCompte(animId);if(!c)return{k:"non",lib:"Pas branché",sous:"Les invitations partent avec le compte commun"};
+function natCompteEtat(animId){const c=natCompte(animId);if(!c)return{k:"non",lib:"Pas branché",sous:"Sans lui, rien ne part au national"};
   if(c.erreur)return{k:"ko",lib:"À rebrancher",sous:"Le national refuse la connexion"};
   if(c.ok_le)return{k:"ok",lib:"Branché",sous:"Tes invitations partent à ton nom"};return{k:"att",lib:"À tester",sous:"Enregistré, pas encore vérifié"}}
 function natCompteInfos(c){const i=c&&c.infos;if(!i)return"";const L=(i.lieux||[]).slice(0,6);
@@ -6516,18 +6518,19 @@ function natCompteInfos(c){const i=c&&c.infos;if(!i)return"";const L=(i.lieux||[
 function natCompteAccueil(){try{const a=SESSION&&SESSION.animId;if(!a||SESSION._voir||readOnly()||SESSION.role==="superadmin")return;
   const c=natCompte(a),ko=!!(c&&c.erreur);if(c&&!ko)return;
   if(navigator.webdriver&&localStorage.getItem("cap-nc-force")!=="1")return;
-  if(!ko&&localStorage.getItem("cap-nc-non")==="1")return;if(sessionStorage.getItem("cap-nc-vu"))return;
-  const anim=SESSION.role==="animateur";let n=0;
+  if(sessionStorage.getItem("cap-nc-vu"))return;
+  let n=0;
   const essai=()=>{if(sessionStorage.getItem("cap-nc-vu"))return;const libre=!_mdpForce&&!document.getElementById("sheet").classList.contains("open")&&!document.querySelector("#tuto.on,html.lanc-on");
-    if(libre){sessionStorage.setItem("cap-nc-vu","1");if(anim)annonce("🔐",ko?"Ton compte national est à rebrancher":"Branche ton compte du CRM national","Tes invitations partiront à ton nom, avec ta photo",()=>openCompteNat(a));else{window._ncAccueil=1;openCompteNat(a)}return}
+    if(libre){sessionStorage.setItem("cap-nc-vu","1");window._ncAccueil=1;openCompteNat(a);return}
     if(++n<10)setTimeout(essai,1500)};
-  setTimeout(essai,anim?9000:4800)}catch(e){}}
-function natCompteNon(){try{localStorage.setItem("cap-nc-non","1")}catch(e){}closeSheet();toast("Compris. Tu le retrouves dans Paramètres quand tu veux.")}
+  setTimeout(essai,4800)}catch(e){}}
+/* v1.105 : le compte commun est celui du super admin, lui seul s'en sert. Les autres agissent au national avec leur propre compte. */
+function natComptePret(){if(!SESSION)return false;if(SESSION.role==="superadmin")return true;const c=SESSION.animId&&natCompte(SESSION.animId);return !!(c&&!c.erreur)}
 function openCompteNat(animId){if(!natComptePeut(animId)){toast("Ce compte national n'est pas le tien","w");return}
   const a=((window._DBvrai||DB).animateurs||[]).find(x=>x.id===animId)||{nom:"Animateur"},c=natCompte(animId),e=natCompteEtat(animId),moi=SESSION.animId===animId;
   const acc=window._ncAccueil;window._ncAccueil=0;
   document.getElementById("sheet-content").innerHTML=`${ficheHead({title:"Compte du CRM national",ini:"🔐",sub:esc(a.nom)})}
-    ${acc?`<p class="nc-intro" id="nc-intro">Bonjour ${esc(String(a.nom).split(/\s+/)[0])}. Pour que ce que tu fais au CRM national depuis ici parte à <b>ton nom</b>, indique une fois l'identifiant et le mot de passe que tu utilises là-bas. Ça prend une minute.</p>`:""}
+    ${acc?`<p class="nc-intro" id="nc-intro">Bonjour ${esc(String(a.nom).split(/\s+/)[0])}. Pour agir au CRM national depuis ici (invitations, inscrits), il faut <b>ton propre compte</b> du national : indique une fois l'identifiant et le mot de passe que tu utilises là-bas. Tant que ce n'est pas fait, rien ne part au national, et la question revient à chaque connexion.</p>`:""}
     <div class="nc-etat ${e.k}"><b>${esc(e.lib)}</b><span>${c?`Identifiant ${esc(c.identifiant)}${c.ok_le?" · vérifié le "+esc(adhDate(c.ok_le)):""}`:esc(e.sous)}</span></div>
     ${c&&c.erreur?`<div class="nat-err">${esc(c.erreur)} Remets l'identifiant et le mot de passe ci-dessous.</div>`:""}
     ${natCompteInfos(c)}
@@ -6538,8 +6541,8 @@ function openCompteNat(animId){if(!natComptePeut(animId)){toast("Ce compte natio
     <details class="ni-aide" style="margin-top:14px"><summary>Comment ça marche</summary>
       <p class="fh-note">Une fois le compte branché, quand tu crées l'invitation d'une réunion ${moi?"de ton groupe":"de son groupe"}, elle part au national avec ce compte : ${moi?"ton nom, ta photo":"son nom, sa photo"}, et les inscrits arrivent dans ${moi?"ton":"son"} carnet d'adresses.</p>
       <p class="fh-note">Le mot de passe est rangé chiffré dans la base. Il ne s'affiche plus jamais, ni pour toi ni pour le super admin ; seul le serveur s'en sert pour se connecter.</p>
-      <p class="fh-note">Si tu changes ton mot de passe au national, reviens le remettre ici. Sans compte branché, tout continue de passer par le compte commun, comme avant.</p></details>
-    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">${acc?"Plus tard":"Fermer"}</button>${acc?`<button class="btn ghost" id="nc-non" onclick="natCompteNon()">Ne plus me le demander</button>`:""}</div>`;
+      <p class="fh-note">Si tu changes ton mot de passe au national, reviens le remettre ici. Sans compte branché, tu ne peux rien envoyer au national depuis le CRM.</p></details>
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet()">${acc?"Plus tard":"Fermer"}</button></div>`;
   openSheet()}
 async function natCompteTester(animId,btn,silence){const t=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="Connexion au national…"}
   let r=null,msg="";try{const q=await sb.functions.invoke("national-suivi",{body:{action:"compte_tester",animateur_id:animId}});r=q.data;if(q.error&&!r){try{msg=(await q.error.context.json()).error}catch(e){msg=q.error.message}}}catch(e){msg="Le national n'a pas répondu"}
@@ -6555,7 +6558,7 @@ async function natCompteSauver(animId,btn){const id=(document.getElementById("nc
   const ok=await natCompteTester(animId,null,true);if(ok)toast("Compte national branché : les prochaines invitations partiront à ce nom","s")}
 async function natCompteRetirer(animId,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : débrancher";return}
   btn.disabled=true;const {error}=await sb.rpc("cap_national_compte_retirer",{p_anim:animId});if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
-  await natComptesCharger();toast("Compte débranché : retour au compte commun");openCompteNat(animId)}
+  await natComptesCharger();toast("Compte débranché : tu ne peux plus rien envoyer au national tant qu'il n'est pas rebranché");openCompteNat(animId)}
 /* Dans la fiche d'accès d'un animateur (super admin) : où en est son compte national. */
 function natCompteBloc(animId){if(!natComptePeut(animId))return"";const e=natCompteEtat(animId);
   return `<div class="nat-box"><div class="nat-t">Compte du CRM national</div><div class="nc-ligne"><span class="nc-pt ${e.k}"></span><span><b>${esc(e.lib)}</b> · ${esc(e.sous)}</span><button class="btn ghost mini" onclick="openCompteNat('${animId}')">${natCompte(animId)?"Voir":"Brancher"}</button></div></div>`}
@@ -6620,7 +6623,9 @@ async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)
   const t=btn.textContent;btn.disabled=true;btn.textContent="Envoi au national…";
   if(SESSION.role!=="superadmin"){ // v1.22 : l'animateur passe par la base (réunion de son groupe seulement), réponse lue dans reunions.national
     const avant=JSON.stringify(m.nat||null);const {error:e0}=await sb.rpc("cap_invitation_nationale",{p_reunion:id});
-    if(e0){btn.disabled=false;btn.textContent=t;toast(rlsMsg(e0),"e");return}
+    if(e0){btn.disabled=false;btn.textContent=t;
+      if(/compte du CRM national/i.test(e0.message||"")){toast("Branche d'abord ton compte du CRM national","w");if(SESSION.animId){window._ncAccueil=1;openCompteNat(SESSION.animId)}return}
+      toast(rlsMsg(e0),"e");return}
     for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,2000));const {data:q}=await sb.from("reunions").select("national").eq("id",id).single();
       if(q&&q.national&&JSON.stringify(q.national)!==avant){m.nat=q.national;btn.disabled=false;toast("Invitation créée au national (n° "+q.national.invitation_id+")","s");meetingDetail(m,canEditReunion(m));return}}
     btn.disabled=false;btn.textContent=t;toast("Le national tarde à répondre : rouvre la réunion dans une minute","w");return}

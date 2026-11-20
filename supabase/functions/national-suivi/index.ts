@@ -301,10 +301,23 @@ Deno.serve(async (req) => {
       const { data: l } = r.lieu_id ? await admin.from('lieux').select('nom').eq('id', r.lieu_id).single() : { data: null };
       // Compte : une invitation existante reste dans le compte qui l'a créée ; une nouvelle (ou refaire:true) part dans celui de l'animateur.
       const nat = r.national || {};
-      const garder = !!nat.invitation_id && !body.refaire;
       const { data: cl } = await admin.from('clubs').select('animateur_id').eq('id', r.club_id).single();
-      const animId = garder ? (nat.compte || null) : (r.animateur_id || cl?.animateur_id || null);
+      // v22 : le compte commun (celui du super admin) ne sert qu'au super admin et aux passages programmés.
+      // Une autre personne (body.par_anim, posé par la base) agit avec le compte de l'animateur de la réunion s'il est branché,
+      // sinon avec le sien ; sans compte branché, l'action est refusée. Une invitation née dans le compte commun est alors refaite.
+      const parAnim = body.par_anim ? String(body.par_anim) : '';
+      let garder = !!nat.invitation_id && !body.refaire;
+      let animId: string | null = garder ? (nat.compte || null) : (r.animateur_id || cl?.animateur_id || null);
+      if (parAnim) {
+        if (garder && !nat.compte) garder = false;
+        if (!garder) {
+          animId = null;
+          for (const c of [r.animateur_id, cl?.animateur_id, parAnim]) if (c && await compteAnim(admin, String(c))) { animId = String(c); break; }
+          if (!animId) throw new Error('Branche d\'abord ton compte du CRM national (Paramètres, Mon compte national) : sans lui, rien ne part au national.');
+        }
+      }
       const { N: N0, compte, nom: compteNom } = await sessionPour(admin, animId);
+      if (parAnim && !compte) throw new Error('Compte national introuvable : rebranche-le dans Paramètres, Mon compte national.');
       const idType = r.format ? 3 : r.type === 'RL' ? 16 : r.type === 'SI' ? 7 : 3; // v1.6.1 : réunion du cycle = « Réunion des membres »
       const invs = await invitationsListe(N0);
       const maj = garder && invs.some(x => String(x.id) === String(nat.invitation_id)) ? String(nat.invitation_id) : '';

@@ -2150,6 +2150,14 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.115 réunions du réseau*/.rr-seg{margin:10px 0}.rr-ks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:8px}.rr-k{border:1px solid var(--line);border-radius:12px;padding:9px 8px;text-align:center;min-width:0}.rr-k b{display:block;font:800 22px/1.1 "Bricolage Grotesque",Inter,sans-serif}.rr-k span{font-size:11.5px;color:var(--muted)}.rr-k.al{background:var(--crimson);border-color:var(--crimson);color:#fff}.rr-k.al span{color:#fff}
+@media(max-width:600px){.rr-ks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rr-reg{margin-top:14px}.rr-rt{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:6px}.rr-rt b{font-size:16px}.rr-rt span{font-size:12px;color:var(--muted)}
+.rr-g{border:1px solid var(--line);border-radius:12px;margin-bottom:6px;overflow:hidden}.rr-gt{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;background:none;border:0;color:var(--ink);font:inherit;text-align:left;cursor:pointer}.rr-gn{flex:1;min-width:0}.rr-gn b{display:block;font-size:14.5px}.rr-gn small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.rr-gt i{font-style:normal;color:var(--muted);transition:transform .2s}.rr-g.o .rr-gt i{transform:rotate(90deg)}
+.rr-b{flex:none;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}.rr-b.al{background:var(--crimson);border-color:var(--crimson);color:#fff}.rr-b.tr{border-style:dashed;color:var(--ink)}
+.rr-l{padding:0 12px 8px}.rr-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.rr-r.an .va-t b{text-decoration:line-through;color:var(--muted)}.rr-r.av{opacity:.6}.rr-a{display:flex;gap:6px;flex:none}.rr-tr{flex:none;width:40px;height:40px;border:1px dashed var(--muted);border-radius:10px;display:grid;place-items:center;color:var(--muted);font-size:18px}
+@media(max-width:600px){.rr-gt{flex-wrap:wrap}.rr-gn{flex-basis:100%}.rr-gt i{margin-left:auto}.rr-r{flex-wrap:wrap}.rr-r .va-t{flex-basis:calc(100% - 60px)}.rr-a{margin-left:50px}}
 /*v1.113 suivi des PSA*/button.va.psa-al{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;text-align:left;font:inherit;color:var(--ink);cursor:pointer}.psa-ch{font-size:18px;color:var(--muted)}
 .psa-et{flex:none;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}.psa-et.zero{background:var(--crimson);border-color:var(--crimson);color:#fff}
 .psa-an.fait{opacity:.7}.psa-ok2{color:#1E9E63;font-weight:700}.psa-zt{font-weight:700;margin-top:6px}.psa-q em{display:block;font-style:normal;color:var(--muted);font-size:12px}a.psa-ag{text-decoration:none}
@@ -2708,8 +2716,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.114.0";
+const APP_VERSION="1.115.0";
 const CHANGELOG=[
+  {v:"1.115.0",date:"20 novembre 2026",notes:{"Ajouté":["Agenda → « Réunions du réseau » : par région et par groupe, les réunions tenues (bilan en PDF), annulées, déplacées, sans bilan, et les réunions manquantes par rapport au rythme du groupe ; compteurs au mois, au trimestre, à l\u2019année","Direction : « Relancer » l\u2019animateur d\u2019un toucher pour un bilan manquant, un motif d\u2019annulation ou un groupe sans réunion récente","Une réunion annulée demande son motif (fête religieuse, jour férié, vacances, lieu ou animateur indisponible…) ; un déplacement est compté tout seul"]}},
   {v:"1.114.0",date:"20 novembre 2026",notes:{"Modifié":["Équipe → « Donner l\u2019accès » : ouvert à la direction nationale, pour les comptes d\u2019animateur et de directeur de région","Message d\u2019invitation : le type de la réunion y figure (Réunion Business, Conférence et son thème, Visite d\u2019entreprise…), repère {type}"]}},
   {v:"1.113.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : suivi par région — qui a calé son PSA ce mois-ci, qui est à relancer (bouton « Relancer » = notification sur son téléphone), quelle région n\u2019a aucun créneau ouvert","Alerte « PSA à caler » sur la Synthèse et Mon groupe, pour l\u2019animateur comme pour les directeurs, et rappel automatique chaque lundi matin","Direction nationale : planning des PSA de tout le réseau, en lecture seule","Bouton pour reporter un PSA dans Google Agenda (ou un autre agenda depuis le lien de planning)"]}},
   {v:"1.112.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF : nouvelle mise en page — marge rouge étroite avec le numéro de la réunion, la date, l\u2019heure, le lieu et l\u2019animateur ; chiffres posés sur des filets ; membres, membres d\u2019autres groupes et invités en lignes"]}},
@@ -3361,7 +3370,7 @@ const RECO_COLS="id,club_id,de,a,statut,montant,cree_le,maj_le,notifie_le,suivi_
 const RECO_TYPES={mise_en_relation:"Mise en relation",information:"Information commerciale"};
 const RECO_ORIGINES=[[1,"Relationnel Protéine"],[9,"Réunion interclub Protéine"],[8,"Speed Business Protéine"],[10,"Réseaux sociaux"],[4,"Demande site public"],[2,"Campagne eMailing"],[6,"Campagne téléprospection"],[7,"Article de presse"],[11,"Relvicom"]];
 function mapLieu(r){return{id:r.id,nom:r.nom,ville:r.ville||"",adresse:r.adresse||"",lat:r.lat??"",lng:r.lng??"",capacite:r.capacite??"",contactNom:r.contact_nom||"",contactTel:r.contact_tel||"",notes:r.notes||"",photo:r.photo_url||"",lien:r.lien_carte||""}}
-function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.archivee_le&&(r.statut==="planifiee"||r.statut==="confirmee")?"archivee":r.statut,statutBase:r.statut,archiveeLe:r.archivee_le||null,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||""}}
+function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,clubId:r.club_id,date:r.date,heure:r.heure||"",lieuId:r.lieu_id,animId:r.animateur_id,statut:r.archivee_le&&(r.statut==="planifiee"||r.statut==="confirmee")?"archivee":r.statut,statutBase:r.statut,archiveeLe:r.archivee_le||null,guests:[],equipe:[],presents:r.presents??null,invitesVenus:r.invites_venus??null,adhObt:r.adhesions_obtenues??null,bilanLe:r.bilan_le||null,cr:r.compte_rendu||null,crLe:r.cr_le||null,pcode:r.presence_code||null,nat:r.national||null,format:r.format||null,theme:r.theme||"",motif:r.annule_motif||"",motifReport:r.report_motif||"",dateInit:r.date_initiale||null,reports:r.reports||0}}
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
@@ -5958,7 +5967,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
       it("Présentation",`presGroupe('${c.id}')`),
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
   if(r==="age"){const nb=reunionsSansBilan().length;
-    return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb})].filter(Boolean)}
+    return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb}),role!=="visiteur"&&it("Réunions du réseau","openReunionsReseau()")].filter(Boolean)}
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
@@ -6170,7 +6179,7 @@ function viewDashboard(reg){
   const sc=reg||vuePeutBasculer()?"nat":window._dashSc==="reg"?"reg":"nat"; // v0.38.0 : la vue nationale remplace l'interrupteur
   const per=DB.clubs.filter(c=>_dashScope[sc].includes(c.id));
   const large=window.matchMedia("(min-width:1100px)").matches;
-  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte();
+  html+=large?`<div class="dash-top">${dashBonjour()}${dashOutils()}</div>`+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte()+rrAlerte():dashBonjour()+dashOutils()+dashMesRecos()+dashDemandes()+dashBilanAlerte()+verrouAlerte()+psaAlerte()+rrAlerte();
   const seg=vuePeutBasculer()?`<div class="vn-band"><small>Vue nationale</small><b>Le réseau CAP Maroc</b><span>${DB.zones.length} zone${DB.zones.length>1?"s":""} · ${new Set(DB.clubs.map(c=>c.ville)).size} villes · ${DB.clubs.length} groupes · ${animsTerrain().length} animateurs</span><button class="btn ghost mini" onclick="vueChoisir('reg')">📍 Passer à ma région</button></div>`:`<div class="seg-sc" role="tablist"><span class="knob" style="transform:translateX(${sc==="reg"?"100%":"0"})"></span><button role="tab" aria-selected="${sc==="nat"}" class="${sc==="nat"?"on":""}" onclick="window._dashSc='nat';render()">National</button><button role="tab" aria-selected="${sc==="reg"}" class="${sc==="reg"?"on":""}" onclick="window._dashSc='reg';render()">Rabat · Salé · Kénitra</button></div>`;
   const st=dashStats(per),lieu=reg?reg.lieu:sc==="reg"?"Rabat · Salé · Kénitra":"Tout le réseau";
   const chiffres=dashSec("chiffres","📊","Le réseau en chiffres",lieu+" · touche un chiffre pour voir la liste",dashBlock(st,sc,"chiffres"));
@@ -6863,6 +6872,7 @@ function meetingForm(id,presetClub){
     <div class="field"><label>Lieu</label><select id="f-lieu">${lieuOpt}</select></div>
     <div class="field"><label>Animateur</label><select id="f-anim"><option value="">— choisir —</option>${animOpt}</select></div>
     <div class="field"><label>Statut</label><select data-pills id="f-statut">${Object.keys(STATUTS).filter(s=>s!=="archivee").map(s=>`<option value="${s}" ${(m.statutBase||m.statut)===s?"selected":""}>${STATUTS[s]}</option>`).join("")}</select></div>
+    <div id="f-motif-bloc" ${(m.statutBase||m.statut)==="annulee"?"":"hidden"}>${reuMotifChamp(m.motif||"","","f-motif")}</div>
     </div>
     <div class="sheet-actions"><button class="btn ghost" onclick="${editing?`meetingDetail(DB.reunions.find(x=>x.id==='${id}'),true)`:"closeSheet()"}">Annuler</button><button class="btn" onclick="saveMeeting('${editing?id:""}')">${editing?"Enregistrer":"Créer"}</button></div>
     ${editing?`<div class="del-link" onclick="delMeeting('${id}')">Supprimer cette réunion</div>`:""}`;
@@ -6872,12 +6882,14 @@ async function saveMeeting(id){
   const g=x=>document.getElementById(x).value;
   const clubId=g("f-club"),date=g("f-date");if(!clubId||!date){toast("Club et date obligatoires");return}
   const fmt=g("f-format")||null;
+  if(g("f-statut")==="annulee"&&!reuMotifLu("f-motif")){document.getElementById("f-motif-bloc").hidden=false;toast("Indique le motif de l'annulation","w");return}
   const row={type:g("f-type"),club_id:clubId,date,heure:g("f-heure")||null,lieu_id:g("f-lieu")||null,animateur_id:g("f-anim")||null,statut:g("f-statut"),format:fmt,theme:fmt&&fmt!=="business"?(g("f-theme").trim()||null):null};
+  if(row.statut==="annulee")row.annule_motif=reuMotifLu("f-motif");
   if(id){
     const {error}=await sb.from("reunions").update(row).eq("id",id);
     if(error){toast(rlsMsg(error));return}
     const m=DB.reunions.find(x=>x.id===id);
-    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:m.archiveeLe&&(row.statut==="planifiee"||row.statut==="confirmee")?"archivee":row.statut,statutBase:row.statut,format:row.format,theme:row.theme||""});
+    Object.assign(m,{type:row.type,clubId:row.club_id,date:row.date,heure:row.heure||"",lieuId:row.lieu_id,animId:row.animateur_id,statut:m.archiveeLe&&(row.statut==="planifiee"||row.statut==="confirmee")?"archivee":row.statut,statutBase:row.statut,format:row.format,theme:row.theme||"",motif:row.annule_motif||m.motif||""});
     toast("Réunion mise à jour");
   }else{
     const {data,error}=await sb.from("reunions").insert(row).select().single();
@@ -8653,11 +8665,79 @@ function renderBilan(){
         <textarea id="bil-notes" rows="3" maxlength="2000" placeholder="Ambiance, intervenant, points à suivre, absents excusés…" oninput="_bil.notes=this.value">${esc(_bil.notes||"")}</textarea></div>
       <details class="bil-sec bil-cr" ${Object.values(_bil.cr||{}).some(Boolean)?"open":""}><summary class="bil-sec-t">📋 Compte rendu <small>facultatif, à remplir maintenant ou plus tard</small></summary>
         ${crChamps(m).map(([k,l,ph])=>`<div class="field"><label for="bcr-${k}">${l}</label><textarea id="bcr-${k}" rows="${k==="intervenant"||k==="entreprise"?2:3}" placeholder="${esc(ph)}" oninput="_bil.cr['${k}']=this.value">${esc((_bil.cr||{})[k]||((k==="intervenant"||k==="entreprise")&&m.theme?m.theme:""))}</textarea></div>`).join("")}</details>`:""}
-    ${_bil.statut==="reportee"?`<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
+    ${_bil.statut==="annulee"?`${reuMotifChamp(m.motif,"","bil-motif")}<p class="fh-note">Le motif sert au suivi du réseau : une réunion annulée avec son motif n'est pas comptée comme manquante.</p>`:""}
+    ${_bil.statut==="reportee"?`${reuMotifChamp(m.motifReport,"","bil-motif")}<div class="field"><label>Nouvelle date</label><input id="bil-date" type="date" min="${isoJour(TODAY)}" value="${_bil.date}" oninput="_bil.date=this.value"></div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="${reste?"bilPasser()":"closeSheet()"}">${reste?"Passer →":"Plus tard"}</button><button class="btn" onclick="saveBilan()">${_bil.statut==="reportee"?"Reporter":"Enregistrer"}</button></div>
     ${reste?`<div class="bil-reste">Encore ${reste} réunion${reste>1?"s":""} après celle-ci</div>`:""}
     ${(()=>{const v=bilVieilles();return v.length>1?`<div class="bil-arch"><button type="button" class="lien-b" onclick="bilArchiverLot(this)">Archiver d'un coup les ${v.length} réunions de plus de ${BIL_VIEUX_JOURS} jours</button><small>Elles restent dans l'historique, sans bilan.</small></div>`:""})()}`;
 }
+/* v1.115 : réunions du réseau. Pour chaque groupe, sur une période : réunions tenues, annulées (avec leur motif), déplacées,
+   sans bilan, et « trous » = périodes sans réunion alors que le rythme du groupe en prévoyait. Le bureau national y trouve
+   les bilans en PDF, rangés par région et par groupe, et relance l'animateur d'un toucher. */
+const REU_MOTIFS=["Fête religieuse","Jour férié","Vacances","Lieu indisponible","Animateur indisponible","Pas assez de participants","Autre"];
+function reuMotifChamp(v,plus,idp){const std=!v||REU_MOTIFS.includes(v);
+  return `<div class="field" id="${idp}-z"><label>Motif</label><select id="${idp}">${[["","Choisir…"],...REU_MOTIFS.map(x=>[x,x])].map(([k,l])=>`<option value="${esc(k)}" ${(std?v:"Autre")===k?"selected":""}>${esc(l)}</option>`).join("")}</select>
+    <input id="${idp}-plus" maxlength="160" style="margin-top:6px" placeholder="Précision (facultatif)" value="${esc(std?(plus||""):v)}"></div>`}
+function reuMotifLu(idp){const s=document.getElementById(idp),p=document.getElementById(idp+"-plus");if(!s)return"";const a=s.value,b=(p&&p.value||"").trim();return a?(b?(a==="Autre"?b:a+" : "+b):a):""}
+/* Écart normal entre deux réunions du groupe, en jours : quinzaine par défaut (règle de JB), semaine ou mois si le rythme le dit. */
+function rrPas(c){const r=c.rRang;if(r==null)return 14;if(r===0)return c.rPas===1?7:14;return 30}
+function rrJours(a,b){return Math.round((dObj(b)-dObj(a))/864e5)}
+function rrBornes(k){const t=TODAY,y=t.getFullYear(),m=t.getMonth(),iso=d=>isoJour(d);
+  if(k==="mois")return{d0:iso(new Date(y,m,1)),d1:iso(new Date(y,m+1,0)),lib:MOIS_LONG[m]+" "+y};
+  if(k==="trim"){const q=Math.floor(m/3);return{d0:iso(new Date(y,q*3,1)),d1:iso(new Date(y,q*3+3,0)),lib:"Trimestre "+(q+1)+" · "+y}}
+  return{d0:y+"-01-01",d1:y+"-12-31",lib:"Année "+y}}
+function rrGroupe(c,b){const auj=isoJour(TODAY),fin=b.d1<auj?b.d1:auj,pas=rrPas(c);
+  const T=DB.reunions.filter(r=>r.clubId===c.id).sort((x,y)=>x.date.localeCompare(y.date)),P=T.filter(r=>r.date>=b.d0&&r.date<=fin);
+  const tenues=P.filter(r=>r.statut==="realisee"),annulees=P.filter(r=>r.statut==="annulee"),archivees=P.filter(r=>r.statut==="archivee"),
+    sans=P.filter(r=>(r.statut==="planifiee"||r.statut==="confirmee")&&reuFinie(r)),deplacees=T.filter(r=>r.date>=b.d0&&r.date<=b.d1&&(r.reports||0)>0);
+  /* Trous : entre deux réunions passées (annulées et archivées comprises : elles expliquent l'absence), puis jusqu'à aujourd'hui. */
+  const S=T.filter(r=>r.date<=fin),trous=[];
+  for(let i=1;i<S.length;i++){const g=rrJours(S[i-1].date,S[i].date);if(S[i].date>=b.d0&&g>pas*1.6)trous.push({du:S[i-1].date,au:S[i].date,n:Math.max(1,Math.round(g/pas)-1)})}
+  const der=S[S.length-1],proch=T.find(r=>r.date>auj&&r.statut!=="annulee");
+  if(der&&fin===auj){const g=rrJours(der.date,auj);if(g>pas*1.6)trous.push({du:der.date,au:null,n:Math.max(1,Math.round(g/pas)-1)})}
+  const manq=trous.reduce((t,x)=>t+x.n,0);
+  return{c,pas,P,tenues,annulees,archivees,sans,deplacees,trous,manq,jamais:!T.length,der,proch,prevues:tenues.length+annulees.length+archivees.length+sans.length+manq}}
+function rrTout(k){const b=rrBornes(k||"annee"),G=DB.clubs.map(c=>rrGroupe(c,b)),s=f=>G.reduce((t,g)=>t+f(g),0);
+  return{b,G,prevues:s(g=>g.prevues),tenues:s(g=>g.tenues.length),annulees:s(g=>g.annulees.length),deplacees:s(g=>g.deplacees.length),sans:s(g=>g.sans.length),manq:s(g=>g.manq),ouverts:G.filter(g=>g.trous.some(t=>!t.au)).length}}
+function rrPeutRelancer(){return !!SESSION&&!SESSION._voir&&["superadmin","directeur_national","directeur"].includes(SESSION.role)}
+function rrDate(iso){const d=dObj(iso);return d.getDate()+" "+MOIS[d.getMonth()].toLowerCase()}
+function openReunionsReseau(){window._rr=window._rr||{per:"annee",ouv:null};rrRendu();openSheet()}
+function rrMaj(){avecVue(()=>rrRendu())}
+function rrRendu(){const st=window._rr,X=rrTout(st.per),peut=rrPeutRelancer();
+  const tuile=(n,l,al)=>`<div class="rr-k ${al&&n?"al":""}"><b>${n}</b><span>${l}</span></div>`;
+  const ligne=(g,r)=>{const d=dObj(r.date),fait=r.statut==="realisee",an=r.statut==="annulee",sb=(r.statut==="planifiee"||r.statut==="confirmee")&&reuFinie(r),mod=canEditReunion(r)&&!readOnly();
+    const etat=fait?"Tenue"+(reuVerrou(r)?" · bilan verrouillé":" · bilan à verrouiller"):an?"Annulée · "+(r.motif?esc(r.motif):"motif non précisé"):sb?"Passée, bilan à saisir":r.statut==="archivee"?"Archivée sans bilan":"À venir";
+    const act=fait?`<button class="btn ghost mini" onclick="bilEnvTelecharger('${r.id}',this)">📄 PDF</button>`
+      :sb?(mod?`<button class="btn mini" onclick="openBilan('${r.id}')">Saisir</button>`:"")+(peut?`<button class="btn ${mod?"ghost":""} mini" onclick="rrRelancer('${g.c.id}','${r.id}','bilan',this)">Relancer</button>`:"")
+      :an&&!r.motif?(mod?`<button class="btn mini" onclick="rrMotifForm('${r.id}')">Motif</button>`:"")+(peut?`<button class="btn ${mod?"ghost":""} mini" onclick="rrRelancer('${g.c.id}','${r.id}','motif',this)">Demander</button>`:""):"";
+    return `<div class="rr-r ${an?"an":""} ${r.date>isoJour(TODAY)?"av":""}" data-rr="${r.id}"><span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span><button type="button" class="va-t" onclick="openMeeting('${r.id}')"><b>${esc(typeLib(r))}${(r.reports||0)>0?" · déplacée"+(r.dateInit?" (prévue le "+esc(rrDate(r.dateInit))+")":""):""}</b><small>${etat}</small></button><span class="rr-a">${act}</span></div>`};
+  const trou=(g,t)=>`<div class="rr-r tr"><span class="rr-tr">∅</span><span class="va-t"><b>Aucune réunion ${t.au?"du "+esc(rrDate(t.du))+" au "+esc(rrDate(t.au)):"depuis le "+esc(rrDate(t.du))}</b><small>${t.n} réunion${t.n>1?"s":""} manquante${t.n>1?"s":""} au rythme du groupe (tous les ${g.pas} jours)</small></span><span class="rr-a">${peut?`<button class="btn ghost mini" onclick="rrRelancer('${g.c.id}',null,'trou',this)">Demander pourquoi</button>`:""}</span></div>`;
+  const grp=g=>{const o=st.ouv===g.c.id,al=g.sans.length+g.manq,an=g.c.animId?animNom(g.c.animId):"";
+    return `<div class="rr-g ${o?"o":""}" data-rrg="${g.c.id}"><button type="button" class="rr-gt" onclick="window._rr.ouv=${o?"null":`'${g.c.id}'`};rrMaj()"><span class="rr-gn"><b>${esc(String(g.c.nom).replace(/^CAP\s+/,""))}</b><small>${an?esc(an)+" · ":"Sans animateur · "}${g.jamais?"aucune réunion saisie":g.tenues.length+" tenue"+(g.tenues.length>1?"s":"")+(g.annulees.length?" · "+g.annulees.length+" annulée"+(g.annulees.length>1?"s":""):"")+(g.deplacees.length?" · "+g.deplacees.length+" déplacée"+(g.deplacees.length>1?"s":""):"")+(g.proch?" · prochaine le "+esc(rrDate(g.proch.date)):" · aucune à venir")}</small></span>
+      ${g.sans.length?`<span class="rr-b al">${g.sans.length} sans bilan</span>`:""}${g.manq?`<span class="rr-b tr">${g.manq} manquante${g.manq>1?"s":""}</span>`:""}${!al&&!g.jamais?`<span class="rr-b ok">À jour</span>`:""}<i>›</i></button>
+      ${o?`<div class="rr-l">${g.trous.filter(t=>!t.au).map(t=>trou(g,t)).join("")}${g.P.slice().reverse().map(r=>ligne(g,r)).join("")}${g.trous.filter(t=>t.au).map(t=>trou(g,t)).join("")}${!g.P.length&&!g.trous.length?`<p class="fh-note">Aucune réunion sur la période.</p>`:""}</div>`:""}</div>`};
+  const R=regionsDe(DB.clubs).map(r=>({r,G:r.clubs.map(c=>X.G.find(g=>g.c.id===c.id)).sort((a,b)=>(b.sans.length+b.manq)-(a.sans.length+a.manq)||String(a.c.nom).localeCompare(String(b.c.nom)))}));
+  document.getElementById("sheet-content").innerHTML=`<h3 id="rr-t">Réunions du réseau</h3><div class="sheet-sub">${esc(X.b.lib)} · ${DB.clubs.length} groupe${DB.clubs.length>1?"s":""} · bilans, réunions manquantes, annulations</div>
+    <div class="seg rr-seg" role="radiogroup">${[["mois","Ce mois"],["trim","Trimestre"],["annee","Année"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${st.per===k}" class="${st.per===k?"on":""}" onclick="window._rr.per='${k}';rrMaj()">${l}</button>`).join("")}</div>
+    <div class="rr-ks">${tuile(X.prevues,"prévues")}${tuile(X.tenues,"tenues")}${tuile(X.annulees,"annulées")}${tuile(X.deplacees,"déplacées")}${tuile(X.sans,"sans bilan",1)}${tuile(X.manq,"manquantes",1)}</div>
+    <details class="ni-aide"><summary>Comment c'est compté</summary><p class="fh-note">« Prévues » = tenues + annulées + archivées + sans bilan + manquantes. Une réunion est « manquante » quand l'écart entre deux réunions dépasse nettement le rythme du groupe (tous les 15 jours si rien n'est réglé). Une réunion annulée avec son motif n'est pas comptée manquante. « Déplacée » = sa date a été changée au moins une fois.</p></details>
+    ${R.map(({r,G})=>`<div class="rr-reg"><div class="rr-rt"><b>${esc(r.nom)}</b><span>${G.reduce((t,g)=>t+g.tenues.length,0)} tenues · ${G.reduce((t,g)=>t+g.sans.length,0)} sans bilan · ${G.reduce((t,g)=>t+g.manq,0)} manquantes</span></div>${G.map(grp).join("")}</div>`).join("")}
+    <div class="sheet-actions" style="margin-top:14px"><button class="btn ghost" onclick="closeSheet();go('agenda')">📅 Planning du mois</button><button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`}
+async function rrRelancer(clubId,reunionId,quoi,btn){btn.disabled=true;const {data,error}=await sb.rpc("cap_reunion_relancer",{p_club:clubId,p_reunion:reunionId,p_quoi:quoi});btn.disabled=false;
+  if(error){toast(rlsMsg(error),"e");return}
+  if(data&&data.compte===false){const c=club(clubId)||{},a=c.animId&&anim(c.animId),tel=a&&a.tel?String(a.tel).replace(/[^\d]/g,"").replace(/^0/,"212"):"";
+    const msg=`Bonjour ${a?String(a.nom).split(/\s+/)[0]:""},\n\n${quoi==="bilan"?"Il manque le bilan d'une réunion du groupe "+(c.nom||"")+". Peux-tu le saisir dans le CRM ?":quoi==="motif"?"Une réunion du groupe "+(c.nom||"")+" a été annulée : peux-tu en indiquer le motif dans le CRM ?":"Le groupe "+(c.nom||"")+" n'a pas eu de réunion depuis un moment. Peux-tu planifier la prochaine, ou m'en dire la raison ?"}\n\n${SITE_PUBLIC}\n\n${(SESSION.name||"").split(/\s+/)[0]}`;
+    toast("Pas de compte sur le CRM : message WhatsApp préparé","w");window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank","noopener");return}
+  btn.textContent="Relancé ✓";btn.disabled=true;toast("Notification envoyée à l'animateur","s")}
+/* Motif d'une réunion déjà annulée (pour l'animateur ou celui qui peut la modifier). */
+function rrMotifForm(id){const r=DB.reunions.find(x=>x.id===id);if(!r)return;const c=club(r.clubId)||{};
+  document.getElementById("sheet-content").innerHTML=`<h3>Pourquoi la réunion n'a pas eu lieu ?</h3><div class="sheet-sub">${esc(typeLib(r))} du ${esc(rrDate(r.date))} · ${esc(c.nom||"")}</div>${reuMotifChamp(r.motif,"","rr-motif")}
+    <div class="sheet-actions"><button class="btn ghost" onclick="rrMaj()">Retour</button><button class="btn" onclick="rrMotifOk('${id}',this)">Enregistrer</button></div>`}
+async function rrMotifOk(id,btn){const v=reuMotifLu("rr-motif");if(!v){toast("Choisis un motif","w");return}btn.disabled=true;const {error}=await sb.from("reunions").update({annule_motif:v}).eq("id",id);btn.disabled=false;
+  if(error){toast(rlsMsg(error),"e");return}const r=((window._DBvrai||DB).reunions||[]).find(x=>x.id===id);if(r)r.motif=v;toast("Motif enregistré","s");rrMaj()}
+/* Synthèse (direction) : ce qui attend dans les réunions du réseau. */
+function rrAlerte(){if(!SESSION||SESSION._voir||!rrPeutRelancer())return"";const X=rrTout("annee");if(!X.sans&&!X.ouverts)return"";
+  return `<button type="button" class="va psa-al" id="rr-al" onclick="openReunionsReseau()"><span class="va-i">🗓</span><span class="va-s"><b>${[X.sans?X.sans+" réunion"+(X.sans>1?"s":"")+" sans bilan":"",X.ouverts?X.ouverts+" groupe"+(X.ouverts>1?"s":"")+" sans réunion récente":""].filter(Boolean).join(" · ")}</b><small>Touche pour voir qui relancer, groupe par groupe</small></span><span class="psa-ch">›</span></button>`}
 /* v1.41 — réunions passées depuis longtemps sans bilan : rangées d'un coup (deux clics), hors des compteurs. */
 const BIL_VIEUX_JOURS=60;
 function bilVieilles(){const lim=isoJour(new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()-BIL_VIEUX_JOURS));return reunionsSansBilan().filter(r=>r.date<lim)}
@@ -8675,9 +8755,11 @@ async function saveBilan(){
   const m=DB.reunions.find(x=>x.id===_bil.id);let row;
   if(_bil.statut==="reportee"){
     if(!_bil.date||_bil.date<isoJour(TODAY)){toast("Choisis une nouvelle date à venir","w");return}
-    row={date:_bil.date,statut:"planifiee"};
+    row={date:_bil.date,statut:"planifiee"};const mr=reuMotifLu("bil-motif");if(mr)row.report_motif=mr;
   }else if(_bil.statut==="archivee"){row={archivee_le:new Date().toISOString(),archivee_par:SESSION.id}; // v1.41 : rangée sans bilan
-  }else{row={archivee_le:null,statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+  }else{if(_bil.statut==="annulee"&&!reuMotifLu("bil-motif")){toast("Indique le motif de l'annulation","w");return}
+    row={archivee_le:null,statut:_bil.statut,presents:_bil.statut==="realisee"?_bil.presents:null,invites_venus:_bil.statut==="realisee"?_bil.inv:null,adhesions_obtenues:_bil.statut==="realisee"?_bil.adh:null,bilan_le:new Date().toISOString()};
+    if(_bil.statut==="annulee")row.annule_motif=reuMotifLu("bil-motif");
     if(_bil.statut==="realisee"){const txt=Object.fromEntries(Object.entries(_bil.cr||{}).map(([k,v])=>[k,String(v||"").trim()]).filter(([,v])=>v));
       row.compte_rendu={...Object.fromEntries(Object.entries(m.cr||{}).filter(([k])=>k==="bilan"||!(k in (_bil.cr||{})))),...txt,bilan:{...((m.cr&&m.cr.bilan)||{}),recos:_bil.recos||0,montant:_bil.montant||0,notes:(_bil.notes||"").trim()}};
       reuVerrouPose(m,row.compte_rendu); // v1.104 : bilan enregistré = réunion verrouillée
@@ -8687,7 +8769,8 @@ async function saveBilan(){
   if(_bil.statut==="archivee")Object.assign(m,{statut:"archivee",archiveeLe:row.archivee_le});
   else Object.assign(m,{statut:row.statut,statutBase:row.statut,archiveeLe:null,date:row.date||m.date});
   if(_bil.statut!=="reportee"&&_bil.statut!=="archivee")Object.assign(m,{presents:row.presents,invitesVenus:row.invites_venus,adhObt:row.adhesions_obtenues,bilanLe:row.bilan_le});
-  if(row.compte_rendu)m.cr=row.compte_rendu;if(row.cr_le)m.crLe=row.cr_le;
+  if(row.compte_rendu)m.cr=row.compte_rendu;if(row.cr_le)m.crLe=row.cr_le;if(row.annule_motif)m.motif=row.annule_motif;
+  if(_bil.statut==="reportee"){m.reports=(m.reports||0)+1;if(row.report_motif)m.motifReport=row.report_motif}
   await okPuis();
   toast(_bil.statut==="reportee"?"Réunion reportée":_bil.statut==="archivee"?"Réunion archivée sans bilan":"Bilan enregistré");
   _bilSerie.faits++;
@@ -9703,7 +9786,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -9763,7 +9846,7 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
    (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
    recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
    (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
-["reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+["openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 /* v1.42 : écrans lourds — au téléphone, un mot avant d'ouvrir (une fois par écran). */

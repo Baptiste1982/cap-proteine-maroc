@@ -2150,6 +2150,7 @@ body.esp-on #view{display:none}body.esp-plein #nav,body.esp-plein #nav-pill{disp
 .np2 .np-it{width:100%;box-sizing:border-box;padding:11px 14px 11px 22px;font-size:14.5px;border-top:1px solid var(--line)}.np2 .np-it.sel{color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
 .tiroir .np2 .npg{animation:tirIn .3s both}.tiroir .np2 .np-it{animation:none}
 @media(prefers-reduced-motion:reduce){.npg-s,.npg-ch{transition:none}.tiroir .np2 .npg{animation:none}}
+/*v1.121 notifications au ras du bas de l'écran*/@media(min-width:900px){#notifs{bottom:16px}}
 /*v1.120 PSA en calendrier*/.psa-vs{margin:10px 0 0}.psa-cal{display:grid;gap:8px}.psa-ch2{display:flex;align-items:center;justify-content:space-between}.psa-ch2 b{font-size:15px;text-transform:capitalize}.psa-ch2 .btn{position:relative;min-width:40px}.psa-ch2 .btn i{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--crimson)}
 .psa-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.psa-jn{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:2px 0}
 .psa-c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;border-radius:10px;border:1px solid transparent;background:none;color:var(--muted);font:inherit;padding:2px}.psa-c b{font-size:14px;font-weight:600;line-height:1.1}.psa-c.p{opacity:.45}.psa-c.auj b{text-decoration:underline}
@@ -2165,7 +2166,7 @@ button.psa-c.a{cursor:pointer;color:var(--ink);border-color:var(--line);backgrou
 /*v1.118 cartes de notification : fond blanc et texte foncé dans tous les thèmes (le fond suivait --ink, clair en sombre : blanc sur blanc), posées juste au-dessus de la barre du bas au téléphone*/
 .annonce,#notifs .annonce{background:#fff;color:#1B1416;border:1px solid #E2DEDD;box-shadow:0 14px 34px -12px rgba(0,0,0,.5)}.annonce:hover{background:#F6F4F3}
 .annonce .an-t b{color:#1B1416;font-size:14.5px;line-height:1.25}.annonce .an-t small{color:#5E585A;white-space:normal}.annonce .an-go{color:#D81B3F}.annonce .an-ic{background:#EEF2F6}
-@media(max-width:899px){#notifs{bottom:calc(98px + env(safe-area-inset-bottom))}}
+@media(max-width:899px){#notifs{bottom:calc(86px + env(safe-area-inset-bottom))}}
 /*v1.117 alertes à fermer ou reporter*/.al-w{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:start;margin-bottom:12px}.al-w>:first-child{margin-bottom:0}
 .al-x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:14px;cursor:pointer}.al-x:hover{color:var(--ink);border-color:var(--ink)}
 .al-m{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border:1px dashed var(--line);border-radius:12px;font-size:13px}.al-m span{color:var(--muted)}.al-m button{font:600 13px Inter,sans-serif;padding:7px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}.al-m button:hover{border-color:var(--ink)}
@@ -2737,8 +2738,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.120.0";
+const APP_VERSION="1.121.0";
 const CHANGELOG=[
+  {v:"1.121.0",date:"20 novembre 2026",notes:{"Modifié":["Une alerte mise de côté l\u2019est sur tous tes appareils : reportée sur le téléphone, elle disparaît aussi sur l\u2019ordinateur","La carte « Nouvelle version disponible » et les autres notifications se posent tout en bas de l\u2019écran"]}},
   {v:"1.120.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité en calendrier : un mois à l\u2019écran, on touche un jour pour voir ses heures (ou une liste repliée par jour) ; le lien de planning des animateurs a le même calendrier","Ouvrir des créneaux en série : les 3, 4 ou 5 derniers jours du mois, du lundi au jeudi (vendredi en option), sur plusieurs mois","« Reporter les créneaux de ce mois sur le mois suivant »"]}},
   {v:"1.119.0",date:"20 novembre 2026",notes:{"Ajouté":["Centre de notifications : la cloche en haut à droite réunit tout ce qui t\u2019attend (bilans, réunions à verrouiller, PSA, demandes, contacts confiés, recommandations…), ce que tu as reporté, la discussion de ton groupe et les messages reçus récemment sur l\u2019appareil"]}},
   {v:"1.118.0",date:"20 novembre 2026",notes:{"Corrigé":["Cartes de notification : texte foncé sur fond blanc dans tous les thèmes (elles étaient illisibles en thème sombre), et placées juste au-dessus de la barre du bas au téléphone"]}},
@@ -3436,6 +3438,7 @@ async function loadDB(){
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   await natComptesCharger();
   await psaSuiviCharger(); // v1.113
+  await alCharger(); // v1.121
   if(accGere())try{const ac=await sb.rpc("cap_acces_equipe");if(!ac.error)DB.acces=ac.data||[];if(SESSION.role==="superadmin"){const dr=await sb.rpc("cap_droits_comptes");if(!dr.error)DB.droits=dr.data||[]}}catch(e){console.warn(e)}
   // v0.26.0 : recommandations et présences (jamais bloquant pour le démarrage)
   DB.psa=[];try{const ps=await sb.from("psa_creneaux").select("*").gte("debut",new Date(Date.now()-30*864e5).toISOString()).order("debut");if(!ps.error)DB.psa=psaNorm(ps.data||[])}catch(e){} // v1.25 PSA
@@ -8550,7 +8553,7 @@ function showUpdateBar(v){
   bar.innerHTML=`<span class="maj-ic" aria-hidden="true">↻</span><span class="maj-t"><b>Nouvelle version disponible</b><small>Version ${esc(v)} · un toucher suffit</small></span>
     <button type="button" class="maj-go" onclick="location.reload(true)">Mettre à jour</button>
     <button type="button" class="maj-x" onclick="this.parentElement.remove()" aria-label="Plus tard">✕</button>`;
-  notifPile().prepend(bar);
+  notifPile().appendChild(bar); // v1.121 : tout en bas de la pile, au ras du bas de l'écran
 }
 
 const VILLES=["Rabat","Salé","Kenitra","Casablanca","Dar Bouazza","Bouskoura","Marrakech"];
@@ -8708,7 +8711,15 @@ function reunionsSansBilan(){if(readOnly())return[];return DB.reunions.filter(r=
 /* v1.117 : une alerte se ferme, avec un rappel « en fin de journée », « demain » ou « dans une semaine ». Le choix est gardé
    sur l'appareil, par compte. Tant qu'elle est en pause, l'alerte et sa carte d'annonce ne s'affichent pas. */
 function alCle(c){return "cap-al-"+((SESSION&&SESSION.id)||"x")+"-"+c}
-function alEnPause(c){try{const v=+localStorage.getItem(alCle(c));if(v&&v>Date.now())return v;if(v)localStorage.removeItem(alCle(c))}catch(e){}return 0}
+/* v1.121 : la mise de côté suit la personne sur tous ses appareils (profiles.alertes_pause, lue à la connexion puis chaque minute) ;
+   la copie locale sert de secours hors connexion et tant que la base n'a pas répondu. */
+window._alP=window._alP||{};
+function alEnPause(c){let v=0;try{v=+localStorage.getItem(alCle(c))||0}catch(e){}const d=+(window._alP||{})[c]||0;if(window._alPLu)v=d;else v=Math.max(v,d);
+  if(v>Date.now())return v;try{localStorage.removeItem(alCle(c))}catch(e){}return 0}
+function alPoser(c,t){window._alP=window._alP||{};if(t)window._alP[c]=t;else delete window._alP[c];try{if(t)localStorage.setItem(alCle(c),String(t));else localStorage.removeItem(alCle(c))}catch(e){}
+  try{if(SESSION&&!SESSION._voir)sb.rpc("cap_alerte_pause",{p_cle:c,p_jusqua:t?new Date(t).toISOString():null}).then(()=>{},()=>{})}catch(e){}}
+async function alCharger(){try{if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return false;const q=await sb.rpc("cap_alertes_pauses");if(q.error||!q.data||typeof q.data!=="object")return false;
+  const av=JSON.stringify(window._alP||{}),n={};Object.entries(q.data).forEach(([k,v])=>{if(+v>Date.now())n[k]=+v});window._alP=n;window._alPLu=true;return JSON.stringify(n)!==av}catch(e){return false}}
 const AL_NOMS={bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau",demandes:"Demandes d'adhésion",national:"Envoi au national",contacts:"Contacts confiés",recos:"Recommandations reçues",comptes:"Comptes d'équipe",comptenat:"Compte national"};
 function alR(c,html){if(!html)return"";if(alEnPause(c))return"";
   return `<div class="al-w" data-al="${c}">${html}<button type="button" class="al-x" aria-label="Fermer ou reporter cette alerte" title="Fermer ou reporter" onclick="alMenu('${c}',this)">✕</button></div>`}
@@ -8716,12 +8727,12 @@ function alMenu(c,btn){const w=btn.closest(".al-w");let m=w.querySelector(".al-m
   m=document.createElement("div");m.className="al-m";m.innerHTML=`<span>Me le rappeler</span><button type="button" onclick="alReporter('${c}','soir')">en fin de journée</button><button type="button" onclick="alReporter('${c}','demain')">demain</button><button type="button" onclick="alReporter('${c}','semaine')">dans une semaine</button>`;w.appendChild(m)}
 function alQuand(q){const d=new Date();if(q==="soir"){const s=new Date(d);s.setHours(17,30,0,0);return s.getTime()>d.getTime()+30*60e3?s.getTime():d.getTime()+3*3600e3}
   const j=new Date(d);j.setDate(j.getDate()+(q==="semaine"?7:1));j.setHours(8,0,0,0);return j.getTime()}
-function alReporter(c,q){const t=alQuand(q);try{localStorage.setItem(alCle(c),String(t))}catch(e){}const d=new Date(t);
+function alReporter(c,q){const t=alQuand(q);alPoser(c,t);const d=new Date(t);
   toast("Rappel "+(q==="soir"?"à "+String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0"):q==="demain"?"demain matin":"dans une semaine"),"s");render()}
 function alPauses(){return Object.keys(AL_NOMS).filter(c=>alEnPause(c))}
 function alPauseLigne(){const p=alPauses();if(!p.length||!SESSION||SESSION._voir)return"";
   return `<button type="button" class="al-p" id="al-p" onclick="alToutRevoir()">⏰ ${p.length} rappel${p.length>1?"s":""} en pause (${p.map(c=>AL_NOMS[c].toLowerCase()).join(", ")}) · les réafficher</button>`}
-function alToutRevoir(){alPauses().forEach(c=>{try{localStorage.removeItem(alCle(c))}catch(e){}});render()}
+function alToutRevoir(){alPauses().forEach(c=>alPoser(c,0));render()}
 /* v1.119 : centre de notifications. Une cloche en haut à droite (téléphone et ordinateur) réunit tout ce qui attend la personne :
    les alertes en cours, celles qu'elle a reportées, et ce qu'elle a reçu récemment sur cet appareil. */
 function cnAlertes(){if(!SESSION||SESSION.role==="visiteur")return[];const L=[],voir=!!SESSION._voir;
@@ -8762,7 +8773,7 @@ function openCentre(){const A=cnAlertes(),act=A.filter(x=>!alEnPause(x.cle)),pau
 function cnMenu(cle,btn){const i=btn.closest(".cn-i");let m=i.nextElementSibling;if(m&&m.classList.contains("al-m")){m.remove();return}
   m=document.createElement("div");m.className="al-m";m.innerHTML=`<span>Me le rappeler</span><button type="button" onclick="cnReporter('${cle}','soir')">en fin de journée</button><button type="button" onclick="cnReporter('${cle}','demain')">demain</button><button type="button" onclick="cnReporter('${cle}','semaine')">dans une semaine</button>`;i.after(m)}
 function cnReporter(cle,q){alReporter(cle,q);avecVue(()=>openCentre())}
-function cnReprendre(cle){try{localStorage.removeItem(alCle(cle))}catch(e){}render();avecVue(()=>openCentre())}
+function cnReprendre(cle){alPoser(cle,0);render();avecVue(()=>openCentre())}
 function cnVider(){try{localStorage.removeItem(cnJCle())}catch(e){}avecVue(()=>openCentre())}
 function dashBilanAlerte(){
   const l=reunionsSansBilan();if(!l.length)return"";const d=dObj(l[0].date);
@@ -9873,6 +9884,8 @@ async function inscritsRelire(){
 }
 async function adhRafraichir(){
   if(_adhRafr||!SESSION||SESSION.role==="visiteur"||!DB)return;_adhRafr=true;
+  /* v1.121 : une alerte mise de côté sur un autre appareil disparaît ici aussi (dans la minute, ou au retour sur l'appli). */
+  alCharger().then(ch=>{if(!ch)return;try{const sh=document.getElementById("sheet"),a=document.activeElement;if(!(sh&&sh.classList.contains("open")&&!isRail())&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))render();else avecVue(cnBadge)}catch(e){}});
   try{
     const [rr,pp]=await Promise.all([sb.from("recommandations").select(RECO_COLS).order("cree_le",{ascending:false}),sb.from("presences").select("*")]);
     if(!rr.error){const av=new Map((DB.recos||[]).map(r=>[r.id,r.statut]));const prem=!DB._recosVus;DB._recosVus=true;

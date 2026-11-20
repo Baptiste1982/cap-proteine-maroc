@@ -420,6 +420,7 @@ span.chaleur.c3,span.chaleur.c4{color:#1B1416}
 /*v1.127 réunions du réseau : portée et événements*/
 .rr-seg{margin:0 0 12px}.rr-seg button{flex:1;min-height:38px;border:0;background:none;border-radius:10px;font:700 13px Inter,sans-serif;color:inherit;cursor:pointer}.rr-seg button.on{background:#D81B3F;color:#fff}
 .rr-ev{display:flex;flex-direction:column;gap:3px;background:#D81B3F;color:#fff;border-radius:16px;padding:14px 16px}.rr-ev small{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.rr-ev b{font-size:18px}.rr-ev span{font-size:13px;opacity:.95}
+.rr-pdf{display:block;width:100%;min-height:42px;margin:0 0 12px;border:1.5px solid currentColor;background:none;color:inherit;border-radius:12px;font:700 14px Inter,sans-serif;cursor:pointer;opacity:.9}
 </style>
 </head>
 <body>
@@ -434,6 +435,7 @@ span.chaleur.c3,span.chaleur.c4{color:#1B1416}
 </div></nav>
 <script src="documents-commun.js"></script>
 <script src="lancement.js"></script>
+<script src="calendrier-pdf.js?v=1"></script>
 <script src="tel-commun.js"></script>
 <script src="installer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -745,6 +747,17 @@ function carteReseau(r){const h=r.heure?String(r.heure).slice(0,5):"",rp=r.ma_re
     <span class="rr-l">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}${r.viennent?` · ${r.viennent} membre${r.viennent>1?"s":""} inscrit${r.viennent>1?"s":""}`:""}</span>
     <div class="rr-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rp==="oui"?"on":""}" data-rrep="${r.id}:oui" aria-pressed="${rp==="oui"}">${rp==="oui"?"✓ ":""}Je viens</button><button type="button" class="${rp==="non"?"on non":""}" data-rrep="${r.id}:non" aria-pressed="${rp==="non"}">Je ne viens pas</button></div>
     ${voir?`<button type="button" class="rr-voir" data-reu="${r.id}">Voir qui est prévu et la quinzaine du groupe ›</button>`:`<small class="rr-note">Inscris-toi pour voir les invités, les membres et la quinzaine du groupe.</small>`}</div>`}
+/* v1.128 : le calendrier des réunions à venir en PDF (même dessin que dans le CRM), selon la portée choisie. */
+async function calendrierMembre(btn){const T=S.reseauReu||[],RV={};(S.annuaire||[]).forEach(m=>{if(m.ville&&m.region)RV[m.ville]=m.region});
+  const maV=(T.find(r=>r.mon_groupe)||{}).ville||"",reg=r=>RV[r.ville]||r.ville||"",maReg=S.maRegion||RV[maV]||maV,P=["moi","reg","nat"].includes(S.rrP)?S.rrP:"nat";
+  const L=P==="moi"?T.filter(r=>r.mon_groupe):P==="reg"?T.filter(r=>r.mon_groupe||(maReg&&reg(r)===maReg)):T,lib=P==="moi"?(S.moi&&S.moi.club)||"Mon groupe":P==="reg"?(maReg||"Ma région"):"Tout le réseau";
+  const d=new Date(),k=i=>{const x=new Date(d.getFullYear(),d.getMonth()+i,1);return{k:x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")}},mois=[k(0),k(1)];
+  const t0=btn.textContent;btn.disabled=true;btn.textContent="Préparation…";let b=null;
+  try{b=await calendrierPdf({mois,portee:lib,couleur:calPdfCouleur,evenements:S.reseauEv||[],reunions:L.map(r=>({date:r.date,heure:r.heure?String(r.heure).slice(0,5):"",statut:"planifiee",groupe:String(r.club||"").replace(/^CAP\s+/,""),ville:r.ville||"",type:r.format?({business:"Business",conference:"Thématique",visite:"Visite"})[r.format]:r.type==="RL"?"Lancement":"Session d'info"}))})}catch(e){}
+  btn.disabled=false;btn.textContent=t0;if(!b){toast("Le PDF n'a pas pu être fabriqué","ko");return}
+  const nom="Calendrier des réunions - "+lib.replace(/[·\/]/g,"-")+" - "+mois[0].k+".pdf";let f=null;try{f=new File([b],nom,{type:"application/pdf"})}catch(e){}
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})&&matchMedia("(pointer:coarse)").matches){try{await navigator.share({files:[f],title:nom});return}catch(e){if(e&&e.name==="AbortError")return}}
+  const u=URL.createObjectURL(b),a=Object.assign(document.createElement("a"),{href:u,download:nom});document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);toast("Calendrier téléchargé","ok")}
 function vueReunions(){
   if(S.reseauReu===undefined){chargerReseauReu().then(()=>{if(S.onglet==="reunions")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
   const T=S.reseauReu,RV={};(S.annuaire||[]).forEach(m=>{if(m.ville&&m.region)RV[m.ville]=m.region});
@@ -752,7 +765,7 @@ function vueReunions(){
   const L=P==="moi"?T.filter(r=>r.mon_groupe):P==="reg"?T.filter(r=>r.mon_groupe||(maReg&&reg(r)===maReg)):T,mien=L.filter(r=>r.mon_groupe),autres=L.filter(r=>!r.mon_groupe),EV=S.reseauEv||[];
   const seg=`<div class="seg rr-seg" role="tablist" aria-label="Réunions affichées">${[["moi","Mon groupe"],["reg",maReg?"Ma région":"Ma ville"],["nat","Tout le réseau"]].map(([k,l])=>`<button role="tab" aria-selected="${P===k}" class="${P===k?"on":""}" data-rrp="${k}">${l}</button>`).join("")}</div>`;
   const evH=EV.length?`<div class="rr-l2">${EV.map(e=>`<div class="rr-ev"><small>${esc(e.genre)} · tout le réseau</small><b class="bri">${esc(e.titre)}</b><span>${esc(dateReu(e.date,e.heure?String(e.heure).slice(0,5):""))}${e.lieu?" · "+esc(e.lieu):""}</span></div>`).join("")}</div>`:"";
-  return `<div class="page">${ariane()}<div class="head"><div><h1>Réunions du réseau</h1><p class="sub">Tu peux assister à la réunion de n'importe quel groupe, dans toutes les villes. Inscris-toi : l'animateur du groupe est prévenu, et tu vois qui sera là.</p></div></div>${seg}${evH}
+  return `<div class="page">${ariane()}<div class="head"><div><h1>Réunions du réseau</h1><p class="sub">Tu peux assister à la réunion de n'importe quel groupe, dans toutes les villes. Inscris-toi : l'animateur du groupe est prévenu, et tu vois qui sera là.</p></div></div>${seg}${T.length||EV.length?`<button type="button" class="rr-pdf" data-rrpdf>📄 Calendrier en PDF</button>`:""}${evH}
     ${L.length?`${autres.length?`<div class="rr-l2">${autres.map(carteReseau).join("")}</div>`:P==="moi"?"":`<div class="card"><b>Pas d'autre réunion planifiée${P==="reg"?" dans ta région":""}.</b><p class="sub">Les réunions des autres groupes apparaîtront ici dès qu'elles seront programmées.</p></div>`}
       ${mien.length?volet("rr-mien","Mon groupe",mien.length,`<div class="rr-l2">${mien.map(carteReseau).join("")}</div>`,{ouvert:!autres.length}):""}`
       :T.length?`<div class="card"><b>Aucune réunion planifiée ${P==="moi"?"dans ton groupe":"dans ta région"}.</b><p class="sub">Regarde « Tout le réseau ».</p></div>`:`<div class="card"><b>Aucune réunion planifiée dans le réseau.</b><p class="sub">${esc(S.reseauErr||"Elles apparaîtront ici dès que les animateurs les auront programmées.")}</p></div>`}</div>`}
@@ -1610,6 +1623,7 @@ function brancher(){
   app.querySelectorAll("[data-mondoc]").forEach(b=>b.onclick=()=>mesDocOuvrir(b.dataset.mondoc));
   app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
   app.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});
+  app.querySelectorAll("[data-rrpdf]").forEach(b=>b.onclick=()=>calendrierMembre(b));
   app.querySelectorAll("[data-rrp]").forEach(b=>b.onclick=()=>{S.rrP=b.dataset.rrp;rendu(true)});
   app.querySelectorAll("[data-anntri]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cap-anntri",b.dataset.anntri)}catch(e){}rendu(true)});
   const q=$("q");if(q){const sg=$("sugg");

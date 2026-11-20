@@ -2670,6 +2670,21 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .cal-evt{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;border-radius:8px;background:var(--crimson);color:#fff;padding:5px 8px;margin:0 0 4px;font-family:inherit;cursor:pointer;min-width:0}
 .cal-evt b{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.cal-evt span{font-size:12px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.cal-evt small{font-size:10.5px;opacity:.9}
 .cal-pts i.ev{background:var(--crimson);width:14px;border-radius:3px}.cal-det .cal-evt{padding:9px 12px;margin-bottom:8px}.cal-det .cal-evt span{font-size:14px}
+/*v1.130 journal du super admin*/
+.jr-bar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}.jr-seg{flex-wrap:wrap;background:var(--card);max-width:100%}.jr-seg button{min-height:34px}
+.jr-fs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.jr-f{border:0;border-radius:99px;background:var(--crimson);color:#fff;font:700 12.5px Inter,sans-serif;padding:6px 12px;cursor:pointer}
+.jr-res{font-size:12.5px;color:var(--muted);margin:0 0 8px}
+.jr-j{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--line)}.jr-j b{font:800 14px "Bricolage Grotesque",sans-serif}.jr-j span{font-size:12px;color:var(--muted)}
+.jr-l{border-radius:10px}.jr-l.ouv{background:var(--soft,var(--card));outline:1px solid var(--line)}
+.jr-h{display:grid;grid-template-columns:44px 26px minmax(0,1fr) 14px;gap:8px;align-items:start;width:100%;text-align:left;border:0;background:none;color:inherit;font-family:inherit;padding:8px;cursor:pointer;border-radius:10px;min-height:44px}
+.jr-h:hover{background:var(--hover,rgba(127,127,127,.08))}.jr-h time{font:700 12.5px Inter,sans-serif;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}.jr-ic{font-size:15px;line-height:1.3}
+.jr-t{font-size:13.5px;line-height:1.35;min-width:0;overflow-wrap:anywhere}.jr-t em{font-style:normal;font-weight:600}.jr-t small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.jr-ch{font-style:normal;color:var(--muted);transition:transform .2s}.jr-l.ouv .jr-ch{transform:rotate(90deg)}.jr-l.a-retrait .jr-t b{text-decoration:underline dashed}
+.jr-d{padding:2px 12px 12px 86px;font-size:12.5px}.jr-d p{margin:0 0 6px;color:var(--muted)}.jr-d table{border-collapse:collapse;width:100%}.jr-d th{text-align:left;font-weight:600;color:var(--muted);padding:3px 10px 3px 0;vertical-align:top;white-space:nowrap;text-transform:capitalize}.jr-d td{padding:3px 0;overflow-wrap:anywhere}.jr-d s{color:var(--muted)}
+.jr-g{display:flex;flex-direction:column;gap:6px}.jr-gr{display:grid;grid-template-columns:minmax(0,1fr) 90px 40px;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:inherit;font-family:inherit;border-radius:12px;padding:10px 12px;cursor:pointer;min-height:48px}
+.jr-gr:hover{border-color:var(--crimson)}.jr-gn b{display:block;font-size:14px}.jr-gn small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}.jr-gb{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.jr-gb i{display:block;height:100%;background:var(--crimson);border-radius:3px}.jr-gv{font:800 16px "Bricolage Grotesque",sans-serif;text-align:right}
+#jr-plus{margin-top:12px}
+@media (max-width:600px){.jr-d{padding-left:12px}.jr-gr{grid-template-columns:minmax(0,1fr) 40px}.jr-gb{display:none}.jr-h{grid-template-columns:40px 22px minmax(0,1fr) 12px;gap:6px}}
 </style>
 </head>
 <body>
@@ -2762,6 +2777,8 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 /* ============================================================
    RÉFÉRENTIELS D'AFFICHAGE
    ============================================================ */
+/* v1.130 : un compte peut porter un titre (profiles.titre) affiché à la place du libellé de son rôle ; ses droits restent ceux du rôle. */
+function roleDe(u){const t=u&&u.id&&((window._DBvrai||(typeof DB!=="undefined"?DB:null))||{}).titres;return (t&&t[u.id])||ROLES[u&&u.role]||(u&&u.role)||""}
 const ROLES={superadmin:"Super admin",directeur_national:"Directeur national",directeur:"Directeur de zone",animateur:"Animateur",visiteur:"Visiteur"};
 const TYPES={SI:"Session d'information",RL:"Réunion de lancement"};
 /* v1.6.0 : cycle des réunions d'un groupe en activité. La 1re réunion de la série est une réunion business, puis
@@ -2778,8 +2795,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.129.0";
+const APP_VERSION="1.130.0";
 const CHANGELOG=[
+  {v:"1.130.0",date:"20 novembre 2026",notes:{"Ajouté":["Un compte peut porter un titre affiché à la place du libellé de son rôle (Ghita : « Office Manager ») ; ses droits ne changent pas.","Journal, réservé au super admin (Paramètres → Administration, et menu Équipe) : qui a fait quoi et quand. Le fil complet jour par jour, ou rangé par personne, par région, par type ; recherche, période, détail de chaque action (les champs modifiés, avant et après), export pour Excel. Les connexions au CRM y sont notées aussi."]}},
   {v:"1.129.0",date:"20 novembre 2026",notes:{"Ajouté":["Les événements du réseau (l'interclub du 4 décembre) apparaissent dans la grille du calendrier, au mois comme à la semaine, dans l'Agenda et dans Mon groupe : un bandeau rouge sur le jour. Un toucher ouvre l'événement."]}},
   {v:"1.128.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre → Réunions du réseau : « Calendrier en PDF », le calendrier des réunions à venir (mois en cours et mois suivant), à télécharger ou à partager, selon le choix « Mon groupe », « Ma région » ou « Tout le réseau »."]}},
   {v:"1.127.1",date:"20 novembre 2026",notes:{"Modifié":["Calendrier à présenter : les jours sont cernés d'un filet plus marqué, les numéros et les noms des jours sont plus foncés."]}},
@@ -3486,6 +3504,7 @@ async function loadDB(){
   if(SESSION&&SESSION.role==="superadmin")try{const eq=await sb.rpc("cap_equipe_etat");if(!eq.error)DB.aEmbarquer=(eq.data||[]).filter(u=>u.role!=="visiteur"&&u.id!==SESSION.id&&(u.mdp_initial||(!u.derniere_connexion&&!u.mdp_provisoire))).length}catch(e){console.warn(e)}
   DB.acces=null; // v0.45.0 : accès CRM de chaque compte (superadmin seulement, jamais bloquant)
   await natComptesCharger();
+  try{const tt=await sb.rpc("cap_titres");DB.titres=tt.error?{}:(tt.data||{})}catch(e){DB.titres={}}
   try{const ev=await sb.from("evenements_reseau").select("*").order("date");DB.evenements=ev.error?[]:(ev.data||[])}catch(e){DB.evenements=[]}
   await psaSuiviCharger(); // v1.113
   await alCharger(); // v1.121
@@ -3572,7 +3591,7 @@ async function loadSessionProfile(){
   if(!user)return false;
   const {data:prof,error}=await sb.from("profiles").select("*").eq("id",user.id).single();
   if(error||!prof){console.error(error);toast("Profil introuvable");return false}
-  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tutoProposer:!!prof.tuto_proposer,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring,gereReseau:!!prof.gere_reseau};
+  SESSION={id:user.id,role:prof.role,name:prof.nom||user.email,zoneId:prof.zone_id,animId:prof.animateur_id,clubIds:[],_nat:false,tutoVu:!!prof.tuto_vu_le,tutoProposer:!!prof.tuto_proposer,tel:prof.tel||"",choixRegion:!!prof.choix_region,monitoring:!!prof.voit_monitoring,gereReseau:!!prof.gere_reseau,titre:prof.titre||""};
   if(VOIR_CRM&&VOIR_CRM.v&&/^u:/.test(VOIR_CRM.v)){
     if(prof.role!=="superadmin"){voirOublier()}
     else{_voirActif=true;const {data:c,error:e2}=await sb.from("profiles").select("*").eq("id",VOIR_CRM.v.slice(2)).single();
@@ -3592,6 +3611,7 @@ async function bootIntoApp(){
     SESSION.clubIds=DB.clubs.filter(c=>c.animId===SESSION.animId).map(c=>c.id);
   enterApp();
   verifierMdpInitial();
+  try{if(SESSION&&!SESSION._voir)sb.rpc("cap_journal_connexion").then(()=>{},()=>{})}catch(e){}
   adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();psaAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);espPrecharger();
@@ -4184,7 +4204,7 @@ function enterApp(){
   document.getElementById("auth").classList.add("hidden");document.getElementById("app").classList.remove("hidden");
   document.getElementById("nav").classList.remove("hidden");
   document.getElementById("tb-name").textContent=SESSION.name;
-  const rp=document.getElementById("tb-role");rp.textContent=ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
+  const rp=document.getElementById("tb-role");rp.textContent=SESSION.titre||ROLES[SESSION.role];rp.className="role-pill"+(SESSION.role==="superadmin"?" sa":"");
   document.getElementById("admin-btn").classList.toggle("hidden",SESSION.role!=="superadmin");
   document.getElementById("pwd-btn").classList.toggle("hidden",SESSION.role==="visiteur");
   {const g=document.querySelector("#nav .nav-reu");if(g)g.hidden=readOnly()} // v1.25.1 : pas d'onglet « Mon groupe » en lecture seule
@@ -4604,7 +4624,7 @@ function depuis(iso){
 function quiConnecteHTML(){
   const l=_presListe,on=l.filter(enLigne),autres=l.filter(u=>!enLigne(u)&&(u.vu_le||u.derniere_connexion)),jamais=l.filter(u=>!u.vu_le&&!u.derniere_connexion);
   const der=u=>{const a=u.vu_le?new Date(u.vu_le).getTime():0,b=u.derniere_connexion?new Date(u.derniere_connexion).getTime():0;return a>b?u.vu_le:u.derniere_connexion};
-  const row=(u,quand)=>`<div class="rank-row"><span class="qc-av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.login))}${enLigne(u)?`<i class="qc-dot"></i>`:""}</span><div class="rn">${esc(u.nom||u.login)}${u.id===SESSION.id?" <span style=\"color:var(--muted);font-weight:500\">(toi)</span>":""}<small>${esc(ROLES[u.role]||u.role||"")} · ${quand}</small></div></div>`;
+  const row=(u,quand)=>`<div class="rank-row"><span class="qc-av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.login))}${enLigne(u)?`<i class="qc-dot"></i>`:""}</span><div class="rn">${esc(u.nom||u.login)}${u.id===SESSION.id?" <span style=\"color:var(--muted);font-weight:500\">(toi)</span>":""}<small>${esc(roleDe(u))} · ${quand}</small></div></div>`;
   return secHead("En ligne maintenant",on.length)+`<div class="rank">${on.length?on.map(u=>row(u,"actif "+depuis(u.vu_le))).join(""):`<div class="rail-vide">Personne pour l'instant.</div>`}</div>`
     +(autres.length?secHead("Déjà connectés",autres.length)+`<div class="rank">${autres.sort((a,b)=>new Date(der(b))-new Date(der(a))).map(u=>row(u,"vu "+depuis(der(u)))).join("")}</div>`:"")
     +(jamais.length?secHead("Jamais connectés",jamais.length)+`<div class="rank">${jamais.map(u=>row(u,"jamais connecté")).join("")}</div>`:"");
@@ -6100,7 +6120,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
   if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
-  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
+  if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),sup&&it("Journal","openJournal()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
 function navItemHTML(x){return `<button type="button" class="nav-ss${x.on?" sel":""}" onclick="${x.act}">${esc(x.lb)}${x.n?`<em>${x.n}</em>`:""}</button>`}
@@ -6919,6 +6939,60 @@ async function natCoffreVoir(animId,btn){if(!SESSION||SESSION.role!=="superadmin
   clearTimeout(window._ncCoffreT);window._ncCoffreT=setTimeout(()=>natCoffreCacher(animId),60000)}
 function natCoffreCacher(animId){clearTimeout(window._ncCoffreT);const z=document.getElementById("nc-coffre");if(z)z.innerHTML=`<button class="btn ghost mini" onclick="natCoffreVoir('${animId}',this)">👁 Afficher l'identifiant et le mot de passe</button>`}
 function natCoffreCopier(k){const e=document.getElementById("nc-c-"+k);if(!e)return;try{navigator.clipboard.writeText(e.textContent).then(()=>toast("Copié","s"),()=>toast("Copie impossible : sélectionne le texte","w"))}catch(x){toast("Copie impossible : sélectionne le texte","w")}}
+/* v1.130 : journal du super admin. Qui a fait quoi, quand : le fil complet, ou rangé par personne, par région, par type.
+   Les lignes viennent de la table journal, remplie par la base à chaque écriture. */
+const JR_OBJ={clubs:["👥","un groupe","Groupes"],reunions:["📅","une réunion","Réunions"],membres:["🪪","un membre","Membres"],invites:["🙋","un invité","Invités"],adhesions:["📝","une demande d'adhésion","Adhésions"],recommandations:["🤝","une recommandation","Recommandations"],lieux:["📍","un lieu","Lieux"],animateurs:["🎙","un animateur","Animateurs"],zones:["🗺","une région","Régions"],leads:["📇","un lead","Leads"],psa_creneaux:["🗓","un créneau PSA","PSA"],membre_documents:["📎","une pièce de membre","Pièces des membres"],presences:["✅","une présence","Présences"],evenements_reseau:["🎉","un événement du réseau","Événements"],documents_reseau:["📚","un document","Documents"],crm:["🔓","","Connexions"]};
+const JR_ACT={ajout:"a ajouté",modif:"a modifié",retrait:"a retiré",connexion:"s'est connecté"};
+const JR_PER=[["1","Aujourd'hui"],["7","7 jours"],["30","30 jours"],["0","Tout"]];
+const JR_VUES=[["fil","Journal"],["qui","Par personne"],["reg","Par région"],["type","Par type"]];
+let _jr=null;
+function jrPeut(){return !!SESSION&&SESSION.role==="superadmin"&&!SESSION._voir}
+function jrRegion(r){return r.ville?zoneNomForVille(r.ville):"Sans région"}
+function jrGroupe(r){const c=r.club_id&&(window._DBvrai||DB).clubs.find(x=>x.id===r.club_id);return c?c.nom.replace(/^CAP\s+/,""):""}
+function jrPhrase(r){const o=JR_OBJ[r.objet]||["•","un élément",r.objet];return r.action==="connexion"?"s'est connecté au CRM":`${JR_ACT[r.action]||r.action} ${o[1]}`}
+function jrTexte(r){return [r.par_nom,ROLES[r.role]||r.role,jrPhrase(r),r.libelle,jrGroupe(r),r.ville,jrRegion(r),(JR_OBJ[r.objet]||[])[2]].filter(Boolean).join(" ")}
+async function jrCharger(plus){if(!jrPeut())return;const J=_jr;let q=sb.from("journal").select("*").order("le",{ascending:false}).limit(800);
+  if(plus&&J.rows.length)q=q.lt("le",J.rows[J.rows.length-1].le);const {data,error}=await q;
+  if(error){J.err=rlsMsg(error);return}J.err="";const l=data||[];J.rows=plus?J.rows.concat(l):l;J.fin=l.length<800}
+async function openJournal(){if(!jrPeut()){toast("Réservé au super admin","w");return}
+  _jr=_jr||{rows:[],vue:"fil",q:"",per:"7",qui:null,reg:null,type:null,ouv:new Set(),fin:true,err:""};
+  document.getElementById("sheet-content").innerHTML=`<h3>Journal</h3>${skLignes(6)}`;openSheet();await jrCharger(false);jrRendu()}
+function jrFiltre(){const J=_jr,mots=predMots(J.q),lim=J.per==="0"?0:Date.now()-(+J.per)*864e5+(J.per==="1"?0:0),d0=J.per==="1"?new Date(new Date().setHours(0,0,0,0)).getTime():lim;
+  return J.rows.filter(r=>(!d0||new Date(r.le).getTime()>=d0)&&(!J.qui||(r.par||r.par_nom)===J.qui)&&(!J.reg||jrRegion(r)===J.reg)&&(!J.type||r.objet===J.type)
+    &&(!mots.length||(()=>{const t=predMots(jrTexte(r));return mots.every(m=>t.some(x=>x.startsWith(m)))})()))}
+function jrChoisir(k,v){_jr[k]=_jr[k]===v?null:v;if(k!=="vue"&&k!=="per")_jr.vue="fil";jrRendu()}
+function jrVue(v){_jr.vue=v;jrRendu()}
+function jrPer(v){_jr.per=v;jrRendu()}
+function jrChercher(v){_jr.q=v;const z=document.getElementById("jr-res");if(z)z.innerHTML=jrCorps()}
+function jrOuvrir(id){const o=_jr.ouv;o.has(id)?o.delete(id):o.add(id);const e=document.querySelector(`[data-jr="${id}"]`);if(e)e.outerHTML=jrLigne(_jr.rows.find(r=>r.id===id))}
+function jrVal(v){if(v===null||v===undefined||v==="")return "vide";if(v===true)return "oui";if(v===false)return "non";const s=typeof v==="object"?JSON.stringify(v):String(v);return /^\d{4}-\d{2}-\d{2}T/.test(s)?new Date(s).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):s.length>90?s.slice(0,90)+"…":s}
+function jrDetail(r){const d=r.detail||{},k=Object.keys(d);const quand=new Date(r.le).toLocaleString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  return `<div class="jr-d"><p>${esc(quand)}${r.ville?" · "+esc(r.ville):""}${jrGroupe(r)?" · "+esc(jrGroupe(r)):""}</p>${k.length?`<table>${k.map(c=>`<tr><th>${esc(c.replace(/_/g," "))}</th><td>${d[c][0]==="…"?"modifié":`<s>${esc(jrVal(d[c][0]))}</s> → <b>${esc(jrVal(d[c][1]))}</b>`}</td></tr>`).join("")}</table>`:r.action==="modif"?"":`<p class="jr-n">${r.action==="ajout"?"Création.":r.action==="retrait"?"Suppression.":""}</p>`}</div>`}
+function jrLigne(r){const o=JR_OBJ[r.objet]||["•","",""],h=new Date(r.le).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),ouv=_jr.ouv.has(r.id),n=r.detail?Object.keys(r.detail).length:0;
+  return `<div class="jr-l ${ouv?"ouv":""} a-${esc(r.action)}" data-jr="${r.id}"><button type="button" class="jr-h" onclick="jrOuvrir(${r.id})" aria-expanded="${ouv}"><time>${h}</time><span class="jr-ic" aria-hidden="true">${o[0]}</span><span class="jr-t"><b>${esc(r.par_nom||"?")}</b> ${esc(jrPhrase(r))}${r.libelle&&r.action!=="connexion"?` · <em>${esc(r.libelle)}</em>`:""}<small>${esc([ROLES[r.role]||r.role,jrGroupe(r),r.ville,n?n+" champ"+(n>1?"s":""):""].filter(Boolean).join(" · "))}</small></span><i class="jr-ch" aria-hidden="true">›</i></button>${ouv?jrDetail(r):""}</div>`}
+function jrFil(L){if(!L.length)return `<p class="fh-empty">Rien dans le journal avec ces critères.</p>`;const jours=new Map();L.forEach(r=>{const k=isoJour(new Date(r.le));(jours.get(k)||jours.set(k,[]).get(k)).push(r)});
+  return [...jours.entries()].slice(0,60).map(([k,l])=>`<div class="jr-j"><b>${esc(jourLong(k))}</b><span>${l.length} action${l.length>1?"s":""}</span></div>${l.slice(0,300).map(jrLigne).join("")}${l.length>300?`<p class="fh-note">${l.length-300} autres ce jour-là : affine la recherche.</p>`:""}`).join("")}
+function jrGroupes(L,cle,lib,champ){const M=new Map();L.forEach(r=>{const k=cle(r);const g=M.get(k)||M.set(k,{k,lib:lib(r),n:0,der:r.le,par:{}}).get(k);g.n++;const a=r.action;g.par[a]=(g.par[a]||0)+1});
+  const l=[...M.values()].sort((a,b)=>b.n-a.n);if(!l.length)return `<p class="fh-empty">Rien dans le journal avec ces critères.</p>`;const mx=l[0].n;
+  return `<div class="jr-g">${l.map(g=>`<button type="button" class="jr-gr" data-jrg="${esc(String(g.k))}" onclick="jrChoisir('${champ}',${typeof g.k==="string"?`'${esc(g.k).replace(/'/g,"\\'")}'`:g.k})"><span class="jr-gn"><b>${esc(g.lib)}</b><small>${["ajout","modif","retrait","connexion"].filter(a=>g.par[a]).map(a=>g.par[a]+" "+({ajout:"ajout",modif:"modification",retrait:"retrait",connexion:"connexion"})[a]+(g.par[a]>1?"s":"")).join(" · ")} · dernière le ${new Date(g.der).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</small></span><span class="jr-gb"><i style="width:${Math.max(4,Math.round(g.n/mx*100))}%"></i></span><span class="jr-gv">${g.n}</span></button>`).join("")}</div>`}
+function jrCorps(){const J=_jr,L=jrFiltre();
+  const corps=J.vue==="qui"?jrGroupes(L,r=>r.par||r.par_nom,r=>(r.par_nom||"?")+(r.role?" · "+(ROLES[r.role]||r.role):""),"qui"):J.vue==="reg"?jrGroupes(L,jrRegion,jrRegion,"reg"):J.vue==="type"?jrGroupes(L,r=>r.objet,r=>(JR_OBJ[r.objet]||[0,0,r.objet])[2],"type"):jrFil(L);
+  const pers=new Set(L.map(r=>r.par||r.par_nom)).size;
+  return `<p class="jr-res">${L.length} action${L.length>1?"s":""} · ${pers} personne${pers>1?"s":""}${J.fin?"":" · journal chargé jusqu'au "+new Date(J.rows[J.rows.length-1].le).toLocaleDateString("fr-FR")}</p>${corps}${J.fin?"":`<button type="button" class="btn ghost" id="jr-plus" onclick="jrPlus(this)">Charger plus ancien</button>`}`}
+async function jrPlus(b){b.disabled=true;await jrCharger(true);jrRendu()}
+function jrExport(){const L=jrFiltre(),c=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const t=[["Date","Heure","Personne","Rôle","Action","Objet","Libellé","Groupe","Ville","Région","Champs modifiés"].map(c).join(";")].concat(L.map(r=>{const d=new Date(r.le);return [d.toLocaleDateString("fr-FR"),d.toLocaleTimeString("fr-FR"),r.par_nom,ROLES[r.role]||r.role,jrPhrase(r),(JR_OBJ[r.objet]||[0,0,r.objet])[2],r.libelle,jrGroupe(r),r.ville,jrRegion(r),r.detail?Object.keys(r.detail).join(", "):""].map(c).join(";")})).join("\n");
+  adhSauver(new Blob(["﻿"+t],{type:"text/csv;charset=utf-8"}),"Journal CRM - "+isoJour(new Date())+".csv");toast(L.length+" lignes exportées","s")}
+function jrRendu(){const J=_jr;if(!J)return;const nomQui=J.qui&&((J.rows.find(r=>(r.par||r.par_nom)===J.qui)||{}).par_nom||"?");
+  const puce=(k,t)=>`<button type="button" class="jr-f" onclick="jrChoisir('${k}',_jr.${k})">${esc(t)} ✕</button>`;
+  document.getElementById("sheet-content").innerHTML=`<h3>Journal</h3><p class="fh-note">Qui a fait quoi, et quand. Visible de toi seul. Touche une ligne pour le détail, une personne ou une région pour ne voir qu'elle.</p>
+    ${J.err?`<p class="fh-empty">${esc(J.err)}</p>`:""}
+    <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="jr-q" type="search" autocomplete="off" placeholder="Une personne, un groupe, une ville, un nom…" value="${esc(J.q)}" oninput="jrChercher(this.value)"></div>
+    <div class="jr-bar"><div class="seg jr-seg" role="tablist">${JR_VUES.map(([k,l])=>`<button type="button" role="tab" aria-selected="${J.vue===k}" class="${J.vue===k?"on":""}" onclick="jrVue('${k}')">${l}</button>`).join("")}</div>
+      <div class="seg jr-seg" role="radiogroup" aria-label="Période">${JR_PER.map(([k,l])=>`<button type="button" role="radio" aria-checked="${J.per===k}" class="${J.per===k?"on":""}" onclick="jrPer('${k}')">${l}</button>`).join("")}</div></div>
+    ${J.qui||J.reg||J.type?`<div class="jr-fs">${J.qui?puce("qui",nomQui):""}${J.reg?puce("reg",J.reg):""}${J.type?puce("type",(JR_OBJ[J.type]||[0,0,J.type])[2]):""}</div>`:""}
+    <div id="jr-res">${jrCorps()}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="jrExport()">Exporter (Excel)</button><button class="btn" onclick="closeSheet()">Fermer</button></div>`}
 function openCoffreNat(){if(!SESSION||SESSION.role!=="superadmin"||SESSION._voir){toast("Réservé au super admin","w");return}
   const V=window._DBvrai||DB,cs=V.natComptes||DB.natComptes||[],A=(V.animateurs||[]).slice().sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
   const avec=A.filter(a=>cs.some(c=>c.animateur_id===a.id)),sans=A.filter(a=>!cs.some(c=>c.animateur_id===a.id)&&(V.acces||[]).some(u=>(u.animateur_id||u.animId)===a.id)&&a.id!==SESSION.animId);
@@ -8366,7 +8440,7 @@ function embRendu(){
     ${ficheKpis([[l.length,"comptes"],[nR,"avec « cap2026 »",nR?"warn":""],[nJ,"jamais connectés",nJ?"warn":""]])}
     <div class="emb-l">${l.map((u,i)=>{const [t,txt]=embEtat(u),a=u.animateur_id&&anim(u.animateur_id),r=_emb.res[u.id];
       return `<div class="emb-c" style="--i:${Math.min(i,12)}"><div class="emb-h"><span class="av" style="background:${roleCouleur(u.role)}">${esc(initiales(u.nom||u.email))}</span>
-        <div><b>${esc(u.nom||u.email)}</b><small>${esc(ROLES[u.role]||u.role)} · identifiant <code>${esc((u.email||"").split("@")[0])}</code></small><span class="emb-e ${t}">${esc(txt)}</span></div></div>
+        <div><b>${esc(u.nom||u.email)}</b><small>${esc(roleDe(u))} · identifiant <code>${esc((u.email||"").split("@")[0])}</code></small><span class="emb-e ${t}">${esc(txt)}</span></div></div>
         ${a?`<div class="field emb-tel"><label>Mobile WhatsApp</label><input type="tel" inputmode="tel" value="${esc(a.tel||"")}" placeholder="06 …" onchange="embTel('${a.id}',this.value)"></div>`:""}
         ${r?`<div class="emb-ok"><div>Mot de passe provisoire : <b>${esc(r.pwd)}</b></div><div class="emb-2"><a class="btn" href="${esc(embWa(u,r.pwd))}" target="_blank" rel="noopener">Envoyer par WhatsApp</a><button class="btn ghost" onclick="embCopier('${u.id}')">Copier le message</button></div></div>`
           :`<button class="btn ${u.mdp_initial||!u.derniere_connexion?"":"ghost"} emb-go" onclick="embInviter('${u.id}')">${_emb.conf[u.id]?"Confirmer : remplacer son mot de passe actuel ?":u.mdp_initial||!u.derniere_connexion?"🔑 Créer ses accès et préparer le message":"🔑 Nouveau mot de passe"}</button>`}</div>`}).join("")}</div>
@@ -9501,7 +9575,7 @@ async function openParametres(){
   const notifLib={actif:"Activées sur cet appareil",inactif:"Désactivées sur cet appareil",refuse:"Bloquées dans le navigateur",ios:"Ajoute d'abord le CRM à l'écran d'accueil",non:"Non disponibles sur cet appareil"}[ne]||"";
   document.getElementById("sheet-content").innerHTML=`
     <h3>Paramètres</h3>
-    <div class="set-who"><span class="av" style="background:${roleCouleur(role)}">${esc(initiales(SESSION.name))}</span><span><b>${esc(SESSION.name)}</b><small>${esc(ROLES[role]||role)} · ${esc(document.getElementById("tb-region").textContent)}</small></span></div>
+    <div class="set-who"><span class="av" style="background:${roleCouleur(role)}">${esc(initiales(SESSION.name))}</span><span><b>${esc(SESSION.name)}</b><small>${esc(SESSION.titre||ROLES[role]||role)} · ${esc(document.getElementById("tb-region").textContent)}</small></span></div>
     ${role!=="visiteur"?`<div class="set-sec">Compte</div><div class="set-l">
       ${ne!=="masque"?r("🔔","Notifications",notifLib,"openNotifs()"):""}
       ${r("🔑","Changer mon mot de passe","","openMyPassword()")}</div>`:""}
@@ -9517,7 +9591,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>
@@ -10016,7 +10090,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

@@ -2705,8 +2705,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.111.0";
+const APP_VERSION="1.112.0";
 const CHANGELOG=[
+  {v:"1.112.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF : nouvelle mise en page — marge rouge étroite avec le numéro de la réunion, la date, l\u2019heure, le lieu et l\u2019animateur ; chiffres posés sur des filets ; membres, membres d\u2019autres groupes et invités en lignes"]}},
   {v:"1.111.0",date:"20 novembre 2026",notes:{"Ajouté":["Points sur activité : « Envoyer le planning par lien » — l\u2019animateur qui n\u2019utilise pas encore le CRM ouvre son lien, voit les créneaux et réserve le sien sans compte. Un créneau pris se verrouille aussitôt pour tout le monde, et la liste se met à jour toute seule"]}},
   {v:"1.110.0",date:"20 novembre 2026",notes:{"Modifié":["Envoi d\u2019une adhésion au CRM national : ouvert à toute l\u2019équipe (animateurs, directeurs de région, direction nationale), chacun avec son propre compte du national","Paramètres → Coffre des comptes du national (super admin seulement) : relire l\u2019identifiant et le mot de passe saisis par chacun, pour les redonner en cas d\u2019oubli"]}},
   {v:"1.109.0",date:"20 novembre 2026",notes:{"Modifié":["Bilan en PDF, résumé WhatsApp et fiche de synthèse : les membres d\u2019autres groupes venus à la réunion ont leur rubrique, en vert, avec leur groupe, leur ville et leur région ; ils ne sont plus mêlés aux invités extérieurs"]}},
@@ -4737,54 +4738,63 @@ function bilanTexte(m){const D=bilDonnees(m),L=[];
   if(D.notes){L.push("");L.push(D.notes)}
   D.rub.forEach(([t,x])=>{L.push("");L.push(t+" : "+x)});
   return L.join("\n")}
+/* v1.112 : marge rouge étroite (numéro de la réunion, date, heure, lieu, animateur) sur chaque page ; à droite, chiffres posés sur des filets
+   et listes en lignes (nom à gauche, entreprise et métier à droite). Choix de JB sur maquette, le 20/11. */
 async function bilanPdf(m){await bilQualites(m);const L=await pdfLibCharger(),doc=await L.PDFDocument.create(),f=await doc.embedFont(L.StandardFonts.Helvetica),fb=await doc.embedFont(L.StandardFonts.HelveticaBold);
-  const D=bilDonnees(m),W=595,H=842,M=44,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.43,.42,.44),filet=L.rgb(.87,.86,.87),pale=L.rgb(.968,.962,.958),blanc=L.rgb(1,1,1),vert=L.rgb(.118,.62,.388);
-  const sur=t=>pdfTexteSur(String(t==null?"":t).replace(/[  ]/g," ").replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/…/g,"...")).replace(/\s+/g," ").trim();
+  const D=bilDonnees(m),W=595,H=842,MG=102,X=MG+26,R=W-38,CW=R-X,BAS=58,rouge=L.rgb(.847,.106,.247),noir=L.rgb(.106,.078,.086),gris=L.rgb(.43,.42,.44),filet=L.rgb(.87,.86,.87),pale=L.rgb(.962,.955,.951),blanc=L.rgb(1,1,1),vert=L.rgb(.118,.62,.388),bleu=L.rgb(.247,.498,.82);
+  const sur=t=>pdfTexteSur(String(t==null?"":t).replace(/[  ]/g," ").replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/…/g,"...")).replace(/\s+/g," ").trim();
   const larg=(t,font,sz)=>font.widthOfTextAtSize(t,sz),num=String(D.numero).padStart(2,"0"),grp=sur(D.groupe),dateC=String(D.d.getDate()).padStart(2,"0")+"/"+String(D.d.getMonth()+1).padStart(2,"0")+"/"+D.d.getFullYear();
-  let pg,y,premiere=true;
-  const page=()=>{pg=doc.addPage([W,H]);y=H-M;if(!premiere){pg.drawText(grp+"  ·  Réunion n° "+num+"  ·  "+dateC,{x:M,y:H-30,size:8.5,font:fb,color:gris});pg.drawLine({start:{x:M,y:H-38},end:{x:W-M,y:H-38},thickness:.6,color:filet});y=H-56}premiere=false};
-  const place=h=>{if(y-h<M+30)page()};
   const lignes=(t,font,sz,lg)=>{const out=[];String(t||"").split(/\n/).forEach(par=>{let l="";sur(par).split(" ").forEach(w=>{const e=l?l+" "+w:w;if(l&&larg(e,font,sz)>lg){out.push(l);l=w}else l=e});out.push(l)});return out};
-  const txt=(t,o)=>{o=o||{};const sz=o.sz||10.5,font=o.b?fb:f,x=o.x||M;lignes(t,font,sz,(o.w||W-M-x)).forEach(l=>{place(sz+5.5);pg.drawText(l,{x,y:y-sz,size:sz,font,color:o.c||noir});y-=sz+5.5})};
-  const titre=(t,n)=>{y-=16;place(46);pg.drawRectangle({x:M,y:y-10,width:4,height:11,color:rouge});pg.drawText(sur(t).toUpperCase(),{x:M+11,y:y-9,size:9.5,font:fb,color:noir});
-    if(n!=null){const s=String(n);pg.drawText(s,{x:W-M-larg(s,fb,9.5),y:y-9,size:9.5,font:fb,color:rouge})}
-    y-=16;pg.drawLine({start:{x:M,y},end:{x:W-M,y},thickness:.6,color:filet});y-=9};
+  let logo=null;try{logo=await doc.embedPng(await (await fetch("logo-proteine-blanc.png")).arrayBuffer())}catch(e){}
+  const etabli="Bilan établi le "+new Date().toLocaleDateString("fr-FR");
+  let pg,y,premiere=true;
+  /* La marge, identique sur toutes les pages. */
+  const marge=()=>{pg.drawRectangle({x:0,y:0,width:MG,height:H,color:rouge});const mx=14,mw=MG-2*mx;let my=H-34;
+    if(logo){const wl=mw,hl=wl*logo.height/logo.width;pg.drawImage(logo,{x:mx,y:my-hl,width:wl,height:hl});my-=hl+30}
+    else{pg.drawText("PROTEINE",{x:mx,y:my-12,size:12,font:fb,color:blanc});my-=44}
+    pg.drawText("RÉUNION N°",{x:mx,y:my,size:6.5,font:fb,color:blanc,opacity:.85});let ns=50;while(ns>26&&larg(num,fb,ns)>mw)ns-=2;pg.drawText(num,{x:mx-1,y:my-ns+4,size:ns,font:fb,color:blanc});my-=ns+24;
+    [["DATE",dateLongue(D.d)+" "+D.d.getFullYear()],["HEURE",m.heure||"Non précisée"],["LIEU",D.lieu||"Non précisé"],["ANIMÉE PAR",D.anim]].forEach(([l,v])=>{
+      pg.drawText(l,{x:mx,y:my,size:6,font:fb,color:blanc,opacity:.85});my-=11;lignes(v,fb,8.5,mw).slice(0,3).forEach(s=>{pg.drawText(s,{x:mx,y:my,size:8.5,font:fb,color:blanc});my-=11});my-=9});
+    lignes(etabli,f,6.5,mw).forEach((s,k)=>pg.drawText(s,{x:mx,y:30-k*8+8,size:6.5,font:f,color:blanc,opacity:.9}))};
+  const page=()=>{pg=doc.addPage([W,H]);marge();y=H-44;
+    if(!premiere){pg.drawText("BILAN DE RÉUNION  ·  SUITE",{x:X,y:y-7,size:7.5,font:fb,color:gris});pg.drawText(grp,{x:X,y:y-26,size:15,font:fb,color:noir});y-=44}premiere=false};
+  const place=h=>{if(y-h<BAS)page()};
+  const txt=(t,o)=>{o=o||{};const sz=o.sz||10,font=o.b?fb:f;lignes(t,font,sz,o.w||CW).forEach(l=>{place(sz+5);pg.drawText(l,{x:o.x||X,y:y-sz,size:sz,font,color:o.c||noir});y-=sz+5})};
+  const titre=(t,n,coul)=>{y-=18;place(48);pg.drawCircle({x:X+3.5,y:y-5.5,size:3.2,color:coul||noir});pg.drawText(sur(t).toUpperCase(),{x:X+13,y:y-8.5,size:8.5,font:fb,color:gris});
+    if(n!=null){const s=String(n);pg.drawText(s,{x:R-larg(s,fb,9),y:y-8.5,size:9,font:fb,color:coul||noir})}y-=17};
+  /* Une ligne de liste : nom à gauche, précision à droite, une ligne sur deux sur fond pâle. */
+  const XC=X+178,rang=(i,nm,s,o)=>{o=o||{};const sl=s?lignes(s,f,9,R-XC-6).slice(0,2):[],h=sl.length>1?29:19;place(h);
+    if(i%2===0)pg.drawRectangle({x:X,y:y-h+2,width:CW,height:h,color:pale});if(o.barre)pg.drawRectangle({x:X,y:y-h+2,width:3,height:h,color:o.barre});
+    let ns=10;const nn=sur(nm);while(ns>7.5&&larg(nn,fb,ns)>XC-X-16)ns-=.5;pg.drawText(nn,{x:X+9,y:y-11,size:ns,font:fb,color:o.c||noir});
+    sl.forEach((l,k)=>pg.drawText(l,{x:XC,y:y-11-k*10.5,size:9,font:f,color:o.c2||gris}));y-=h};
   page();
-  /* En-tête : logo à gauche, numéro de la réunion à droite. */
-  try{const img=await doc.embedPng(await (await fetch("logo-proteine.png")).arrayBuffer()),hl=44,wl=hl*img.width/img.height;pg.drawImage(img,{x:M,y:H-30-hl,width:wl,height:hl})}
-  catch(e){pg.drawText("CLUB D'AFFAIRES PROTEINE",{x:M,y:H-56,size:12,font:fb,color:rouge})}
-  const e1="BILAN DE RÉUNION",e2="N° "+num;pg.drawText(e1,{x:W-M-larg(e1,fb,8.5),y:H-40,size:8.5,font:fb,color:gris});pg.drawText(e2,{x:W-M-larg(e2,fb,28),y:H-70,size:28,font:fb,color:rouge});
-  /* Bandeau : le groupe en grand, puis le type, la date et l'heure. */
-  const bh=92,by=H-92-bh;pg.drawRectangle({x:0,y:by,width:W,height:bh,color:rouge});
-  pg.drawText("GROUPE",{x:M,y:by+bh-22,size:8,font:fb,color:blanc,opacity:.85});
-  let gs=27;while(gs>15&&larg(grp,fb,gs)>W-2*M)gs--;pg.drawText(grp,{x:M,y:by+bh-24-gs,size:gs,font:fb,color:blanc});
-  pg.drawText(sur(typeLib(m)+(m.theme?" : "+m.theme:"")+"  ·  "+dateLongue(D.d)+" "+D.d.getFullYear()+(m.heure?"  ·  "+m.heure:"")),{x:M,y:by+14,size:11,font:f,color:blanc});
-  y=by-14;
-  /* Fiche : date, heure, lieu, animateur. */
-  const F=[["DATE",dateLongue(D.d)+" "+D.d.getFullYear()],["HEURE",m.heure||"Non précisée"],["LIEU",D.lieu||"Non précisé"],["ANIMÉE PAR",D.anim]],fw=(W-2*M-3*8)/4,fh=50;
-  F.forEach(([l,v],i)=>{const x=M+i*(fw+8);pg.drawRectangle({x,y:y-fh,width:fw,height:fh,color:pale});pg.drawText(l,{x:x+9,y:y-15,size:7,font:fb,color:gris});
-    lignes(v,fb,9.5,fw-18).slice(0,2).forEach((s,k)=>pg.drawText(s,{x:x+9,y:y-30-k*12,size:9.5,font:fb,color:noir}))});
-  y-=fh+10;
-  /* Chiffres. */
-  const K=[[D.nPres,"membres présents"],[D.nInv,"invités venus"],[D.nAdh,"adhésions obtenues"],[D.recos,"recommandations"],[D.montant?madFmt(D.montant).replace(/\s?MAD/,""):"0","MAD d'affaires"]],lw=(W-2*M-4*8)/5,kh=58;
-  K.forEach(([v,l],i)=>{const x=M+i*(lw+8),s=sur(String(v)),sz=s.length>7?14:21;pg.drawRectangle({x,y:y-kh,width:lw,height:kh,borderColor:filet,borderWidth:1});pg.drawRectangle({x,y:y-3,width:lw,height:3,color:i===4?rouge:noir});
-    pg.drawText(s,{x:x+10,y:y-33,size:sz,font:fb,color:i===4?rouge:noir});pg.drawText(sur(l),{x:x+10,y:y-48,size:7.5,font:f,color:gris})});
-  y-=kh+2;
+  /* Titre : le groupe en grand, puis le type de réunion. */
+  pg.drawText("BILAN DE RÉUNION",{x:X,y:y-7,size:7.5,font:fb,color:gris});let gs=27;while(gs>15&&larg(grp,fb,gs)>CW)gs--;pg.drawText(grp,{x:X,y:y-14-gs,size:gs,font:fb,color:noir});y-=20+gs;
+  pg.drawText(sur(typeLib(m)+(m.theme?" : "+m.theme:"")),{x:X,y:y-11,size:11,font:f,color:gris});y-=26;
+  /* Chiffres : trois colonnes entre deux filets. */
+  pg.drawLine({start:{x:X,y},end:{x:R,y},thickness:1.6,color:noir});
+  const K=[[D.nPres,"membre"+(D.nPres>1?"s":"")+" présent"+(D.nPres>1?"s":"")+(D.nbMembres?" sur "+D.nbMembres:"")],[D.nInv,"invité"+(D.nInv>1?"s":"")+" venu"+(D.nInv>1?"s":"")],[D.nAdh,"adhésion"+(D.nAdh>1?"s":"")+" obtenue"+(D.nAdh>1?"s":"")]],kw=CW/3,kh=62;
+  K.forEach(([v,l],i)=>{const x=X+i*kw+(i?12:0);if(i)pg.drawLine({start:{x:X+i*kw,y:y-6},end:{x:X+i*kw,y:y-kh+6},thickness:.6,color:filet});
+    pg.drawText(sur(String(v)),{x,y:y-36,size:30,font:fb,color:noir});pg.drawText(sur(l),{x,y:y-51,size:8,font:f,color:gris})});
+  y-=kh;pg.drawLine({start:{x:X,y},end:{x:R,y},thickness:.6,color:filet});
+  /* Affaires : recommandations à gauche, chiffre d'affaires à droite. */
+  const ca=sur(D.montant?madFmt(D.montant):"0 MAD");pg.drawText("AFFAIRES",{x:X,y:y-17,size:7.5,font:fb,color:gris});
+  pg.drawText(sur(D.recos+" recommandation"+(D.recos>1?"s":"")+" passée"+(D.recos>1?"s":"")),{x:X,y:y-31,size:9.5,font:f,color:noir});
+  let cs=22;while(cs>13&&larg(ca,fb,cs)>CW-170)cs--;pg.drawText(ca,{x:R-larg(ca,fb,cs),y:y-30,size:cs,font:fb,color:rouge});
+  y-=44;pg.drawLine({start:{x:X,y},end:{x:R,y},thickness:.6,color:filet});
   /* Membres présents, en deux colonnes. */
-  if(D.presents.length){titre("Membres présents",D.presents.length+(D.nbMembres?" sur "+D.nbMembres:""));const col=(W-2*M)/2,rg=Math.ceil(D.presents.length/2);
-    for(let r=0;r<rg;r++){place(16);[D.presents[r],D.presents[r+rg]].forEach((nm,c)=>{if(!nm)return;const x=M+c*col;pg.drawCircle({x:x+4,y:y-6.5,size:2.2,color:vert});pg.drawText(sur(nm),{x:x+13,y:y-10,size:10.5,font:f,color:noir})});y-=16}}
-  if(D.absents.length){y-=4;txt("Absents : "+D.absents.join("  ·  "),{sz:9,c:gris})}
-  /* Invités venus : nom, puis entreprise et métier. */
-  if(D.autres.length){const vr=L.rgb(.118,.62,.388);titre("Membres d'autres groupes",D.autres.length);D.autres.forEach((x,i)=>{place(19);if(i%2===0)pg.drawRectangle({x:M,y:y-16,width:W-2*M,height:18,color:pale});
-    pg.drawRectangle({x:M,y:y-16,width:3,height:18,color:vr});pg.drawText(sur(x.nom),{x:M+10,y:y-11,size:10,font:fb,color:vr});
-    const s2=[x.groupe,x.ville,x.region&&x.region!==x.ville?"région "+x.region:""].filter(Boolean).join("  ·  ");if(s2){const l=lignes(s2,f,9.5,W-M-(M+210)-8)[0];pg.drawText(l,{x:M+210,y:y-11,size:9.5,font:f,color:noir})}y-=18})}
-  if(D.venus.length){titre("Invités venus",D.venus.length);D.venus.forEach(([nm,s],i)=>{place(19);if(i%2===0)pg.drawRectangle({x:M,y:y-16,width:W-2*M,height:18,color:pale});
-    pg.drawText(sur(nm),{x:M+8,y:y-11,size:10,font:fb,color:noir});if(s){const l=lignes(s,f,9.5,W-M-(M+210)-8)[0];pg.drawText(l,{x:M+210,y:y-11,size:9.5,font:f,color:gris})}y-=18})}
-  if(D.notes){titre("Notes du bilan");txt(D.notes)}
-  D.rub.forEach(([t,x])=>{titre(t);txt(x)});
-  if(!D.rub.length&&!D.notes){titre("Compte rendu");txt("Pas de compte rendu écrit pour cette réunion.",{c:gris})}
-  const n=doc.getPageCount(),pied=sur(grp+"  ·  Réunion n° "+num+"  ·  établi le "+new Date().toLocaleDateString("fr-FR")+" par "+((SESSION&&SESSION.name)||"l'équipe"));
-  doc.getPages().forEach((p,i)=>{p.drawLine({start:{x:M,y:36},end:{x:W-M,y:36},thickness:.6,color:filet});p.drawText(pied,{x:M,y:23,size:7.5,font:f,color:gris});const s=(i+1)+" / "+n;p.drawText(s,{x:W-M-larg(s,f,7.5),y:23,size:7.5,font:f,color:gris})});
+  if(D.presents.length){titre("Membres présents",D.presents.length+(D.nbMembres?" sur "+D.nbMembres:""),bleu);const col=CW/2,rg=Math.ceil(D.presents.length/2);
+    for(let r=0;r<rg;r++){place(17);if(r%2===0)pg.drawRectangle({x:X,y:y-15,width:CW,height:17,color:pale});
+      [D.presents[r],D.presents[r+rg]].forEach((nm,c)=>{if(!nm)return;pg.drawText(sur(nm),{x:X+9+c*col,y:y-10,size:10,font:fb,color:noir})});y-=17}}
+  if(D.absents.length){y-=5;txt("Absents : "+D.absents.join("  ·  "),{sz:8.5,c:gris})}
+  if(D.autres.length){titre("Membres d'autres groupes",D.autres.length,vert);D.autres.forEach((x,i)=>rang(i,x.nom,[x.groupe,x.ville,x.region&&x.region!==x.ville?"région "+x.region:""].filter(Boolean).join("  ·  "),{barre:vert,c:vert,c2:noir}))}
+  if(D.venus.length){titre("Invités venus",D.venus.length,gris);D.venus.forEach(([nm,s],i)=>rang(i,nm,s))}
+  /* Compte rendu. */
+  const sous=t=>{y-=7;place(30);pg.drawText(sur(t).toUpperCase(),{x:X,y:y-8,size:7.5,font:fb,color:noir});y-=14};
+  if(D.notes||D.rub.length){titre("Compte rendu",null,noir);if(D.notes)txt(D.notes);D.rub.forEach(([t,x])=>{sous(t);txt(x,{c:L.rgb(.26,.24,.25)})})}
+  else{titre("Compte rendu",null,noir);txt("Pas de compte rendu écrit pour cette réunion.",{c:gris})}
+  const n=doc.getPageCount(),pied=sur(grp+"  ·  Réunion n° "+num+"  ·  "+dateC+"  ·  par "+((SESSION&&SESSION.name)||"l'équipe"));
+  doc.getPages().forEach((p,i)=>{p.drawLine({start:{x:X,y:40},end:{x:R,y:40},thickness:.6,color:filet});p.drawText(pied,{x:X,y:27,size:7.5,font:f,color:gris});const s=(i+1)+" / "+n;p.drawText(s,{x:R-larg(s,f,7.5),y:27,size:7.5,font:f,color:gris})});
   doc.setTitle(grp+" - Réunion n° "+num+" - "+dateC);doc.setAuthor("Club d'Affaires Protéine");
   return new Blob([await doc.save()],{type:"application/pdf"})}
 /* À qui : le directeur national. Mobile gardé dans les réglages partagés (super admin), sinon sur l'appareil. */

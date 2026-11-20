@@ -2685,6 +2685,39 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .jr-gr:hover{border-color:var(--crimson)}.jr-gn b{display:block;font-size:14px}.jr-gn small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}.jr-gb{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.jr-gb i{display:block;height:100%;background:var(--crimson);border-radius:3px}.jr-gv{font:800 16px "Bricolage Grotesque",sans-serif;text-align:right}
 #jr-plus{margin-top:12px}
 @media (max-width:600px){.jr-d{padding-left:12px}.jr-gr{grid-template-columns:minmax(0,1fr) 40px}.jr-gb{display:none}.jr-h{grid-template-columns:40px 22px minmax(0,1fr) 12px;gap:6px}}
+/*v1.133 planning de la région : calendrier + réunions du jour*/
+.vp{display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:26px;align-items:start}
+.vp-cal{display:grid;gap:12px;min-width:0}.vp-nav{display:flex;align-items:center;justify-content:space-between}.vp-nav b{font:800 18px "Bricolage Grotesque",Inter,sans-serif}.vp-nav .btn{min-width:40px;font-size:18px}
+.vp-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.vp-jn{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding-bottom:2px}
+.vp-j{aspect-ratio:1/1;min-height:42px;border:1px solid transparent;border-radius:12px;background:none;color:var(--muted);font:600 13px Inter,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:0;transition:transform .15s,background .15s}
+.vp-j.vide{cursor:default}.vp-j.a{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:800}.vp-j.a.passe b{opacity:.75}
+.vp-j:not(.vide):hover{transform:translateY(-1px);border-color:var(--ink)}.vp-j.auj{box-shadow:inset 0 0 0 2px var(--crimson)}
+.vp-j.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.vp-j i{display:flex;gap:3px;align-items:center;height:7px;font-style:normal}.vp-j u{width:7px;height:7px;border-radius:50%;background:var(--vc,#8C8085);text-decoration:none}.vp-j u.x{background:none;border:1.5px solid var(--muted)}.vp-j u.ev{width:12px;border-radius:3px;background:var(--crimson)}
+.vp-j.on u{background:#fff}.vp-j.on u.x{background:none;border-color:#fff}.vp-j s{font-size:9px;text-decoration:none}
+.vp-res{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}.vp-res b{color:var(--ink)}
+.vp-pied{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.vp-dr{display:grid;gap:10px;min-width:0;align-content:start}
+.vp-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}.vp-h small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.vp-h b{font:800 19px "Bricolage Grotesque",Inter,sans-serif;text-transform:capitalize}
+.vp-n,.vp-vide{margin:0;font-size:13px;color:var(--muted)}.vp-vide{padding:18px 0}
+.vp-r{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--vc,#8C8085);border-radius:14px;padding:4px 12px 4px 4px;min-width:0}
+.vp-rb{flex:1;min-width:0;display:flex;align-items:center;gap:12px;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:8px;cursor:pointer;border-radius:10px}.vp-rb:hover{background:rgba(127,127,127,.09)}
+.vp-d{flex:none;width:44px;display:flex;flex-direction:column;align-items:center;line-height:1.05}.vp-d b{font:800 20px "Bricolage Grotesque",Inter,sans-serif}.vp-d small{font-size:10.5px;color:var(--muted);text-transform:lowercase}
+.vp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.vp-t>b{font-size:14.5px}.vp-t>small{font-size:12px;color:var(--muted)}.vp-l{font-size:12.5px}.vp-f{font-size:12px;color:var(--muted)}
+.vp-e{flex:none;font-style:normal;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.vp-r.f .vp-e{background:#2E7D5B;border-color:#2E7D5B;color:#fff}.vp-r.b .vp-e{background:var(--gold);border-color:var(--gold);color:#fff}.vp-r.x{border-style:dashed;border-left-style:solid;background:none}.vp-r.x .vp-t>b{color:var(--muted);text-decoration:line-through}
+.vp-bil{flex:none}
+.vp-ev{display:flex;flex-direction:column;gap:2px;text-align:left;border:0;border-radius:14px;background:var(--crimson);color:#fff;padding:12px 14px;cursor:pointer;font:inherit}.vp-ev small{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.vp-ev b{font-size:15px}
+.vp-plus{justify-self:start}
+.vp-sans{display:grid;gap:6px;padding-top:6px}.vp-sans small{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.vp-sans div{display:flex;flex-wrap:wrap;gap:6px}
+.vp-sans button,.vp-sans span{border:1px dashed var(--line);background:none;color:var(--ink);border-radius:999px;padding:7px 12px;font:600 12.5px Inter,sans-serif;min-height:34px}.vp-sans button{cursor:pointer}.vp-sans button:hover{border-color:var(--ink)}
+@media(max-width:899.98px){.vp{grid-template-columns:minmax(0,1fr);gap:16px}.vp-r{flex-direction:column;align-items:stretch;padding:4px}.vp-rb{flex-wrap:wrap}.vp-t{flex:1 1 60%}.vp-e{margin-left:56px}.vp-r:not(:has(.vp-d)) .vp-e{margin-left:0}.vp-bil{margin:0 8px 8px;align-self:flex-start}}
+@media(prefers-reduced-motion:reduce){.vp-j{transition:none}}
+/*v1.133 archives du groupe : des lignes qui portent l'information*/
+.grp-cr .gc-t{flex:0 1 300px;min-width:0}.gc-x{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.gc-c{display:flex;flex-direction:column;gap:1px;min-width:0}.gc-c small{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.gc-c b{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gc-c em{font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grp-cr.avenir .gc-c b{font-weight:600}
+@media(max-width:1099.98px){.grp-cr{flex-wrap:wrap}.grp-cr .gc-t{flex:1 1 0}.gc-x{order:5;flex:1 1 100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;padding:8px 0 2px;border-top:1px dashed var(--line)}.gc-c:nth-child(3){grid-column:1 / -1}}
 </style>
 </head>
 <body>
@@ -2795,8 +2828,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.132.0";
+const APP_VERSION="1.133.0";
 const CHANGELOG=[
+  {v:"1.133.0",date:"20 novembre 2026",notes:{"Ajouté":["Planning de la région : un calendrier à gauche ; en touchant un jour, les groupes réunis ce jour-là s'affichent à droite avec le détail (type, heure, lieu, animateur, invités, résultat). Sans jour choisi, toutes les réunions du mois et les groupes sans réunion.","Bilans et archives d'un groupe : chaque ligne donne le groupe et son animateur, le jour, l'heure, le lieu, les invités inscrits ou le résultat."]}},
   {v:"1.132.0",date:"20 novembre 2026",notes:{"Corrigé":["Carte du réseau : les villes restent sur la terre et dans le bon ordre le long de la côte (Casablanca n'est plus dans l'océan)."],"Ajouté":["Sur ordinateur, la page de réservation des PSA (calendrier à gauche, heures à droite) et la page d'invitation à une réunion (la réunion à gauche, les explications à droite) prennent la largeur de l'écran. Rien ne change au téléphone."]}},
   {v:"1.131.0",date:"20 novembre 2026",notes:{"Ajouté":["Espace membre sur ordinateur : la page prend toute la largeur. Les onglets passent en haut avec le bouton « Recommander quelqu'un » à droite, l'accueil et Mon groupe s'affichent en deux colonnes, le Réseau, les réunions et le menu Moi en grille. Rien ne change au téléphone."]}},
   {v:"1.130.0",date:"20 novembre 2026",notes:{"Ajouté":["Un compte peut porter un titre affiché à la place du libellé de son rôle (Ghita : « Office Manager ») ; ses droits ne changent pas.","Journal, réservé au super admin (Paramètres → Administration, et menu Équipe) : qui a fait quoi et quand. Le fil complet jour par jour, ou rangé par personne, par région, par type ; recherche, période, détail de chaque action (les champs modifiés, avant et après), export pour Excel. Les connexions au CRM y sont notées aussi."]}},
@@ -4346,6 +4380,48 @@ const VILLE_TEINTE={Rabat:"#D81B3F","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
 function vrTeinte(v){return VILLE_TEINTE[v]||villeColor(v)}
 function vrMois(){const l=[];for(let i=-6;i<=3;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()+i,1);l.push({k:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),lab:MOIS[d.getMonth()],an:d.getFullYear(),auj:i===0,futur:i>0})}return l}
 function vrVille(v){if(typeof monPeut==="function"&&monPeut()){_mon.niv="ville";_mon.cle=v;go("monitoring")}else go("clubs")}
+/* v1.133 : planning de la région = calendrier à gauche, réunions du jour (ou du mois) à droite */
+function vrPlanMois(){return window._vrM||(TODAY.getFullYear()+"-"+String(TODAY.getMonth()+1).padStart(2,"0"))}
+function vrPlanAller(s){const[y,m]=vrPlanMois().split("-").map(Number),d=s?new Date(y,m-1+s,1):new Date(TODAY.getFullYear(),TODAY.getMonth(),1);window._vrM=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");window._vrJ="";vrPlanMaj()}
+function vrPlanJour(iso){window._vrJ=window._vrJ===iso?"":iso;vrPlanMaj()}
+function vrPlanMaj(){const z=document.getElementById("vr-plan");if(z)z.innerHTML=avecVue(vrPlanCorps)}
+function vrPlanEtat(r){return r.statut==="annulee"||r.statut==="archivee"?"x":r.statut==="realisee"?"f":reuFinie(r)?"b":"v"}
+function vrPlanCarte(r,peut,avecDate){const c=club(r.clubId),e=vrPlanEtat(r),a=anim(r.animId||c.animId),d=dObj(r.date);
+  const etat={f:"✓ Réalisée",b:"Bilan à saisir",v:r.statut==="confirmee"?"Confirmée":"Prévue",x:r.statut==="archivee"?"Archivée sans bilan":"Annulée"}[e];
+  const faits=e==="f"?[r.presents!=null?r.presents+" présent"+(r.presents>1?"s":""):"",r.invitesVenus!=null?r.invitesVenus+" invité"+(r.invitesVenus>1?"s":"")+" venu"+(r.invitesVenus>1?"s":""):"",r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":""):""].filter(Boolean)
+    :e==="v"?[(r.guests||[]).length?(r.guests.length+" invité"+(r.guests.length>1?"s":"")+" inscrit"+(r.guests.length>1?"s":"")):"Pas encore d'invité"]:e==="x"&&r.motif?[r.motif]:[];
+  return `<div class="vp-r ${e}" style="--vc:${vrTeinte(c.ville)}"><button type="button" class="vp-rb" onclick="openMeeting('${r.id}')">
+    ${avecDate?`<span class="vp-d"><b>${d.getDate()}</b><small>${JOURS_LONG[d.getDay()||7].slice(0,3)}.</small></span>`:""}
+    <span class="vp-t"><b>${esc(String(c.nom||"Groupe").replace(/^CAP\s+/,""))}</b><small>${esc(c.ville||"")}${a?" · animé par "+esc(a.nom.split(/\s+/)[0]):""}</small>
+      <span class="vp-l">${esc(typeLib(r))}${r.theme?" : "+esc(r.theme):""} · ${esc(r.heure?String(r.heure).slice(0,5).replace(":"," h "):"heure à définir")} · ${esc(lieuNom(r.lieuId))}</span>
+      ${faits.length?`<span class="vp-f">${faits.map(esc).join(" · ")}</span>`:""}</span>
+    <em class="vp-e">${esc(etat)}</em></button>${e==="b"&&peut&&canEditClubId(r.clubId)?`<button type="button" class="btn mini vp-bil" onclick="openBilan('${r.id}')">Saisir le bilan</button>`:""}</div>`}
+function vrPlanCorps(){
+  const peut=!readOnly(),mk=vrPlanMois(),[y,mo]=mk.split("-").map(Number),auj=isoJour(TODAY),sel=window._vrJ&&window._vrJ.startsWith(mk)?window._vrJ:"";
+  const ids=new Set(DB.clubs.map(c=>c.id)),L=DB.reunions.filter(r=>ids.has(r.clubId)&&r.date.startsWith(mk)).sort((a,b)=>(a.date+(a.heure||"")).localeCompare(b.date+(b.heure||"")));
+  const parJ={};L.forEach(r=>(parJ[r.date]=parJ[r.date]||[]).push(r));
+  const EV=(typeof evts==="function"?evts():[]).filter(e=>String(e.date).startsWith(mk));
+  const n1=new Date(y,mo-1,1),nb=new Date(y,mo,0).getDate(),dec=(n1.getDay()+6)%7,cases=[];
+  for(let i=0;i<dec;i++)cases.push(`<span class="vp-j vide"></span>`);
+  for(let j=1;j<=nb;j++){const iso=mk+"-"+String(j).padStart(2,"0"),l=parJ[iso]||[],ev=EV.filter(e=>e.date===iso);
+    cases.push(`<button type="button" class="vp-j${l.length||ev.length?" a":""}${iso===auj?" auj":""}${iso===sel?" on":""}${iso<auj?" passe":""}" data-vpj="${iso}" onclick="vrPlanJour('${iso}')" aria-pressed="${iso===sel}" aria-label="${esc(dateLongue(dObj(iso)))} : ${l.length} réunion${l.length>1?"s":""}"><b>${j}</b><i>${ev.length?`<u class="ev"></u>`:""}${l.slice(0,4).map(r=>`<u class="${vrPlanEtat(r)}" style="--vc:${vrTeinte(club(r.clubId).ville)}"></u>`).join("")}${l.length>4?`<s>+${l.length-4}</s>`:""}</i></button>`)}
+  const n={f:0,v:0,b:0,x:0};L.forEach(r=>n[vrPlanEtat(r)]++);
+  const cal=`<div class="vp-cal"><div class="vp-nav"><button type="button" class="btn ghost mini" onclick="vrPlanAller(-1)" aria-label="Mois précédent">‹</button><b>${MOIS_LONG[mo-1]} ${y}</b><button type="button" class="btn ghost mini" onclick="vrPlanAller(1)" aria-label="Mois suivant">›</button></div>
+    <div class="vp-g">${["L","M","M","J","V","S","D"].map(x=>`<span class="vp-jn">${x}</span>`).join("")}${cases.join("")}</div>
+    <div class="vp-res">${[[n.f,"tenue","tenues"],[n.v,"à venir","à venir"],[n.b,"bilan à saisir","bilans à saisir"],[n.x,"annulée ou archivée","annulées ou archivées"]].filter(x=>x[0]).map(([k,s,p])=>`<span><b>${k}</b> ${k>1?p:s}</span>`).join("")||"<span>Aucune réunion ce mois-ci</span>"}</div>
+    <div class="vp-pied">${mk!==auj.slice(0,7)?`<button type="button" class="btn ghost mini" onclick="vrPlanAller(0)">Revenir à aujourd'hui</button>`:""}${peut?`<button type="button" class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button>`:""}</div></div>`;
+  let droite;
+  if(sel){const l=parJ[sel]||[],ev=EV.filter(e=>e.date===sel);
+    droite=`<div class="vp-h"><div><small>Le jour choisi</small><b>${esc(dateLongue(dObj(sel)))} ${y}</b></div><button type="button" class="btn ghost mini" onclick="vrPlanJour('${sel}')">Tout le mois</button></div>
+      ${ev.map(e=>`<button type="button" class="vp-ev" onclick="evtOuvrir('${e.id}')"><small>${esc(e.genre||"Événement")} · tout le réseau</small><b>${esc(e.titre)}</b></button>`).join("")}
+      ${l.length?`<p class="vp-n">${l.length} groupe${l.length>1?"s":""} réuni${l.length>1?"s":""} ce jour-là</p>${l.map(r=>vrPlanCarte(r,peut,false)).join("")}`:(ev.length?"":`<p class="vp-vide">Aucun groupe ne se réunit ce jour-là.</p>`)}
+      ${peut&&sel>=auj?`<button type="button" class="btn ghost vp-plus" onclick="calNouvelle('${sel}')">＋ Planifier une réunion ce jour</button>`:""}`}
+  else{const sans=mk>=auj.slice(0,7)?DB.clubs.filter(c=>!c.pause&&!L.some(r=>r.clubId===c.id&&r.statut!=="annulee")):[];
+    droite=`<div class="vp-h"><div><small>Tout le mois</small><b>${MOIS_LONG[mo-1]} ${y} · ${L.length} réunion${L.length>1?"s":""}</b></div></div>
+      ${EV.map(e=>`<button type="button" class="vp-ev" onclick="evtOuvrir('${e.id}')"><small>${esc(e.genre||"Événement")} · ${esc(dateLongue(dObj(e.date)))}</small><b>${esc(e.titre)}</b></button>`).join("")}
+      ${L.length?L.map(r=>vrPlanCarte(r,peut,true)).join(""):`<p class="vp-vide">Aucune réunion ce mois-ci dans la région.</p>`}
+      ${sans.length?`<div class="vp-sans"><small>Sans réunion ce mois-ci</small><div>${sans.map(c=>peut&&canEditClubId(c.id)?`<button type="button" onclick="planifierSuivante('${c.id}')">＋ ${esc(c.nom.replace(/^CAP\s+/,""))}</button>`:`<span>${esc(c.nom.replace(/^CAP\s+/,""))}</span>`).join("")}</div></div>`:""}`}
+  return `<div class="vp">${cal}<div class="vp-dr">${droite}</div></div>`}
 function viewRegion(){
   const R=vueRegion(),cl=DB.clubs.slice(),ids=new Set(cl.map(c=>c.id));
   const aVenir=DB.reunions.filter(r=>!isPast(r.date)&&r.statut!=="annulee");
@@ -4393,11 +4469,9 @@ function viewRegion(){
   const band=`<div class="vn-band reg"><small>Vue régionale</small><b>${esc(R.nom)}</b><span>${nbV} ville${nbV>1?"s":""} · ${cl.length} groupe${cl.length>1?"s":""} (${actifs} actif${actifs>1?"s":""}) · ${nbA} animateur${nbA>1?"s":""} · ${nbPersonnes(DB.membres)} membre${nbPersonnes(DB.membres)>1?"s":""}</span>${vuePeutBasculer()?`<button class="btn ghost mini" onclick="vueChoisir('nat')">🌍 Passer à la vue nationale</button>`:""}</div>`;
   const groupes=dashSec("groupes","🏛","Les groupes de la région","Ville par ville, du plus urgent au plus calme · touche une ligne pour ouvrir le groupe",
     `${todo.length?`<div class="vr-todo in">${todo.map(([t,a])=>`<button onclick="${a}">${t}<span>›</span></button>`).join("")}</div>`:""}<div class="vr-tab in"><div class="vr-tw"><table><thead><tr><th>Groupe</th><th class="vr-an">Animateur</th><th class="vr-n">Membres</th><th class="vr-pro">Prochaine</th><th>État</th></tr></thead><tbody>${lignesVille()}</tbody></table></div></div>`);
-  const plan=dashSec("plan","📆","Planning de la région","Six mois passés, le mois en cours et trois à venir · touche une case pour ouvrir ou planifier",
-    `${peut?`<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn mini" onclick="openPlanSerie()">📆 Planifier en série</button></div>`:""}
-    ${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}
-    <div class="vr-tw">${grille}</div>
-    <div class="vr-leg"><span><i class="vr-pt f">✓</i>réalisée</span><span><i class="vr-pt v">12</i>prévue (jour du mois)</span><span><i class="vr-pt b">!</i>bilan à saisir</span><span><i class="vr-pt x">✕</i>annulée</span>${peut?`<span><i class="vr-pt p">+</i>à planifier</span>`:""}</div>`);
+  const plan=dashSec("plan","📆","Planning de la région","Touche un jour : les groupes réunis ce jour-là s'affichent à droite, avec le détail",
+    `${!aVenir.length?`<div class="vr-alerte">📅 Aucune réunion à venir dans la région${dernier?" · dernière le "+esc(dateLongue(dObj(dernier))):""}${sansBil.length?" · "+sansBil.length+" bilan"+(sansBil.length>1?"s":"")+" à saisir":""}</div>`:""}
+    <div id="vr-plan">${vrPlanCorps()}</div>`);
   return viewDashboard({band,lieu:R.nom,apres:groupes+plan});
 }
 function updateRegionLabel(){
@@ -5016,9 +5090,12 @@ function grpCR(c,D){const auj=isoJour(TODAY),l=D.reu.slice().sort((a,b)=>b.date.
   const ligne=(r,i)=>{const d=dObj(r.date),ed=canEditReunion(r)&&!readOnly(),fait=r.statut==="realisee",att=reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee"),b=(r.cr&&r.cr.bilan)||{};
     const sous=fait?[(r.presents??0)+" présent"+((r.presents||0)>1?"s":""),(r.invitesVenus??0)+" invité"+((r.invitesVenus||0)>1?"s":""),r.adhObt?r.adhObt+" adhésion"+(r.adhObt>1?"s":""):"",r.crLe?"compte rendu écrit":"",b.transmis_le?"transmis":""].filter(Boolean).join(" · "):att?"Bilan à saisir":r.date>=auj&&r.statut!=="annulee"?"À venir"+(r.lieuId?" · "+lieuNom(r.lieuId):""):(STATUTS[r.statut]||"");
     const futur=!fait&&!att&&r.date>=auj&&r.statut!=="annulee";
+    const an=anim(r.animId||c.animId),ng=(r.guests||[]).length,col=(k,v,s)=>v?`<span class="gc-c"><small>${k}</small><b>${esc(v)}</b>${s?`<em>${esc(s)}</em>`:""}</span>`:"";
+    const cols=col("Groupe",String(c.nom||"").replace(/^CAP\s+/,""),an?"animé par "+an.nom:"sans animateur")+col("Quand",JOURS_LONG[d.getDay()||7]+(r.heure?" · "+String(r.heure).slice(0,5).replace(":"," h "):""),r.lieuId?lieuNom(r.lieuId):"lieu à définir")+(fait?col("Résultat",(r.presents??0)+" présent"+((r.presents||0)>1?"s":""),(r.invitesVenus??0)+" invité"+((r.invitesVenus||0)>1?"s":"")+" venu"+((r.invitesVenus||0)>1?"s":"")+(r.adhObt?" · "+r.adhObt+" adhésion"+(r.adhObt>1?"s":""):"")):r.statut==="annulee"?col("Motif",r.motif||"non précisé",""):col("Invités",ng?ng+" inscrit"+(ng>1?"s":""):"aucun pour l'instant",r.theme||""));
     return `<div class="grp-cr ${fait?"ok":att?"todo":"neutre"}${futur?" avenir":""}" role="button" tabindex="0" style="--i:${Math.min(i,14)}" onclick="openMeeting('${r.id}')" onkeydown="if(event.key==='Enter')openMeeting('${r.id}')">
       <span class="reu-d"><b>${d.getDate()}</b><small>${MOIS[d.getMonth()]}</small></span>
       <span class="gc-t"><b>${reuVerrou(r)?"🔒 ":""}${r.statut!=="annulee"&&r.statut!=="archivee"?"N° "+bilNumero(r)+" · ":""}${esc(typeLib(r))} · ${esc(STATUTS[r.statut]||"")}</b><small>${esc(sous)}</small></span>
+      <span class="gc-x">${cols}</span>
       <span class="gc-a">${att&&ed?`<button class="btn mini" onclick="event.stopPropagation();openBilan('${r.id}')">Saisir</button>`:fait?`<button class="btn ghost mini" title="Télécharger le bilan en PDF" aria-label="Télécharger le bilan en PDF" onclick="event.stopPropagation();bilEnvTelecharger('${r.id}',this)">📄</button><button class="btn ghost mini" title="Transmettre le bilan" aria-label="Transmettre le bilan" onclick="event.stopPropagation();openBilanEnvoi('${r.id}')">📤</button>`:""}</span></div>`};
   return `<p class="grp-note">${l.length} réunion${l.length>1?"s":""} au total, ${faites} avec bilan${D.sansBilan.length?`, <b style="color:var(--crimson-txt,var(--crimson))">${D.sansBilan.length} bilan${D.sansBilan.length>1?"s":""} à saisir</b>`:""}. Chaque bilan se ressort en PDF.</p>
     ${l.length?ans.map(a=>{const la=l.filter(r=>r.date.startsWith(a)),fa=la.filter(r=>r.statut==="realisee").length;

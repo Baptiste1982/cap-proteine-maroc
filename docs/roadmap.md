@@ -54,5 +54,4 @@ Bilan en PDF (marge rouge, membres d'autres groupes), coffre des comptes du nati
 
 ## En suspens (décision de JB)
 
-- Interclub « One team - One Community » du 4/12 : pas dans le planning (une réunion exige un groupe).
 - Vidéos animateur et membre avec voix off.

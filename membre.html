@@ -417,6 +417,9 @@ a.ac-lieu,span.ac-lieu{background:#fff;color:#1B1416;box-shadow:0 2px 8px rgba(6
 span.chaleur{display:inline-flex;align-items:center;gap:5px;background:var(--cc);color:#fff;border-radius:99px;padding:3px 10px;font-weight:700}
 span.chaleur.c1,span.chaleur.c2,span.chaleur.c5{color:#fff}
 span.chaleur.c3,span.chaleur.c4{color:#1B1416}
+/*v1.127 réunions du réseau : portée et événements*/
+.rr-seg{margin:0 0 12px}.rr-seg button{flex:1;min-height:38px;border:0;background:none;border-radius:10px;font:700 13px Inter,sans-serif;color:inherit;cursor:pointer}.rr-seg button.on{background:#D81B3F;color:#fff}
+.rr-ev{display:flex;flex-direction:column;gap:3px;background:#D81B3F;color:#fff;border-radius:16px;padding:14px 16px}.rr-ev small{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.92}.rr-ev b{font-size:18px}.rr-ev span{font-size:13px;opacity:.95}
 </style>
 </head>
 <body>
@@ -729,7 +732,8 @@ function demoPrevus(r){return {acces:r.mon_groupe||r.ma_reponse==="oui",invites:
   qualites:[{nom:"Omar Tazi",q:"reseau",groupe:"CAP Casablanca Anfa",club_id:"k1"},{nom:"Salma Bennis",q:"groupe",groupe:r.club,club_id:"k0"}],
   visiteurs:r.mon_groupe?[]:[{nom:S.moi.nom,groupe:S.moi.club}],quinzaine:{du:new Date(Date.now()-12*864e5).toISOString().slice(0,10),depuis_reunion:true,recos:6,affaires:2,ca:185000}}}
 async function chargerReseauReu(){
-  if(DEMO){if(!S.reseauReu)S.reseauReu=demoReseau();return}
+  if(DEMO){if(!S.reseauReu)S.reseauReu=demoReseau();S.reseauEv=[{id:"e1",genre:"Interclub",titre:"One team - One Community",date:new Date(Date.now()+14*864e5).toISOString().slice(0,10),heure:null,lieu:null}];return}
+  try{const ev=await sb.from("evenements_reseau").select("id,titre,genre,date,heure,lieu").gte("date",new Date().toISOString().slice(0,10)).order("date");S.reseauEv=ev.error?[]:(ev.data||[])}catch(e){S.reseauEv=[]}
   const {data,error}=await sb.rpc("cap_membre_reunions_reseau");S.reseauReu=error?[]:(data||[]);S.reseauErr=error?error.message:"";
 }
 function reseauSous(){const l=S.reseauReu;if(l===undefined){chargerReseauReu().then(()=>{if(S.onglet==="accueil")rendu(true)});return "Tu peux t'inscrire à la réunion de n'importe quel groupe"}
@@ -743,11 +747,15 @@ function carteReseau(r){const h=r.heure?String(r.heure).slice(0,5):"",rp=r.ma_re
     ${voir?`<button type="button" class="rr-voir" data-reu="${r.id}">Voir qui est prévu et la quinzaine du groupe ›</button>`:`<small class="rr-note">Inscris-toi pour voir les invités, les membres et la quinzaine du groupe.</small>`}</div>`}
 function vueReunions(){
   if(S.reseauReu===undefined){chargerReseauReu().then(()=>{if(S.onglet==="reunions")rendu(true)});return `<div class="page">${ariane()}<p class="vide">Chargement…</p></div>`}
-  const L=S.reseauReu,mien=L.filter(r=>r.mon_groupe),autres=L.filter(r=>!r.mon_groupe);
-  return `<div class="page">${ariane()}<div class="head"><div><h1>Réunions du réseau</h1><p class="sub">Tu peux assister à la réunion de n'importe quel groupe, dans toutes les villes. Inscris-toi : l'animateur du groupe est prévenu, et tu vois qui sera là.</p></div></div>
-    ${L.length?`${autres.length?`<div class="rr-l2">${autres.map(carteReseau).join("")}</div>`:`<div class="card"><b>Pas d'autre réunion planifiée.</b><p class="sub">Les réunions des autres groupes apparaîtront ici dès qu'elles seront programmées.</p></div>`}
+  const T=S.reseauReu,RV={};(S.annuaire||[]).forEach(m=>{if(m.ville&&m.region)RV[m.ville]=m.region});
+  const maV=(T.find(r=>r.mon_groupe)||{}).ville||"",reg=r=>RV[r.ville]||r.ville||"",maReg=S.maRegion||RV[maV]||maV,P=["moi","reg","nat"].includes(S.rrP)?S.rrP:"nat";
+  const L=P==="moi"?T.filter(r=>r.mon_groupe):P==="reg"?T.filter(r=>r.mon_groupe||(maReg&&reg(r)===maReg)):T,mien=L.filter(r=>r.mon_groupe),autres=L.filter(r=>!r.mon_groupe),EV=S.reseauEv||[];
+  const seg=`<div class="seg rr-seg" role="tablist" aria-label="Réunions affichées">${[["moi","Mon groupe"],["reg",maReg?"Ma région":"Ma ville"],["nat","Tout le réseau"]].map(([k,l])=>`<button role="tab" aria-selected="${P===k}" class="${P===k?"on":""}" data-rrp="${k}">${l}</button>`).join("")}</div>`;
+  const evH=EV.length?`<div class="rr-l2">${EV.map(e=>`<div class="rr-ev"><small>${esc(e.genre)} · tout le réseau</small><b class="bri">${esc(e.titre)}</b><span>${esc(dateReu(e.date,e.heure?String(e.heure).slice(0,5):""))}${e.lieu?" · "+esc(e.lieu):""}</span></div>`).join("")}</div>`:"";
+  return `<div class="page">${ariane()}<div class="head"><div><h1>Réunions du réseau</h1><p class="sub">Tu peux assister à la réunion de n'importe quel groupe, dans toutes les villes. Inscris-toi : l'animateur du groupe est prévenu, et tu vois qui sera là.</p></div></div>${seg}${evH}
+    ${L.length?`${autres.length?`<div class="rr-l2">${autres.map(carteReseau).join("")}</div>`:P==="moi"?"":`<div class="card"><b>Pas d'autre réunion planifiée${P==="reg"?" dans ta région":""}.</b><p class="sub">Les réunions des autres groupes apparaîtront ici dès qu'elles seront programmées.</p></div>`}
       ${mien.length?volet("rr-mien","Mon groupe",mien.length,`<div class="rr-l2">${mien.map(carteReseau).join("")}</div>`,{ouvert:!autres.length}):""}`
-      :`<div class="card"><b>Aucune réunion planifiée dans le réseau.</b><p class="sub">${esc(S.reseauErr||"Elles apparaîtront ici dès que les animateurs les auront programmées.")}</p></div>`}</div>`}
+      :T.length?`<div class="card"><b>Aucune réunion planifiée ${P==="moi"?"dans ton groupe":"dans ta région"}.</b><p class="sub">Regarde « Tout le réseau ».</p></div>`:`<div class="card"><b>Aucune réunion planifiée dans le réseau.</b><p class="sub">${esc(S.reseauErr||"Elles apparaîtront ici dès que les animateurs les auront programmées.")}</p></div>`}</div>`}
 async function repondreReseau(id,rep){
   const r=(S.reseauReu||[]).find(x=>x.id===id);if(!r||r.ma_reponse===rep)return;
   if(VOIR){toast("Aperçu : rien n'est enregistré","info");return}
@@ -1602,6 +1610,7 @@ function brancher(){
   app.querySelectorAll("[data-mondoc]").forEach(b=>b.onclick=()=>mesDocOuvrir(b.dataset.mondoc));
   app.querySelectorAll("[data-filtre]").forEach(b=>b.onclick=()=>{S.filtre=b.dataset.filtre;rendu(true)});
   app.querySelectorAll("[data-portee]").forEach(b=>b.onclick=()=>{S.portee=b.dataset.portee;S.filtre="tous";rendu(true)});
+  app.querySelectorAll("[data-rrp]").forEach(b=>b.onclick=()=>{S.rrP=b.dataset.rrp;rendu(true)});
   app.querySelectorAll("[data-anntri]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("cap-anntri",b.dataset.anntri)}catch(e){}rendu(true)});
   const q=$("q");if(q){const sg=$("sugg");
     const majS=()=>{const h=suggHTML();sg.innerHTML=h;sg.hidden=!h||document.activeElement!==q;sg.querySelectorAll("[data-sgq]").forEach(b=>b.onmousedown=e=>{e.preventDefault();S.q=b.dataset.sgq;q.value=S.q;sg.hidden=true;$("res").innerHTML=listeAnnuaire();brancherRes()});

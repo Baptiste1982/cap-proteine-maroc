@@ -12,7 +12,7 @@
 //                      signature "papier" : contrat papier à imprimer (aucun e-mail ne part) ;
 //                      signature "aucune" : s'arrête une fois le contrat généré.
 //
-// Réservé au superadmin. Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT et
+// Réservé au superadmin et à la direction nationale (qui agit avec son propre compte du national, v8). Identifiants du national : secrets CAP_NATIONAL_IDENTIFIANT et
 // CAP_NATIONAL_MOT_DE_PASSE (jamais dans le code). Chaque étape réussie est enregistrée dans
 // adhesions.national : un nouvel envoi reprend là où le précédent s'est arrêté, sans doublon.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -94,13 +94,21 @@ Deno.serve(async (req) => {
     // Appel programmé (national-suivi) : jeton du coffre, seulement pour l'action « prospect ».
     const jeton = req.headers.get('x-suivi-jeton');
     let user: { id: string | null } | null = null;
+    // v8 : qui se connecte au national. Super admin et passages programmés = compte commun (secrets) ;
+    // direction nationale = SON compte (table national_comptes, mot de passe dans le coffre), jamais le compte commun.
+    let cnx: { login: string; password: string; anim: string | null; nom: string } = { login: Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', password: Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '', anim: null, nom: '' };
     if (jeton) { const { data } = await admin.rpc('cap_national_jeton_ok', { p: jeton }); if (data === true) user = { id: null }; }
     if (!user) {
       const caller = createClient(url, anon, { global: { headers: { Authorization: req.headers.get('Authorization') || '' } } });
       const { data: { user: u } } = await caller.auth.getUser();
       if (!u) return json({ error: 'Session invalide' }, 401);
-      const { data: prof } = await admin.from('profiles').select('role').eq('id', u.id).single();
-      if (prof?.role !== 'superadmin') return json({ error: 'Réservé au superadmin' }, 403);
+      const { data: prof } = await admin.from('profiles').select('role, animateur_id, nom').eq('id', u.id).single();
+      if (prof?.role !== 'superadmin' && prof?.role !== 'directeur_national') return json({ error: 'Réservé à la direction nationale' }, 403);
+      if (prof.role === 'directeur_national') {
+        const { data: c } = prof.animateur_id ? await admin.rpc('cap_national_compte_secret', { p_anim: prof.animateur_id }) : { data: null };
+        if (!c?.identifiant || !c?.mdp) return json({ error: 'Branche d\'abord ton compte du CRM national (Paramètres, Mon compte national) : sans lui, rien ne part au national.' }, 400);
+        cnx = { login: String(c.identifiant), password: String(c.mdp), anim: String(prof.animateur_id), nom: String(prof.nom || '') };
+      }
       user = { id: u.id };
     }
 
@@ -134,7 +142,8 @@ Deno.serve(async (req) => {
       if (nat.reference_procedure) return json({ error: 'Yousign déjà lancé pour ce contrat' }, 400);
       if (nat.signe_le) return json({ error: 'Contrat déjà signé' }, 400);
       const N = new National();
-      etapes.push(...(nat.etapes || []), `Connecté au national : ${await N.connexion(Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '')}`);
+      etapes.push(...(nat.etapes || []), `Connecté au national : ${await N.connexion(cnx.login, cnx.password)}${cnx.nom ? ' (compte de ' + cnx.nom + ')' : ''}`);
+      if (cnx.anim) Object.assign(nat, { compte: cnx.anim, compte_nom: cnx.nom });
       const ys = await N.ecrire('/signatureNumerique/creerProcedure', { idContrat: String(nat.contrat_id) });
       etapes.push(`Signature électronique lancée sur le contrat n° ${nat.contrat_id} : Yousign envoie le contrat au membre par e-mail.`);
       for (const m of (Array.isArray(ys.messageLog) ? ys.messageLog : [])) etapes.push(String(m).replace(/<[^>]+>/g, ''));
@@ -154,8 +163,9 @@ Deno.serve(async (req) => {
     if (!idMode && action !== 'prospect') return json({ error: 'Mode de règlement inconnu du national' }, 400);
 
     const N = new National();
-    const club = await N.connexion(Deno.env.get('CAP_NATIONAL_IDENTIFIANT') || '', Deno.env.get('CAP_NATIONAL_MOT_DE_PASSE') || '');
-    etapes.push(`Connecté au national : ${club}`);
+    const club = await N.connexion(cnx.login, cnx.password);
+    etapes.push(`Connecté au national : ${club}${cnx.nom ? ' (compte de ' + cnx.nom + ')' : ''}`);
+    if (cnx.anim && action !== 'apercu') Object.assign(nat, { compte: cnx.anim, compte_nom: cnx.nom });
 
     // Listes officielles.
     const cats: any[] = await N.json('GET', '/categorieJuridique/lister?libelle=');

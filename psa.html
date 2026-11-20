@@ -48,6 +48,12 @@ body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-
 textarea{width:100%;font:15px Inter,sans-serif;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;background:#fff;color:var(--ink)}
 .deux{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .note{color:var(--muted);font-size:13.5px;margin:0}
+.calh{display:flex;align-items:center;justify-content:space-between}.calh b{font-size:16px;text-transform:capitalize}.calh .btn{position:relative;min-width:44px;font-size:18px}.calh .btn i{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--rouge)}
+.calg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.cn{text-align:center;font-size:11px;font-weight:700;color:var(--muted)}
+.cj{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px;border-radius:10px;border:1px solid transparent;background:none;color:#A39D9E;font:inherit;padding:2px}.cj b{font-size:15px;font-weight:600;line-height:1.1}.cj.p{opacity:.5}
+button.cj.a{cursor:pointer;color:var(--ink);background:var(--pale);border-color:var(--line)}button.cj.a b{font-weight:800}.cj small{font-size:10px;line-height:1.15;color:var(--vert);font-weight:600}
+button.cj.a.plein{background:transparent;border-style:dashed}button.cj.a.plein small{color:var(--muted)}button.cj.a.moi{border-color:var(--vert);background:#E6F4EC}
+button.cj.a.on{background:var(--rouge);border-color:var(--rouge);color:#fff}button.cj.a.on small{color:#fff}
 .msg{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1B1416;color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;max-width:calc(100vw - 32px);z-index:5;pointer-events:none}
 .msg.on{opacity:1;transform:translate(-50%,0)}.msg.ko{background:#8A1C1C}
 @media (prefers-reduced-motion:reduce){.direct i{animation:none}.msg{transition:none}}
@@ -61,7 +67,9 @@ textarea{width:100%;font:15px Inter,sans-serif;border:1px solid var(--line);bord
 const SB="https://xsppsqjigdgaybmowzaq.supabase.co",CLE="sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7";
 const J=(new URLSearchParams(location.search).get("j")||"").trim(),DEMO=new URLSearchParams(location.search).has("demo");
 const MODES={visio:"En ligne (Zoom)",presentiel:"Sur place",telephone:"Téléphone"};
-let D=null,ouvert=null,mode="visio",enCours=false,dernier=0,note="";
+let D=null,ouvert=null,mode="visio",enCours=false,dernier=0,note="",moisAff=null,jourSel=null;
+const p2=n=>String(n).padStart(2,"0"),isoJ=d=>{d=new Date(d);return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())};
+const MOIS_L=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const hh=iso=>{const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0")};
 const jour=iso=>new Date(iso).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
@@ -95,13 +103,26 @@ function majDirect(){const e=document.getElementById("direct");if(!e)return;cons
 let _vu="";
 function rendu(force){
   const p=document.getElementById("page"),ta=document.getElementById("note");if(ta)note=ta.value;
-  const cle=JSON.stringify(D)+"|"+ouvert+"|"+mode;if(!force&&cle===_vu){majDirect();return}_vu=cle;
+  const cle=JSON.stringify(D)+"|"+ouvert+"|"+mode+"|"+moisAff+"|"+jourSel;if(!force&&cle===_vu){majDirect();return}_vu=cle;
   if(!D||!D.ok){document.getElementById("sous").textContent="Lien inconnu";vide("Ce lien n'est plus valable. Demande-en un nouveau à ton directeur de région.");return}
   const prenom=String(D.pour||"").split(/\s+/)[0];
   document.getElementById("sous").textContent=`Bonjour ${prenom}. Choisis ton créneau avec ${D.directeur||"ton directeur de région"}.`;
   const L=D.creneaux||[],moi=L.find(c=>c.etat==="moi"),libres=L.filter(c=>c.etat==="libre").length;
   if(ouvert&&!L.some(c=>c.id===ouvert&&c.etat==="libre")){ouvert=null}
-  const jours=new Map();L.forEach(c=>{const k=new Date(c.debut).toDateString();(jours.get(k)||jours.set(k,[]).get(k)).push(c)});
+  const jours=new Map();L.forEach(c=>{const k=isoJ(c.debut);(jours.get(k)||jours.set(k,[]).get(k)).push(c)});
+  /* Calendrier : un mois à l'écran ; un jour marqué s'ouvre sur ses heures. Par défaut, le premier jour qui a un créneau libre. */
+  const premier=L.find(c=>c.etat==="libre")||L[0];
+  if(!moisAff&&premier)moisAff=isoJ(premier.debut).slice(0,7);
+  if(!moisAff){const n=new Date();moisAff=n.getFullYear()+"-"+p2(n.getMonth()+1)}
+  if(jourSel===null&&premier&&isoJ(premier.debut).slice(0,7)===moisAff)jourSel=isoJ(premier.debut);
+  const [cy,cm]=moisAff.split("-").map(Number),nbJ=new Date(cy,cm,0).getDate(),dec=(new Date(cy,cm-1,1).getDay()+6)%7,auj=isoJ(new Date()),mois=[...new Set([...jours.keys()].map(k=>k.slice(0,7)))];
+  let cases="";for(let i=0;i<dec;i++)cases+=`<span class="cj v"></span>`;
+  for(let j=1;j<=nbJ;j++){const iso=moisAff+"-"+p2(j),l=jours.get(iso);if(!l){cases+=`<span class="cj ${iso<auj?"p":""}"><b>${j}</b></span>`;continue}
+    const lib=l.filter(c=>c.etat==="libre").length,am=l.some(c=>c.etat==="moi");
+    cases+=`<button type="button" class="cj a ${jourSel===iso?"on":""} ${am?"moi":""} ${lib||am?"":"plein"}" data-jour="${iso}" aria-label="${j} ${MOIS_L[cm-1]} : ${am?"ton créneau":lib?lib+" libre"+(lib>1?"s":""):"complet"}"><b>${j}</b><small>${am?"toi":lib?lib+" libre"+(lib>1?"s":""):"complet"}</small></button>`}
+  const sel=jourSel&&jours.get(jourSel);
+  const cal=`<div class="calh"><button type="button" class="btn gh" data-mois="-1" aria-label="Mois précédent">‹${mois.some(x=>x<moisAff)?"<i></i>":""}</button><b>${MOIS_L[cm-1]} ${cy}</b><button type="button" class="btn gh" data-mois="1" aria-label="Mois suivant">›${mois.some(x=>x>moisAff)?"<i></i>":""}</button></div>
+    <div class="calg"><span class="cn">L</span><span class="cn">M</span><span class="cn">M</span><span class="cn">J</span><span class="cn">V</span><span class="cn">S</span><span class="cn">D</span>${cases}</div>`;
   const ligne=c=>{
     if(c.etat==="pris")return `<div class="cr pris" data-c="${c.id}" data-etat="pris"><b>${hh(c.debut)}</b><span>${c.duree} min</span><small>🔒 Déjà pris</small></div>`;
     if(c.etat==="moi")return `<div class="cr amoi" data-c="${c.id}" data-etat="moi"><b>${hh(c.debut)}</b><span>${c.duree} min · <strong>ton créneau</strong></span><small>✓</small></div>`;
@@ -118,12 +139,14 @@ function rendu(force){
       <button class="btn gh" data-annuler="${moi.id}">Annuler ou changer de créneau</button></section>`:""}
     <section class="carte"><h2>${moi?"Les autres créneaux":"Créneaux proposés"}</h2>
       <div class="direct" id="direct"><i></i><span></span></div>
-      ${L.length?[...jours.values()].map(j=>`<div class="jour">${esc(jour(j[0].debut))}</div>${j.map(ligne).join("")}`).join(""):`<p class="note">Aucun créneau ouvert pour l'instant. Ton directeur va en proposer : cette page se met à jour toute seule.</p>`}
+      ${L.length?cal+(sel?`<div class="jour" id="jour-sel">${esc(jour(sel[0].debut))}</div>${sel.map(ligne).join("")}`:`<p class="note">${[...jours.keys()].some(k=>k.slice(0,7)===moisAff)?"Touche un jour marqué pour voir ses heures.":"Aucun créneau ce mois-ci. Le point près d'une flèche indique un mois qui en a."}</p>`):`<p class="note">Aucun créneau ouvert pour l'instant. Ton directeur va en proposer : cette page se met à jour toute seule.</p>`}
       ${L.length&&!libres&&!moi?`<p class="note">Tous les créneaux sont pris. Préviens ton directeur pour qu'il en ouvre d'autres.</p>`:""}
       ${moi?`<p class="note">Pour changer d'heure, annule d'abord ton créneau.</p>`:""}</section>`;
   majDirect()}
 document.addEventListener("click",async e=>{
-  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics]");if(!b)return;
+  const b=e.target.closest("[data-ouvrir],[data-fermer],[data-mode],[data-reserver],[data-annuler],[data-ics],[data-jour],[data-mois]");if(!b)return;
+  if(b.dataset.jour){jourSel=jourSel===b.dataset.jour?"":b.dataset.jour;ouvert=null;rendu();const z=document.getElementById("jour-sel");if(z)z.scrollIntoView({block:"nearest",behavior:"smooth"});return}
+  if(b.dataset.mois){const [y,m]=moisAff.split("-").map(Number),d=new Date(y,m-1+(+b.dataset.mois),1);moisAff=d.getFullYear()+"-"+p2(d.getMonth()+1);jourSel="";ouvert=null;rendu();return}
   if(b.dataset.ics){const c=(D.creneaux||[]).find(x=>x.id===b.dataset.ics);if(c)agendaIcs(c);return}
   const ta=document.getElementById("note");if(ta)note=ta.value;
   if(b.dataset.ouvrir){ouvert=b.dataset.ouvrir;rendu();return}

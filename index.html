@@ -2873,8 +2873,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.141.0";
+const APP_VERSION="1.142.0";
 const CHANGELOG=[
+  {v:"1.142.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, la barre du bas pouvait se décrocher et flotter pendant le défilement, après un passage par l'espace membre ou une saisie au clavier : elle est recalée à chaque retour"]}},
   {v:"1.141.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, le raccourci « PSA » de l'accueil sortait de l'écran : les raccourcis sont maintenant sur deux colonnes"]}},
   {v:"1.140.0",date:"23 novembre 2026",notes:{"Ajouté":["Le suivi des contrats signés et des règlements est ouvert à chaque niveau : direction nationale, responsable de région et animateur, chacun pour les adhésions de son périmètre (cloche, accueil, menu Adhésions, boîte à outils)","Les notifications « contrat signé » et « règlement reçu » partent aussi à la direction nationale et à l'animateur du groupe"]}},
   {v:"1.139.0",date:"23 novembre 2026",notes:{"Modifié":["Un groupe ne compte ses membres qu'à partir de la signature du contrat, comme au CRM national. Avant la signature, la personne est « candidate » : elle garde sa fiche, mais ne compte plus dans les totaux, les statistiques, le statut du groupe ni l'annuaire des membres","Les candidats se retrouvent sous le filtre « Candidats » dans Membres, et dans un bloc à part dans Mon groupe"]}},
@@ -7754,7 +7755,18 @@ function viewEspace(){const u=window._espUrl||"";
    de pastilles ni de cadre arrondi. Au téléphone, la barre du bas de l'espace membre remplace celle du CRM
    (on revient par le sélecteur d'espace ou le menu du haut). */
 function espAvecBarre(){return /membre\.html#(moi|voir)=/.test(window._espUrl||"")}
-function espCaler(){const on=tab==="espace"&&!!window._espUrl,b=document.body,h=document.getElementById("esp-host");if(!h)return;
+/* v1.142 : barre du bas « décrochée » sur iPhone. Après un clavier refermé, ou un retour de l'espace membre (cadre),
+   iOS garde parfois un décalage de la fenêtre : la barre fixe flotte alors pendant le défilement.
+   On rend la main au document (le cadre ne garde pas le focus), on recale le défilement et on force la barre à se redessiner. */
+function navRecoller(){try{if(isWide())return;const a=document.activeElement;if(a&&a.tagName==="IFRAME"&&tab!=="espace")a.blur();
+  const max=Math.max(0,document.documentElement.scrollHeight-innerHeight);window.scrollTo(0,Math.min(window.scrollY,max));
+  const n=document.getElementById("nav");if(n){n.style.transform="translate3d(0,0,0)";void n.offsetHeight;requestAnimationFrame(()=>{n.style.transform=""})}}catch(e){}}
+(function(){let t=null;const plusTard=d=>{clearTimeout(t);t=setTimeout(navRecoller,d)};
+  document.addEventListener("focusout",e=>{const x=e.target;if(x&&/^(INPUT|TEXTAREA|SELECT)$/.test(x.tagName))plusTard(320)},true);
+  if(window.visualViewport){let h=visualViewport.height;visualViewport.addEventListener("resize",()=>{const n=visualViewport.height;if(n>h+60)plusTard(260);h=n})}
+  window.addEventListener("pageshow",()=>plusTard(200));document.addEventListener("visibilitychange",()=>{if(!document.hidden)plusTard(200)});
+  window.addEventListener("orientationchange",()=>plusTard(400))})();
+function espCaler(){const on=tab==="espace"&&!!window._espUrl,b=document.body,h=document.getElementById("esp-host");if(!h)return;if(!on&&b.classList.contains("esp-on"))setTimeout(navRecoller,60); /* v1.142 : on quitte le cadre */if(on&&!b.classList.contains("esp-on")&&!isWide())try{window.scrollTo(0,0)}catch(e){}
   b.classList.toggle("esp-on",on);b.classList.toggle("esp-plein",on&&!isWide()&&espAvecBarre());if(!on){h.removeAttribute("style");return}
   const tb=document.querySelector(".topbar").getBoundingClientRect(),ap=document.querySelector(".app").getBoundingClientRect(),nv=document.getElementById("nav").getBoundingClientRect(),vb=document.getElementById("voir-band");
   const haut=Math.max(tb.bottom,vb&&vb.offsetParent!==null?vb.getBoundingClientRect().bottom:0),bas=isWide()||b.classList.contains("esp-plein")?0:Math.max(0,innerHeight-nv.top);

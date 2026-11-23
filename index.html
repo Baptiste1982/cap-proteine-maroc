@@ -2747,6 +2747,18 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .sg-e,.sg-ok,.sg-at{font-size:13px;margin:6px 0 0}.sg-e{font-weight:600}.sg-ok{color:#1E9E63}.sg-at{color:var(--muted)}
 .sg-a{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 @media(max-width:700px){.sg-k{grid-template-columns:1fr}}
+/*v1.138 étapes calquées sur le national*/
+.mb-etp{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;font:600 10.5px Inter,sans-serif;border:1px solid currentColor;opacity:.85;vertical-align:middle;white-space:nowrap;flex:none}
+.mb-etp.cand{border-style:dashed;opacity:.6}.mb-nl .mb-etp{margin-left:0}
+.etp{margin:10px 0 12px;padding:12px 12px 10px;border:1px solid var(--line);border-radius:14px}
+.etp-f{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0}
+.etp-f li{position:relative;text-align:center;font-size:11.5px;line-height:1.25;color:var(--muted);padding:0 2px}
+.etp-f li::before{content:"";position:absolute;top:10px;left:-50%;width:100%;height:2px;background:var(--line)}
+.etp-f li:first-child::before{display:none}.etp-f li.fait::before{background:var(--crimson)}
+.etp-f i{position:relative;z-index:1;display:grid;place-items:center;width:22px;height:22px;margin:0 auto 5px;border-radius:50%;border:2px solid var(--line);background:var(--card,#fff);font-style:normal;font-size:12px;font-weight:700;color:#fff}
+.etp-f li.fait i{background:var(--crimson);border-color:var(--crimson)}
+.etp-f li.fait span{color:var(--ink)}.etp-f li.ici span{font-weight:700}
+.etp-t{margin:9px 0 0;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2857,8 +2869,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.137.0";
+const APP_VERSION="1.138.0";
 const CHANGELOG=[
+  {v:"1.138.0",date:"23 novembre 2026",notes:{"Ajouté":["Les étapes d'un membre suivent celles du CRM national : demande reçue, contrat envoyé, contrat signé, facturé, réglé. Elles s'affichent en frise sur sa fiche et sur l'écran des contrats signés","Dès la signature, la personne porte l'étiquette « Dans le groupe » ; elle devient membre à part entière au règlement. Avant la signature : « Candidat »","Filtres « Dans le groupe, pas encore réglé » et « Candidats » dans Membres"]}},
   {v:"1.137.0",date:"23 novembre 2026",notes:{"Ajouté":["Contrats signés au national : une ligne dans « ce qui t'attend » sur l'accueil et dans la cloche, avec un écran de détail (groupe, contrat, règlement) et un bouton pour mettre la fiche du membre à jour","Règlements lus au national chaque heure : facture émise, règlement partiel ou complet, avec une notification dès qu'un règlement est enregistré"]}},
   {v:"1.136.0",date:"23 novembre 2026",notes:{"Corrigé":["Contrats signés au national : un contrat qui quitte « En attente de signature » est maintenant retrouvé dans l'annuaire des membres du national, puis marqué signé chez nous (les contrats de Reda Allah Sibari et de Nawar Mounchit restaient « introuvables »)"],"Ajouté":["Alerte quand un contrat n'est plus ni en attente ni membre au national depuis plus d'un jour","Le groupe du membre au national s'affiche sur la demande signée"]}},
   {v:"1.135.0",date:"20 novembre 2026",notes:{"Corrigé":["Points sur activité : un créneau réservé s'affiche en carte lisible (heure, nom entier, durée et mode, puis les boutons « Lien Zoom », « Agenda » et « Libérer » avec leur libellé) au lieu d'un nom écrasé sur une colonne.","Le nombre « à caler » du cartouche PSA et de la cloche se met à jour dès qu'un animateur réserve (dans la minute), sans recharger la page."],"Ajouté":["Sur un PSA réservé, celui qui le mène choisit comment il se tient : en ligne, sur place ou par téléphone ; l'animateur est prévenu (notification, et message WhatsApp prêt en touchant la confirmation).","Page de réservation de l'animateur : il peut changer le mode de son rendez-vous après coup, son directeur est prévenu."]}},
@@ -4615,14 +4628,14 @@ function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(
 function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.metier_precis,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
 function mbListe(){
   const ids=new Set(scopedClubIds());const q=predMots(window._q4||"");
-  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(filter!=="anim"||mbAnim(m))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
+  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(filter!=="anim"||mbAnim(m))&&(filter!=="etp"||(e=>e.suivi&&!e.plein&&e.n>=2)(mbEtape(m)))&&(filter!=="cand"||(e=>e.suivi&&e.n<2)(mbEtape(m)))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
     .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
 }
 function mbCarte(m,i){
   const c=club(m.clubId),inf=m.infos||{},tel=inf.m_tel||"";
   return `<div class="mb-card" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" role="button" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <span class="mb-av">${esc(initiales(m.nom))}</span>
-    <span class="mb-t"><b class="mb-nl"><span class="mb-nom">${esc(m.nom)}</span>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}${m.inscrit?`<span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}" aria-label="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"●":"○"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
+    <span class="mb-t"><b class="mb-nl"><span class="mb-nom">${esc(m.nom)}</span>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}${etapePill(m)}${m.inscrit?`<span class="mb-acc ${m.vuLe?"on":""}" title="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}" aria-label="${m.vuLe?"Connecté à l'espace membre":"Code créé, jamais connecté"}">${m.vuLe?"●":"○"}</span>`:""}</b><small>${esc([mbEntreprise(m),mbMetier(m)].filter(Boolean).join(" · ")||"Métier non renseigné")}</small><em>${esc((c.nom||"").replace(/^CAP\s+/,""))} · ${esc(c.ville||"")}</em></span>
     ${tel?`<a class="mb-tel" href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()" aria-label="Appeler ${esc(m.nom)}">📞</a>`:""}
   </div>`;
 }
@@ -4633,7 +4646,7 @@ function mbChoisirMode(m){try{localStorage.setItem("cap-mbvue",m)}catch(e){}docu
 function vModes(modes,cur,fn){return `<div class="vmode" role="tablist" aria-label="Mode d'affichage">${modes.map(([k,ic,l])=>`<button type="button" role="tab" data-m="${k}" class="${cur===k?"on":""}" aria-selected="${cur===k}" onclick="${fn}('${k}')" title="${esc(l)}"><span aria-hidden="true">${ic}</span><em>${esc(l)}</em></button>`).join("")}</div>`}
 function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
   return `<tr style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
-    <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}</span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
+    <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}${etapePill(m)}</span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
     <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(telAff(tel))}</a>`:"—"}</td><td class="mbl-e" onclick="event.stopPropagation()">${mbEspCell(m)}</td></tr>`}
 function mbGroupes(l,cle,titre){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});let i=0;
   return Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr")).map(k=>`<section class="mbg"><div class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></div><div class="mb-grid">${g[k].map(m=>mbCarte(m,i++)).join("")}</div></section>`).join("")}
@@ -4654,7 +4667,7 @@ function viewMembres(){
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="mb-q" type="search" ${window._mbRes&&annResPeut()?"":`data-pred="membres"`} placeholder="Tape les premières lettres : nom, entreprise, métier, groupe…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
     ${annResPeut()?`<div class="mon-seg ar-seg" role="group" aria-label="Périmètre de l'annuaire"><button type="button" class="${window._mbRes?"":"on"}" onclick="window._mbRes=0;render()">${SESSION.role==="animateur"?"Mes groupes":"Ma région"}</button><button type="button" class="${window._mbRes?"on":""}" onclick="window._mbRes=1;render()">Tout le réseau</button></div>`:""}
-    <div class="mb-bar"${window._mbRes&&annResPeut()?" hidden":""}><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
+    <div class="mb-bar"${window._mbRes&&annResPeut()?" hidden":""}><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${(n=>n?fchip("Dans le groupe, pas encore réglé","etp",n):"")(tous.filter(m=>{const e=mbEtape(m);return e.suivi&&!e.plein&&e.n>=2}).length)}${(n=>n?fchip("Candidats","cand",n):"")(tous.filter(m=>{const e=mbEtape(m);return e.suivi&&e.n<2}).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
     <div id="mb-res">${window._mbRes&&annResPeut()?annResHTML():mbResultats()}</div><div style="height:8px"></div></div>`;
 }
 
@@ -4948,7 +4961,7 @@ function grpMembres(c,D){
   const ed=canEditClubId(c.id),met=grpMetiers(D),sans=D.membres.filter(m=>!mbMetier(m)).length,rech=c.metRech||[];
   const pris=new Set(met.map(x=>sansAcc(x[0])));
   const list=D.membres.length?`<div class="rl">${D.membres.map((m,i)=>`<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}"><button class="rl-h" onclick="memberSheet('${c.id}','${m.id}')">
-      <span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}</b><small>${esc([mbMetier(m)||"Métier non renseigné",mbEntreprise(m)].filter(Boolean).join(" · "))}</small></span>
+      <span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}${etapePill(m)}</b><small>${esc([mbMetier(m)||"Métier non renseigné",mbEntreprise(m)].filter(Boolean).join(" · "))}</small></span>
       <span class="rl-ind">${dots4(m)}${m.inscrit?`<span class="rl-fact g">espace membre</span>`:""}</span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:`<p class="fh-empty">Aucun membre pour l'instant.</p>`;
   const cherchent=D.membres.filter(m=>m.cherche);
   return `<div class="grp-2col">
@@ -7557,6 +7570,7 @@ function memberSheet(clubId,id){
   }
   document.getElementById("sheet-content").innerHTML=`
     ${editing?ficheHead({vc:villeColor(club(clubId).ville),ini:initiales(m.nom),round:true,title:m.nom,sub:"Suivi d'intégration · "+esc(club(clubId).nom.replace(/^CAP\s+/,""))+(mbAnim(m)?" · Animateur":"")}):`<h3>Nouveau membre</h3><div class="sheet-sub">Suivi d'intégration — ${esc(club(clubId).nom)}.</div>`}
+    ${editing?etapeFrise(m):""}
     ${editing?mbRapides(m):""}
     ${editing?mbNommerBloc(m):""}
     ${editing&&!isWide()?`<details class="mb-edit"><summary>✏️ Modifier le suivi (nom, étapes, abonnement, notes)</summary><div class="mb-edit-c">`:""}
@@ -9917,6 +9931,22 @@ function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"de
       <div class="dmf-act"><a class="btn ghost mini" href="formulaire-adhesion-membre.pdf" target="_blank" rel="noopener">📄 PDF vierge</a><a class="btn ghost mini" href="${esc(src.toString())}" target="_blank" rel="noopener">↗ Plein écran</a><button class="btn ghost mini" onclick="adhCharger&&adhCharger().then(()=>{toast('Demandes actualisées','s');render()})">⟳ Actualiser les demandes</button></div></div>
     <p class="dmf-note">${m==="vrai"?"Tu remplis le formulaire avec le futur membre, comme il le ferait sur son téléphone. À l'envoi, sa demande arrive dans l'onglet 📥 Demandes avec le PDF signé.":"Le formulaire tel que le voit le futur membre. Mode démonstration : rien n'est enregistré."}</p>
     <div class="dmf-cadre"><iframe title="Formulaire d'adhésion" src="${esc(src.toString())}" loading="lazy"></iframe></div></div>`}
+/* v1.138 : étapes d'un membre, calquées sur le CRM national (demande, contrat envoyé, signé, facturé, réglé).
+   Dès la signature il fait partie du groupe ; il devient membre à part entière au règlement (fiche « paiement »). */
+const ETAPES_NAT=["Demande reçue","Contrat envoyé","Contrat signé","Facturé","Réglé"];
+function mbEtape(m){
+  const a=mbAdhesion(m),n=a&&a.national;
+  if(m.paiement)return{n:4,plein:true,court:"Membre",lib:"Membre à part entière",suivi:!!a};
+  if(!a)return{n:-1,plein:false,court:"",lib:"",suivi:false};
+  if(!n||!n.contrat_id)return{n:0,plein:false,court:"Candidat",lib:"Demande reçue, contrat pas encore envoyé au national",suivi:true};
+  if(!n.signe_le)return{n:1,plein:false,court:"Candidat",lib:"Contrat envoyé, en attente de signature",suivi:true};
+  const g=natRegl(n);
+  if(g.etat==="complet")return{n:4,plein:false,court:"Dans le groupe",lib:"Réglé au national : intégration à valider",suivi:true,avalider:true};
+  return{n:g.fact?3:2,plein:false,court:"Dans le groupe",lib:g.fact?"Facturé, règlement attendu":"Contrat signé, facture pas encore émise",suivi:true}}
+function etapePill(m){const e=mbEtape(m);return !e.suivi||e.plein?"":`<span class="mb-etp ${e.n<2?"cand":""}" title="${esc(e.lib)}">${esc(e.court)}</span>`}
+function etapeFrise(m){const e=mbEtape(m);if(!e.suivi)return"";
+  const txt=e.plein?"Membre à part entière.":e.avalider?"Réglé au national. Valide son intégration pour qu'il devienne membre à part entière.":e.n>=2?"Fait partie du groupe depuis la signature du contrat. Membre à part entière une fois le règlement enregistré.":"Pas encore dans le groupe : le contrat n'est pas signé.";
+  return `<div class="etp" aria-label="Étapes au CRM national"><ol class="etp-f">${ETAPES_NAT.map((t,i)=>`<li class="${i<=e.n?"fait":""}${i===e.n?" ici":""}"><i>${i<=e.n?"✓":""}</i><span>${esc(t)}</span></li>`).join("")}</ol><p class="etp-t">${esc(txt)}</p></div>`}
 /* v1.137 : contrats signés au national, règlements et fin d'intégration. */
 function natRegl(n){const r=(n||{}).reglement;if(!r)return{etat:"inconnu",txt:"",fact:false};
   const fact=(r.echeances||[]).some(e=>e.facture_le);
@@ -9938,6 +9968,7 @@ function openSignes(){
         <div class="sg-k"><div><small>Groupe</small>${esc((adhGroupe(a)||"Sans groupe").replace(/^CAP\s+/,""))}${n.club_national?`<em>au national : ${esc(n.club_national)}</em>`:""}</div>
           <div><small>Contrat</small>n° ${esc(n.contrat_id||"—")}<em>signé, constaté le ${esc(adhDate(n.signe_le))}</em></div>
           <div><small>Règlement</small><span class="sg-r ${g.etat}">${esc(g.txt||"Pas encore lu")}</span>${(n.reglement||{}).lu_le?`<em>lu le ${esc(adhDate(n.reglement.lu_le))}</em>`:""}</div></div>
+        ${mb?etapeFrise(mb):""}
         ${e?`<p class="sg-e">À reporter sur sa fiche : ${Object.keys(e.v).map(k=>lib[k]).join(", ")}.</p>`:!mb?`<p class="sg-e">Pas encore de fiche membre : intègre la demande.</p>`:g.etat==="complet"?`<p class="sg-ok">✓ Fiche à jour : membre intégré.</p>`:`<p class="sg-at">Fiche à jour. En attente du règlement au national : tu seras prévenu dès qu'il est enregistré.</p>`}
         <div class="sg-a">${e&&ed?`<button class="btn mini" onclick="signeReporter('${a.id}',this)">✓ Mettre sa fiche à jour</button>`:""}<button class="btn ghost mini" onclick="adhDetail('${a.id}')">Voir la demande</button>${mb?`<button class="btn ghost mini" onclick="memberSheet('${mb.clubId}','${mb.id}')">Sa fiche</button>`:""}</div></div>`}).join("")}</div>`:`<p class="fh-empty">Aucun contrat signé pour l'instant.</p>`}
     <div class="sheet-actions">${SESSION.role==="superadmin"?`<button class="btn ghost" onclick="natVerifier(this).then(()=>openSignes())">🔄 Vérifier au national</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;

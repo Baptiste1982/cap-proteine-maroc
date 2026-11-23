@@ -2791,6 +2791,11 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overflow:hidden}details.mbg>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;margin:0}details.mbg>summary::-webkit-details-marker{display:none}details.mbg>summary::before{content:"▸";margin-right:2px;color:var(--muted);transition:transform .2s}details.mbg[open]>summary::before{transform:rotate(90deg)}details.mbg>summary b{flex:1;min-width:0}details.mbg>summary::after{display:none}details.mbg>summary em{background:none;color:var(--ink);border:1px solid var(--line);font-size:12.5px;padding:1px 9px}
 .mbg-tout{display:flex;gap:8px;justify-content:flex-end;margin:6px 0 2px}.mbl-g.g td:nth-child(4){display:none}
 @media(max-width:899px){.mbl-g td:nth-child(2),.mbl-g td.mbl-e{display:none}}
+/*v1.146 inviter le réseau*/
+.ei-go{width:100%;margin:6px 0 4px}.ei-av{font-size:13.5px;border:1px dashed var(--line);border-radius:12px;padding:9px 12px;margin:10px 0;color:var(--muted)}.ei-av a{color:var(--ink);font-weight:600}
+.ei-l{display:grid;padding-bottom:10px}.ei-g{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:10px 0;border-top:1px solid var(--line)}.ei-gt{display:grid;gap:1px;min-width:0}.ei-gt small{color:var(--muted);font-size:13px}.ei-gt .ei-ok{color:#1E9E63;font-weight:600}
+.ei-ga{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ei-g .ei-ga{margin-top:0}.ei-qr{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding-bottom:12px}.ei-qr .ni-qr{width:132px;background:#fff;border-radius:10px;padding:6px}.ei-u{display:block;font-size:12.5px;word-break:break-all;color:var(--muted)}
+.ei-ta{width:100%;font:14px/1.5 Inter,sans-serif;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);resize:vertical}.vn-b>.ei-ga{padding-bottom:12px}
 </style>
 </head>
 <body>
@@ -2901,8 +2906,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.145.0";
+const APP_VERSION="1.146.0";
 const CHANGELOG=[
+  {v:"1.146.0",date:"24 novembre 2026",notes:{"Ajouté":["Événement du réseau : « Inviter le réseau ». Un lien d'inscription par groupe (et un QR pour tous), le message à relayer par chaque animateur dans le WhatsApp de son groupe, le suivi des groupes prévenus et des inscrits.","Page d'inscription à l'événement, sans compte : la personne donne son nom et son groupe. L'heure et l'adresse peuvent être complétées plus tard, la page et le message se mettent à jour.","Ville de l'événement."]}},
   {v:"1.145.0",date:"23 novembre 2026",notes:{"Modifié":["Membres « par groupe » et « par métier » : des listes qui se replient, à la place des cartes. Boutons « Tout déplier » et « Tout replier »."],"Ajouté":["Paramètres → Administration : « Actualiser les membres du national », pour relire l'annuaire du national sans attendre lundi."]}},
   {v:"1.144.0",date:"23 novembre 2026",notes:{"Ajouté":["Vérification hebdomadaire des membres du CRM national : chaque lundi matin, les nouveaux membres du national sont ajoutés à leur groupe, et les écarts (membre qui n'y figure plus, changement de groupe, groupe inconnu) sont signalés sans rien retirer. Rapport dans Réseau → « Membres du national », avec une notification quand quelque chose change."]}},
   {v:"1.143.0",date:"23 novembre 2026",notes:{"Ajouté":["Adhésions → « Par étape » : l'état général des demandes, de la réception au règlement, par région puis par groupe. La vue nationale s'affine par région puis par groupe, la vue régionale par groupe ; chaque chiffre ouvre la liste des personnes"]}},
@@ -4409,7 +4415,56 @@ function evts(){return ((window._DBvrai||DB).evenements||[]).slice().sort((a,b)=
 function evtsAVenir(){const a=isoJour(TODAY);return evts().filter(e=>e.date>=a)}
 function evtQuand(e){const d=dObj(e.date);return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]+(e.heure?" · "+e.heure:"")}
 function agEvts(){const L=evtsAVenir(),peut=canCreerStructure();if(!L.length&&!peut)return"";
-  return `<div class="ev-z" id="ev-z">${L.map(e=>`<${peut?`button type="button" onclick="evtForm('${e.id}')"`:"div"} class="ev-c" data-ev="${e.id}"><span class="ev-g">${esc(e.genre)}</span><b>${esc(e.titre)}</b><small>${esc(evtQuand(e))}${e.lieu?" · "+esc(e.lieu):""} · tout le réseau</small></${peut?"button":"div"}>`).join("")}${peut?`<button type="button" class="btn ghost mini" id="ev-plus" onclick="evtForm()">＋ Événement du réseau</button>`:""}</div>`}
+  return `<div class="ev-z" id="ev-z">${L.map(e=>`<button type="button" onclick="evtOuvrir('${e.id}')" class="ev-c" data-ev="${e.id}"><span class="ev-g">${esc(e.genre)}</span><b>${esc(e.titre)}</b><small>${esc(evtQuand(e))}${e.lieu?" · "+esc(e.lieu):""} · tout le réseau</small></button>`).join("")}${peut?`<button type="button" class="btn ghost mini" id="ev-plus" onclick="evtForm()">＋ Événement du réseau</button>`:""}</div>`}
+/* v1.146 : inviter tout le réseau à un événement. Lien d'inscription par groupe (evenement.html), message à relayer par
+   chaque animateur dans le WhatsApp de son groupe, suivi des relais et des inscrits. */
+const EVT_MSG=`Bonjour à tous,
+
+Le réseau Club d'Affaires Protéine se retrouve pour « {titre} », le {jour}{heure}, {lieu}.
+Tous les groupes du Maroc sont invités : c'est l'occasion de rencontrer les membres des autres villes.
+{asavoir}
+Pour dire que tu viens, une minute suffit :
+{lien}
+
+Merci de t'inscrire dès maintenant, cela nous aide à organiser l'accueil.`;
+function evtModele(){try{return localStorage.getItem("cap-evtmsg")||EVT_MSG}catch(e){return EVT_MSG}}
+function evtLien(e,clubId){return `${SITE_PUBLIC}/evenement.html?e=${e.id}${clubId?"&g="+clubId:""}`}
+function evtMsg(e,c,tpl){const h=e.heure?" à "+String(e.heure).slice(0,5).replace(":"," h ").replace(/ 00$/,""):"",ou=e.lieu?"à "+[e.lieu,e.ville].filter(Boolean).join(", "):e.ville?"à "+e.ville:"dans un lieu précisé prochainement";
+  const manque=!e.heure&&!e.lieu?"L'heure et l'adresse précises seront confirmées prochainement.":!e.heure?"L'heure sera confirmée prochainement.":!e.lieu?"L'adresse précise sera confirmée prochainement.":"";
+  return (tpl||evtModele()).replace(/\{titre\}/g,e.titre).replace(/\{jour\}/g,jourLong(e.date).toLowerCase()).replace(/\{heure\}/g,h).replace(/\{lieu\}/g,ou).replace(/\{asavoir\}\n?/g,manque?manque+"\n":"").replace(/\{groupe\}/g,c?c.nom:"").replace(/\{lien\}/g,evtLien(e,c&&c.id))}
+function evtPeutInviter(){return !!SESSION&&SESSION.role!=="visiteur"&&!SESSION._voir}
+async function evtInviter(id){const e=evts().find(x=>x.id===id);if(!e||!evtPeutInviter())return;const gere=canCreerStructure(),V=window._DBvrai||DB;
+  document.getElementById("sheet-content").innerHTML=`<h3>Inviter le réseau</h3>${skLignes(4)}`;openSheet();
+  let dec={},ins=[];try{const [a,b]=await Promise.all([sb.rpc("cap_evenement_decompte",{p_id:id}),sb.from("evenement_inscrits").select("id,nom,club_id,qualite,tel,cree_le").eq("evenement_id",id).order("cree_le",{ascending:false})]);dec=a.data||{};ins=b.data||[]}catch(x){}
+  window._evI={id,dec,ins};
+  const tous=V.clubs.filter(c=>!c.pause),miens=gere?tous:tous.filter(c=>canEditClubId(c.id)),R=regionsDe(miens),inv=e.invitation||{},tot=Object.values(dec).reduce((s,n)=>s+n,0),rel=tous.filter(c=>inv[c.id]).length;
+  const ligne=c=>{const a=anim(c.animId),r=inv[c.id],n=dec[c.id]||0;
+    return `<div class="ei-g" data-eig="${c.id}"><div class="ei-gt"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${a?esc(a.nom):"Sans animateur"} · ${n} inscrit${n>1?"s":""}</small>${r?`<small class="ei-ok">✓ Message transmis le ${esc(adhDate(r.le))}${r.par?" par "+esc(r.par):""}</small>`:""}</div>
+      <div class="ei-ga">${a&&a.tel&&gere?`<button type="button" class="btn mini" onclick="evtRelais('${id}','${c.id}','wa')">WhatsApp à ${esc(a.nom.split(" ")[0])}</button>`:""}<button type="button" class="btn ghost mini" onclick="evtRelais('${id}','${c.id}','copie')">Copier le message</button></div></div>`};
+  document.getElementById("sheet-content").innerHTML=`<h3>Inviter le réseau</h3>
+    <div class="sheet-sub">${esc(e.titre)} · ${esc(jourLong(e.date))}${e.heure?" · "+esc(e.heure):""}${e.lieu||e.ville?" · "+esc([e.lieu,e.ville].filter(Boolean).join(", ")):""}</div>
+    ${!e.heure||!e.lieu?`<p class="ei-av">${!e.heure&&!e.lieu?"L'heure et l'adresse ne sont":!e.heure?"L'heure n'est":"L'adresse n'est"} pas encore saisie${!e.heure&&!e.lieu?"s":""} : le message et la page le disent, et se mettent à jour dès que tu ${gere?`<a href="#" onclick="evtForm('${id}');return false">complètes l'événement</a>`:"l'événement est complété"}.</p>`:""}
+    <div class="vn-t"><div><b>${tot}</b><small>inscrit${tot>1?"s":""}</small></div><div><b>${rel}/${tous.length}</b><small>groupes prévenus</small></div><div><b>${dec.ext||0}</b><small>non-membres</small></div></div>
+    <details class="vn-b" name="ei"><summary><b>Lien et QR code pour tous</b><em>↗</em></summary><p class="vn-a">À afficher ou à envoyer tel quel : la personne choisit son groupe en s'inscrivant.</p>
+      <div class="ei-qr"><div class="ni-qr" data-niqr="${esc(evtLien(e))}"></div><div><code class="ei-u">${esc(evtLien(e))}</code><div class="ei-ga"><button type="button" class="btn ghost mini" onclick="evtCopier(evtLien(evts().find(x=>x.id==='${id}')),'Lien copié')">Copier le lien</button><a class="btn ghost mini" href="${esc(evtLien(e))}" target="_blank" rel="noopener">Voir la page</a></div></div></div></details>
+    <details class="vn-b" name="ei"><summary><b>Le message à relayer</b><em>✎</em></summary><p class="vn-a">Chaque animateur le poste dans le WhatsApp de son groupe. Repères : {titre} {jour} {heure} {lieu} {asavoir} {lien}. Le lien est celui du groupe : son nom est déjà choisi sur la page.</p>
+      <textarea id="ei-msg" rows="11" class="ei-ta">${esc(evtModele())}</textarea><div class="ei-ga"><button type="button" class="btn ghost mini" onclick="evtMsgGarder()">Garder ce texte</button><button type="button" class="btn ghost mini" onclick="evtMsgOrigine()">Revenir au texte d'origine</button></div></details>
+    <div class="dash-h" style="margin-top:14px">${gere?"Par groupe":"Mes groupes"}</div>
+    ${R.length?R.map((r,i)=>`<details class="vn-b" name="eir"${R.length===1||i===0?" open":""}><summary><b>${esc(r.nom)}</b><em>${r.clubs.filter(c=>inv[c.id]).length}/${r.clubs.length}</em></summary><div class="ei-l">${r.clubs.map(ligne).join("")}</div></details>`).join(""):`<p class="fh-empty">Tu n'animes aucun groupe : utilise le lien pour tous, ci-dessus.</p>`}
+    <details class="vn-b" name="ei"><summary><b>Les inscrits</b><em>${ins.length}</em></summary>${ins.length<tot?`<p class="vn-a">Tu vois les inscrits de tes groupes ; le total compte tout le réseau.</p>`:""}<div class="vn-l">${ins.length?ins.map(x=>{const c=V.clubs.find(k=>k.id===x.club_id);return `<div class="vn-r"><b>${esc(x.nom)}</b><span>${c?esc(c.nom.replace(/^CAP\s+/,"")):"Pas encore membre"}${x.tel?` · <a href="tel:${esc(x.tel.replace(/[^+\d]/g,""))}">${esc(telAff(x.tel))}</a>`:""}</span></div>`}).join(""):`<p class="vn-a">Personne pour l'instant.</p>`}</div></details>
+    <div class="sheet-actions">${gere?`<button class="btn ghost" onclick="evtForm('${id}')">Modifier l'événement</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  natInvQr()}
+async function evtCopier(t,msg){try{await navigator.clipboard.writeText(t);toast(msg||"Copié","s")}catch(x){prompt("À copier :",t)}}
+function evtMsgCourant(){const t=document.getElementById("ei-msg");return t&&t.value.trim()?t.value:evtModele()}
+function evtMsgGarder(){const v=evtMsgCourant();if(!/\{lien\}/.test(v)){toast("Garde le repère {lien} : sans lui, personne ne peut s'inscrire","w");return}try{localStorage.setItem("cap-evtmsg",v)}catch(x){}toast("Texte gardé pour tes prochains envois","s")}
+function evtMsgOrigine(){try{localStorage.removeItem("cap-evtmsg")}catch(x){}const t=document.getElementById("ei-msg");if(t)t.value=EVT_MSG;toast("Texte d'origine remis","s")}
+async function evtRelais(id,clubId,mode){const V=window._DBvrai||DB,e=evts().find(x=>x.id===id),c=V.clubs.find(x=>x.id===clubId);if(!e||!c)return;const a=anim(c.animId),corps=evtMsg(e,c,evtMsgCourant());
+  if(mode==="wa"&&a&&a.tel)waOuvrir(a.tel,`Bonjour ${a.nom.split(" ")[0]}, voici le message à poster dans le WhatsApp de ${c.nom} pour l'événement du réseau :\n\n${corps}`);else await evtCopier(corps,"Message copié : à coller dans le WhatsApp du groupe");
+  if(!canCreerStructure()&&!canEditClubId(clubId))return;
+  const inv=Object.assign({},e.invitation||{});inv[clubId]={le:new Date().toISOString(),par:(SESSION.nom||"").split(" ")[0]};
+  if(canCreerStructure()){const {error}=await sb.from("evenements_reseau").update({invitation:inv}).eq("id",id);if(error){toast(rlsMsg(error),"e");return}}
+  else{const {error}=await sb.rpc("cap_evenement_relais",{p_id:id,p_club:clubId});if(error)return}
+  e.invitation=inv;const l=document.querySelector(`[data-eig="${clubId}"] .ei-gt`);if(l&&!l.querySelector(".ei-ok"))l.insertAdjacentHTML("beforeend",`<small class="ei-ok">✓ Message transmis à l'instant</small>`)}
 function evtForm(id){if(!canCreerStructure())return;const e=id?evts().find(x=>x.id===id):null;
   document.getElementById("sheet-content").innerHTML=`<h3>${e?"Modifier l'événement":"Nouvel événement du réseau"}</h3>
     <p class="fh-note">Un événement commun à tout le réseau, qui n'est la réunion d'aucun groupe : interclub, séminaire… Il apparaît dans l'Agenda de tous et dans le calendrier à présenter.</p>
@@ -4417,12 +4472,14 @@ function evtForm(id){if(!canCreerStructure())return;const e=id?evts().find(x=>x.
     <div class="field"><label for="ev-g">Type</label><select id="ev-g">${EVT_GENRES.map(g=>`<option ${e&&e.genre===g?"selected":""}>${esc(g)}</option>`).join("")}</select></div>
     <div class="field"><label for="ev-d">Date</label><input id="ev-d" type="date" value="${e?e.date:""}"></div>
     <div class="field"><label for="ev-h">Heure (facultatif)</label><input id="ev-h" maxlength="5" inputmode="numeric" placeholder="18:30" value="${esc(e&&e.heure||"")}"></div>
-    <div class="field"><label for="ev-l">Lieu (facultatif)</label><input id="ev-l" maxlength="120" value="${esc(e&&e.lieu||"")}"></div>
+    <div class="field"><label for="ev-v">Ville</label><input id="ev-v" maxlength="60" list="ev-vl" value="${esc(e&&e.ville||"")}" placeholder="Casablanca"><datalist id="ev-vl">${villesListe().map(v=>`<option value="${esc(v)}">`).join("")}</datalist></div>
+    <div class="field"><label for="ev-l">Lieu précis (facultatif, à compléter plus tard)</label><input id="ev-l" maxlength="120" value="${esc(e&&e.lieu||"")}"></div>
+    ${e?`<button type="button" class="btn ei-go" id="ev-inv" onclick="evtInviter('${e.id}')">📣 Inviter le réseau et suivre les inscrits</button>`:""}
     <div class="sheet-actions">${e?`<button class="btn ghost" id="ev-sup" onclick="evtRetirer('${e.id}',this)">Retirer</button>`:""}<button class="btn ghost" onclick="closeSheet()">Annuler</button><button class="btn" id="ev-ok" onclick="evtSauver('${e?e.id:""}')">Enregistrer</button></div>`;
   openSheet()}
 async function evtSauver(id){const t=document.getElementById("ev-t").value.trim(),d=document.getElementById("ev-d").value,h=document.getElementById("ev-h").value.trim().replace("h",":");
   if(!t||!d){toast("Il faut un titre et une date","w");return}if(h&&!/^([01]?\d|2[0-3]):[0-5]\d$/.test(h)){toast("Heure à écrire comme 18:30","w");return}
-  const ligne={titre:t,genre:document.getElementById("ev-g").value,date:d,heure:h||null,lieu:document.getElementById("ev-l").value.trim()||null},V=window._DBvrai||DB;
+  const ligne={titre:t,genre:document.getElementById("ev-g").value,date:d,heure:h||null,lieu:document.getElementById("ev-l").value.trim()||null,ville:document.getElementById("ev-v").value.trim()||null},V=window._DBvrai||DB;
   const q=id?sb.from("evenements_reseau").update(ligne).eq("id",id).select():sb.from("evenements_reseau").insert(ligne).select(),{data,error}=await q;if(error){toast(rlsMsg(error),"e");return}
   V.evenements=(V.evenements||[]).filter(x=>x.id!==id).concat(data||[]);toast("Événement enregistré","s");closeSheet();render()}
 async function evtRetirer(id,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer le retrait";return}
@@ -5550,8 +5607,8 @@ function calEvt(e){return `<button type="button" class="cal-evt" data-ev="${e.id
 function evtOuvrir(id){const e=evts().find(x=>x.id===id);if(!e)return;if(canCreerStructure()){evtForm(id);return}
   document.getElementById("sheet-content").innerHTML=`<h3>${esc(e.titre)}</h3><p class="fh-note">${esc(e.genre)} · événement de tout le réseau</p>
     <div class="drow"><div class="tx"><div class="k">Date</div><div class="v">${esc(jourLong(e.date))}${e.heure?" · "+esc(e.heure):""}</div></div></div>
-    <div class="drow"><div class="tx"><div class="k">Lieu</div><div class="v">${esc(e.lieu||"À préciser")}</div></div></div>
-    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
+    <div class="drow"><div class="tx"><div class="k">Lieu</div><div class="v">${esc([e.lieu,e.ville].filter(Boolean).join(", ")||"À préciser")}</div></div></div>
+    <div class="sheet-actions">${evtPeutInviter()?`<button class="btn" id="ev-inv" onclick="evtInviter('${e.id}')">📣 Inviter mon groupe</button>`:""}<button class="btn ghost" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
 function calendrier(list){
   window._calList=list;
   const v=calVue(),cur=calCur(),auj=isoJour(TODAY),parJour={};
@@ -10468,7 +10525,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openVerifNat","etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["evtInviter","openVerifNat","etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

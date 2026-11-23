@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Événement du réseau · Club d'Affaires Protéine</title>
+<meta property="og:site_name" content="Club d'Affaires Protéine Maroc">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Événement du réseau · Club d'Affaires Protéine">
+<meta property="og:description" content="La date, le lieu et votre inscription, en une page.">
+<meta property="og:image" content="https://cap-proteine-maroc.vercel.app/icone-512.png?v=2">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#D81B3F">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icone-180.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:15.5px/1.55 Inter,system-ui,sans-serif;background:#ECEAE9;color:#1B1416;padding:max(16px,env(safe-area-inset-top)) 16px 110px}
+main{max-width:520px;margin:0 auto;display:grid;gap:12px}
+main>*{animation:monte .5s cubic-bezier(.2,.8,.2,1) both}main>*:nth-child(2){animation-delay:.06s}main>*:nth-child(3){animation-delay:.12s}main>*:nth-child(4){animation-delay:.18s}main>*:nth-child(5){animation-delay:.24s}
+@keyframes monte{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.tete{background:#D81B3F;color:#fff;border-radius:24px;padding:22px 20px}
+.tete img{height:46px;width:auto;display:block;margin-bottom:16px}
+.tete small{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;opacity:.92}
+h1{margin:4px 0 14px;font:800 28px/1.12 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.01em}
+.quand{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quand div,.ou{background:#fff;color:#1B1416;border-radius:14px;padding:10px 12px}
+.quand small,.ou small{display:block;color:#5E5054;letter-spacing:0;text-transform:none;font-size:12.5px;opacity:1;font-weight:500}
+.quand b{font-size:17px}.ou{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;text-decoration:none}
+.ou b{display:block}.ou i{font-style:normal;color:#D81B3F;font-weight:700;white-space:nowrap}
+.bloc{background:#fff;border-radius:20px;padding:18px 20px}
+h2{margin:0 0 10px;font:800 18px "Bricolage Grotesque",Inter,sans-serif}
+.bloc p{margin:0 0 8px;color:#3B3033}.bloc p:last-child{margin:0}
+ol,ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+ol li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+ol li>span{width:30px;height:30px;border-radius:50%;background:#D81B3F;color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+ol b,ul b{display:block}ol small,ul small{color:#5E5054;font-size:14px}
+ul li{padding-left:16px;position:relative}ul li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:#5B7FA3}
+.anim{display:flex;align-items:center;gap:14px}
+.anim .ph{width:64px;height:64px;border-radius:50%;background:#F3EEEC center top/cover no-repeat;flex-shrink:0;display:grid;place-items:center;font:800 22px "Bricolage Grotesque",Inter,sans-serif;color:#D81B3F}
+.anim b{display:block;font-size:16.5px}.anim small{color:#5E5054}
+.bas{position:fixed;left:0;right:0;bottom:0;padding:12px 16px max(12px,env(safe-area-inset-bottom));background:linear-gradient(to top,#ECEAE9 68%,rgba(236,234,233,0))}
+.btn{display:flex;align-items:center;justify-content:center;max-width:520px;margin:0 auto;min-height:54px;border-radius:16px;background:#D81B3F;color:#fff;font:700 17px Inter,sans-serif;text-decoration:none;box-shadow:0 12px 28px -12px rgba(216,27,63,.7);transition:transform .15s,background .15s}
+.btn:hover{background:#B5142F}.btn:active{transform:scale(.98)}.btn:focus-visible,.ou:focus-visible{outline:3px solid #5B7FA3;outline-offset:2px}
+.pied{text-align:center;color:#5E5054;font-size:13px;margin:4px 0 0}
+@media(min-width:900px){main{max-width:1040px;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px 22px;align-items:start;padding-top:20px}
+main>.tete{grid-column:1;grid-row:1 / span 8;position:sticky;top:20px;padding:30px 28px}main>.tete h1{font-size:34px}main>.bloc,main>.pied{grid-column:2}
+main>.bloc:only-child{grid-column:1 / -1}.bas{background:none;pointer-events:none}.bas .btn{pointer-events:auto;box-shadow:0 10px 30px rgba(216,27,63,.35)}}
+@media(prefers-reduced-motion:reduce){main>*{animation:none}.btn{transition:none}}
+
+.field{display:grid;gap:5px;margin-bottom:12px}.field label{font-weight:600;font-size:14px}
+.field input,.field select{font:16px Inter,sans-serif;padding:12px 13px;border:1.5px solid #CFC8C6;border-radius:12px;background:#fff;color:#1B1416;width:100%}
+.field input:focus,.field select:focus{outline:3px solid #5B7FA3;outline-offset:1px;border-color:#5B7FA3}
+button.btn{border:0;width:100%;cursor:pointer}button.btn[disabled]{opacity:.6}
+.err{color:#B5142F;font-weight:600;font-size:14px;margin:0 0 10px}
+.fait{text-align:center;padding:26px 20px}.fait .coche{width:62px;height:62px;border-radius:50%;background:#1E9E63;color:#fff;display:grid;place-items:center;font-size:30px;margin:0 auto 12px;animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.compte{font-size:13.5px;color:#5E5054;margin:10px 0 0}
+@media(min-width:900px){main>.bloc.form{grid-column:2}}
+@media(prefers-reduced-motion:reduce){.fait .coche{animation:none}}
+</style>
+</head>
+<body>
+<main id="m"><div class="bloc"><p>Ouverture de l'invitation…</p></div></main>
+<script>
+/* v1.146 : invitation à un événement du réseau (interclub…). Page publique : date, lieu, inscription.
+   ?e=<événement>&g=<groupe présélectionné>&s=<source> ; ?demo = exemple, rien n'est envoyé. */
+(function(){
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const P=new URLSearchParams(location.search),id=(P.get("e")||"").replace(/[^0-9a-f-]/gi,""),g0=P.get("g")||"",src=(P.get("s")||"").slice(0,40),M=document.getElementById("m"),demo=P.has("demo");
+  const API="https://xsppsqjigdgaybmowzaq.supabase.co/rest/v1/rpc/",H={"Content-Type":"application/json",apikey:"sb_publishable_2uW0CfYvPRJ8TsJw_aNNhA_l7_UQjL7"};
+  const rpc=(f,b)=>fetch(API+f,{method:"POST",headers:H,body:JSON.stringify(b)}).then(r=>r.ok?r.json():Promise.reject(r.status));
+  const DEMO={titre:"One team - One Community",genre:"Interclub",date:new Date(Date.now()+9*86400e3).toISOString().slice(0,10),heure:null,lieu:null,ville:"Casablanca",inscrits:23,groupes:[{id:"a",nom:"CAP Casablanca Leaders",ville:"Casablanca"},{id:"b",nom:"CAP Rabat Privilège",ville:"Rabat"},{id:"c",nom:"CAP Marrakech Synergie",ville:"Marrakech"}]};
+  let E=null;
+  const cle="cap-evt-"+id;
+  function tete(d){const dt=new Date(d.date+"T12:00:00"),jour=dt.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}),h=d.heure?String(d.heure).slice(0,5).replace(":"," h ").replace(/ 00$/,""):"";
+    const ou=[d.lieu,d.ville].filter(Boolean).join(", "),carte=d.lieu?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(ou):"";
+    return `<section class="tete"><img src="logo-proteine-blanc.png" alt="Club d'Affaires Protéine"><small>${esc(d.genre||"Événement")} · tout le réseau</small>
+      <h1>${esc(d.titre)}</h1>
+      <div class="quand"><div><small>Le</small><b>${esc(jour.charAt(0).toUpperCase()+jour.slice(1))}</b></div><div><small>À</small><b>${esc(h||"Heure à venir")}</b></div></div>
+      ${ou?`<a class="ou" ${carte?`href="${esc(carte)}" target="_blank" rel="noopener"`:""}><span><small>Où</small><b>${esc(d.lieu||d.ville)}</b><small>${esc(d.lieu?d.ville||"":"Adresse précisée prochainement")}</small></span>${carte?"<i>Itinéraire ›</i>":""}</a>`:`<div class="ou"><span><small>Où</small><b>Lieu précisé prochainement</b></span></div>`}
+    </section>`}
+  function fait(nom,deja){return `<section class="bloc fait form"><div class="coche">✓</div><h2>${deja?"Vous étiez déjà inscrit":"C'est noté"}${nom?", "+esc(nom.split(" ")[0]):""}</h2>
+      <p>Votre participation est enregistrée. ${E.heure&&E.lieu?"À très vite.":"L'heure et le lieu précis vous seront confirmés par l'animateur de votre groupe."}</p>
+      <p class="compte"><a href="#" id="autre">Inscrire une autre personne</a></p></section>`}
+  function form(){const parVille={};(E.groupes||[]).forEach(c=>(parVille[c.ville||"Autres"]=parVille[c.ville||"Autres"]||[]).push(c));
+    return `<section class="bloc form"><h2>Je participe</h2>
+      <p id="err" class="err" hidden></p>
+      <div class="field"><label for="nom">Prénom et nom</label><input id="nom" maxlength="80" autocomplete="name" placeholder="Prénom Nom"></div>
+      <div class="field"><label for="grp">Mon groupe</label><select id="grp"><option value="">Choisir…</option>${Object.keys(parVille).map(v=>`<optgroup label="${esc(v)}">${parVille[v].map(c=>`<option value="${esc(c.id)}"${c.id===g0?" selected":""}>${esc(c.nom)}</option>`).join("")}</optgroup>`).join("")}<option value="ext">Je ne suis pas encore membre</option></select></div>
+      <div class="field"><label for="tel">Mobile (facultatif)</label><input id="tel" type="tel" maxlength="24" autocomplete="tel" inputmode="tel" placeholder="06 00 00 00 00"></div>
+      <button class="btn" id="ok" type="button">Je viens</button>
+      <p class="compte">${E.inscrits?E.inscrits+" personne"+(E.inscrits>1?"s":"")+" déjà inscrite"+(E.inscrits>1?"s":"")+".":"Soyez le premier à vous inscrire."}</p></section>`}
+  function rendu(vue,nom,deja){M.innerHTML=tete(E)+(vue==="fait"?fait(nom,deja):form())+`<section class="bloc"><h2>Un événement pour tout le réseau</h2><p>Les membres de tous les groupes du Club d'Affaires Protéine se retrouvent pour se rencontrer, d'une ville à l'autre.</p>${E.note?`<p>${esc(E.note)}</p>`:""}</section><p class="pied">Club d'Affaires Protéine Maroc</p>`;
+    const a=document.getElementById("autre");if(a)a.onclick=e=>{e.preventDefault();rendu("form")};
+    const b=document.getElementById("ok");if(b)b.onclick=envoyer}
+  function erreur(t){const e=document.getElementById("err");e.textContent=t;e.hidden=false;e.scrollIntoView({block:"center",behavior:"smooth"})}
+  function envoyer(){const nom=document.getElementById("nom").value.trim().replace(/\s+/g," "),grp=document.getElementById("grp").value,tel=document.getElementById("tel").value.trim(),b=document.getElementById("ok");
+    if(nom.length<3||!/\s/.test(nom)){erreur("Indiquez votre prénom et votre nom.");return}
+    if(!grp){erreur("Choisissez votre groupe, ou « Je ne suis pas encore membre ».");return}
+    b.disabled=true;b.textContent="Envoi…";
+    const fin=r=>{if(r&&r.ok){try{localStorage.setItem(cle,nom)}catch(e){}E.inscrits=(E.inscrits||0)+(r.deja?0:1);rendu("fait",nom,r.deja)}else{b.disabled=false;b.textContent="Je viens";erreur(r&&r.motif==="plein"?"Les inscriptions sont momentanément suspendues. Réessayez plus tard.":r&&r.motif==="ferme"?"Les inscriptions à cet événement sont closes.":"Inscription non enregistrée. Vérifiez votre nom et réessayez.")}};
+    if(demo){setTimeout(()=>fin({ok:true,deja:false}),500);return}
+    rpc("cap_evenement_inscrire",{p_id:id,p_nom:nom,p_club:grp==="ext"?null:grp,p_tel:tel,p_source:src}).then(fin).catch(()=>{b.disabled=false;b.textContent="Je viens";erreur("Connexion impossible. Réessayez dans un instant.")})}
+  function ouvrir(d){E=d;let deja="";try{deja=localStorage.getItem(cle)||""}catch(e){}rendu(deja&&!demo?"fait":"form",deja,true)}
+  if(demo){ouvrir(DEMO);return}
+  if(!id){M.innerHTML=`<div class="bloc"><h2>Lien incomplet</h2><p>Redemandez le lien à l'animateur de votre groupe.</p></div>`;return}
+  rpc("cap_evenement_public",{p_id:id}).then(d=>{if(!d){M.innerHTML=`<div class="bloc"><h2>Événement introuvable</h2><p>Il est peut-être passé. Renseignez-vous auprès de l'animateur de votre groupe.</p></div>`;return}ouvrir(d)})
+    .catch(()=>{M.innerHTML=`<div class="bloc"><h2>Connexion impossible</h2><p>Réessayez dans un instant.</p></div>`});
+})();
+</script>
+</body>
+</html>

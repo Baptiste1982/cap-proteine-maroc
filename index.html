@@ -2761,6 +2761,8 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .etp-t{margin:9px 0 0;font-size:12.5px;color:var(--muted)}
 /*v1.139 candidats*/
 .cand-b{margin-top:16px;opacity:.9}.cand-b .rl-row{border-style:dashed}
+/*v1.141 raccourcis de l'accueil au téléphone : sur deux colonnes, plus rien hors écran*/
+@media(max-width:899.98px){.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;margin:0 0 14px;padding:0}.tools .tool{min-width:0;justify-content:flex-start}.tools .tool>span,.tools .tool{white-space:normal}}
 </style>
 </head>
 <body>
@@ -2871,8 +2873,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.140.0";
+const APP_VERSION="1.141.0";
 const CHANGELOG=[
+  {v:"1.141.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, le raccourci « PSA » de l'accueil sortait de l'écran : les raccourcis sont maintenant sur deux colonnes"]}},
   {v:"1.140.0",date:"23 novembre 2026",notes:{"Ajouté":["Le suivi des contrats signés et des règlements est ouvert à chaque niveau : direction nationale, responsable de région et animateur, chacun pour les adhésions de son périmètre (cloche, accueil, menu Adhésions, boîte à outils)","Les notifications « contrat signé » et « règlement reçu » partent aussi à la direction nationale et à l'animateur du groupe"]}},
   {v:"1.139.0",date:"23 novembre 2026",notes:{"Modifié":["Un groupe ne compte ses membres qu'à partir de la signature du contrat, comme au CRM national. Avant la signature, la personne est « candidate » : elle garde sa fiche, mais ne compte plus dans les totaux, les statistiques, le statut du groupe ni l'annuaire des membres","Les candidats se retrouvent sous le filtre « Candidats » dans Membres, et dans un bloc à part dans Mon groupe"]}},
   {v:"1.138.0",date:"23 novembre 2026",notes:{"Ajouté":["Les étapes d'un membre suivent celles du CRM national : demande reçue, contrat envoyé, contrat signé, facturé, réglé. Elles s'affichent en frise sur sa fiche et sur l'écran des contrats signés","Dès la signature, la personne porte l'étiquette « Dans le groupe » ; elle devient membre à part entière au règlement. Avant la signature : « Candidat »","Filtres « Dans le groupe, pas encore réglé » et « Candidats » dans Membres"]}},

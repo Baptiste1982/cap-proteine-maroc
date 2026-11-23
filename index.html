@@ -2787,6 +2787,10 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .vn-t{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 4px}.vn-t>div{border:1px solid var(--line);border-radius:14px;padding:10px 12px}.vn-t b{display:block;font:700 26px/1.1 "Bricolage Grotesque",sans-serif}.vn-t small{color:var(--muted);font-size:12.5px}
 .vn-q{font-size:13.5px;color:var(--muted);margin:8px 0}.vn-b{border:1px solid var(--line);border-radius:14px;margin-top:10px;padding:0 14px}.vn-b summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;cursor:pointer;list-style:none}.vn-b summary::-webkit-details-marker{display:none}.vn-b summary em{font-style:normal;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:13px}
 .vn-a{font-size:13px;color:var(--muted);margin:0 0 8px}.vn-l{display:grid;padding-bottom:10px}.vn-r{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.vn-r span{color:var(--muted);font-size:13px}.vn-r.lien{cursor:pointer}.vn-r.lien b{text-decoration:underline}
+/*v1.145 membres en listes repliables*/
+details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overflow:hidden}details.mbg>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;margin:0}details.mbg>summary::-webkit-details-marker{display:none}details.mbg>summary::before{content:"▸";margin-right:2px;color:var(--muted);transition:transform .2s}details.mbg[open]>summary::before{transform:rotate(90deg)}details.mbg>summary b{flex:1;min-width:0}details.mbg>summary::after{display:none}details.mbg>summary em{background:none;color:var(--ink);border:1px solid var(--line);font-size:12.5px;padding:1px 9px}
+.mbg-tout{display:flex;gap:8px;justify-content:flex-end;margin:6px 0 2px}.mbl-g.g td:nth-child(4){display:none}
+@media(max-width:899px){.mbl-g td:nth-child(2),.mbl-g td.mbl-e{display:none}}
 </style>
 </head>
 <body>
@@ -2897,8 +2901,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.144.0";
+const APP_VERSION="1.145.0";
 const CHANGELOG=[
+  {v:"1.145.0",date:"23 novembre 2026",notes:{"Modifié":["Membres « par groupe » et « par métier » : des listes qui se replient, à la place des cartes. Boutons « Tout déplier » et « Tout replier »."],"Ajouté":["Paramètres → Administration : « Actualiser les membres du national », pour relire l'annuaire du national sans attendre lundi."]}},
   {v:"1.144.0",date:"23 novembre 2026",notes:{"Ajouté":["Vérification hebdomadaire des membres du CRM national : chaque lundi matin, les nouveaux membres du national sont ajoutés à leur groupe, et les écarts (membre qui n'y figure plus, changement de groupe, groupe inconnu) sont signalés sans rien retirer. Rapport dans Réseau → « Membres du national », avec une notification quand quelque chose change."]}},
   {v:"1.143.0",date:"23 novembre 2026",notes:{"Ajouté":["Adhésions → « Par étape » : l'état général des demandes, de la réception au règlement, par région puis par groupe. La vue nationale s'affine par région puis par groupe, la vue régionale par groupe ; chaque chiffre ouvre la liste des personnes"]}},
   {v:"1.142.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, la barre du bas pouvait se décrocher et flotter pendant le défilement, après un passage par l'espace membre ou une saisie au clavier : elle est recalée à chaque retour"]}},
@@ -4684,15 +4689,20 @@ function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
   return `<tr style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}" tabindex="0" onclick="memberSheet('${m.clubId}','${m.id}')" onkeydown="if(event.key==='Enter')memberSheet('${m.clubId}','${m.id}')">
     <td><span class="mbl-n"><span class="mb-av sm">${esc(initiales(m.nom))}</span><b>${esc(m.nom)}</b>${mbAnim(m)?`<span class="mb-anim">Animateur</span>`:""}${etapePill(m)}</span></td><td>${esc(mbEntreprise(m)||"—")}</td><td class="mbl-m">${esc(mbMetier(m)||"—")}</td>
     <td>${esc((c.nom||"").replace(/^CAP\s+/,""))}<small>${esc(c.ville||"")}</small></td><td class="mbl-t">${tel?`<a href="tel:${esc(tel.replace(/[^+\d]/g,""))}" onclick="event.stopPropagation()">${esc(telAff(tel))}</a>`:"—"}</td><td class="mbl-e" onclick="event.stopPropagation()">${mbEspCell(m)}</td></tr>`}
-function mbGroupes(l,cle,titre){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});let i=0;
-  return Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr")).map(k=>`<section class="mbg"><div class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></div><div class="mb-grid">${g[k].map(m=>mbCarte(m,i++)).join("")}</div></section>`).join("")}
+/* v1.145 : par groupe et par métier = listes repliables (les cartes prenaient trop de place). */
+function mbgEtat(){return window._mbgOuv=window._mbgOuv||{}}
+function mbgNote(d){mbgEtat()[d.dataset.k]=d.open}
+function mbgTout(oui){document.querySelectorAll("#mb-res details.mbg").forEach(d=>{d.open=oui;mbgEtat()[d.dataset.k]=oui})}
+function mbGroupes(l,cle,titre,pref){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});const E=mbgEtat(),q=!!window._q4,ks=Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr"));
+  return `<div class="mbg-tout"><button type="button" class="btn ghost mini" onclick="mbgTout(true)">Tout déplier</button><button type="button" class="btn ghost mini" onclick="mbgTout(false)">Tout replier</button></div>`+ks.map((k,n)=>{const id=pref+":"+k,o=q||(id in E?E[id]:ks.length===1);
+    return `<details class="mbg" data-k="${esc(id)}"${o?" open":""} ontoggle="mbgNote(this)"><summary class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></summary><div class="mbl-w"><table class="mbl mbl-g ${pref}"><tbody>${g[k].slice().sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(mbLigne).join("")}</tbody></table></div></details>`}).join("")}
 function mbResultats(){
   const l=mbListe(),mode=mbMode();
   if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
   const n=`<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div>`;
   if(mode==="liste")return n+`<div class="mbl-w"><table class="mbl"><thead><tr><th>Membre</th><th>Entreprise</th><th>Métier</th><th>Groupe</th><th>Téléphone</th><th>Espace membre</th></tr></thead><tbody>${l.map(mbLigne).join("")}</tbody></table></div>`;
-  if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")});
-  if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k);
+  if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")},"g");
+  if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k,"m");
   return n+`<div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
 }
 function mbFiltrer(){const r=document.getElementById("mb-res");if(r)r.innerHTML=window._mbRes&&annResPeut()?annResHTML():mbResultats()}
@@ -9826,7 +9836,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔄","Actualiser les membres du national","Relire l'annuaire du CRM national et mettre à jour tous les groupes, sans attendre lundi","openVerifNat()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>

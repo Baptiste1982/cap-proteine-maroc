@@ -7,6 +7,7 @@
 // v2 : règlements. Pour chaque contrat signé, les échéances de l'abonnement sont lues comme le fait le tableau de bord du
 // national (POST /abonnement/get {id}) : montant dû, montant réglé, dates. Résultat dans national.reglement
 // { echeances, du, recu, etat: aucun | partiel | complet, lu_le } ; notification dès qu'un règlement de plus est enregistré.
+// v3 : les notifications partent aux superadmins, à la direction nationale et aux comptes de l'animateur du groupe.
 // Lecture seule au national. Appel : session superadmin (bouton du CRM) ou en-tête x-suivi-jeton (appel programmé).
 // essai:true = rien n'est écrit chez nous non plus.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -73,7 +74,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const essai = body.essai === true;
 
-    const { data: adhs, error } = await admin.from('adhesions').select('id, data, national, saisie_proteine_le').neq('statut', 'rejetee').not('national', 'is', null);
+    const { data: adhs, error } = await admin.from('adhesions').select('id, data, national, saisie_proteine_le, ref, membre_id').neq('statut', 'rejetee').not('national', 'is', null);
     if (error) throw error;
     const suivis = (adhs || []).filter(a => a.national?.contrat_id && !a.national?.signe_le && a.national?.absent_le);
     const aRegler = (a: any) => a.national?.abonnement_id && a.national?.signe_le && a.national?.reglement?.etat !== 'complet';
@@ -136,9 +137,9 @@ Deno.serve(async (req) => {
     }
 
     if (!essai) {
-      const envois: { title: string; body: string; url: string; tag: string }[] = [
-        ...payes.map(p => ({ title: p.etat === 'complet' ? '💶 Règlement complet au national' : '💶 Règlement reçu au national', body: `${p.nom} · ${mad(p.recu)} sur ${mad(p.du)} MAD TTC. Tu peux finaliser son intégration.`, url: '/?adh=' + p.id, tag: 'regle-' + p.id })),
-        ...res.signes.map(s => ({ title: '✍️ Contrat signé au national', body: [s.nom, s.ent, s.club].filter(Boolean).join(' · '), url: '/?adh=' + s.id, tag: 'signe-' + s.id })),
+      const envois: { title: string; body: string; url: string; tag: string; adh?: string }[] = [
+        ...payes.map(p => ({ title: p.etat === 'complet' ? '💶 Règlement complet au national' : '💶 Règlement reçu au national', body: `${p.nom} · ${mad(p.recu)} sur ${mad(p.du)} MAD TTC. Tu peux finaliser son intégration.`, url: '/?adh=' + p.id, tag: 'regle-' + p.id, adh: p.id })),
+        ...res.signes.map(s => ({ title: '✍️ Contrat signé au national', body: [s.nom, s.ent, s.club].filter(Boolean).join(' · '), url: '/?adh=' + s.id, tag: 'signe-' + s.id, adh: s.id })),
         ...suivis.filter((a: any) => a._alerte).map(a => ({ title: '⚠️ Contrat introuvable au national', body: `${nomDe(a.data)} · contrat n° ${a.national.contrat_id} : ni en attente de signature ni membre. À vérifier.`, url: '/?adh=' + a.id, tag: 'absent-' + a.id })),
       ];
       if (envois.length) {
@@ -146,9 +147,16 @@ Deno.serve(async (req) => {
           const { data: k } = await admin.rpc('cap_vapid_private');
           if (k) {
             webpush.setVapidDetails('https://cap-proteine-maroc.vercel.app', VAPID_PUBLIC, k as string);
-            const { data: profs } = await admin.from('profiles').select('id').eq('role', 'superadmin');
-            const { data: abos } = await admin.from('push_abonnements').select('id, endpoint, p256dh, auth').in('user_id', (profs || []).map(p => p.id));
-            for (const m of envois) for (const ab of abos || []) { try { await webpush.sendNotification({ endpoint: ab.endpoint, keys: { p256dh: ab.p256dh, auth: ab.auth } }, JSON.stringify(m), { TTL: 86400 }); } catch { /* */ } }
+            const { data: profs } = await admin.from('profiles').select('id, role, animateur_id');
+            const { data: abos } = await admin.from('push_abonnements').select('id, user_id, endpoint, p256dh, auth').in('user_id', (profs || []).map(p => p.id));
+            const { data: mbs } = await admin.from('membres').select('id, club_id'); const { data: cls } = await admin.from('clubs').select('id, animateur_id');
+            // Destinataires : superadmins, direction nationale, et les comptes de l'animateur du groupe de la demande.
+            const pour = (adhId?: string) => {
+              const a = (adhs || []).find(x => x.id === adhId), club = a ? ((mbs || []).find(x => x.id === a.membre_id)?.club_id || a.ref) : null;
+              const anim = club ? (cls || []).find(x => String(x.id) === String(club))?.animateur_id : null;
+              return new Set((profs || []).filter(p => p.role === 'superadmin' || p.role === 'directeur_national' || (anim && p.animateur_id === anim)).map(p => p.id));
+            };
+            for (const m of envois) { const ids = pour(m.adh); for (const ab of (abos || []).filter(x => ids.has(x.user_id))) { try { await webpush.sendNotification({ endpoint: ab.endpoint, keys: { p256dh: ab.p256dh, auth: ab.auth } }, JSON.stringify({ title: m.title, body: m.body, url: m.url, tag: m.tag }), { TTL: 86400 }); } catch { /* */ } } }
           }
         } catch { /* la notification ne bloque rien */ }
       }

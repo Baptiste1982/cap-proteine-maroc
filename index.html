@@ -2783,6 +2783,10 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .etp-tab tfoot th,.etp-tab tfoot td{border-top:2px solid var(--line);font-weight:700}
 .etp-vides{all:unset;cursor:pointer;display:block;margin:10px 2px 0;font-size:13px;color:var(--muted);text-decoration:underline}
 @media(max-width:700px){.etp-ks{grid-template-columns:repeat(3,minmax(0,1fr))}.etp-tab thead th span{display:none}.etp-tab th:first-child{width:36%;padding-left:8px}.etp-tab{font-size:12.5px}.etp-n{min-width:26px;height:26px;padding:0 6px}}
+/*v1.144 membres du national*/
+.vn-t{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 4px}.vn-t>div{border:1px solid var(--line);border-radius:14px;padding:10px 12px}.vn-t b{display:block;font:700 26px/1.1 "Bricolage Grotesque",sans-serif}.vn-t small{color:var(--muted);font-size:12.5px}
+.vn-q{font-size:13.5px;color:var(--muted);margin:8px 0}.vn-b{border:1px solid var(--line);border-radius:14px;margin-top:10px;padding:0 14px}.vn-b summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;cursor:pointer;list-style:none}.vn-b summary::-webkit-details-marker{display:none}.vn-b summary em{font-style:normal;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:13px}
+.vn-a{font-size:13px;color:var(--muted);margin:0 0 8px}.vn-l{display:grid;padding-bottom:10px}.vn-r{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.vn-r span{color:var(--muted);font-size:13px}.vn-r.lien{cursor:pointer}.vn-r.lien b{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -2893,8 +2897,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.143.0";
+const APP_VERSION="1.144.0";
 const CHANGELOG=[
+  {v:"1.144.0",date:"23 novembre 2026",notes:{"Ajouté":["Vérification hebdomadaire des membres du CRM national : chaque lundi matin, les nouveaux membres du national sont ajoutés à leur groupe, et les écarts (membre qui n'y figure plus, changement de groupe, groupe inconnu) sont signalés sans rien retirer. Rapport dans Réseau → « Membres du national », avec une notification quand quelque chose change."]}},
   {v:"1.143.0",date:"23 novembre 2026",notes:{"Ajouté":["Adhésions → « Par étape » : l'état général des demandes, de la réception au règlement, par région puis par groupe. La vue nationale s'affine par région puis par groupe, la vue régionale par groupe ; chaque chiffre ouvre la liste des personnes"]}},
   {v:"1.142.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, la barre du bas pouvait se décrocher et flotter pendant le défilement, après un passage par l'espace membre ou une saisie au clavier : elle est recalée à chaque retour"]}},
   {v:"1.141.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, le raccourci « PSA » de l'accueil sortait de l'écran : les raccourcis sont maintenant sur deux colonnes"]}},
@@ -3728,7 +3733,7 @@ async function bootIntoApp(){
   adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();psaAnnonce();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);espPrecharger();
-  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();ouvrirLienCompteNat();
+  ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();ouvrirLienCompteNat();ouvrirLienVerifNat();
   presenceDemarrer();
   horlogeDemarrer();
   if(typeof Lancement!=="undefined")Lancement.fin();
@@ -6276,7 +6281,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"||window._dmVue==="etp"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),it("Suivi par étape","navDem('etp')",{on:tab==="demandes"&&v==="etp"}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       !ro&&signesListe().length&&it("Signés et règlements","openSignes()",{n:signesAFaire().length}),it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
+  if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()"),verifNatPeut()&&it("Membres du national","openVerifNat()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),sup&&it("Journal","openJournal()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -10046,6 +10051,34 @@ function signeEcart(a){const n=a.national||{},mb=a.membre_id&&DB.membres.find(m=
   return Object.keys(v).length?{mb,v}:null}
 function signesListe(){return (DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&(a.national||{}).signe_le).sort((x,y)=>String(y.national.signe_le).localeCompare(String(x.national.signe_le)))}
 function signesAFaire(){return signesListe().filter(a=>signeEcart(a)||(!a.membre_id))}
+/* v1.144 : vérification hebdomadaire des membres du CRM national (rapport écrit par la fonction serveur national-annuaire). */
+function verifNatPeut(){return !!SESSION&&vuePeutBasculer()&&!SESSION._voir}
+async function openVerifNat(){if(!verifNatPeut())return;
+  try{const {data}=await sb.from("reglages").select("valeur").eq("cle","national_verif").maybeSingle();if(data)(DB.reglages=DB.reglages||{}).national_verif=data.valeur}catch(e){}
+  let R=null;try{R=JSON.parse((DB.reglages||{}).national_verif||"null")}catch(e){}
+  const D=window._DBvrai||DB,sup=SESSION.role==="superadmin",n=R?(R.ajoutes||[]).length+(R.partis||[]).length+(R.deplaces||[]).length+(R.inconnus||[]).length:0;
+  let vu=0;const bloc=(titre,L,fn,aide)=>L&&L.length?`<details class="vn-b" name="vn"${vu++?"":" open"}><summary><b>${titre}</b><em>${L.length}</em></summary>${aide?`<p class="vn-a">${aide}</p>`:""}<div class="vn-l">${L.map(fn).join("")}</div></details>`:"";
+  const fiche=x=>{const m=x.id&&D.membres.find(y=>y.id===x.id);return m?` onclick="memberSheet('${m.clubId}','${m.id}')" class="vn-r lien"`:` class="vn-r"`};
+  document.getElementById("sheet-content").innerHTML=`<h3>Membres du national</h3>
+    <div class="sheet-sub">Chaque lundi matin, le CRM relit l'annuaire des membres du CRM national et le compare à nos fiches.</div>
+    ${R?`<div class="vn-t"><div><b>${R.national||0}</b><small>membres au national</small></div><div><b>${(R.ajoutes||[]).length}</b><small>ajoutés chez nous</small></div><div><b>${n-(R.ajoutes||[]).length}</b><small>écarts à regarder</small></div></div>
+      <p class="vn-q">Dernière vérification : ${esc(adhDate(R.le))}${n?"":" · tout correspond, rien à faire."}</p>
+      ${bloc("Ajoutés à nos groupes",R.ajoutes,x=>`<div class="vn-r"><b>${esc(x.nom)}</b><span>${esc((x.groupe||"").replace(/^CAP\s+/,""))}${x.metier?" · "+esc(x.metier):""}</span></div>`,"Nouveaux au national : leur fiche a été créée dans le bon groupe.")}
+      ${bloc("N'apparaissent plus au national",R.partis,x=>`<div${fiche(x)}><b>${esc(x.nom)}</b><span>${esc((x.groupe||"").replace(/^CAP\s+/,""))}</span></div>`,"Leur fiche vient du national et ils n'y figurent plus dans ce groupe. Rien n'a été retiré : à toi de voir avec l'animateur.")}
+      ${bloc("Dans un autre groupe au national",R.deplaces,x=>`<div class="vn-r"><b>${esc(x.nom)}</b><span>au national : ${esc((x.national||"").replace(/^CAP\s+/,""))} · chez nous : ${esc((x.chez_nous||"").replace(/CAP\s+/g,""))}</span></div>`,"Rien n'a été déplacé : change le groupe sur sa fiche si c'est confirmé.")}
+      ${bloc("Groupe du national inconnu chez nous",R.inconnus,x=>`<div class="vn-r"><b>${esc(x.nom)}</b><span>${esc(x.groupe||"")}</span></div>`,"Le groupe n'existe pas dans le CRM sous ce nom : crée-le ou renomme-le, la vérification suivante rangera ces membres.")}
+      ${(R.erreurs||[]).length?`<p class="vn-q">⚠ ${esc(R.erreurs.join(" · "))}</p>`:""}
+      <details class="vn-b" name="vn"><summary><b>Effectif au national par groupe</b><em>${Object.keys(R.groupes||{}).length}</em></summary><div class="vn-l">${Object.entries(R.groupes||{}).sort((a,b)=>b[1]-a[1]).map(([g,k])=>`<div class="vn-r"><b>${esc(g)}</b><span>${k} membre${k>1?"s":""}</span></div>`).join("")}</div></details>`
+    :`<p class="fh-empty">Pas encore de vérification. La première part lundi matin.</p>`}
+    <div class="sheet-actions">${sup?`<button class="btn ghost" id="vn-go" onclick="verifNatLancer(this)">🔄 Vérifier maintenant</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet()}
+async function verifNatLancer(btn){if(btn){btn.disabled=true;btn.textContent="⏳ Lecture du national…"}
+  const {data:r,error}=await sb.functions.invoke("national-annuaire",{body:{action:"verifier"}});
+  const err=error?((await error.context?.json?.().catch(()=>null))?.error||error.message):r?.error;
+  if(err){toast("Vérification impossible : "+err,"e");if(btn){btn.disabled=false;btn.textContent="🔄 Vérifier maintenant"}return}
+  if((r.rapport?.ajoutes||[]).length){try{await loadDB()}catch(e){}render()}
+  toast("Vérification faite","s");openVerifNat()}
+function ouvrirLienVerifNat(){const q=new URLSearchParams(location.search);if(!q.get("verifnat")||!verifNatPeut())return;history.replaceState(null,"",location.pathname);openVerifNat()}
 function openSignes(){
   const L=signesListe(),lib={contrat:"contrat signé",facture:"facture émise",paiement:"paiement reçu"};
   document.getElementById("sheet-content").innerHTML=`<h3>Contrats signés au national</h3>
@@ -10425,7 +10458,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openVerifNat","etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

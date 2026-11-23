@@ -2759,6 +2759,8 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .etp-f li.fait i{background:var(--crimson);border-color:var(--crimson)}
 .etp-f li.fait span{color:var(--ink)}.etp-f li.ici span{font-weight:700}
 .etp-t{margin:9px 0 0;font-size:12.5px;color:var(--muted)}
+/*v1.139 candidats*/
+.cand-b{margin-top:16px;opacity:.9}.cand-b .rl-row{border-style:dashed}
 </style>
 </head>
 <body>
@@ -2869,8 +2871,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.138.0";
+const APP_VERSION="1.139.0";
 const CHANGELOG=[
+  {v:"1.139.0",date:"23 novembre 2026",notes:{"Modifié":["Un groupe ne compte ses membres qu'à partir de la signature du contrat, comme au CRM national. Avant la signature, la personne est « candidate » : elle garde sa fiche, mais ne compte plus dans les totaux, les statistiques, le statut du groupe ni l'annuaire des membres","Les candidats se retrouvent sous le filtre « Candidats » dans Membres, et dans un bloc à part dans Mon groupe"]}},
   {v:"1.138.0",date:"23 novembre 2026",notes:{"Ajouté":["Les étapes d'un membre suivent celles du CRM national : demande reçue, contrat envoyé, contrat signé, facturé, réglé. Elles s'affichent en frise sur sa fiche et sur l'écran des contrats signés","Dès la signature, la personne porte l'étiquette « Dans le groupe » ; elle devient membre à part entière au règlement. Avant la signature : « Candidat »","Filtres « Dans le groupe, pas encore réglé » et « Candidats » dans Membres"]}},
   {v:"1.137.0",date:"23 novembre 2026",notes:{"Ajouté":["Contrats signés au national : une ligne dans « ce qui t'attend » sur l'accueil et dans la cloche, avec un écran de détail (groupe, contrat, règlement) et un bouton pour mettre la fiche du membre à jour","Règlements lus au national chaque heure : facture émise, règlement partiel ou complet, avec une notification dès qu'un règlement est enregistré"]}},
   {v:"1.136.0",date:"23 novembre 2026",notes:{"Corrigé":["Contrats signés au national : un contrat qui quitte « En attente de signature » est maintenant retrouvé dans l'annuaire des membres du national, puis marqué signé chez nous (les contrats de Reda Allah Sibari et de Nawar Mounchit restaient « introuvables »)"],"Ajouté":["Alerte quand un contrat n'est plus ni en attente ni membre au national depuis plus d'un jour","Le groupe du membre au national s'affiche sur la demande signée"]}},
@@ -3551,7 +3554,7 @@ function mapReunion(r){return{pres:r.presentation||null,id:r.id,type:r.type,club
 function guestVue(){try{return localStorage.getItem('cap-gvue')||'det'}catch(e){return'det'}}
 function guestVueChoisir(v,id){try{localStorage.setItem('cap-gvue',v)}catch(e){}openMeeting(id)}
 function mapGuest(r){return{_id:r.id,nom:r.nom,tel:r.tel||"",par:r.invite_par||"",statut:r.statut,entreprise:r.entreprise||"",metier:r.metier||"",note:r.note||"",parMembre:!!r.propose_par,venu:r.venu??null,rappelLe:r.rappel_le||null,suiviLe:r.suivi_le||null,email:r.email||"",profilId:r.profil_id||null}}
-function mapMembre(r){return{speDetail:r.specialite_detail||"",loisirs:r.loisirs||"",carte:r.carte_jeton||"",id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
+function mapMembre(r){return{candidat:!!r.candidat,speDetail:r.specialite_detail||"",loisirs:r.loisirs||"",carte:r.carte_jeton||"",id:r.id,userId:r.user_id||null,clubId:r.club_id,num:r.num,nom:r.nom,specialite:r.specialite||"",formulaire:!!r.formulaire,contrat:!!r.contrat,facture:!!r.facture,paiement:!!r.paiement,reorientation:r.reorientation||"",commentaires:r.commentaires||"",infos:r.infos||null,createdAt:r.created_at||"",inscrit:!!r.user_id,abDebut:r.abonnement_debut||"",relanceRenouvLe:r.relance_renouv_le||null,cherche:r.cherche||"",animId:r.animateur_id||null,photo:r.photo_url||"",logo:r.logo_url||"",presentation:r.presentation||"",site:r.site||"",linkedin:r.linkedin||"",reseaux:r.reseaux||""}}
 function rlsMsg(e){const m=(e&&e.message)||"";if(/row-level security|permission|policy|violates/i.test(m))return "Action non autorisée pour ton rôle.";return "Erreur : "+m}
 
 /* ---- chargement : ce que RLS autorise pour l'utilisateur connecté ---- */
@@ -3579,6 +3582,7 @@ async function loadDB(){
   };
   const adh=await sb.from("adhesions").select("*").order("created_at",{ascending:false});
   DB.adhesions=adh.error?[]:(adh.data||[]); // table absente ou non autorisée → simplement vide
+  mbsRepartir(); /* v1.139 */
   try{const cx=await sb.rpc("cap_membres_connexions"); // optionnel : jamais bloquant pour le démarrage
     if(!cx.error)(cx.data||[]).forEach(r=>{const m=DB.membres.find(x=>x.id===r.membre_id);if(m)m.vuLe=r.derniere_connexion||null});}catch(e){console.warn(e)}
   DB.directeurs=[];try{const dz=await sb.rpc("cap_regions_directeurs");if(!dz.error&&Array.isArray(dz.data))DB.directeurs=dz.data}catch(e){console.warn(e)} // v1.84
@@ -4413,7 +4417,7 @@ function vuePortee(){if(!DB)return null;const ag=tab==="agenda"&&SESSION&&SESSIO
   const cl=DB.clubs.filter(c=>anim?(!!SESSION.animId&&c.animId===SESSION.animId):villes.includes(c.ville)),ids=new Set(cl.map(c=>c.id));
   const reu=DB.reunions.filter(r=>ids.has(r.clubId)),rids=new Set(reu.map(r=>r.id)),lieuxUtil=new Set(reu.map(r=>r.lieuId).filter(Boolean));
   const anims=new Set(cl.map(c=>c.animId).filter(Boolean));
-  return{...DB,clubs:cl,reunions:reu,membres:DB.membres.filter(m=>ids.has(m.clubId)),
+  return{...DB,clubs:cl,reunions:reu,membres:mbsPoser(DB.membres.filter(m=>ids.has(m.clubId))),candidats:(DB.candidats||[]).filter(m=>ids.has(m.clubId)),
     adhesions:(DB.adhesions||[]).filter(a=>{const c=adhClubId(a);return !c||ids.has(c)}),
     lieux:DB.lieux.filter(l=>villes.includes(l.ville)||lieuxUtil.has(l.id)),
     animateurs:DB.animateurs.filter(a=>anims.has(a.id)||villes.includes(a.ville)),
@@ -4540,7 +4544,7 @@ function go(t){_navRubOuverte=null;_navFerme=false;filPageNoter(t);_navDir=TAB_O
   espCaler();
   document.getElementById("fab").classList.toggle("hidden",readOnly()||tab==="dash"||tab==="monitoring"||tab==="espace"||tab==="membres"||tab==="demandes"||(tab==="team"&&!canManageStructure())||(tab==="clubs"&&!canCreerStructure()));
   render();window.scrollTo({top:0,behavior:"instant"});}
-function render(){const v=document.getElementById("view");
+function render(){if(!window._DBvrai)mbsRepartir(); /* v1.139 : candidats à part */const v=document.getElementById("view");
   const _af=document.activeElement,_afId=_af&&v.contains(_af)&&_af.id&&_af.tagName==="INPUT"?_af.id:null,_afPos=_afId?_af.selectionStart:null;
   vueAppliquer();
   v.innerHTML=avecVue(()=>tab==="dash"?(vueMode()==="reg"?viewRegion():viewDashboard()):tab==="agenda"?viewAgenda():tab==="reunions"?viewGroupe():tab==="clubs"?viewClubs():tab==="membres"?viewMembres():tab==="demandes"?viewDemandes():tab==="lieux"?viewLieux():tab==="espace"?viewEspace():tab==="monitoring"?viewMonitoring():viewTeam());
@@ -4628,7 +4632,7 @@ function mbSousTitre(m){const c=club(m.clubId);return [mbEntreprise(m),mbMetier(
 function mbIndex(m){const i=m.infos||{},c=club(m.clubId);return mbNorm([m.nom,m.specialite,i.metier,i.metier_precis,i.ent_nom,i.ent_nom_legal,i.ent_activite,i.m_fonction,i.ent_ville,c.nom,c.ville].join(" "))}
 function mbListe(){
   const ids=new Set(scopedClubIds());const q=predMots(window._q4||"");
-  return DB.membres.filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(filter!=="anim"||mbAnim(m))&&(filter!=="etp"||(e=>e.suivi&&!e.plein&&e.n>=2)(mbEtape(m)))&&(filter!=="cand"||(e=>e.suivi&&e.n<2)(mbEtape(m)))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
+  return (filter==="cand"?(DB.candidats||[]):DB.membres).filter(m=>ids.has(m.clubId)&&(!filter.startsWith("v:")||club(m.clubId).ville===filter.slice(2))&&(filter!=="anim"||mbAnim(m))&&(filter!=="etp"||(e=>e.suivi&&!e.plein&&e.n>=2)(mbEtape(m)))&&(!q.length||(w=>q.every(t=>w.some(x=>x.startsWith(t))))(predMots(mbIndex(m)))))
     .sort((a,b)=>a.nom.localeCompare(b.nom,"fr"));
 }
 function mbCarte(m,i){
@@ -4667,7 +4671,7 @@ function viewMembres(){
     <div class="searchbar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="mb-q" type="search" ${window._mbRes&&annResPeut()?"":`data-pred="membres"`} placeholder="Tape les premières lettres : nom, entreprise, métier, groupe…" value="${esc(window._q4||"")}" oninput="window._q4=this.value;mbFiltrer()" autocomplete="off"></div>
     ${annResPeut()?`<div class="mon-seg ar-seg" role="group" aria-label="Périmètre de l'annuaire"><button type="button" class="${window._mbRes?"":"on"}" onclick="window._mbRes=0;render()">${SESSION.role==="animateur"?"Mes groupes":"Ma région"}</button><button type="button" class="${window._mbRes?"on":""}" onclick="window._mbRes=1;render()">Tout le réseau</button></div>`:""}
-    <div class="mb-bar"${window._mbRes&&annResPeut()?" hidden":""}><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${(n=>n?fchip("Dans le groupe, pas encore réglé","etp",n):"")(tous.filter(m=>{const e=mbEtape(m);return e.suivi&&!e.plein&&e.n>=2}).length)}${(n=>n?fchip("Candidats","cand",n):"")(tous.filter(m=>{const e=mbEtape(m);return e.suivi&&e.n<2}).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
+    <div class="mb-bar"${window._mbRes&&annResPeut()?" hidden":""}><div class="filters">${fchip("Tous","all",tous.length)}${fchip("Animateurs","anim",tous.filter(mbAnim).length)}${(n=>n?fchip("Dans le groupe, pas encore réglé","etp",n):"")(tous.filter(m=>{const e=mbEtape(m);return e.suivi&&!e.plein&&e.n>=2}).length)}${(n=>n?fchip("Candidats","cand",n):"")((DB.candidats||[]).filter(m=>ids.has(m.clubId)).length)}${villes.map(v=>fchip(v,"v:"+v,tous.filter(m=>club(m.clubId).ville===v).length)).join("")}</div>${vModes(MB_MODES,mbMode(),"mbChoisirMode")}</div>
     <div id="mb-res">${window._mbRes&&annResPeut()?annResHTML():mbResultats()}</div><div style="height:8px"></div></div>`;
 }
 
@@ -4965,7 +4969,7 @@ function grpMembres(c,D){
       <span class="rl-ind">${dots4(m)}${m.inscrit?`<span class="rl-fact g">espace membre</span>`:""}</span><span class="rl-chev">›</span></button></div>`).join("")}</div>`:`<p class="fh-empty">Aucun membre pour l'instant.</p>`;
   const cherchent=D.membres.filter(m=>m.cherche);
   return `<div class="grp-2col">
-    <div>${secHead("Membres",D.membres.length,ed?`<button class="btn ghost mini" onclick="memberSheet('${c.id}')">+ Ajouter</button>`:"")}${list}</div>
+    <div>${secHead("Membres",D.membres.length,ed?`<button class="btn ghost mini" onclick="memberSheet('${c.id}')">+ Ajouter</button>`:"")}${list}${(K=>K.length?`<div class="cand-b">${secHead("Candidats",K.length,"")}<p class="fh-note">Contrat pas encore signé : ils ne comptent pas dans le groupe.</p><div class="rl">${K.map((m,i)=>`<div class="rl-row" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}"><button class="rl-h" onclick="memberSheet('${c.id}','${m.id}')"><span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}${etapePill(m)}</b><small>${esc(mbEtape(m).lib)}</small></span><span class="rl-chev">›</span></button></div>`).join("")}</div></div>`:"")(candidatsDe(c.id))}</div>
     <div>
       <div class="month-label">Métiers représentés <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${met.length}</span></div>
       ${met.length?`<div class="grp-met">${met.map(([k,n])=>`<span class="gm">${esc(k)}${n>1?`<em>×${n}</em>`:""}</span>`).join("")}</div>`:`<p class="fh-empty">Aucun métier renseigné.</p>`}
@@ -7941,7 +7945,7 @@ async function saveMembre(clubId,id){
 async function delMembre(clubId,id){
   const {error}=await sb.from("membres").delete().eq("id",id);
   if(error){toast(rlsMsg(error));return}
-  DB.membres=DB.membres.filter(x=>x.id!==id);openClub(clubId);toast("Membre retiré");
+  DB.membres=DB.membres.filter(x=>x.id!==id);DB.candidats=(DB.candidats||[]).filter(x=>x.id!==id);mbsRepartir();openClub(clubId);toast("Membre retiré");
 }
 function clubForm(id){
   const editing=!!id;const c=editing?club(id):{nom:"",ville:villesListe()[0],animId:"",statut:"creation"};
@@ -7980,7 +7984,7 @@ async function delClub(id){
   const {error}=await sb.from("clubs").delete().eq("id",id);
   if(error){toast(rlsMsg(error));return}
   DB.clubs=DB.clubs.filter(c=>c.id!==id);
-  DB.membres=DB.membres.filter(m=>m.clubId!==id);
+  DB.membres=DB.membres.filter(m=>m.clubId!==id);DB.candidats=(DB.candidats||[]).filter(m=>m.clubId!==id);mbsRepartir();
   closeSheet();render();toast("Club supprimé");
 }
 
@@ -8398,7 +8402,7 @@ async function adhArchiver(id){
   const motif=[m!=="Autre"?m:"",txt].filter(Boolean).join(" — ");
   const del=document.getElementById("adh-del-mb"),mbId=del&&del.checked?a.membre_id:null;
   if(mbId){const {error:e1}=await sb.from("membres").delete().eq("id",mbId);if(e1){toast(rlsMsg(e1));return}
-    DB.membres=DB.membres.filter(x=>x.id!==mbId);a.membre_id=null}
+    DB.membres=DB.membres.filter(x=>x.id!==mbId);DB.candidats=(DB.candidats||[]).filter(x=>x.id!==mbId);a.membre_id=null;mbsRepartir()}
   const row={statut:"rejetee",archivee_le:new Date().toISOString(),archive_motif:motif,archive_par:SESSION.id};
   const {error}=await sb.from("adhesions").update(row).eq("id",id);
   if(error){toast(rlsMsg(error));return}
@@ -9931,6 +9935,16 @@ function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"de
       <div class="dmf-act"><a class="btn ghost mini" href="formulaire-adhesion-membre.pdf" target="_blank" rel="noopener">📄 PDF vierge</a><a class="btn ghost mini" href="${esc(src.toString())}" target="_blank" rel="noopener">↗ Plein écran</a><button class="btn ghost mini" onclick="adhCharger&&adhCharger().then(()=>{toast('Demandes actualisées','s');render()})">⟳ Actualiser les demandes</button></div></div>
     <p class="dmf-note">${m==="vrai"?"Tu remplis le formulaire avec le futur membre, comme il le ferait sur son téléphone. À l'envoi, sa demande arrive dans l'onglet 📥 Demandes avec le PDF signé.":"Le formulaire tel que le voit le futur membre. Mode démonstration : rien n'est enregistré."}</p>
     <div class="dmf-cadre"><iframe title="Formulaire d'adhésion" src="${esc(src.toString())}" loading="lazy"></iframe></div></div>`}
+/* v1.139 : le groupe ne compte qu'à partir de la signature. DB.membres = ceux qui font partie d'un groupe ;
+   DB.candidats = fiches dont la demande d'adhésion n'a pas encore de contrat signé au national.
+   Une recherche par identifiant (find, some) dans DB.membres retombe sur les candidats : leur fiche s'ouvre comme les autres. */
+function mbEstCandidat(m,adh){const l=adh.filter(a=>a.membre_id===m.id&&a.statut!=="rejetee");return l.length?!l.some(a=>(a.national||{}).signe_le):!!m.candidat}
+function mbsPoser(arr){const F=Array.prototype,C=()=>((window._DBvrai||DB||{}).candidats)||[];
+  Object.defineProperty(arr,"find",{value:function(f,t){const r=F.find.call(this,f,t);return r!==undefined?r:F.find.call(C(),f,t)},configurable:true,writable:true});
+  Object.defineProperty(arr,"some",{value:function(f,t){return F.some.call(this,f,t)||F.some.call(C(),f,t)},configurable:true,writable:true});return arr}
+function mbsRepartir(){if(!DB||!DB.membres)return;const vu=new Set(),tous=[...DB.membres,...(DB.candidats||[])].filter(m=>!vu.has(m.id)&&vu.add(m.id)),adh=DB.adhesions||[];
+  const c=tous.filter(m=>mbEstCandidat(m,adh)),ids=new Set(c.map(m=>m.id));DB.candidats=c;DB.membres=mbsPoser(tous.filter(m=>!ids.has(m.id)))}
+function candidatsDe(clubId){return ((DB&&DB.candidats)||[]).filter(m=>m.clubId===clubId).sort((a,b)=>a.nom.localeCompare(b.nom,"fr"))}
 /* v1.138 : étapes d'un membre, calquées sur le CRM national (demande, contrat envoyé, signé, facturé, réglé).
    Dès la signature il fait partie du groupe ; il devient membre à part entière au règlement (fiche « paiement »). */
 const ETAPES_NAT=["Demande reçue","Contrat envoyé","Contrat signé","Facturé","Réglé"];

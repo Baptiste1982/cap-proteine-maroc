@@ -2763,6 +2763,26 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 .cand-b{margin-top:16px;opacity:.9}.cand-b .rl-row{border-style:dashed}
 /*v1.141 raccourcis de l'accueil au téléphone : sur deux colonnes, plus rien hors écran*/
 @media(max-width:899.98px){.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;margin:0 0 14px;padding:0}.tools .tool{min-width:0;justify-content:flex-start}.tools .tool>span,.tools .tool{white-space:normal}}
+/*v1.143 suivi des demandes par étape*/
+.etp-intro{margin:6px 0 12px;color:var(--muted);font-size:13.5px}
+.etp-ks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.etp-k{display:grid;justify-items:center;gap:2px;padding:10px 4px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit;min-width:0}
+.etp-k i{font-style:normal;font-size:17px}.etp-k b{font:800 22px "Bricolage Grotesque",sans-serif}.etp-k span{font-size:11.5px;color:var(--muted);text-align:center}
+.etp-k.zero{opacity:.5;cursor:default}.etp-k:not(.zero):hover{border-color:var(--crimson)}
+.etp-f2{margin-bottom:12px}
+.etp-tw{border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.etp-tab{width:100%;border-collapse:collapse;font-size:13.5px;table-layout:fixed}
+.etp-tab th,.etp-tab td{padding:7px 4px;text-align:center;border-top:1px solid var(--line)}
+.etp-tab thead th{border-top:0;font-size:11px;font-weight:600;color:var(--muted);padding:9px 2px}.etp-tab thead th i{display:block;font-style:normal;font-size:15px}
+.etp-tab th:first-child{text-align:left;width:34%;padding-left:12px}.etp-tab td:last-child,.etp-tab th:last-child{width:11%}
+.etp-tab th button{all:unset;cursor:pointer;display:block;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis}.etp-tab th button[disabled]{cursor:default;opacity:.55}
+.etp-tab th button small{display:block;font-weight:400;font-size:11.5px;color:var(--muted)}
+.etp-r th button{font:700 13px Inter,sans-serif;letter-spacing:.03em;text-transform:uppercase}.etp-r td,.etp-r th{background:rgba(127,127,127,.08)}
+.etp-n{border:0;cursor:pointer;min-width:30px;height:28px;padding:0 8px;border-radius:99px;background:var(--crimson);color:#fff;font:700 13px Inter,sans-serif}
+.etp-0{color:var(--muted);opacity:.5}.etp-rien{color:var(--muted);font-size:13px;padding:14px}
+.etp-tab tfoot th,.etp-tab tfoot td{border-top:2px solid var(--line);font-weight:700}
+.etp-vides{all:unset;cursor:pointer;display:block;margin:10px 2px 0;font-size:13px;color:var(--muted);text-decoration:underline}
+@media(max-width:700px){.etp-ks{grid-template-columns:repeat(3,minmax(0,1fr))}.etp-tab thead th span{display:none}.etp-tab th:first-child{width:36%;padding-left:8px}.etp-tab{font-size:12.5px}.etp-n{min-width:26px;height:26px;padding:0 6px}}
 </style>
 </head>
 <body>
@@ -2873,8 +2893,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.142.0";
+const APP_VERSION="1.143.0";
 const CHANGELOG=[
+  {v:"1.143.0",date:"23 novembre 2026",notes:{"Ajouté":["Adhésions → « Par étape » : l'état général des demandes, de la réception au règlement, par région puis par groupe. La vue nationale s'affine par région puis par groupe, la vue régionale par groupe ; chaque chiffre ouvre la liste des personnes"]}},
   {v:"1.142.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, la barre du bas pouvait se décrocher et flotter pendant le défilement, après un passage par l'espace membre ou une saisie au clavier : elle est recalée à chaque retour"]}},
   {v:"1.141.0",date:"23 novembre 2026",notes:{"Corrigé":["Au téléphone, le raccourci « PSA » de l'accueil sortait de l'écran : les raccourcis sont maintenant sur deux colonnes"]}},
   {v:"1.140.0",date:"23 novembre 2026",notes:{"Ajouté":["Le suivi des contrats signés et des règlements est ouvert à chaque niveau : direction nationale, responsable de région et animateur, chacun pour les adhésions de son périmètre (cloche, accueil, menu Adhésions, boîte à outils)","Les notifications « contrat signé » et « règlement reçu » partent aussi à la direction nationale et à l'animateur du groupe"]}},
@@ -6252,8 +6273,8 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
       it("Vue membre",`espaceOuvrir('membre.html#equipe=${c.id}')`,{on:tab==="espace"&&/#equipe=/.test(window._espUrl||"")}),...esp]}
   if(r==="age"){const nb=reunionsSansBilan().length;
     return[it("Calendrier","navVers('agenda')",{on:tab==="agenda"}),!ro&&it("Planifier en série","openPlanSerie()"),!ro&&it("Bilans à faire","openBilan()",{n:nb}),role!=="visiteur"&&it("Réunions du réseau","openReunionsReseau()")].filter(Boolean)}
-  if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"?window._dmVue:"pipe",ro=readOnly();
-    return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
+  if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"||window._dmVue==="etp"?window._dmVue:"pipe",ro=readOnly();
+    return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),it("Suivi par étape","navDem('etp')",{on:tab==="demandes"&&v==="etp"}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       !ro&&signesListe().length&&it("Signés et règlements","openSignes()",{n:signesAFaire().length}),it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
   if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),sup&&it("Journal","openJournal()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
@@ -9939,8 +9960,43 @@ function natCols(){
     {k:"signe",t:"Signées",s:"Historique complet",ico:"✅",l:all.filter(a=>natEtat(a)==="signe").sort((x,y)=>((y.national||{}).signe_le||"").localeCompare((x.national||{}).signe_le||""))}];
 }
 function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer")}
-function dmVueSeg(){if(!navDir()&&["nat","leads"].includes(window._dmVue))window._dmVue="pipe";const v=["nat","form","leads"].includes(window._dmVue)?window._dmVue:"pipe",dir=navDir(),n=natAEnvoyer().length,nl=(DB.leads||[]).filter(l=>l.statut==="a_contacter").length;
-  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button>${dir?`<button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>`:""}${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button>${dir?`<button role="tab" aria-selected="${v==="leads"}" class="${v==="leads"?"on":""}" onclick="window._dmVue='leads';render()">📇 Leads${nl?`<em>${nl}</em>`:""}</button>`:""}`}</div>`}
+/* v1.143 : état général des demandes d'adhésion, étape par étape, par région puis par groupe.
+   En vue nationale : tout le réseau, à affiner par région puis par groupe ; en vue régionale : les groupes de la région. */
+const ETP_COLS=[["📥","Reçue","Demande reçue, pas encore intégrée dans un groupe"],["🚀","À envoyer","Intégrée, contrat pas encore envoyé au national"],["✍️","À signer","Contrat envoyé, signature attendue"],["✅","Signé","Contrat signé, facture pas encore émise"],["🧾","Facturé","Facture émise, règlement attendu"],["💶","Réglé","Règlement complet : membre à part entière"]];
+function etpDe(a){const n=a.national||{};if(a.statut!=="integree")return 0;if(!n.contrat_id)return 1;if(!n.signe_le)return 2;
+  const g=natRegl(n),mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);if(g.etat==="complet"||(mb&&mb.paiement))return 5;return g.fact?4:3}
+function etpDonnees(){const A=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"),clubs=DB.clubs,par={};
+  A.forEach(a=>{const c=adhClubId(a),k=c&&clubs.some(x=>x.id===c)?c:"sans";(par[k]=par[k]||[]).push(a)});
+  const ligne=(k,nom,sous)=>{const l=par[k]||[];return{k,nom,sous,l,n:ETP_COLS.map((_,i)=>l.filter(a=>etpDe(a)===i).length),t:l.length}};
+  const regs=regionsDe(clubs).map(r=>({k:r.k,nom:r.nom,groupes:r.clubs.slice().sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(c=>ligne(c.id,(c.nom||"").replace(/^CAP\s+/,""),c.ville))}));
+  if(par.sans)regs.push({k:"sans",nom:"Sans groupe",groupes:[ligne("sans","Lien sans groupe","à rattacher à un groupe")]});
+  regs.forEach(r=>{r.n=ETP_COLS.map((_,i)=>r.groupes.reduce((s,g)=>s+g.n[i],0));r.t=r.n.reduce((a,b)=>a+b,0)});
+  return{regs,n:ETP_COLS.map((_,i)=>regs.reduce((s,r)=>s+r.n[i],0)),t:A.length}}
+function etpHTML(){const D=etpDonnees(),plus=D.regs.filter(r=>r.k!=="sans").length>1;let f=window._etpReg||"";if(f&&!D.regs.some(r=>r.k===f))f=window._etpReg="";
+  const R=f?D.regs.filter(r=>r.k===f):D.regs,tot=f?R[0].n:D.n,vides=R.reduce((s,r)=>s+r.groupes.filter(g=>!g.t).length,0),tous=!!window._etpVides;
+  const cel=(k,i,n)=>n?`<button type="button" class="etp-n" onclick="etpOuvrir('${k}',${i})" aria-label="${n} : ${esc(ETP_COLS[i][1])}">${n}</button>`:`<span class="etp-0">·</span>`;
+  const ou=vueMode()==="reg"&&vuePeutBasculer()?"dans la région "+vueRegion().nom:plus?"dans tout le réseau":"dans ton périmètre";
+  return `<p class="etp-intro">Où en est chaque demande, du formulaire au règlement, ${esc(ou)}. Touche un chiffre pour voir les personnes.</p>
+    <div class="etp-ks">${ETP_COLS.map((c,i)=>`<button type="button" class="etp-k${tot[i]?"":" zero"}" ${tot[i]?`onclick="etpOuvrir('${f?"r:"+f:""}',${i})"`:"disabled"} title="${esc(c[2])}"><i>${c[0]}</i><b>${tot[i]}</b><span>${esc(c[1])}</span></button>`).join("")}</div>
+    ${plus?`<div class="filters etp-f2"><button class="chip ${f?"":"on"}" onclick="window._etpReg='';render()">Tout le réseau<em>${D.t}</em></button>${D.regs.map(r=>`<button class="chip ${f===r.k?"on":""}" onclick="window._etpReg='${r.k}';render()">${esc(r.nom)}<em>${r.t}</em></button>`).join("")}</div>`:""}
+    <div class="etp-tw"><table class="etp-tab"><thead><tr><th>Groupe</th>${ETP_COLS.map(c=>`<th title="${esc(c[2])}"><i>${c[0]}</i><span>${esc(c[1])}</span></th>`).join("")}<th>Total</th></tr></thead>
+    ${R.map(r=>{const gs=r.groupes.filter(g=>tous||g.t);return `<tbody>${plus||r.k==="sans"?`<tr class="etp-r"><th><button type="button" onclick="window._etpReg='${f===r.k?"":r.k}';render()">${esc(r.nom)}</button></th>${r.n.map((n,i)=>`<td>${cel("r:"+r.k,i,n)}</td>`).join("")}<td><b>${r.t}</b></td></tr>`:""}
+      ${gs.map(g=>`<tr><th><button type="button" ${g.t?`onclick="etpOuvrir('${g.k}',-1)"`:"disabled"}>${esc(g.nom)}<small>${esc(g.sous||"")}</small></button></th>${g.n.map((n,i)=>`<td>${cel(g.k,i,n)}</td>`).join("")}<td>${g.t||`<span class="etp-0">·</span>`}</td></tr>`).join("")}
+      ${!gs.length?`<tr><td colspan="8" class="etp-rien">Aucune demande en cours dans cette région.</td></tr>`:""}</tbody>`}).join("")}
+    ${R.length>1||!plus?`<tfoot><tr><th>Total</th>${tot.map((n,i)=>`<td>${cel(f?"r:"+f:"",i,n)}</td>`).join("")}<td><b>${tot.reduce((a,b)=>a+b,0)}</b></td></tr></tfoot>`:""}</table></div>
+    ${vides?`<button type="button" class="etp-vides" onclick="window._etpVides=!window._etpVides;render()">${tous?"Masquer":"Afficher"} les ${vides} groupe${vides>1?"s":""} sans demande en cours</button>`:""}`}
+function etpOuvrir(k,i){k=k||"";const D=etpDonnees();let l=[],titre="Tout le périmètre";
+  if(k.startsWith("r:")){const r=D.regs.find(x=>x.k===k.slice(2));if(r){l=r.groupes.flatMap(g=>g.l);titre=r.nom}}
+  else if(k){const g=D.regs.flatMap(r=>r.groupes).find(x=>x.k===k);if(g){l=g.l;titre=g.nom}}
+  else l=D.regs.flatMap(r=>r.groupes.flatMap(g=>g.l));
+  const et=i>=0?[i]:ETP_COLS.map((_,j)=>j);
+  const bloc=j=>{const L=l.filter(a=>etpDe(a)===j).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));if(!L.length)return"";
+    return `<div class="sec-h">${ETP_COLS[j][0]} ${esc(ETP_COLS[j][1])} <em>${L.length}</em></div><p class="fh-note">${esc(ETP_COLS[j][2])}</p><div class="rank">${L.map(a=>`<div class="rank-row"><div class="rn link" onclick="adhDetail('${a.id}')">${esc(adhNom(a))}<small>${esc([a.data.ent_nom,(adhGroupe(a)||"Sans groupe").replace(/^CAP\s+/,""),"reçue le "+adhDate(a.created_at)].filter(Boolean).join(" · "))}</small></div><span class="rl-chev">›</span></div>`).join("")}</div>`};
+  document.getElementById("sheet-content").innerHTML=`<h3>${esc(titre)}</h3><div class="sheet-sub">${i>=0?esc(ETP_COLS[i][1])+" · ":""}${l.filter(a=>i<0||etpDe(a)===i).length} demande${l.filter(a=>i<0||etpDe(a)===i).length>1?"s":""}</div>
+    ${et.map(bloc).join("")||`<p class="fh-empty">Aucune demande à cette étape.</p>`}
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet()">Fermer</button></div>`;openSheet()}
+function dmVueSeg(){if(!navDir()&&["nat","leads"].includes(window._dmVue))window._dmVue="pipe";const v=["nat","form","leads","etp"].includes(window._dmVue)?window._dmVue:"pipe",dir=navDir(),n=natAEnvoyer().length,nl=(DB.leads||[]).filter(l=>l.statut==="a_contacter").length;
+  return `<div class="dm-vue" role="tablist"><button role="tab" aria-selected="${v==="pipe"}" class="${v==="pipe"?"on":""}" onclick="window._dmVue='pipe';render()">📥 Demandes</button><button role="tab" aria-selected="${v==="etp"}" class="${v==="etp"?"on":""}" onclick="window._dmVue='etp';render()">📊 Par étape</button>${dir?`<button role="tab" aria-selected="${v==="nat"}" class="${v==="nat"?"on":""}" onclick="window._dmVue='nat';render()">🚀 Envoi au national${n?`<em>${n}</em>`:""}</button>`:""}${readOnly()?"":`<button role="tab" aria-selected="${v==="form"}" class="${v==="form"?"on":""}" onclick="window._dmVue='form';render()">📝 Formulaire</button>${dir?`<button role="tab" aria-selected="${v==="leads"}" class="${v==="leads"?"on":""}" onclick="window._dmVue='leads';render()">📇 Leads${nl?`<em>${nl}</em>`:""}</button>`:""}`}</div>`}
 /* v0.42.0 : le formulaire d'adhésion dans le CRM. « Remplir » envoie une vraie demande (elle arrive dans Demandes),
    « Consulter » ouvre le même formulaire en démonstration : rien n'est envoyé. */
 function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"demo":"vrai";
@@ -10249,7 +10305,7 @@ function viewDemandes(){
   return `<div class="page dm-page"><div class="page-head"><div><div class="eyebrow">Recrutement</div><h2>Demandes d'adhésion</h2></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${navDir()?`<button class="btn ghost mini" onclick="openClasseur()">📁 Classeur</button>${readOnly()?"":`<button class="btn ghost mini" onclick="adhExportSaisie('csv')">⬇ Export saisie (${nS})</button>`}`:""}</div></div>
     ${dmVueSeg()}
-    ${window._dmVue==="leads"?leadsHTML()+`</div>`:window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
+    ${window._dmVue==="etp"?etpHTML()+`</div>`:window._dmVue==="leads"?leadsHTML()+`</div>`:window._dmVue==="form"?dmFormHTML()+`</div>`:`${window._dmVue==="nat"?natResume():dmProchaine()}
     <div class="dm-ks"${window._dmVue==="nat"?" hidden":""}>${k(mois,"reçues ce mois")}${k(nI,"à intégrer",nI?"w":"","window._dmCol='todo';dmChercher(window._dmQ||'')")}${k(nS,"à saisir au national",nS?"w":"","window._dmCol='saisie';dmChercher(window._dmQ||'')")}${k(nL,"en retard (+ de "+ADH_DELAI_J+" j)",nL?"r":"",`window._dmF=window._dmF==='retard'?'':'retard';render()`)}</div>
     <div class="dm-bar"><label class="dm-q"><span aria-hidden="true">🔎</span><input id="dm-q" type="search" data-pred="demandes" placeholder="Nom, entreprise, métier, groupe, téléphone…" value="${esc(window._dmQ||"")}" oninput="dmChercher(this.value)"></label>
       ${window._dmVue==="nat"?"":`<button class="chip ${late?"on":""}" onclick="window._dmF=window._dmF==='retard'?'':'retard';render()">⏰ En retard<em>${nL}</em></button>`}${nR?`<button class="chip" onclick="openArchivesAdh()">🗄 Archives<em>${nR}</em></button>`:""}</div>
@@ -10369,7 +10425,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -10429,7 +10485,7 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
    (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
    recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
    (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
-["openSignes","openCentre","openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+["etpOuvrir","openSignes","openCentre","openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 /* v1.42 : écrans lourds — au téléphone, un mot avant d'ouvrir (une fois par écran). */

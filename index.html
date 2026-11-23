@@ -2799,6 +2799,8 @@ details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overf
 /*v1.147 carnet du national*/
 .ca-l{display:grid}.ca-r{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid var(--line)}.ca-r.parti{opacity:.6}.ca-t{display:grid;gap:1px;min-width:0;flex:1 1 220px}.ca-t small{color:var(--muted);font-size:13px}.ca-t .ca-p{font-size:12px}.ca-a{display:flex;flex-wrap:wrap;gap:6px}
 #cn-q{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font:15px Inter,sans-serif}
+/*v1.148 rapprochement du carnet*/
+.ca-ls{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}.ca-lk{font:600 11.5px Inter,sans-serif;border:1px solid var(--line);border-radius:99px;padding:2px 9px;background:transparent;color:var(--muted)}button.ca-lk{cursor:pointer}.ca-lk.q-mb{color:#3F7FD1;border-color:#3F7FD1}.ca-lk.q-cand{border-style:dashed}
 </style>
 </head>
 <body>
@@ -2909,8 +2911,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.147.0";
+const APP_VERSION="1.148.0";
 const CHANGELOG=[
+  {v:"1.148.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : chaque contact est rapproché de ce que le CRM connaît déjà (membre et son groupe, lead, invité à une réunion) par le mobile, l'e-mail ou le nom. Filtres « Déjà connus » et « Nouveaux pour le CRM ».","« En faire un lead » : un contact nouveau passe dans les leads en un toucher, sans doublon."]}},
   {v:"1.147.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : les contacts que tu as saisis dans l'Annuaire du CRM national arrivent ici tout seuls, avec ton compte branché — à la connexion, au branchement du compte et chaque matin. Recherche, filtre par profil, appel, WhatsApp, e-mail, et invitation à l'événement du réseau en un toucher.","Le super admin voit le carnet de chaque compte branché."]}},
   {v:"1.146.0",date:"24 novembre 2026",notes:{"Ajouté":["Événement du réseau : « Inviter le réseau ». Un lien d'inscription par groupe (et un QR pour tous), le message à relayer par chaque animateur dans le WhatsApp de son groupe, le suivi des groupes prévenus et des inscrits.","Page d'inscription à l'événement, sans compte : la personne donne son nom et son groupe. L'heure et l'adresse peuvent être complétées plus tard, la page et le message se mettent à jour.","Ville de l'événement."]}},
   {v:"1.145.0",date:"23 novembre 2026",notes:{"Modifié":["Membres « par groupe » et « par métier » : des listes qui se replient, à la place des cartes. Boutons « Tout déplier » et « Tout replier »."],"Ajouté":["Paramètres → Administration : « Actualiser les membres du national », pour relire l'annuaire du national sans attendre lundi."]}},
@@ -10138,8 +10141,9 @@ async function carnetSync(force,silence){if(!carnetPret())return null;
 function carnetAccueil(){if(navigator.webdriver)return;setTimeout(()=>carnetSync(false,true),9000)}
 async function openCarnetNat(){if(!carnetPeut())return;const sup=SESSION.role==="superadmin";
   document.getElementById("sheet-content").innerHTML=`<h3>Carnet du national</h3>${skLignes(5)}`;openSheet();
-  let L=[],E={};try{const [a,b]=await Promise.all([sb.from("carnet_national").select("*").order("nom").limit(5000),sb.rpc("cap_carnet_etat")]);L=a.data||[];E=b.data||{}}catch(e){}
-  window._cnat={L,E,q:window._cnat&&window._cnat.q||"",qui:window._cnat&&window._cnat.qui||"",pro:window._cnat&&window._cnat.pro||""};
+  let L=[],E={},Rp={};try{const [a,b,c]=await Promise.all([sb.from("carnet_national").select("*").order("nom").limit(5000),sb.rpc("cap_carnet_etat"),sb.rpc("cap_carnet_rapprochement")]);L=a.data||[];E=b.data||{};(c.data||[]).forEach(x=>Rp[x.id]=x)}catch(e){}
+  const connus=L.filter(c=>Rp[c.id]).length;
+  window._cnat={L,E,Rp,con:window._cnat&&window._cnat.con||"",q:window._cnat&&window._cnat.q||"",qui:window._cnat&&window._cnat.qui||"",pro:window._cnat&&window._cnat.pro||""};
   const le=sup?(E.commun||{}).le:(E.moi||{}).le,noms={};(E.comptes||[]).forEach(c=>noms[c.animateur_id]=c.nom);window._cnat.noms=noms;
   const pros={};L.forEach(c=>String(c.profils||"").split(",").map(x=>x.trim()).filter(Boolean).forEach(p=>pros[p]=(pros[p]||0)+1));
   const quis=sup?[["","Tous",L.length],["commun","Mon compte",L.filter(c=>!c.animateur_id).length]].concat((E.comptes||[]).map(c=>[c.animateur_id,(c.nom||"").split(" ")[0],L.filter(x=>x.animateur_id===c.animateur_id).length])):[];
@@ -10150,14 +10154,26 @@ async function openCarnetNat(){if(!carnetPeut())return;const sup=SESSION.role===
     <div class="search-wrap" style="margin:10px 0"><input id="cn-q" type="search" placeholder="Nom, entreprise, ville…" value="${esc(window._cnat.q)}" oninput="carnetChercher(this.value)" autocomplete="off"></div>
     ${quis.length>2?`<div class="filters" id="cn-qui">${quis.map(q=>chip("qui",q[0],q[1],q[2])).join("")}</div>`:""}
     ${Object.keys(pros).length>1?`<div class="filters" id="cn-pro">${chip("pro","","Tous les profils",L.length)}${Object.keys(pros).sort((a,b)=>pros[b]-pros[a]).map(p=>chip("pro",p,p,pros[p])).join("")}</div>`:""}
+    ${L.length?`<div class="filters" id="cn-con">${chip("con","","Tous",L.length)}${chip("con","oui","Déjà connus du CRM",connus)}${chip("con","non","Nouveaux pour le CRM",L.length-connus)}</div>`:""}
     <div id="cn-res">${carnetListe()}</div>
     <div class="sheet-actions">${carnetPret()?`<button class="btn ghost" id="cn-maj" onclick="carnetActualiser(this)">🔄 Actualiser depuis le national</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`}
 function carnetListe(){const S=window._cnat||{L:[]},mots=predMots(S.q||""),ev=evtsAVenir()[0];
-  const l=S.L.filter(c=>(!S.qui||(S.qui==="commun"?!c.animateur_id:c.animateur_id===S.qui))&&(!S.pro||String(c.profils||"").split(",").map(x=>x.trim()).includes(S.pro))&&(!mots.length||(w=>mots.every(m=>w.some(x=>x.startsWith(m))))(predMots([c.prenom,c.nom,c.entreprise,c.ville,c.fonction,c.email].join(" ")))));
+  const Rp=S.Rp||{},l=S.L.filter(c=>(!S.con||(S.con==="oui")===!!Rp[c.id])&&(!S.qui||(S.qui==="commun"?!c.animateur_id:c.animateur_id===S.qui))&&(!S.pro||String(c.profils||"").split(",").map(x=>x.trim()).includes(S.pro))&&(!mots.length||(w=>mots.every(m=>w.some(x=>x.startsWith(m))))(predMots([c.prenom,c.nom,c.entreprise,c.ville,c.fonction,c.email].join(" ")))));
   if(!l.length)return `<p class="fh-empty">${S.L.length?"Aucun contact ne correspond.":"Aucun contact pour l'instant."}</p>`;
   return `<div class="mb-n">${l.length} contact${l.length>1?"s":""}</div><div class="ca-l">${l.slice(0,400).map(c=>{const tel=c.tel1||c.tel2||"",nom=[c.prenom,c.nom].filter(Boolean).join(" ")||"Sans nom";
-    return `<div class="ca-r${c.absent_le?" parti":""}"><div class="ca-t"><b>${esc(nom)}</b><small>${esc([c.entreprise,c.fonction,c.ville].filter(Boolean).join(" · ")||"—")}</small><small class="ca-p">${esc(c.profils||"")}${S.noms&&!S.qui&&S.noms[c.animateur_id]?" · carnet de "+esc(S.noms[c.animateur_id].split(" ")[0]):""}${c.absent_le?" · retiré de l'Annuaire du national":""}</small></div>
-      <div class="ca-a">${tel?`<a class="btn ghost mini" href="tel:${esc(tel.replace(/[^+\d]/g,""))}">${esc(telAff(tel))}</a><button type="button" class="btn ghost mini" onclick="waOuvrir('${esc(tel)}','Bonjour ${esc((c.prenom||"").replace(/'/g,"’"))},')">WhatsApp</button>`:""}${c.email?`<a class="btn ghost mini" href="mailto:${esc(c.email)}">E-mail</a>`:""}${ev&&tel?`<button type="button" class="btn mini" onclick="carnetInviter('${c.id}')">Inviter · ${esc(ev.genre)}</button>`:""}</div></div>`}).join("")}</div>${l.length>400?`<p class="vn-a">Les 400 premiers sont affichés : affine avec la recherche.</p>`:""}`}
+    return `<div class="ca-r${c.absent_le?" parti":""}"><div class="ca-t"><b>${esc(nom)}</b><small>${esc([c.entreprise,c.fonction,c.ville].filter(Boolean).join(" · ")||"—")}</small><small class="ca-p">${esc(c.profils||"")}${S.noms&&!S.qui&&S.noms[c.animateur_id]?" · carnet de "+esc(S.noms[c.animateur_id].split(" ")[0]):""}${c.absent_le?" · retiré de l'Annuaire du national":""}</small>${carnetLiens(c,Rp[c.id])}</div>
+      <div class="ca-a">${tel?`<a class="btn ghost mini" href="tel:${esc(tel.replace(/[^+\d]/g,""))}">${esc(telAff(tel))}</a><button type="button" class="btn ghost mini" onclick="waOuvrir('${esc(tel)}','Bonjour ${esc((c.prenom||"").replace(/'/g,"’"))},')">WhatsApp</button>`:""}${c.email?`<a class="btn ghost mini" href="mailto:${esc(c.email)}">E-mail</a>`:""}${ev&&tel?`<button type="button" class="btn mini" onclick="carnetInviter('${c.id}')">Inviter · ${esc(ev.genre)}</button>`:""}${!(Rp[c.id]&&(Rp[c.id].membre||Rp[c.id].lead))&&!c.absent_le?`<button type="button" class="btn ghost mini" onclick="carnetLead('${c.id}',this)">＋ En faire un lead</button>`:""}</div></div>`}).join("")}</div>${l.length>400?`<p class="vn-a">Les 400 premiers sont affichés : affine avec la recherche.</p>`:""}`}
+/* v1.148 : ce que le CRM connaît déjà de ce contact (même mobile, même e-mail ou même nom). */
+const LEAD_ST_LIB={a_contacter:"à contacter",message_envoye:"message envoyé",contacte:"contacté",inscrit:"inscrit",pas_interesse:"pas intéressé"};
+function carnetLiens(c,r){if(!r)return"";const o=[];
+  if(r.membre)o.push(`<button type="button" class="ca-lk q-${r.membre.candidat?"cand":"mb"}" onclick="ficheBase('${esc(String(r.membre.nom).replace(/'/g,"’"))}','${r.membre.id}')">${r.membre.candidat?"Candidat":"Membre"} · ${esc(String(r.membre.groupe||"").replace(/^CAP\s+/,""))}</button>`);
+  if(r.lead)o.push(`<span class="ca-lk">Lead · ${esc(LEAD_ST_LIB[r.lead.statut]||r.lead.statut||"")}</span>`);
+  if(r.invite)o.push(`<span class="ca-lk">Invité ${r.invite.n} fois${r.invite.derniere?" · dernière le "+esc(adhDate(r.invite.derniere)):""}</span>`);
+  return o.length?`<div class="ca-ls">${o.join("")}</div>`:""}
+async function carnetLead(id,btn){btn.disabled=true;const {data,error}=await sb.rpc("cap_carnet_vers_lead",{p_id:id});if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
+  const S=window._cnat;if(S){S.Rp[id]=Object.assign(S.Rp[id]||{id},{lead:{id:data.lead_id,statut:"a_contacter"}});document.getElementById("cn-res").innerHTML=carnetListe()}
+  try{const l=await sb.from("leads").select("*");if(l.data)DB.leads=l.data}catch(e){}
+  toast(data.deja?"Ce contact était déjà dans les leads : il est relié":"Ajouté aux leads"+(SESSION.role==="superadmin"?"":" : tu le retrouves dans « Contacts confiés »"),"s")}
 function carnetChercher(v){if(window._cnat)window._cnat.q=v;const r=document.getElementById("cn-res");if(r)r.innerHTML=carnetListe()}
 function carnetFiltre(k,v){if(!window._cnat)return;window._cnat[k]=v;document.querySelectorAll("#cn-"+k+" .chip").forEach((b,i)=>b.classList.toggle("on",b.getAttribute("onclick").includes(`'${k}','${v}'`)));document.getElementById("cn-res").innerHTML=carnetListe()}
 function carnetInviter(id){const c=(window._cnat||{L:[]}).L.find(x=>x.id===id),e=evtsAVenir()[0];if(!c||!e)return;

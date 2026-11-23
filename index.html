@@ -2796,6 +2796,9 @@ details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overf
 .ei-l{display:grid;padding-bottom:10px}.ei-g{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:10px 0;border-top:1px solid var(--line)}.ei-gt{display:grid;gap:1px;min-width:0}.ei-gt small{color:var(--muted);font-size:13px}.ei-gt .ei-ok{color:#1E9E63;font-weight:600}
 .ei-ga{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ei-g .ei-ga{margin-top:0}.ei-qr{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding-bottom:12px}.ei-qr .ni-qr{width:132px;background:#fff;border-radius:10px;padding:6px}.ei-u{display:block;font-size:12.5px;word-break:break-all;color:var(--muted)}
 .ei-ta{width:100%;font:14px/1.5 Inter,sans-serif;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);resize:vertical}.vn-b>.ei-ga{padding-bottom:12px}
+/*v1.147 carnet du national*/
+.ca-l{display:grid}.ca-r{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid var(--line)}.ca-r.parti{opacity:.6}.ca-t{display:grid;gap:1px;min-width:0;flex:1 1 220px}.ca-t small{color:var(--muted);font-size:13px}.ca-t .ca-p{font-size:12px}.ca-a{display:flex;flex-wrap:wrap;gap:6px}
+#cn-q{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font:15px Inter,sans-serif}
 </style>
 </head>
 <body>
@@ -2906,8 +2909,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.146.0";
+const APP_VERSION="1.147.0";
 const CHANGELOG=[
+  {v:"1.147.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : les contacts que tu as saisis dans l'Annuaire du CRM national arrivent ici tout seuls, avec ton compte branché — à la connexion, au branchement du compte et chaque matin. Recherche, filtre par profil, appel, WhatsApp, e-mail, et invitation à l'événement du réseau en un toucher.","Le super admin voit le carnet de chaque compte branché."]}},
   {v:"1.146.0",date:"24 novembre 2026",notes:{"Ajouté":["Événement du réseau : « Inviter le réseau ». Un lien d'inscription par groupe (et un QR pour tous), le message à relayer par chaque animateur dans le WhatsApp de son groupe, le suivi des groupes prévenus et des inscrits.","Page d'inscription à l'événement, sans compte : la personne donne son nom et son groupe. L'heure et l'adresse peuvent être complétées plus tard, la page et le message se mettent à jour.","Ville de l'événement."]}},
   {v:"1.145.0",date:"23 novembre 2026",notes:{"Modifié":["Membres « par groupe » et « par métier » : des listes qui se replient, à la place des cartes. Boutons « Tout déplier » et « Tout replier »."],"Ajouté":["Paramètres → Administration : « Actualiser les membres du national », pour relire l'annuaire du national sans attendre lundi."]}},
   {v:"1.144.0",date:"23 novembre 2026",notes:{"Ajouté":["Vérification hebdomadaire des membres du CRM national : chaque lundi matin, les nouveaux membres du national sont ajoutés à leur groupe, et les écarts (membre qui n'y figure plus, changement de groupe, groupe inconnu) sont signalés sans rien retirer. Rapport dans Réseau → « Membres du national », avec une notification quand quelque chose change."]}},
@@ -3741,7 +3745,7 @@ async function bootIntoApp(){
   enterApp();
   verifierMdpInitial();
   try{if(SESSION&&!SESSION._voir)sb.rpc("cap_journal_connexion").then(()=>{},()=>{})}catch(e){}
-  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();psaAnnonce();
+  adhAnnonce();boiteAnnonce();boiteAccueil();natCompteAccueil();verrouAnnonce();psaAnnonce();carnetAccueil();
   if(!SESSION._voir)docsAccueilCRM().then(montre=>{if(!montre)tutoAuDemarrage()});
   notifEtat().then(majBoutonNotif);espPrecharger();
   ouvrirLienAdhesion();ouvrirLienReunion();ouvrirLienGroupe();ouvrirLienLeads();ouvrirLienPSA();ouvrirLienBoite();ouvrirLienCompteNat();ouvrirLienVerifNat();
@@ -4059,6 +4063,7 @@ function boiteOutils(){const c=grpClub(),auj=isoJour(TODAY),V=window._DBvrai||DB
   t("Mes ressources","📚","Documents du Bureau national",`<span id="bo-docs">Trames, visuels, documents d'adhésion</span>`,"docsOuvrir()");
   t("Mes ressources","🚀","Kit de départ et vidéos","Les guides à envoyer pour installer l'appli","docsOuvrir('#videos')");
   if(SESSION.animId&&pro)t("Mes ressources","🪪","Ma slide « Qui suis-je ? »",(anim(SESSION.animId)||{}).photo?"Ta photo et ton parcours, repris dans tes présentations":"Ajoute ta photo et ton parcours",`boiteProfil('${pro.id}')`);
+  if(carnetPeut())t("Mes membres","📇","Carnet du national","Mes contacts du CRM national, rapatriés ici","openCarnetNat()",0);
   if(SESSION.animId&&natComptePeut(SESSION.animId)){const e=natCompteEtat(SESSION.animId);t("Mes ressources","🔐","Mon compte national",e.lib+" · "+e.sous,`openCompteNat('${SESSION.animId}')`,e.k==="ko"?1:0)}
   t("Mes ressources","📅","Point avec mon directeur","Réserver un créneau de point sur activité","openPSA()",psaCompte());
   t("Mes ressources","❓","Visite guidée","Revoir le CRM pas à pas","openAide()");
@@ -6348,7 +6353,7 @@ function navSousItems(r){if(!SESSION||!DB)return[];const ro=readOnly(),role=SESS
   if(r==="adh"){if(role==="visiteur")return[];const v=window._dmVue==="nat"||window._dmVue==="form"||window._dmVue==="etp"?window._dmVue:"pipe",ro=readOnly();
     return[it("Demandes reçues","navDem('pipe')",{on:tab==="demandes"&&v==="pipe",n:demListe().length}),it("Suivi par étape","navDem('etp')",{on:tab==="demandes"&&v==="etp"}),navDir()&&it("Envoi au national","navDem('nat')",{on:tab==="demandes"&&v==="nat",n:natAEnvoyer().length}),
       !ro&&signesListe().length&&it("Signés et règlements","openSignes()",{n:signesAFaire().length}),it("Formulaire","navDem('form')",{on:tab==="demandes"&&v==="form"}),!ro&&SESSION.animId&&(mesContacts().length||role==="animateur")&&it("Contacts confiés","openBoite()",{n:mesContactsNonLus().length}),!ro&&navDir()&&it("Leads nationaux","navDem('leads')",{on:tab==="demandes"&&window._dmVue==="leads",n:(DB.leads||[]).filter(l=>l.statut==="a_contacter").length}),navDir()&&it("Classeur des PDF","openClasseur()"),it("Renouvellements","openRenouvellements()"),navDir()&&it("Archives","openArchivesAdh()")].filter(Boolean)}
-  if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()"),verifNatPeut()&&it("Membres du national","openVerifNat()")].filter(Boolean);
+  if(r==="res")return[role!=="visiteur"&&it("Annuaire du réseau","openAnnuaire()"),canCreerStructure()&&it("Régions et villes","openRegions()"),canCreerStructure()&&it("Nouveau groupe","clubForm(null)"),lotPeut()&&it("Pièces en lot","openLot()"),it("Carte","openCarte()"),it("Constellation","openConstellation()"),nat&&it(vueMode()==="reg"?"Villes":"Zones","monOuvrir('zones')"),nat&&it("Lancements","openLancements()"),verifNatPeut()&&it("Membres du national","openVerifNat()"),carnetPeut()&&it("Carnet du national","openCarnetNat()")].filter(Boolean);
   if(r==="equ")return[it("Animateurs","navVers('team')",{on:tab==="team"}),role!=="visiteur"&&it("Points sur activité (PSA)","openPSA()",{n:psaCompte()}),sup&&it("Accès au CRM","openEmbarquer()"),sup&&it("Journal","openJournal()"),nat&&it("Qui est connecté","openQuiConnecte()")].filter(Boolean);
   if(r==="doc")return[it("Documents du réseau","docsOuvrir()",{on:tab==="espace"&&/documents\.html$/.test(window._espUrl||"")}),it("Vidéos de prise en main","docsOuvrir('#videos')",{on:tab==="espace"&&/documents\.html#videos/.test(window._espUrl||"")}),it("Visite guidée","openAide()")];
   return[]}
@@ -7180,7 +7185,7 @@ async function natCompteSauver(animId,btn){const id=(document.getElementById("nc
   const {error}=await sb.rpc("cap_national_compte_poser",{p_anim:animId,p_identifiant:id,p_mdp:mdp});
   document.getElementById("nc-mdp").value="";
   if(error){btn.disabled=false;btn.textContent="Enregistrer et tester";toast(rlsMsg(error),"e");return}
-  const ok=await natCompteTester(animId,null,true);if(ok)toast("Compte national branché : les prochaines invitations partiront à ce nom","s")}
+  const ok=await natCompteTester(animId,null,true);if(ok){toast("Compte national branché : les prochaines invitations partiront à ce nom","s");if(animId===SESSION.animId)carnetSync(true,true)}}
 async function natCompteRetirer(animId,btn){if(!btn.dataset.sur){btn.dataset.sur="1";btn.textContent="Confirmer : débrancher";return}
   btn.disabled=true;const {error}=await sb.rpc("cap_national_compte_retirer",{p_anim:animId});if(error){btn.disabled=false;toast(rlsMsg(error),"e");return}
   await natComptesCharger();toast("Compte débranché : tu ne peux plus rien envoyer au national tant qu'il n'est pas rebranché");openCompteNat(animId)}
@@ -9893,7 +9898,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("🔄","Actualiser les membres du national","Relire l'annuaire du CRM national et mettre à jour tous les groupes, sans attendre lundi","openVerifNat()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("📇","Carnet du national","Les contacts de l'Annuaire du CRM national, rapatriés avec chaque compte branché","openCarnetNat()")}${r("🔄","Actualiser les membres du national","Relire l'annuaire du CRM national et mettre à jour tous les groupes, sans attendre lundi","openVerifNat()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>
@@ -10119,6 +10124,46 @@ function signeEcart(a){const n=a.national||{},mb=a.membre_id&&DB.membres.find(m=
 function signesListe(){return (DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&(a.national||{}).signe_le).sort((x,y)=>String(y.national.signe_le).localeCompare(String(x.national.signe_le)))}
 function signesAFaire(){return signesListe().filter(a=>signeEcart(a)||(!a.membre_id))}
 /* v1.144 : vérification hebdomadaire des membres du CRM national (rapport écrit par la fonction serveur national-annuaire). */
+/* v1.147 : carnet du national. Les contacts saisis dans l'Annuaire du CRM national sont rapatriés avec le compte de chacun
+   (compte commun pour le super admin) : à la connexion (une fois par jour), au branchement du compte, et chaque matin. */
+function carnetPeut(){return !!SESSION&&!SESSION._voir&&(SESSION.role==="superadmin"||(!!SESSION.animId&&SESSION.role!=="visiteur"))}
+function carnetPret(){return carnetPeut()&&(SESSION.role==="superadmin"||!!(natCompte(SESSION.animId)||{}).actif||natComptePret())}
+async function carnetSync(force,silence){if(!carnetPret())return null;
+  if(!force){let av=0;try{av=+localStorage.getItem("cap-carnet-le-"+SESSION.id)||0}catch(e){}if(Date.now()-av<20*36e5)return null}
+  try{localStorage.setItem("cap-carnet-le-"+SESSION.id,String(Date.now()))}catch(e){}
+  try{const {data:r,error}=await sb.functions.invoke("national-carnet",{body:SESSION.role==="superadmin"?{commun:true}:{}});
+    const err=error?((await error.context?.json?.().catch(()=>null))?.error||error.message):r?.error;if(err){if(!silence)toast("Carnet du national : "+err,"e");return null}
+    if(r.nouveaux&&silence)annonce("📇",r.nouveaux+" contact"+(r.nouveaux>1?"s":"")+" rapatrié"+(r.nouveaux>1?"s":"")+" du national","Ton carnet d'adresses du CRM national est à jour ici",()=>openCarnetNat());
+    return r}catch(e){return null}}
+function carnetAccueil(){if(navigator.webdriver)return;setTimeout(()=>carnetSync(false,true),9000)}
+async function openCarnetNat(){if(!carnetPeut())return;const sup=SESSION.role==="superadmin";
+  document.getElementById("sheet-content").innerHTML=`<h3>Carnet du national</h3>${skLignes(5)}`;openSheet();
+  let L=[],E={};try{const [a,b]=await Promise.all([sb.from("carnet_national").select("*").order("nom").limit(5000),sb.rpc("cap_carnet_etat")]);L=a.data||[];E=b.data||{}}catch(e){}
+  window._cnat={L,E,q:window._cnat&&window._cnat.q||"",qui:window._cnat&&window._cnat.qui||"",pro:window._cnat&&window._cnat.pro||""};
+  const le=sup?(E.commun||{}).le:(E.moi||{}).le,noms={};(E.comptes||[]).forEach(c=>noms[c.animateur_id]=c.nom);window._cnat.noms=noms;
+  const pros={};L.forEach(c=>String(c.profils||"").split(",").map(x=>x.trim()).filter(Boolean).forEach(p=>pros[p]=(pros[p]||0)+1));
+  const quis=sup?[["","Tous",L.length],["commun","Mon compte",L.filter(c=>!c.animateur_id).length]].concat((E.comptes||[]).map(c=>[c.animateur_id,(c.nom||"").split(" ")[0],L.filter(x=>x.animateur_id===c.animateur_id).length])):[];
+  const chip=(k,v,lib,n)=>`<button type="button" class="chip${(window._cnat[k]||"")===v?" on":""}" onclick="carnetFiltre('${k}','${esc(v)}')">${esc(lib)} <em>${n}</em></button>`;
+  document.getElementById("sheet-content").innerHTML=`<h3>Carnet du national</h3>
+    <div class="sheet-sub">Les contacts de l'Annuaire du CRM national, rapatriés ici avec ${sup?"chaque compte branché":"ton compte"}. ${le?"Dernière lecture : "+esc(adhDate(le))+".":carnetPret()?"Pas encore lu.":""}</div>
+    ${!carnetPret()?`<p class="ei-av">Ton compte du CRM national n'est pas branché : <a href="#" onclick="openCompteNat('${SESSION.animId}');return false">branche-le</a> et ton carnet arrive tout seul.</p>`:""}
+    <div class="search-wrap" style="margin:10px 0"><input id="cn-q" type="search" placeholder="Nom, entreprise, ville…" value="${esc(window._cnat.q)}" oninput="carnetChercher(this.value)" autocomplete="off"></div>
+    ${quis.length>2?`<div class="filters" id="cn-qui">${quis.map(q=>chip("qui",q[0],q[1],q[2])).join("")}</div>`:""}
+    ${Object.keys(pros).length>1?`<div class="filters" id="cn-pro">${chip("pro","","Tous les profils",L.length)}${Object.keys(pros).sort((a,b)=>pros[b]-pros[a]).map(p=>chip("pro",p,p,pros[p])).join("")}</div>`:""}
+    <div id="cn-res">${carnetListe()}</div>
+    <div class="sheet-actions">${carnetPret()?`<button class="btn ghost" id="cn-maj" onclick="carnetActualiser(this)">🔄 Actualiser depuis le national</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`}
+function carnetListe(){const S=window._cnat||{L:[]},mots=predMots(S.q||""),ev=evtsAVenir()[0];
+  const l=S.L.filter(c=>(!S.qui||(S.qui==="commun"?!c.animateur_id:c.animateur_id===S.qui))&&(!S.pro||String(c.profils||"").split(",").map(x=>x.trim()).includes(S.pro))&&(!mots.length||(w=>mots.every(m=>w.some(x=>x.startsWith(m))))(predMots([c.prenom,c.nom,c.entreprise,c.ville,c.fonction,c.email].join(" ")))));
+  if(!l.length)return `<p class="fh-empty">${S.L.length?"Aucun contact ne correspond.":"Aucun contact pour l'instant."}</p>`;
+  return `<div class="mb-n">${l.length} contact${l.length>1?"s":""}</div><div class="ca-l">${l.slice(0,400).map(c=>{const tel=c.tel1||c.tel2||"",nom=[c.prenom,c.nom].filter(Boolean).join(" ")||"Sans nom";
+    return `<div class="ca-r${c.absent_le?" parti":""}"><div class="ca-t"><b>${esc(nom)}</b><small>${esc([c.entreprise,c.fonction,c.ville].filter(Boolean).join(" · ")||"—")}</small><small class="ca-p">${esc(c.profils||"")}${S.noms&&!S.qui&&S.noms[c.animateur_id]?" · carnet de "+esc(S.noms[c.animateur_id].split(" ")[0]):""}${c.absent_le?" · retiré de l'Annuaire du national":""}</small></div>
+      <div class="ca-a">${tel?`<a class="btn ghost mini" href="tel:${esc(tel.replace(/[^+\d]/g,""))}">${esc(telAff(tel))}</a><button type="button" class="btn ghost mini" onclick="waOuvrir('${esc(tel)}','Bonjour ${esc((c.prenom||"").replace(/'/g,"’"))},')">WhatsApp</button>`:""}${c.email?`<a class="btn ghost mini" href="mailto:${esc(c.email)}">E-mail</a>`:""}${ev&&tel?`<button type="button" class="btn mini" onclick="carnetInviter('${c.id}')">Inviter · ${esc(ev.genre)}</button>`:""}</div></div>`}).join("")}</div>${l.length>400?`<p class="vn-a">Les 400 premiers sont affichés : affine avec la recherche.</p>`:""}`}
+function carnetChercher(v){if(window._cnat)window._cnat.q=v;const r=document.getElementById("cn-res");if(r)r.innerHTML=carnetListe()}
+function carnetFiltre(k,v){if(!window._cnat)return;window._cnat[k]=v;document.querySelectorAll("#cn-"+k+" .chip").forEach((b,i)=>b.classList.toggle("on",b.getAttribute("onclick").includes(`'${k}','${v}'`)));document.getElementById("cn-res").innerHTML=carnetListe()}
+function carnetInviter(id){const c=(window._cnat||{L:[]}).L.find(x=>x.id===id),e=evtsAVenir()[0];if(!c||!e)return;
+  waOuvrir(c.tel1||c.tel2,evtMsg(e,null,EVT_MSG).replace(/^Bonjour à tous,/,"Bonjour "+(c.prenom||"")+",").replace("Pour dire que tu viens","Pour dire que vous venez").replace("Merci de t'inscrire","Merci de vous inscrire"))}
+async function carnetActualiser(btn){btn.disabled=true;btn.textContent="⏳ Lecture du national…";const r=await carnetSync(true);
+  if(r)toast(r.nouveaux?r.nouveaux+" nouveau"+(r.nouveaux>1?"x":"")+" contact"+(r.nouveaux>1?"s":"")+" · "+r.lus+" au total":"Carnet à jour · "+r.lus+" contact"+(r.lus>1?"s":""),"s");openCarnetNat()}
 function verifNatPeut(){return !!SESSION&&vuePeutBasculer()&&!SESSION._voir}
 async function openVerifNat(){if(!verifNatPeut())return;
   try{const {data}=await sb.from("reglages").select("valeur").eq("cle","national_verif").maybeSingle();if(data)(DB.reglages=DB.reglages||{}).national_verif=data.valeur}catch(e){}
@@ -10525,7 +10570,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["evtInviter","openVerifNat","etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openCarnetNat","evtInviter","openVerifNat","etpOuvrir","openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");

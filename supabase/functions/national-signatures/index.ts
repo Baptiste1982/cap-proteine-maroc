@@ -4,6 +4,9 @@
 // noté « Introuvable au national ». Ici, chaque contrat sorti de l'attente (national.absent_le) est cherché dans cet annuaire.
 //   trouvé  → national.signe_le, notification aux superadmins ;
 //   absent depuis plus d'un jour → une alerte, une seule fois.
+// v2 : règlements. Pour chaque contrat signé, les échéances de l'abonnement sont lues comme le fait le tableau de bord du
+// national (POST /abonnement/get {id}) : montant dû, montant réglé, dates. Résultat dans national.reglement
+// { echeances, du, recu, etat: aucun | partiel | complet, lu_le } ; notification dès qu'un règlement de plus est enregistré.
 // Lecture seule au national. Appel : session superadmin (bouton du CRM) ou en-tête x-suivi-jeton (appel programmé).
 // essai:true = rien n'est écrit chez nous non plus.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -73,11 +76,13 @@ Deno.serve(async (req) => {
     const { data: adhs, error } = await admin.from('adhesions').select('id, data, national, saisie_proteine_le').neq('statut', 'rejetee').not('national', 'is', null);
     if (error) throw error;
     const suivis = (adhs || []).filter(a => a.national?.contrat_id && !a.national?.signe_le && a.national?.absent_le);
-    const res = { ok: true, essai, examines: suivis.length, signes: [] as { id: string; nom: string; ent: string; club: string }[], introuvables: [] as string[], annuaire: 0 };
-    if (!suivis.length) return json(res);
+    const aRegler = (a: any) => a.national?.abonnement_id && a.national?.signe_le && a.national?.reglement?.etat !== 'complet';
+    const res = { ok: true, essai, examines: suivis.length, signes: [] as { id: string; nom: string; ent: string; club: string }[], introuvables: [] as string[], annuaire: 0,
+      reglements: [] as { id: string; nom: string; etat: string; du: number; recu: number; echeances: number; nouveau: boolean }[], erreurs: [] as string[], brut: '' };
+    if (!suivis.length && !(adhs || []).some(aRegler)) return json(res);
 
     const N = new National(); await N.connexion();
-    const ann = await annuaireMembres(N); res.annuaire = ann.length;
+    const ann = suivis.length ? await annuaireMembres(N) : []; res.annuaire = ann.length;
     const maintenant = new Date().toISOString();
     const nomDe = (d: any) => [d?.m_prenom, d?.m_nom].filter(Boolean).join(' ');
     // On relit la ligne juste avant d'écrire : national-suivi peut l'avoir touchée entre-temps.
@@ -108,8 +113,31 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Règlements des contrats signés (ceux qui viennent de l'être compris).
+    const num = (x: unknown) => { const v = parseFloat(String(x ?? '').replace(/\s/g, '').replace(',', '.')); return isFinite(v) ? v : 0; };
+    const mad = (v: number) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const payes: { id: string; nom: string; etat: string; du: number; recu: number }[] = [];
+    for (const a of (adhs || []).filter(x => aRegler(x) || (res.signes.some(s => s.id === x.id) && x.national?.abonnement_id))) {
+      try {
+        const j = await N.json('/abonnement/get', { id: String(a.national.abonnement_id) });
+        if (!j?.succes || !j.abonnement) { res.erreurs.push(`Règlement, ${nomDe(a.data)} : abonnement illisible`); continue; }
+        if (essai && !res.brut) res.brut = JSON.stringify(j.abonnement.tabEcheancesAbonnement ?? null).slice(0, 1800);
+        const echeances = (Object.values(j.abonnement.tabEcheancesAbonnement || {}) as any[]).filter(Boolean).map(e => ({
+          date: e.dateEcheance || null, ht: num(e.montantHT), ttc: num(e.montantTTC), facture_le: e.dateFacture || null,
+          regle: num(e.montantReglement), avoir: num(e.montantAvoir), regle_le: e.dateReglement || null }));
+        const du = echeances.reduce((t, e) => t + e.ttc, 0), recu = echeances.reduce((t, e) => t + Math.min(e.ttc, e.regle + e.avoir), 0);
+        const facturees = echeances.filter(e => e.facture_le);
+        const etat = facturees.length && echeances.every(e => e.facture_le && e.regle + e.avoir >= e.ttc) && echeances.some(e => e.regle > 0 || e.ttc === 0) ? 'complet' : recu > 0 ? 'partiel' : 'aucun';
+        const avant = num(a.national?.reglement?.recu), nouveau = recu > avant || (etat === 'complet' && a.national?.reglement?.etat !== 'complet');
+        await sauver(a, { reglement: { echeances, du, recu, etat, lu_le: maintenant, ...(nouveau ? { recu_le: maintenant } : a.national?.reglement?.recu_le ? { recu_le: a.national.reglement.recu_le } : {}) } });
+        res.reglements.push({ id: a.id, nom: nomDe(a.data), etat, du, recu, echeances: echeances.length, nouveau });
+        if (nouveau) payes.push({ id: a.id, nom: nomDe(a.data), etat, du, recu });
+      } catch (e) { res.erreurs.push(`Règlement, ${nomDe(a.data)} : ${(e as Error).message}`); }
+    }
+
     if (!essai) {
       const envois: { title: string; body: string; url: string; tag: string }[] = [
+        ...payes.map(p => ({ title: p.etat === 'complet' ? '💶 Règlement complet au national' : '💶 Règlement reçu au national', body: `${p.nom} · ${mad(p.recu)} sur ${mad(p.du)} MAD TTC. Tu peux finaliser son intégration.`, url: '/?adh=' + p.id, tag: 'regle-' + p.id })),
         ...res.signes.map(s => ({ title: '✍️ Contrat signé au national', body: [s.nom, s.ent, s.club].filter(Boolean).join(' · '), url: '/?adh=' + s.id, tag: 'signe-' + s.id })),
         ...suivis.filter((a: any) => a._alerte).map(a => ({ title: '⚠️ Contrat introuvable au national', body: `${nomDe(a.data)} · contrat n° ${a.national.contrat_id} : ni en attente de signature ni membre. À vérifier.`, url: '/?adh=' + a.id, tag: 'absent-' + a.id })),
       ];

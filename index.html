@@ -2735,6 +2735,18 @@ tr.en-pause td:not(:last-child),.rl-row.en-pause .rl-h{opacity:.55}.act.pause{ba
 @media(max-width:420px){.psa-modes button{font-size:11.5px;padding:0 2px}}
 .psa-l.pris .psa-acts{grid-column:1/-1;flex-wrap:wrap;gap:6px;justify-content:flex-end;padding-top:8px;border-top:1px dashed color-mix(in srgb,#3DAA74 40%,transparent)}
 .psa-l.pris .psa-acts .btn{min-height:34px;text-decoration:none}
+/*v1.137 contrats signés*/
+.sg-l{display:grid;gap:10px;margin-top:10px}
+.sg-c{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card,transparent)}
+.sg-c.afaire{border-color:var(--crimson)}
+.sg-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.sg-h b{font-size:15.5px}.sg-h span{color:var(--muted);font-size:13px}
+.sg-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px;margin:10px 0 6px;font-size:13.5px}
+.sg-k small{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.sg-k em{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:2px}
+.sg-r.complet{color:#1E9E63;font-weight:600}.sg-r.partiel{font-weight:600}
+.sg-e,.sg-ok,.sg-at{font-size:13px;margin:6px 0 0}.sg-e{font-weight:600}.sg-ok{color:#1E9E63}.sg-at{color:var(--muted)}
+.sg-a{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+@media(max-width:700px){.sg-k{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -2845,8 +2857,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.136.0";
+const APP_VERSION="1.137.0";
 const CHANGELOG=[
+  {v:"1.137.0",date:"23 novembre 2026",notes:{"Ajouté":["Contrats signés au national : une ligne dans « ce qui t'attend » sur l'accueil et dans la cloche, avec un écran de détail (groupe, contrat, règlement) et un bouton pour mettre la fiche du membre à jour","Règlements lus au national chaque heure : facture émise, règlement partiel ou complet, avec une notification dès qu'un règlement est enregistré"]}},
   {v:"1.136.0",date:"23 novembre 2026",notes:{"Corrigé":["Contrats signés au national : un contrat qui quitte « En attente de signature » est maintenant retrouvé dans l'annuaire des membres du national, puis marqué signé chez nous (les contrats de Reda Allah Sibari et de Nawar Mounchit restaient « introuvables »)"],"Ajouté":["Alerte quand un contrat n'est plus ni en attente ni membre au national depuis plus d'un jour","Le groupe du membre au national s'affiche sur la demande signée"]}},
   {v:"1.135.0",date:"20 novembre 2026",notes:{"Corrigé":["Points sur activité : un créneau réservé s'affiche en carte lisible (heure, nom entier, durée et mode, puis les boutons « Lien Zoom », « Agenda » et « Libérer » avec leur libellé) au lieu d'un nom écrasé sur une colonne.","Le nombre « à caler » du cartouche PSA et de la cloche se met à jour dès qu'un animateur réserve (dans la minute), sans recharger la page."],"Ajouté":["Sur un PSA réservé, celui qui le mène choisit comment il se tient : en ligne, sur place ou par téléphone ; l'animateur est prévenu (notification, et message WhatsApp prêt en touchant la confirmation).","Page de réservation de l'animateur : il peut changer le mode de son rendez-vous après coup, son directeur est prévenu."]}},
   {v:"1.134.0",date:"20 novembre 2026",notes:{"Ajouté":["Responsable de région : Réseau → Régions et villes → une région. La direction nationale attribue la région à un compte, le responsable peut la céder, et l'historique des passages de relais reste. Le responsable mène les PSA de sa région.","Points sur activité : en ouvrant des créneaux, la direction choisit la région concernée (celles dont elle est responsable d'abord).","Calendriers (PSA, planning de la région, page de réservation) : le volet du jour s'ouvre, se referme et change en glissant, les mois défilent sur le côté."],"Corrigé":["Pastille « à caler » du cartouche PSA : blanc sur rouge, lisible."]}},
@@ -8254,6 +8267,7 @@ function adhNationalBloc(a){
   return `<div class="nat-box">
     <div class="nat-t">Envoi au CRM national</div>
     ${n.contrat_id?`<div class="nat-ok">✓ ${esc(n.signe_le?(n.signe_source&&n.signe_source!=="national"?"Signé, constaté le ":"Signé le ")+adhDate(n.signe_le):NAT_STATUTS[n.statut]||"Contrat créé")} · contrat national n° ${esc(n.contrat_id)}${n.signe_le&&n.club_national?" · membre de "+esc(n.club_national)+" au national":""}</div>`:n.erreur?`<div class="nat-err">${esc(n.erreur)}</div>`:`<div class="nat-v">Contrat pas encore envoyé.</div>`}
+    ${n.signe_le&&natRegl(n).txt?`<div class="nat-v">Règlement au national : ${esc(natRegl(n).txt)}</div>`:""}
     ${n.etat_signature&&!n.signe_le?`<div class="nat-v">État au national : ${esc(n.etat_signature)}${n.verifie_le?" (vérifié le "+esc(adhDate(n.verifie_le))+")":""}</div>`:""}
     ${n.prospect_id?`<div class="nat-v">Annuaire du national : fiche n° ${esc(n.prospect_id)}${n.entreprise_id?" · entreprise n° "+esc(n.entreprise_id):""}${n.annuaire_le?" ("+(n.annuaire==="créé"?"ajoutée":"retrouvée")+" le "+esc(adhDate(n.annuaire_le))+")":""}</div>`:`<div class="nat-v">Pas encore dans l'annuaire du national : elle y sera ajoutée à la prochaine vérification (chaque heure).</div>`}
     ${n.contrat_id&&SESSION&&SESSION.role==="superadmin"?`<button class="btn ghost" onclick="natMiroir(${Number(n.contrat_id)})">✍️ État de la signature au national</button>`:""}<a class="btn ghost" href="${natLienNational(a)[0]}" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a><div class="nat-v">Au national : ${esc(natLienNational(a)[1].split(" — ")[1])}</div>
@@ -9016,7 +9030,7 @@ function alPoser(c,t){window._alP=window._alP||{};if(t)window._alP[c]=t;else del
   try{if(SESSION&&!SESSION._voir)sb.rpc("cap_alerte_pause",{p_cle:c,p_jusqua:t?new Date(t).toISOString():null}).then(()=>{},()=>{})}catch(e){}}
 async function alCharger(){try{if(!SESSION||SESSION.role==="visiteur"||SESSION._voir)return false;const q=await sb.rpc("cap_alertes_pauses");if(q.error||!q.data||typeof q.data!=="object")return false;
   const av=JSON.stringify(window._alP||{}),n={};Object.entries(q.data).forEach(([k,v])=>{if(+v>Date.now())n[k]=+v});window._alP=n;window._alPLu=true;return JSON.stringify(n)!==av}catch(e){return false}}
-const AL_NOMS={bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau",demandes:"Demandes d'adhésion",national:"Envoi au national",contacts:"Contacts confiés",recos:"Recommandations reçues",comptes:"Comptes d'équipe",comptenat:"Compte national"};
+const AL_NOMS={signes:"Contrats signés",bilans:"Bilans à saisir",verrou:"Réunions à verrouiller",psa:"Points sur activité",reunions:"Réunions du réseau",demandes:"Demandes d'adhésion",national:"Envoi au national",contacts:"Contacts confiés",recos:"Recommandations reçues",comptes:"Comptes d'équipe",comptenat:"Compte national"};
 function alR(c,html){if(!html)return"";if(alEnPause(c))return"";
   return `<div class="al-w" data-al="${c}">${html}<button type="button" class="al-x" aria-label="Fermer ou reporter cette alerte" title="Fermer ou reporter" onclick="alMenu('${c}',this)">✕</button></div>`}
 function alMenu(c,btn){const w=btn.closest(".al-w");let m=w.querySelector(".al-m");if(m){m.remove();return}
@@ -9039,7 +9053,8 @@ function cnAlertes(){if(!SESSION||SESSION.role==="visiteur")return[];const L=[],
     const k=t(()=>psaACaler());if(k&&k.n)a("psa","📅",k.n,k.portee==="moi"?"Ton point sur activité de ce mois n'est pas calé":pl(k.n,"animateur sans PSA ce mois-ci","animateurs sans PSA ce mois-ci"),k.portee==="moi"?"Choisis ton créneau":"Voir qui relancer","openPSA()");
     if(t(()=>rrPeutRelancer())){const X=t(()=>rrTout("annee"));if(X){X.sans=Math.max(0,(X.sans||0)-b); /* v1.124 : celles que je peux saisir moi-même sont déjà dans « bilans » */ a("reunions","🗓",(X.sans||0)+(X.ouverts||0),[X.sans?pl(X.sans,"réunion sans bilan chez les animateurs","réunions sans bilan chez les animateurs"):"",X.ouverts?pl(X.ouverts,"groupe sans réunion récente","groupes sans réunion récente"):""].filter(Boolean).join(" · "),"Groupe par groupe, avec la relance","openReunionsReseau()")}}
     const d=t(()=>demListe().length);a("demandes","📥",d,pl(d,"demande d'adhésion à intégrer","demandes d'adhésion à intégrer"),"Reçues par le formulaire en ligne","openDemandes()");
-    if(t(()=>navDir())){const e=t(()=>natAEnvoyer().length);a("national","🚀",e,pl(e,"adhésion à envoyer au CRM national","adhésions à envoyer au CRM national"),"Intégrées, pas encore envoyées","navDem('nat')")}
+    if(t(()=>navDir())){const sg=t(()=>signesAFaire())||[];if(sg.length){const pay=sg.filter(x=>["partiel","complet"].includes(natRegl(x.national).etat)).length;a("signes","✍️",sg.length,pl(sg.length,"contrat signé au national à reporter","contrats signés au national à reporter"),pay?pl(pay,"règlement reçu : intégration à finir","règlements reçus : intégration à finir"):"Voir le détail et mettre la fiche à jour","openSignes()")}
+      const e=t(()=>natAEnvoyer().length);a("national","🚀",e,pl(e,"adhésion à envoyer au CRM national","adhésions à envoyer au CRM national"),"Intégrées, pas encore envoyées","navDem('nat')")}
     const c=t(()=>mesContactsAFaire().length);a("contacts","📬",c,pl(c,"contact confié à traiter","contacts confiés à traiter"),"Des contacts à appeler ou à inviter","openBoite()");
     const r=t(()=>mesRecosATraiter());if(r&&r.length)a("recos","🤝",r.length,pl(r.length,"recommandation reçue à suivre","recommandations reçues à suivre"),"Dans ton espace membre",`espaceOuvrir('membre.html#moi=${r[0].a}&r=recues')`);
     if(SESSION.role==="superadmin"){const e=DB.aEmbarquer||0;a("comptes","🔑",e,pl(e,"compte d'équipe jamais ouvert","comptes d'équipe jamais ouverts"),"Donner ou renvoyer l'accès","openEmbarquer()")}
@@ -9902,8 +9917,44 @@ function dmFormHTML(){const g=window._dmFormG||"",m=window._dmFormM==="demo"?"de
       <div class="dmf-act"><a class="btn ghost mini" href="formulaire-adhesion-membre.pdf" target="_blank" rel="noopener">📄 PDF vierge</a><a class="btn ghost mini" href="${esc(src.toString())}" target="_blank" rel="noopener">↗ Plein écran</a><button class="btn ghost mini" onclick="adhCharger&&adhCharger().then(()=>{toast('Demandes actualisées','s');render()})">⟳ Actualiser les demandes</button></div></div>
     <p class="dmf-note">${m==="vrai"?"Tu remplis le formulaire avec le futur membre, comme il le ferait sur son téléphone. À l'envoi, sa demande arrive dans l'onglet 📥 Demandes avec le PDF signé.":"Le formulaire tel que le voit le futur membre. Mode démonstration : rien n'est enregistré."}</p>
     <div class="dmf-cadre"><iframe title="Formulaire d'adhésion" src="${esc(src.toString())}" loading="lazy"></iframe></div></div>`}
+/* v1.137 : contrats signés au national, règlements et fin d'intégration. */
+function natRegl(n){const r=(n||{}).reglement;if(!r)return{etat:"inconnu",txt:"",fact:false};
+  const fact=(r.echeances||[]).some(e=>e.facture_le);
+  if(r.etat==="complet")return{etat:"complet",fact:true,txt:"Réglé en totalité · "+fmtMAD(r.recu)+" TTC"};
+  if(r.etat==="partiel")return{etat:"partiel",fact:true,txt:"Règlement en cours · "+fmtMAD(r.recu)+" sur "+fmtMAD(r.du)+" TTC"};
+  return fact?{etat:"aucun",fact:true,txt:"Facturé, aucun règlement à ce jour · "+fmtMAD(r.du)+" TTC"}:{etat:"attente",fact:false,txt:"Facture pas encore générée au national"}}
+/* Ce que la fiche du membre devrait porter d'après le national (contrat signé, facture, paiement complet). */
+function signeEcart(a){const n=a.national||{},mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id),g=natRegl(n);if(!mb||!n.signe_le)return null;
+  const v={};if(!mb.contrat)v.contrat=true;if(g.fact&&!mb.facture)v.facture=true;if(g.etat==="complet"&&!mb.paiement)v.paiement=true;
+  return Object.keys(v).length?{mb,v}:null}
+function signesListe(){return (DB.adhesions||[]).filter(a=>a.statut!=="rejetee"&&(a.national||{}).signe_le).sort((x,y)=>String(y.national.signe_le).localeCompare(String(x.national.signe_le)))}
+function signesAFaire(){return signesListe().filter(a=>signeEcart(a)||(!a.membre_id))}
+function openSignes(){
+  const L=signesListe(),lib={contrat:"contrat signé",facture:"facture émise",paiement:"paiement reçu"};
+  document.getElementById("sheet-content").innerHTML=`<h3>Contrats signés au national</h3>
+    <div class="sheet-sub">Ce que le CRM national affiche pour chaque contrat signé. Vérifié chaque heure, de 7 h à 21 h.</div>
+    ${L.length?`<div class="sg-l">${L.map(a=>{const n=a.national||{},g=natRegl(n),e=signeEcart(a),mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id),ed=mb&&canEditClubId(mb.clubId);
+      return `<div class="sg-c ${e||!mb?"afaire":""}"><div class="sg-h"><b>${esc(adhNom(a))}</b><span>${esc(a.data.ent_nom||"")}</span></div>
+        <div class="sg-k"><div><small>Groupe</small>${esc((adhGroupe(a)||"Sans groupe").replace(/^CAP\s+/,""))}${n.club_national?`<em>au national : ${esc(n.club_national)}</em>`:""}</div>
+          <div><small>Contrat</small>n° ${esc(n.contrat_id||"—")}<em>signé, constaté le ${esc(adhDate(n.signe_le))}</em></div>
+          <div><small>Règlement</small><span class="sg-r ${g.etat}">${esc(g.txt||"Pas encore lu")}</span>${(n.reglement||{}).lu_le?`<em>lu le ${esc(adhDate(n.reglement.lu_le))}</em>`:""}</div></div>
+        ${e?`<p class="sg-e">À reporter sur sa fiche : ${Object.keys(e.v).map(k=>lib[k]).join(", ")}.</p>`:!mb?`<p class="sg-e">Pas encore de fiche membre : intègre la demande.</p>`:g.etat==="complet"?`<p class="sg-ok">✓ Fiche à jour : membre intégré.</p>`:`<p class="sg-at">Fiche à jour. En attente du règlement au national : tu seras prévenu dès qu'il est enregistré.</p>`}
+        <div class="sg-a">${e&&ed?`<button class="btn mini" onclick="signeReporter('${a.id}',this)">✓ Mettre sa fiche à jour</button>`:""}<button class="btn ghost mini" onclick="adhDetail('${a.id}')">Voir la demande</button>${mb?`<button class="btn ghost mini" onclick="memberSheet('${mb.clubId}','${mb.id}')">Sa fiche</button>`:""}</div></div>`}).join("")}</div>`:`<p class="fh-empty">Aucun contrat signé pour l'instant.</p>`}
+    <div class="sheet-actions">${SESSION.role==="superadmin"?`<button class="btn ghost" onclick="natVerifier(this).then(()=>openSignes())">🔄 Vérifier au national</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
+  openSheet();
+}
+async function signeReporter(id,btn){
+  const a=((window._DBvrai||DB).adhesions||[]).find(x=>x.id===id),e=a&&signeEcart(a);if(!e)return;
+  if(btn){btn.disabled=true;btn.textContent="⏳"}
+  const {error}=await sb.from("membres").update(e.v).eq("id",e.mb.id);
+  if(error){toast(rlsMsg(error),"e");if(btn){btn.disabled=false;btn.textContent="✓ Mettre sa fiche à jour"}return}
+  const vrai=((window._DBvrai||DB).membres||[]).find(m=>m.id===e.mb.id);Object.assign(e.mb,e.v);if(vrai)Object.assign(vrai,e.v);
+  toast(e.v.paiement?"Fiche à jour : "+e.mb.nom+" est membre à part entière":"Fiche de "+e.mb.nom+" mise à jour","s");
+  if(e.v.paiement&&typeof celebrer==="function"){try{celebrer("🎉","Intégration terminée",e.mb.nom)}catch(x){}}
+  render();openSignes();
+}
 function natResume(){const c=natCols(),nI=adhAIntegrer().length,dv=natDerniereVerif(),su=SESSION&&SESSION.role==="superadmin";
-  return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}${su?`<button class="btn ghost mini" onclick="natMiroir()">✍️ État des signatures au national</button>`:`<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a>`}<span>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
+  return `<div class="nat-verif">${su?`<button class="btn mini" onclick="natVerifier(this)">🔄 Vérifier au national</button>`:""}${su?`<button class="btn ghost mini" onclick="natMiroir()">✍️ État des signatures au national</button><button class="btn ghost mini" onclick="openSignes()">💶 Signés et règlements</button>`:`<a class="btn ghost mini" href="${NAT_URL}/connexion/extranet" target="_blank" rel="noopener">🌐 Ouvrir le CRM national</a>`}<span>${dv?"Dernière vérification : "+esc(adhDate(dv)):"Pas encore vérifié"} · automatique chaque heure, de 8h à 21h</span></div>
     <div class="nat-res">${c.map(x=>`<button class="dm-k ${x.k==="envoyer"&&x.l.length?"w":""}" onclick="window._natCol='${x.k}';dmChercher(window._dmQ||'')"><b>${x.l.length}</b><span>${x.ico} ${x.t.toLowerCase()}</span></button>`).join("")}</div>
     ${nI?`<p class="nat-avant">${nI} demande${nI>1?"s":""} pas encore intégrée${nI>1?"s":""} au niveau régional : elle${nI>1?"s":""} arrivera${nI>1?"ont":""} ici une fois intégrée${nI>1?"s":""}. <a href="#" onclick="window._dmVue='pipe';window._dmCol='todo';render();return false">Les voir ›</a></p>`:""}`}
 function natCarte(a,i,col){
@@ -9916,6 +9967,7 @@ function natCarte(a,i,col){
   if(col==="envoyer"&&n.prospect_id)lignes.push(["Annuaire",`fiche n° ${n.prospect_id}`]);
   if(n.signe_le)lignes.push([n.signe_source&&n.signe_source!=="national"?"Signé, vu le":"Signé",adhDate(n.signe_le)]);
   if(n.signe_le&&n.club_national)lignes.push(["Au national","Membre · "+n.club_national]);
+  if(n.signe_le&&natRegl(n).txt)lignes.push(["Règlement",natRegl(n).txt]);
   if(n.erreur&&col==="envoyer")lignes.push(["Dernier essai",n.erreur]);
   const act=col==="envoyer"?(natAdhPeut()?`<button class="dm-go" onclick="event.stopPropagation();natEnvoyer('${a.id}')">Envoyer au national <span>›</span></button>`:`<button class="dm-go" onclick="event.stopPropagation();adhDetail('${a.id}')">Voir la demande <span>›</span></button>`)
     :col==="attente"?(readOnly()?"":`<button class="dm-go" onclick="event.stopPropagation();natSigne('${a.id}',true)">✓ Marquer signé <span>›</span></button>`)
@@ -10255,7 +10307,7 @@ async function adhTamponner(blob,a){
    ============================================================ */
 let _fil=[],_filClicFiche=false,_filPage=[],_filMenu=false,_filPageRejeu=false;
 document.addEventListener("click",e=>{const t=e.target&&e.target.closest?e.target:null;_filClicFiche=!!(t&&t.closest("#sheet"));_filMenu=!!(t&&t.closest("#nav,.np"))},true);
-const FIL_FICHES=["openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
+const FIL_FICHES=["openSignes","openJournal","evtOuvrir","evtForm","openCalPdf","clubPauseForm","openAgendaAbo","openCentre","openReunionsReseau","openCoffreNat","openBilanEnvoi","openCompteNat","openPointage","openOutils","openAnnuaire","mbNommer","openRegions","regionForm","ficheBase","groupePage","annResFiche","presOuvrir","openLot","openRemercier","natInvWa","mbAccesFiche","accDonner","adhChangerGroupe","openArchivesAdh","adhArchiverForm","openEmbarquer","openPlanSerie","openCR","changerJour","openRythme","openClub","memberSheet","openMeeting","openLieu","openAnim","openCarte","dashDrill","adhDetail","openBilan","openZones","openLancements","openAdhesions","clubForm","openQuiConnecte","openAccounts","accountEdit","accountForm","openParametres","openAide","openNotifs","openChangelog","openRendement","openMyPassword","openRapport","openClasseur"];
 function filTitreCourant(){const h=document.querySelector("#sheet-content h3");return h?h.textContent.replace(/\s+\d+\s*$/,"").replace(/\s*\(\d+\)\s*$/,"").trim():""}
 function filNoter(n,a){
   const w=document.getElementById("sheet"),ouverte=w&&w.classList.contains("open");
@@ -10315,7 +10367,7 @@ for(const n of ["mbFiltrer","dmChercher","dashDrill","kBasculer","calMaj"]){cons
    (bilans, planification, renouvellements, recherche, carte, zones, lancements, rapport, présentation, constellation,
    recommandations, rendement, archives, exports, demandes). Ces fonctions n'écrivent rien avant leur premier await
    (vérifié) : avecVue ne leur prête qu'une copie filtrée de DB pendant leur exécution. En vue nationale, rien ne change. */
-["openCentre","openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
+["openSignes","openCentre","openReunionsReseau","reunionsSansBilan","adhASaisir","adhAIntegrer","predCalc","openRenouvellements","openCarte","openZones","openLancements","openRapport","cstDonnees",
  "showRender","openPlanSerie","psRendu","psDates","openRecos","openRendement","openArchivesAdh","exportCSV","exportMembres","dmCols","natCols"].forEach(n=>{
   const f=window[n];if(typeof f!=="function"||f._vue)return;const g=function(...a){return avecVue(()=>f.apply(this,a))};g._vue=true;window[n]=g});
 /* v1.42 : écrans lourds — au téléphone, un mot avant d'ouvrir (une fois par écran). */

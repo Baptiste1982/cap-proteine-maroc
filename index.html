@@ -2811,6 +2811,13 @@ details.mbg.rc>summary em{background:color-mix(in srgb,var(--rc) 16%,transparent
 @media(max-width:600px){.mbg-reg em{font-size:11px}}
 /*v1.150 pastille de région*/
 .rg-p{display:inline-block;width:18px;height:8px;border-radius:99px;background:var(--rc);margin-right:8px;vertical-align:middle;flex:none}
+/*v1.151 portée de Mon groupe*/
+.reu-seg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.reu-seg button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:8px 14px;font:600 13px/1 Inter,sans-serif;cursor:pointer;min-height:36px;transition:background .2s,border-color .2s}
+.reu-seg button em{font-style:normal;opacity:.65;margin-left:4px;font-weight:500}
+.reu-seg button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}.reu-seg button.on em{opacity:.85}
+.grp-choix{flex-wrap:wrap!important;overflow:visible!important}.grp-choix button{flex:none}
+.grp-choix button.mien::after{content:"moi";font:600 10px/1 Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;border:1px solid currentColor;border-radius:99px;padding:2px 6px;margin-left:6px;opacity:.7}
 </style>
 </head>
 <body>
@@ -2921,8 +2928,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.150.0";
+const APP_VERSION="1.151.0";
 const CHANGELOG=[
+  {v:"1.151.0",date:"24 novembre 2026",notes:{"Modifié":["Mon groupe : un responsable de région voit d’office tous les groupes de sa région, les siens en premier (repère « moi »). Trois choix : Mes groupes, Ma région, Tout le réseau.","Le sélecteur d’espace du haut liste aussi les autres groupes de ma région."]}},
   {v:"1.150.0",date:"24 novembre 2026",notes:{"Modifié":["En vue nationale, la bande de couleur d’un groupe est partout celle de sa région (groupes, membres, agenda, calendrier, demandes, fiches, calendrier en PDF). En vue régionale, elle reste celle de la ville, pour distinguer les villes entre elles.","Une pastille de la couleur de la région devant son nom : à traiter, membres par région, annuaire du réseau, suivi par étape, régions et villes, invitation à un événement."]}},
   {v:"1.149.0",date:"24 novembre 2026",notes:{"Ajouté":["Membres, vue par groupe : les groupes sont rangés par région, chaque région a sa couleur (bande à gauche de chaque groupe et intertitre avec le nombre de groupes et de membres). Une nouvelle région reçoit sa couleur toute seule."]}},
   {v:"1.148.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : chaque contact est rapproché de ce que le CRM connaît déjà (membre et son groupe, lead, invité à une réunion) par le mobile, l'e-mail ou le nom. Filtres « Déjà connus » et « Nouveaux pour le CRM ».","« En faire un lead » : un contact nouveau passe dans les leads en un toucher, sans doublon."]}},
@@ -4410,10 +4418,12 @@ function espEntrees(){if(!SESSION||!DB||SESSION.role==="visiteur")return[];const
   else if(SESSION.role==="directeur")E.push({g:"Régions",ic:"📍",lb:rn,sous:"Ma région",on:libre,act:"go('dash')"});
   else if(SESSION.role==="animateur"&&mesG.length>1)E.push({g:"Mes groupes",ic:"🗂",lb:"Tous mes groupes",sous:mesG.length+" groupes",on:libre,act:"go('dash')"});
   mesG.forEach(c=>E.push({g:"Mes groupes",ic:"👥",lb:c.nom.replace(/^CAP\s+/,""),sous:"Animateur · "+c.ville,on:surG&&gc&&gc.id===c.id,act:`grpAller('${c.id}','bord')`}));
+  let regG=[];try{if(window._DBvrai)DB=window._DBvrai;regG=reuRegClubs().filter(c=>!mesG.some(x=>x.id===c.id))}catch(e){}finally{DB=g}
+  regG.forEach(c=>E.push({g:"Groupes de ma région",ic:"📍",lb:c.nom.replace(/^CAP\s+/,""),sous:(c.animId?animNom(c.animId):"Sans animateur")+" · "+c.ville,on:surG&&gc&&gc.id===c.id,act:`window._reuTous='reg';grpAller('${c.id}','bord')`}));
   fiches.forEach(f=>{const c=DB.clubs.find(x=>x.id===f.clubId)||(window._DBvrai||DB).clubs.find(x=>x.id===f.clubId);E.push({g:"Mon espace membre",ic:"🪪",lb:c?c.nom.replace(/^CAP\s+/,""):"Espace membre",sous:"Membre",on:surE&&(window._espUrl||"").includes(f.id),act:`espaceOuvrir('membre.html#moi=${f.id}')`})});
   return E}
 function espSync(){const b=document.getElementById("esp-sel");if(!b)return;const E=espEntrees();b.classList.toggle("hidden",E.length<2);if(E.length<2){espFermer();return}
-  const c=E.find(x=>x.on)||E[0],h=`<span class="es-ic" aria-hidden="true">${c.ic}</span><span class="es-t"><small>${esc(c.g==="Direction"?"Vue nationale":c.g==="Régions"?"Vue régionale":c.g==="Mes groupes"?"Mon groupe":"Espace membre")}</small><b>${esc(c.lb)}</b></span><span class="es-fl" aria-hidden="true">▾</span>`;
+  const c=E.find(x=>x.on)||E[0],h=`<span class="es-ic" aria-hidden="true">${c.ic}</span><span class="es-t"><small>${esc(c.g==="Direction"?"Vue nationale":c.g==="Régions"?"Vue régionale":c.g==="Mes groupes"?"Mon groupe":c.g==="Groupes de ma région"?"Groupe de ma région":"Espace membre")}</small><b>${esc(c.lb)}</b></span><span class="es-fl" aria-hidden="true">▾</span>`;
   if(b.dataset.h!==h){b.innerHTML=h;b.dataset.h=h}b.setAttribute("aria-label","Changer d'espace · "+c.lb);b.dataset.g=c.g}
 function espMenu(){const b=document.getElementById("esp-sel");let m=document.getElementById("esp-menu");if(m){espFermer();return}
   const E=espEntrees();let g=null;m=document.createElement("div");m.id="esp-menu";m.className="esp-menu";m.setAttribute("role","menu");
@@ -4916,7 +4926,11 @@ const CR_CANEVAS={
 function crChamps(m){return [...(CR_CANEVAS[m.format]||CR_CANEVAS.info),...CR_FIN]}
 function reuMesClubs(){return SESSION.animId?DB.clubs.filter(c=>c.animId===SESSION.animId):[]}
 function reuPeutTout(){return ["superadmin","directeur_national","directeur"].includes(SESSION.role)}
-function reuClubs(){const mine=reuMesClubs();if(window._reuTous||!mine.length)return DB.clubs.filter(c=>canEditClubId(c.id));return mine}
+/*v1.151 : Mon groupe = mes groupes | ma région (les miens d'abord) | tout ce que je peux modifier*/
+function reuRegVilles(){try{if(vueMode()==="reg")return vueRegion().villes||[];const Z=regMesRegions();if(Z.length)return Z.flatMap(z=>z.villes||[]);if(SESSION.zoneId){const z=regZones().find(z=>z.id===SESSION.zoneId);return z?(z.villes||[]):[]}}catch(e){}return[]}
+function reuRegClubs(){const V=reuRegVilles().map(mbNorm);if(!V.length||!reuPeutTout())return[];const moi=SESSION.animId;return DB.clubs.filter(c=>V.includes(mbNorm(c.ville))&&canEditClubId(c.id)).sort((a,b)=>((b.animId===moi)-(a.animId===moi))||V.indexOf(mbNorm(a.ville))-V.indexOf(mbNorm(b.ville))||a.nom.localeCompare(b.nom,"fr"))}
+function reuPortee(){const t=window._reuTous,reg=reuRegClubs().length>0,mine=reuMesClubs().length>0;if(t==="reg")return reg?"reg":(mine?"moi":"tout");if(t===true)return "tout";if(t===false)return mine?"moi":(reg?"reg":"tout");return reg?"reg":(mine?"moi":"tout")}
+function reuClubs(){const p=reuPortee();if(p==="moi")return reuMesClubs();if(p==="reg")return reuRegClubs();return DB.clubs.filter(c=>canEditClubId(c.id))}
 function reuACompteRendu(){const ids=new Set(reuClubs().map(c=>c.id));return DB.reunions.filter(r=>ids.has(r.clubId)&&reuFinie(r)&&(r.statut==="planifiee"||r.statut==="confirmee")&&canEditReunion(r)).sort((a,b)=>b.date.localeCompare(a.date))}
 /* v0.43.0 : quinzaine = un jour fixe, toutes les deux semaines, à partir d'une réunion de référence (rythme_depart). */
 function rythmeQuinz(c){return(c.rRang??0)===0&&c.rPas===2}
@@ -5016,9 +5030,10 @@ function viewGroupe(){
   const clubs=reuClubs(),c=grpClub(),mine=reuMesClubs();
   if(!c)return `<div class="page">${emptyState("Aucun groupe rattaché","Ton compte n'anime encore aucun groupe. Demande au directeur de zone de t'en confier un.")}</div>`;
   const D=grpDonnees(c),nom=c.nom.replace(/^CAP\s+/,""),a=anim(c.animId),h=clubHealth(c),na=clubNextAction(c),ton=clubTone(c),o=grpOng();
-  const bascule=mine.length&&reuPeutTout()?`<div class="seg-sc" role="tablist" style="max-width:420px"><span class="knob" style="transform:translateX(${window._reuTous?"100%":"0"})"></span><button role="tab" class="${window._reuTous?"":"on"}" onclick="window._reuTous=false;render()">Mes groupes</button><button role="tab" class="${window._reuTous?"on":""}" onclick="window._reuTous=true;render()">Tous mes périmètres</button></div>`:"";
+  const prt=reuPortee(),regC=reuRegClubs(),toutN=DB.clubs.filter(x=>canEditClubId(x.id)).length,segs=[];if(mine.length)segs.push(["moi","false","Mes groupes",mine.length]);if(regC.length)segs.push(["reg","'reg'","Ma région",regC.length]);if(reuPeutTout()&&toutN>Math.max(regC.length,mine.length))segs.push(["tout","true",vueMode()==="nat"?"Tout le réseau":"Tous mes périmètres",toutN]);
+  const bascule=segs.length>1?`<div class="reu-seg" role="tablist" aria-label="Quels groupes afficher">${segs.map(x=>`<button role="tab" aria-selected="${prt===x[0]}" class="${prt===x[0]?"on":""}" data-p="${x[0]}" onclick="window._reuTous=${x[1]};window._grpId=null;render()">${x[2]} <em>${x[3]}</em></button>`).join("")}</div>`:"";
   /* v1.42 : au téléphone, le sélecteur d'espace du haut liste déjà mes groupes */
-  const choix=clubs.length>1&&(isWide()||window._reuTous||!mine.length)?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
+  const choix=clubs.length>1&&(isWide()||prt!=="moi"||!mine.length)?`<div class="grp-choix" role="tablist" aria-label="Choisir le groupe">${clubs.map(x=>`<button role="tab" aria-selected="${x.id===c.id}" class="${x.id===c.id?"on":""}${SESSION.animId&&x.animId===SESSION.animId?" mien":""}" style="--vc:${villeColor(x.ville)}" onclick="grpAller('${x.id}')"><i></i>${esc(x.nom.replace(/^CAP\s+/,""))}<small>${esc(x.ville)}</small></button>`).join("")}</div>`:"";
   const onglets=`<div class="grp-ong" role="tablist">${GRP_ONGLETS.map(([k,ic,l,ct])=>{const n=k==="cr"?D.sansBilan.length:k==="membres"?D.incomplets.length:0;return `<button role="tab" aria-selected="${o===k}" aria-label="${l}" class="${o===k?"on":""}" onclick="grpOnglet('${k}')"><span>${ic}</span><b class="go-l">${l}</b><b class="go-c">${ct}</b>${n?`<em>${n}</em>`:""}</button>`}).join("")}</div>`;
   const corps=o==="cal"?grpCal(c,D):o==="membres"?grpMembres(c,D):o==="cr"?grpCR(c,D):o==="affaires"?grpAffaires(c,D):o==="fil"?grpFil(c):grpBord(c,D);
   return `<div class="page grp"><div class="page-head"><div><div class="eyebrow">Animation</div><h2>Mon groupe</h2><p>Tout le pilotage de ${clubs.length>1?"tes groupes":"ton groupe"} au même endroit.</p></div><span class="bo-go"><button class="btn mini" id="bo-btn" onclick="openOutils()">🧰 <span class="pc-seul">Ma boîte à outils</span><span class="tel-seul">Boîte à outils</span></button> <button class="btn ghost mini" onclick="openPlanSerie()">📆 Planifier<span class="pc-seul"> en série</span></button></span></div>

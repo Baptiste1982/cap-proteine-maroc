@@ -2818,6 +2818,12 @@ details.mbg.rc>summary em{background:color-mix(in srgb,var(--rc) 16%,transparent
 .reu-seg button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}.reu-seg button.on em{opacity:.85}
 .grp-choix{flex-wrap:wrap!important;overflow:visible!important}.grp-choix button{flex:none}
 .grp-choix button.mien::after{content:"moi";font:600 10px/1 Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;border:1px solid currentColor;border-radius:99px;padding:2px 6px;margin-left:6px;opacity:.7}
+/*v1.155 constellation : structure en couleur de région*/
+.cst-l.rc{stroke:color-mix(in srgb,var(--rc) 75%,#fff 10%);stroke-width:1.8;opacity:.85}.cst-l.rc.lit{stroke:color-mix(in srgb,var(--rc) 70%,#fff)}
+.cst-orb.rc{stroke:color-mix(in srgb,var(--rc) 70%,#fff 15%);opacity:.7}
+.cst-reg.rc .cst-rc{fill:color-mix(in srgb,var(--rc) 38%,transparent);stroke:var(--rc);stroke-width:2.2}.cst-reg.rc.lit .cst-rc{fill:color-mix(in srgb,var(--rc) 62%,transparent)}
+.cst-reg.rc .cst-rt{fill:color-mix(in srgb,var(--rc) 45%,#fff)}
+.cst-sub.rc .cst-subl{stroke:color-mix(in srgb,var(--rc) 70%,#fff 15%);opacity:.8}.cst-sub.rc .cst-subc{stroke:color-mix(in srgb,var(--rc) 75%,#fff)}.cst-sub.rc .cst-subt{fill:color-mix(in srgb,var(--rc) 35%,#fff)}
 </style>
 </head>
 <body>
@@ -2928,8 +2934,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.154.0";
+const APP_VERSION="1.155.0";
 const CHANGELOG=[
+  {v:"1.155.0",date:"24 novembre 2026",notes:{"Modifié":["Constellation : chaque région a sa couleur (lien vers le centre, rond et nom de la région, villes, orbites). Les groupes gardent leur couleur d’état."]}},
   {v:"1.154.0",date:"24 novembre 2026",notes:{"Modifié":["Espace membre : les étiquettes et les volets de groupes, les réunions du réseau et le calendrier en PDF prennent la couleur de la région, la même que dans le CRM."]}},
   {v:"1.153.0",date:"24 novembre 2026",notes:{"Modifié":["Planning de la région : les points du calendrier prennent eux aussi la couleur de la région."]}},
   {v:"1.152.0",date:"24 novembre 2026",notes:{"Modifié":["La couleur de région s’applique aussi en vue régionale : tous les groupes d’une région portent la même couleur, pour tous les comptes."]}},
@@ -9675,12 +9682,14 @@ function cstRender(){
   const tot=regs.reduce((a,r)=>a+r.nb,0),nG=regs.reduce((a,r)=>a+r.g.length,0);
   const nBil=regs.reduce((a,r)=>a+r.g.reduce((b,x)=>b+x.bil.length,0),0),nPlan=regs.reduce((a,r)=>a+r.g.filter(x=>x.plan).length,0),nSans=regs.reduce((a,r)=>a+r.g.filter(x=>x.anim).length,0);
   let liens="",orb="",astres="",com="",subs="";const pos=[],orbites=[];
+  /*v1.155 : la structure de chaque région (lien, centre, nom, villes, orbites) prend la couleur de la région ; les astres gardent leur couleur d'état*/
+  const RCM=regionCouleurs(),RC=regs.map(r=>RCM[r.k]||"#8C8085");
   const bx={x0:cx-70,y0:cy-70,x1:cx+70,y1:cy+70},bord=(a,b,c,d)=>{bx.x0=Math.min(bx.x0,a);bx.y0=Math.min(bx.y0,b);bx.x1=Math.max(bx.x1,c);bx.y1=Math.max(bx.y1,d)};
   // v0.50.1 : une région à plusieurs villes se découpe en sous-régions (une par ville), chacune avec ses groupes.
   // Les groupes tournent sur une orbite inclinée : devant = plus grand et plus net, derrière = plus petit et plus pâle.
   const orbite=(hx,hy,R,liste,ri,ux,uy,d0)=>{
     const o={hx,hy,R,items:[],off:0,offT:0};orbites.push(o);
-    orb+=`<ellipse class="cst-orb" data-o="${orbites.length-1}" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
+    orb+=`<ellipse class="cst-orb rc" style="--rc:${RC[ri]}" data-o="${orbites.length-1}" cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${R}" ry="${(R*TILT).toFixed(1)}"/>`;
     liste.forEach((g,gi)=>{
       const b0=Math.atan2(uy,ux)+(gi+.5)*2*Math.PI/liste.length,sz=SZ(g.nb),c=CST_COUL[g.e],nomC=court(g);
       const i=pos.length;pos.push({...g,ri,sz,oi:orbites.length-1});o.items.push({i,b0,sz,f:0});
@@ -9700,7 +9709,7 @@ function cstRender(){
     const a=(portrait?Math.PI/2-iGros*2*Math.PI/Math.max(1,nR):-Math.PI/2)+ri*2*Math.PI/Math.max(1,nR)+(nR===3?-.35:0),rx=nR<=1?0:portrait?250:400,ry=nR<=1?0:portrait?520:270;
     const x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);r.x=x;r.y=y;
     const ux=nR<=1?0:Math.cos(a),uy=nR<=1?-1:Math.sin(a),L=Math.hypot(x-cx,y-cy),d0=.45+ri*.12;
-    liens+=`<line class="cst-l" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
+    liens+=`<line class="cst-l rc" data-r="${ri}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--rc:${RC[ri]};--L:${L.toFixed(0)};animation-delay:${.15+ri*.12}s"/>`;
     if(r.nb)for(let k=0;k<Math.min(r.nb,6);k++)com+=`<circle class="cst-com" r="2.6"><animateMotion dur="${(3.6+k*.7).toFixed(1)}s" begin="${(k*.9+ri*.4).toFixed(1)}s" repeatCount="indefinite" path="M${x.toFixed(1)},${y.toFixed(1)} L${cx},${cy}"/></circle>`;
     const villes=[...new Set(r.g.map(g=>g.c.ville||"—"))];let ext;
     if(villes.length>=1){
@@ -9711,14 +9720,14 @@ function cstRender(){
         const gs=r.g.filter(g=>(g.c.ville||"—")===v),b=Math.atan2(uy,ux)+(vi-(villes.length-1)/2)*1.15;
         const vx=x+RR*Math.cos(b),vy=y+RR*Math.sin(b)*.82,solo=gs.length===1,R=rayon(gs),nb=gs.reduce((s,g)=>s+g.nb,0);
         ext=Math.max(ext,Math.hypot(vx-x,vy-y)+Math.max(R,44)+30);
-        subs+=`<g class="cst-sub" data-r="${ri}" style="--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,SZ(g.nb)),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
+        subs+=`<g class="cst-sub rc" data-r="${ri}" style="--rc:${RC[ri]};--d:${(d0+.1+vi*.1).toFixed(2)}s"><line class="cst-subl" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${vx.toFixed(1)}" y2="${vy.toFixed(1)}"/>${solo?"":`<circle class="cst-subc" cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="16"/><text class="cst-subn" x="${vx.toFixed(1)}" y="${(vy+5).toFixed(1)}">${nb}</text>`}<text class="cst-subt" x="${vx.toFixed(1)}" y="${(vy-R*TILT-gs.reduce((m,g)=>Math.max(m,SZ(g.nb)),0)*1.15-22).toFixed(1)}">${esc(v)}</text></g>`;
         bord(vx-60,vy-R*TILT-60,vx+60,vy+R*TILT+40);
         orbite(vx,vy,R,gs,ri,Math.cos(b),Math.sin(b),d0+.2+vi*.1);
       });
     }else{const R=Math.min(140,(r.g.length>1?64:84)+r.g.length*11);ext=R+20;orbite(x,y,R,r.g,ri,ux,uy,d0)}
     const dT=ext+64,tx=x+ux*dT,ty=y+uy*dT*.85,ta=ux>.35?"start":ux<-.35?"end":"middle";
     const tw=Math.max(r.nom.length*9.5,140),tx0=ta==="start"?tx:ta==="end"?tx-tw:tx-tw/2;bord(tx0,ty-34,tx0+tw,ty+6);
-    orb+=`<g class="cst-reg" data-r="${ri}" style="--d:${.25+ri*.12}s"><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${(ty-15).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} ${mot}${r.nb>1?"s":""}</text></g>`;
+    orb+=`<g class="cst-reg rc" data-r="${ri}" style="--rc:${RC[ri]};--d:${.25+ri*.12}s"><circle class="cst-rc" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/><text class="cst-rn" x="${x.toFixed(1)}" y="${(y+7).toFixed(1)}">${r.nb}</text><text class="cst-rt" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${(ty-15).toFixed(1)}">${esc(r.nom)}</text><text class="cst-rs" style="text-anchor:${ta}" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}">${r.g.length} groupe${r.g.length>1?"s":""} · ${r.nb} ${mot}${r.nb>1?"s":""}</text></g>`;
   });
   _cst.pos=pos;
   const m=44,X0=bx.x0-m,Y0=bx.y0-m,VW=bx.x1-bx.x0+2*m,VH=bx.y1-bx.y0+2*m;

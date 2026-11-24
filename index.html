@@ -2809,6 +2809,8 @@ details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overf
 details.mbg.rc{border-left:6px solid var(--rc)}
 details.mbg.rc>summary em{background:color-mix(in srgb,var(--rc) 16%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--rc) 45%,transparent)}
 @media(max-width:600px){.mbg-reg em{font-size:11px}}
+/*v1.150 pastille de région*/
+.rg-p{display:inline-block;width:18px;height:8px;border-radius:99px;background:var(--rc);margin-right:8px;vertical-align:middle;flex:none}
 </style>
 </head>
 <body>
@@ -2919,8 +2921,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.149.0";
+const APP_VERSION="1.150.0";
 const CHANGELOG=[
+  {v:"1.150.0",date:"24 novembre 2026",notes:{"Modifié":["En vue nationale, la bande de couleur d’un groupe est partout celle de sa région (groupes, membres, agenda, calendrier, demandes, fiches, calendrier en PDF). En vue régionale, elle reste celle de la ville, pour distinguer les villes entre elles.","Une pastille de la couleur de la région devant son nom : à traiter, membres par région, annuaire du réseau, suivi par étape, régions et villes, invitation à un événement."]}},
   {v:"1.149.0",date:"24 novembre 2026",notes:{"Ajouté":["Membres, vue par groupe : les groupes sont rangés par région, chaque région a sa couleur (bande à gauche de chaque groupe et intertitre avec le nombre de groupes et de membres). Une nouvelle région reçoit sa couleur toute seule."]}},
   {v:"1.148.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : chaque contact est rapproché de ce que le CRM connaît déjà (membre et son groupe, lead, invité à une réunion) par le mobile, l'e-mail ou le nom. Filtres « Déjà connus » et « Nouveaux pour le CRM ».","« En faire un lead » : un contact nouveau passe dans les leads en un toucher, sans doublon."]}},
   {v:"1.147.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : les contacts que tu as saisis dans l'Annuaire du CRM national arrivent ici tout seuls, avec ton compte branché — à la connexion, au branchement du compte et chaque matin. Recherche, filtre par profil, appel, WhatsApp, e-mail, et invitation à l'événement du réseau en un toucher.","Le super admin voit le carnet de chaque compte branché."]}},
@@ -4046,7 +4049,7 @@ function annuaireCorps(){const t=window._annT||"reg";
     return `<details class="ar-g" name="${nom}"><summary><b>${esc(String(c.nom).replace(/^CAP\s+/,""))}</b><small>${esc([c.ville,a?"animé par "+a.nom:""].filter(Boolean).join(" · "))}</small><em>${nb}</em></summary>${g.length?`<div class="mb-grid">${g.map(m=>annuaireCarte(m)).join("")}</div>${nb>g.length?`<div class="an-vide">${nb-g.length} autre${nb-g.length>1?"s":""} membre${nb-g.length>1?"s":""} d'après le national, fiche${nb-g.length>1?"s":""} pas encore saisie${nb-g.length>1?"s":""}.</div>`:""}`:`<div class="an-vide">${nb?nb+" membre"+(nb>1?"s":"")+" d'après le national, fiches pas encore saisies.":"Pas encore de membre."}</div>`}</details>`};
   const tot=r=>r.clubs.reduce((n,c)=>n+Math.max((P[c.id]||[]).length,clubNb(c)||0),0);
   if(t==="reg"){const r=regs[0];return `<div class="an-n">${esc(r.nom)} · ${r.clubs.length} groupe${r.clubs.length>1?"s":""} · ${tot(r)} membre${tot(r)>1?"s":""}</div>`+r.clubs.map(c=>grp(c,"an-g")).join("")}
-  return `<div class="an-n">${regs.length} régions · ${ids.size} groupes · ${regs.reduce((n,r)=>n+tot(r),0)} membres</div>`+regs.map((r,i)=>`<details class="an-reg" name="an-reg"${r.nom===ma?" open":""}><summary><b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}</small><em>${tot(r)}</em></summary><div class="an-in">${r.clubs.map(c=>grp(c,"an-g"+i)).join("")}</div></details>`).join("")}
+  return `<div class="an-n">${regs.length} régions · ${ids.size} groupes · ${regs.reduce((n,r)=>n+tot(r),0)} membres</div>`+regs.map((r,i)=>`<details class="an-reg" name="an-reg"${r.nom===ma?" open":""}><summary>${regPuce(r.nom)}<b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}</small><em>${tot(r)}</em></summary><div class="an-in">${r.clubs.map(c=>grp(c,"an-g"+i)).join("")}</div></details>`).join("")}
 function annuaireMaj(){const z=document.getElementById("an-res");if(z)z.innerHTML=annuaireCorps();document.querySelectorAll(".an-tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===(window._annT||"reg")))}
 function annuaireOnglet(t){window._annT=t;annuaireMaj()}
 function openAnnuaire(t){if(!SESSION||SESSION.role==="visiteur")return;if(t)window._annT=t;const ma=annuaireMaRegion();
@@ -4467,7 +4470,7 @@ async function evtInviter(id){const e=evts().find(x=>x.id===id);if(!e||!evtPeutI
     <details class="vn-b" name="ei"><summary><b>Le message à relayer</b><em>✎</em></summary><p class="vn-a">Chaque animateur le poste dans le WhatsApp de son groupe. Repères : {titre} {jour} {heure} {lieu} {asavoir} {lien}. Le lien est celui du groupe : son nom est déjà choisi sur la page.</p>
       <textarea id="ei-msg" rows="11" class="ei-ta">${esc(evtModele())}</textarea><div class="ei-ga"><button type="button" class="btn ghost mini" onclick="evtMsgGarder()">Garder ce texte</button><button type="button" class="btn ghost mini" onclick="evtMsgOrigine()">Revenir au texte d'origine</button></div></details>
     <div class="dash-h" style="margin-top:14px">${gere?"Par groupe":"Mes groupes"}</div>
-    ${R.length?R.map((r,i)=>`<details class="vn-b" name="eir"${R.length===1||i===0?" open":""}><summary><b>${esc(r.nom)}</b><em>${r.clubs.filter(c=>inv[c.id]).length}/${r.clubs.length}</em></summary><div class="ei-l">${r.clubs.map(ligne).join("")}</div></details>`).join(""):`<p class="fh-empty">Tu n'animes aucun groupe : utilise le lien pour tous, ci-dessus.</p>`}
+    ${R.length?R.map((r,i)=>`<details class="vn-b" name="eir"${R.length===1||i===0?" open":""}><summary>${regPuce(r.nom)}<b>${esc(r.nom)}</b><em>${r.clubs.filter(c=>inv[c.id]).length}/${r.clubs.length}</em></summary><div class="ei-l">${r.clubs.map(ligne).join("")}</div></details>`).join(""):`<p class="fh-empty">Tu n'animes aucun groupe : utilise le lien pour tous, ci-dessus.</p>`}
     <details class="vn-b" name="ei"><summary><b>Les inscrits</b><em>${ins.length}</em></summary>${ins.length<tot?`<p class="vn-a">Tu vois les inscrits de tes groupes ; le total compte tout le réseau.</p>`:""}<div class="vn-l">${ins.length?ins.map(x=>{const c=V.clubs.find(k=>k.id===x.club_id);return `<div class="vn-r"><b>${esc(x.nom)}</b><span>${c?esc(c.nom.replace(/^CAP\s+/,"")):"Pas encore membre"}${x.tel?` · <a href="tel:${esc(x.tel.replace(/[^+\d]/g,""))}">${esc(telAff(x.tel))}</a>`:""}</span></div>`}).join(""):`<p class="vn-a">Personne pour l'instant.</p>`}</div></details>
     <div class="sheet-actions">${gere?`<button class="btn ghost" onclick="evtForm('${id}')">Modifier l'événement</button>`:""}<button class="btn" onclick="closeSheet()">Fermer</button></div>`;
   natInvQr()}
@@ -4777,6 +4780,9 @@ function regionCouleurs(){const V=window._DBvrai||DB,Z=V.zones||[],sig=Z.map(z=>
 function regionDeVille(ville){const V=window._DBvrai||DB,Z=V.zones||[],i=Z.findIndex(z=>(z.villes||[]).some(v=>mbNorm(v)===mbNorm(ville)));
   return i<0?{nom:"Autres villes",ordre:999,coul:"#8C8085"}:{nom:Z[i].nom,ordre:i,coul:regionCouleurs()[Z[i].id]}}
 function regionCouleur(ville){return regionDeVille(ville).coul}
+/*v1.150 : en vue nationale, la couleur d’un groupe est celle de sa RÉGION ; en vue régionale, celle de sa ville (pour distinguer les villes entre elles)*/
+function villeColor(v){try{if(v&&typeof vueMode==="function"&&vueMode()==="nat"){const r=regionDeVille(v);if(r.ordre<999||((window._DBvrai||DB).zones||[]).length)return r.coul}}catch(e){}return villeColorBase(v)}
+function regPuce(nomOuId){const V=window._DBvrai||DB,z=(V.zones||[]).find(z=>z.id===nomOuId||z.nom===nomOuId);return `<i class="rg-p" style="--rc:${z?regionCouleurs()[z.id]:"#8C8085"}"></i>`}
 function mbGroupes(l,cle,titre,pref,reg){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});const E=mbgEtat(),q=!!window._q4,R={};let ks=Object.keys(g);if(reg)ks.forEach(k=>R[k]=reg(k));
   ks.sort((a,b)=>(reg?R[a].ordre-R[b].ordre:0)||g[b].length-g[a].length||a.localeCompare(b,"fr"));let der=null;
   return `<div class="mbg-tout"><button type="button" class="btn ghost mini" onclick="mbgTout(true)">Tout déplier</button><button type="button" class="btn ghost mini" onclick="mbgTout(false)">Tout replier</button></div>`+ks.map((k,n)=>{const id=pref+":"+k,o=q||(id in E?E[id]:ks.length===1),r=R[k];let tete="";
@@ -5714,7 +5720,7 @@ function zoneNomForVille(ville){
 }
 const VILLE_COLORS={"Rabat":"#D81B3F","Salé":"#B8862A","Kenitra":"#2E7D5B","Casablanca":"#3A5DA8","Dar Bouazza":"#5AA0C8","Bouskoura":"#7A4DA8","Marrakech":"#C8A24C","Tanger":"#1FA0A0"};
 const VILLE_PALETTE=["#1FA0A0","#C2501C","#6B3FA0","#2B8A6E","#B8862A","#3A5DA8","#A8456B","#5A7A2E"];
-function villeColor(v){if(VILLE_COLORS[v])return VILLE_COLORS[v];let h=0;for(const ch of String(v||""))h=(h*31+ch.charCodeAt(0))>>>0;return v?VILLE_PALETTE[h%VILLE_PALETTE.length]:"#8C8085"}
+function villeColorBase(v){if(VILLE_COLORS[v])return VILLE_COLORS[v];let h=0;for(const ch of String(v||""))h=(h*31+ch.charCodeAt(0))>>>0;return v?VILLE_PALETTE[h%VILLE_PALETTE.length]:"#8C8085"}
 /* v1.81 : les villes ne sont plus une liste figée — celles des régions (dans l'ordre), puis celles des groupes et des animateurs. */
 function villesListe(){const D=window._DBvrai||DB||{},s=[];const aj=v=>{v=String(v||"").trim();if(v&&!s.includes(v))s.push(v)};
   (D.zones||[]).forEach(z=>(z.villes||[]).forEach(aj));(D.clubs||[]).forEach(c=>aj(c.ville));(D.animateurs||[]).forEach(a=>aj(a.ville));if(!s.length)VILLES.forEach(aj);return s}
@@ -5836,7 +5842,7 @@ function viewClubs(){
     .sort((a,b)=>{const ia=zoneOrder.indexOf(a),ib=zoneOrder.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b)})
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
-      return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${list.length}</span></div>
+      return `<div class="month-label">${regPuce(zn)}${esc(zn)} <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${list.length}</span></div>
         ${wide?clubsTable(list):`<div class="rl">${list.map(c=>clubRow(c,k++)).join("")}</div>`}`;
     }).join("");
   return `<div class="page"><div class="page-head"><div><div class="eyebrow">Réseau</div><h2>Groupes</h2><p>${clubs.length} groupe${clubs.length>1?"s":""}${sansAnim?` · ${sansAnim} sans animateur`:""}</p></div></div>
@@ -5920,7 +5926,7 @@ function viewTeam(){
     .sort((x,y)=>{const ix=zoneOrder.indexOf(x),iy=zoneOrder.indexOf(y);return (ix<0?99:ix)-(iy<0?99:iy)||x.localeCompare(y)})
     .map(zn=>{
       const list=groups[zn].sort((a,b)=>a.ville.localeCompare(b.ville)||a.nom.localeCompare(b.nom));
-      return `<div class="month-label">${esc(zn)} <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${list.length}</span></div>
+      return `<div class="month-label">${regPuce(zn)}${esc(zn)} <span style="color:var(--crimson-txt,var(--crimson));font-weight:700">${list.length}</span></div>
         ${wide?animsTable(list):`<div class="rl">${list.map(a=>animRow(a,k++)).join("")}</div>`}`;
     }).join("");
   const libres=DB.clubs.filter(c=>scopedClubIds().includes(c.id)&&!c.animId);
@@ -6289,7 +6295,7 @@ function todoRegions(sc){
     const P=l.filter(x=>x.plan).length,B=l.reduce((a,x)=>a+x.bil.length,0),A=l.filter(x=>x.anim).length;
     if(!l.length)return "";
     return `<details class="tj-reg" data-k="${r.k}" ${ouvJ.has(r.k)?"open":""} ontoggle="todoBasculer(this)">
-      <summary><span class="tj-t"><b>${esc(r.nom)}</b><svg class="tj-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      <summary><span class="tj-t">${regPuce(r.nom)}<b>${esc(r.nom)}</b><svg class="tj-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span>
         <span class="tj-c">${P?`<span class="k-plan">${P} à planifier</span>`:""}${B?`<span class="k-bil">${B} bilan${B>1?"s":""}</span>`:""}${A?`<span class="k-anim">${A} sans animateur</span>`:""}</span></summary>
       <table class="tj-tab"><thead><tr><th>Groupe</th><th>Réunion</th><th>Bilans</th><th>Animateur</th></tr></thead><tbody>${l.map((x,i)=>{const c=x.c,a=anim(c.animId),der=DB.reunions.filter(m=>m.clubId===c.id&&isPast(m.date)&&m.statut!=="annulee").sort((p,q)=>q.date.localeCompare(p.date))[0];
         return `<tr style="--i:${i}"><td><button type="button" class="tj-n" onclick="openClub('${c.id}')"><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${der?"dernière le "+dObj(der.date).getDate()+" "+MOIS[dObj(der.date).getMonth()]:"jamais réunie"}</small></button></td>
@@ -6306,7 +6312,7 @@ function membresRegions(sc){
   const nb=c=>DB.membres.filter(m=>m.clubId===c.id).length,max=Math.max(1,...cl.map(nb));
   const chev=`<svg class="km-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>`;
   return `<div class="km">${regionsDe(cl).map(r=>{const n=r.clubs.reduce((a,c)=>a+nb(c),0),vides=r.clubs.filter(c=>!nb(c)).length,cs=[...r.clubs].sort((a,b)=>nb(b)-nb(a)||a.nom.localeCompare(b.nom));
-    return `<div class="km-reg${ouv.has(r.k)?" ouvert":""}" data-k="${r.k}"><button type="button" class="km-h" aria-expanded="${ouv.has(r.k)}" onclick="kBasculer(this)"><span><b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}${vides?" · "+vides+" sans membre":""}</small></span><span class="km-nb">${n}<em>membre${n>1?"s":""}</em></span>${chev}</button>
+    return `<div class="km-reg${ouv.has(r.k)?" ouvert":""}" data-k="${r.k}"><button type="button" class="km-h" aria-expanded="${ouv.has(r.k)}" onclick="kBasculer(this)"><span>${regPuce(r.nom)}<b>${esc(r.nom)}</b><small>${r.clubs.length} groupe${r.clubs.length>1?"s":""}${vides?" · "+vides+" sans membre":""}</small></span><span class="km-nb">${n}<em>membre${n>1?"s":""}</em></span>${chev}</button>
       <div class="km-tir"><div><div class="km-grps">${cs.map((c,gi)=>{const mb=DB.membres.filter(m=>m.clubId===c.id).sort((a,b)=>(a.num||0)-(b.num||0)),k=r.k+":"+c.id;
         return `<div class="km-grp${ouv.has(k)?" ouvert":""}" data-k="${k}" style="--i:${gi}"><button type="button" class="km-gh" aria-expanded="${ouv.has(k)}" onclick="kBasculer(this)"><span><b>${esc(c.nom.replace(/^CAP\s+/,""))}</b><small>${esc(c.ville)}${c.objectif?" · objectif "+c.objectif:""}</small></span><span class="km-j"><i style="--w:${mb.length/max*100}%"></i></span><span class="km-n">${mb.length}</span>${chev}</button>
           <div class="km-tir"><div>${mb.length?`<div class="km-mbs">${mb.map((m,i)=>`<button type="button" class="km-mb" style="--i:${i}" onclick="memberSheet('${c.id}','${m.id}')"><span class="km-av">${esc(initiales(m.nom))}</span><span><b>${esc(m.nom)}</b><small>${esc(mbMetier(m)||"métier à renseigner")}</small></span>${m.paiement?'<span class="km-ok" title="À jour">✓</span>':""}</button>`).join("")}<button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></div>`:`<p class="km-rien">Aucun membre pour l'instant. <button type="button" class="km-lien" onclick="openClub('${c.id}')">Ouvrir le groupe ›</button></p>`}</div></div></div>`}).join("")}</div></div></div></div>`}).join("")}</div>`;
@@ -8830,7 +8836,7 @@ function openRegions(){if(!canCreerStructure())return;const Z=regZones(),D=windo
   const hors=[...new Set(D.clubs.map(c=>c.ville))].filter(v=>!Z.some(z=>z.villes.includes(v)));
   document.getElementById("sheet-content").innerHTML=`
     <h3>Régions et villes</h3><div class="sheet-sub">Une région regroupe des villes ; un groupe se crée dans une ville. Tout ce qui est ajouté ici apparaît dans le menu des espaces, la constellation et les statistiques.</div>
-    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n"><b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""} · ${(regResp(z.id)||{}).profil?"responsable : "+esc(regResp(z.id).nom||""):"sans responsable"}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
+    <div class="reg-l">${Z.map(z=>{const n=z.villes.reduce((s,v)=>s+regGroupes(v).length,0);return `<button class="reg-c" onclick="regionForm('${z.id}')"><span class="reg-n">${regPuce(z.id)}<b>${esc(z.nom)}</b><small>${n} groupe${n>1?"s":""} · ${z.villes.length} ville${z.villes.length>1?"s":""} · ${(regResp(z.id)||{}).profil?"responsable : "+esc(regResp(z.id).nom||""):"sans responsable"}</small></span><span class="reg-v">${z.villes.map(v=>`<i style="--vc:${villeColor(v)}">${esc(v)}</i>`).join("")||`<i class="vide">Aucune ville</i>`}</span><span class="rl-chev">›</span></button>`}).join("")||`<p class="fh-empty">Aucune région pour l'instant.</p>`}</div>
     ${hors.length?`<div class="nat-err">Ville${hors.length>1?"s":""} sans région : ${hors.map(esc).join(", ")}. Ouvre une région pour l'y ajouter, ou crée la sienne.</div>`:""}
     <div class="sheet-actions"><button class="btn ghost" onclick="closeSheet()">Fermer</button><button class="btn ghost" onclick="clubForm(null)">＋ Nouveau groupe</button><button class="btn" onclick="regionForm('')">＋ Nouvelle région</button></div>`;
   openSheet()}
@@ -10081,7 +10087,7 @@ function etpHTML(){const D=etpDonnees(),plus=D.regs.filter(r=>r.k!=="sans").leng
     <div class="etp-ks">${ETP_COLS.map((c,i)=>`<button type="button" class="etp-k${tot[i]?"":" zero"}" ${tot[i]?`onclick="etpOuvrir('${f?"r:"+f:""}',${i})"`:"disabled"} title="${esc(c[2])}"><i>${c[0]}</i><b>${tot[i]}</b><span>${esc(c[1])}</span></button>`).join("")}</div>
     ${plus?`<div class="filters etp-f2"><button class="chip ${f?"":"on"}" onclick="window._etpReg='';render()">Tout le réseau<em>${D.t}</em></button>${D.regs.map(r=>`<button class="chip ${f===r.k?"on":""}" onclick="window._etpReg='${r.k}';render()">${esc(r.nom)}<em>${r.t}</em></button>`).join("")}</div>`:""}
     <div class="etp-tw"><table class="etp-tab"><thead><tr><th>Groupe</th>${ETP_COLS.map(c=>`<th title="${esc(c[2])}"><i>${c[0]}</i><span>${esc(c[1])}</span></th>`).join("")}<th>Total</th></tr></thead>
-    ${R.map(r=>{const gs=r.groupes.filter(g=>tous||g.t);return `<tbody>${plus||r.k==="sans"?`<tr class="etp-r"><th><button type="button" onclick="window._etpReg='${f===r.k?"":r.k}';render()">${esc(r.nom)}</button></th>${r.n.map((n,i)=>`<td>${cel("r:"+r.k,i,n)}</td>`).join("")}<td><b>${r.t}</b></td></tr>`:""}
+    ${R.map(r=>{const gs=r.groupes.filter(g=>tous||g.t);return `<tbody>${plus||r.k==="sans"?`<tr class="etp-r"><th><button type="button" onclick="window._etpReg='${f===r.k?"":r.k}';render()">${regPuce(r.nom)}${esc(r.nom)}</button></th>${r.n.map((n,i)=>`<td>${cel("r:"+r.k,i,n)}</td>`).join("")}<td><b>${r.t}</b></td></tr>`:""}
       ${gs.map(g=>`<tr><th><button type="button" ${g.t?`onclick="etpOuvrir('${g.k}',-1)"`:"disabled"}>${esc(g.nom)}<small>${esc(g.sous||"")}</small></button></th>${g.n.map((n,i)=>`<td>${cel(g.k,i,n)}</td>`).join("")}<td>${g.t||`<span class="etp-0">·</span>`}</td></tr>`).join("")}
       ${!gs.length?`<tr><td colspan="8" class="etp-rien">Aucune demande en cours dans cette région.</td></tr>`:""}</tbody>`}).join("")}
     ${R.length>1||!plus?`<tfoot><tr><th>Total</th>${tot.map((n,i)=>`<td>${cel(f?"r:"+f:"",i,n)}</td>`).join("")}<td><b>${tot.reduce((a,b)=>a+b,0)}</b></td></tr></tfoot>`:""}</table></div>

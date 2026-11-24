@@ -781,7 +781,7 @@ function reseauSous(){const l=S.reseauReu;if(l===undefined){chargerReseauReu().t
   const a=l.filter(r=>!r.mon_groupe).length,m=l.filter(r=>r.ma_reponse==="oui"&&!r.mon_groupe).length;
   return a?`${a} réunion${a>1?"s":""} dans d'autres groupes${m?` · tu es inscrit à ${m}`:""}`:"Aucune autre réunion planifiée pour l'instant"}
 function carteReseau(r){const h=r.heure?String(r.heure).slice(0,5):"",rp=r.ma_reponse,nom=String(r.club||"").replace(/^CAP\s+/,""),voir=r.mon_groupe||rp==="oui";
-  return `<div class="card rr${r.mon_groupe?" mien":""}"><div class="rr-h"><em class="ann-tag" style="--g:${coulGroupe(r.club)}">${esc(nom)}</em>${r.mon_groupe?`<small class="rr-mg">Mon groupe</small>`:""}<small class="rr-ty">${esc(typeReu(r))}</small></div>
+  return `<div class="card rr${r.mon_groupe?" mien":""}"><div class="rr-h"><em class="ann-tag" style="--g:${coulGroupe(r.club,r.ville)}">${esc(nom)}</em>${r.mon_groupe?`<small class="rr-mg">Mon groupe</small>`:""}<small class="rr-ty">${esc(typeReu(r))}</small></div>
     <b class="bri rr-d">${esc(dateReu(r.date,h))}</b>${r.theme?`<span class="rr-th">${esc(r.theme)}</span>`:""}
     <span class="rr-l">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}${r.viennent?` · ${r.viennent} membre${r.viennent>1?"s":""} inscrit${r.viennent>1?"s":""}`:""}</span>
     <div class="rr-rep" role="group" aria-label="Ma réponse"><button type="button" class="${rp==="oui"?"on":""}" data-rrep="${r.id}:oui" aria-pressed="${rp==="oui"}">${rp==="oui"?"✓ ":""}Je viens</button><button type="button" class="${rp==="non"?"on non":""}" data-rrep="${r.id}:non" aria-pressed="${rp==="non"}">Je ne viens pas</button></div>
@@ -792,7 +792,7 @@ async function calendrierMembre(btn){const T=S.reseauReu||[],RV={};(S.annuaire||
   const L=P==="moi"?T.filter(r=>r.mon_groupe):P==="reg"?T.filter(r=>r.mon_groupe||(maReg&&reg(r)===maReg)):T,lib=P==="moi"?(S.moi&&S.moi.club)||"Mon groupe":P==="reg"?(maReg||"Ma région"):"Tout le réseau";
   const d=new Date(),k=i=>{const x=new Date(d.getFullYear(),d.getMonth()+i,1);return{k:x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")}},mois=[k(0),k(1)];
   const t0=btn.textContent;btn.disabled=true;btn.textContent="Préparation…";let b=null;
-  try{b=await calendrierPdf({mois,portee:lib,couleur:calPdfCouleur,evenements:S.reseauEv||[],reunions:L.map(r=>({date:r.date,heure:r.heure?String(r.heure).slice(0,5):"",statut:"planifiee",groupe:String(r.club||"").replace(/^CAP\s+/,""),ville:r.ville||"",type:r.format?({business:"Business",conference:"Thématique",visite:"Visite"})[r.format]:r.type==="RL"?"Lancement":"Session d'info"}))})}catch(e){}
+  try{b=await calendrierPdf({mois,portee:lib,couleur:coulVilleRegion,evenements:S.reseauEv||[],reunions:L.map(r=>({date:r.date,heure:r.heure?String(r.heure).slice(0,5):"",statut:"planifiee",groupe:String(r.club||"").replace(/^CAP\s+/,""),ville:r.ville||"",type:r.format?({business:"Business",conference:"Thématique",visite:"Visite"})[r.format]:r.type==="RL"?"Lancement":"Session d'info"}))})}catch(e){}
   btn.disabled=false;btn.textContent=t0;if(!b){toast("Le PDF n'a pas pu être fabriqué","ko");return}
   const nom="Calendrier des réunions - "+lib.replace(/[·\/]/g,"-")+" - "+mois[0].k+".pdf";let f=null;try{f=new File([b],nom,{type:"application/pdf"})}catch(e){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})&&matchMedia("(pointer:coarse)").matches){try{await navigator.share({files:[f],title:nom});return}catch(e){if(e&&e.name==="AbortError")return}}
@@ -833,7 +833,7 @@ function vueReunion(){
   const qual=n=>{const x=QL[cle(n)];return x?{c:x.q==="groupe"?" q-groupe":" q-reseau",t:`<button type="button" class="rr-v ${x.q==="groupe"?"qg":"qr"}" data-gp="${esc(x.club_id||"")}">${x.q==="groupe"?"Membre du groupe":esc(capNom(x.groupe))} ›</button>`}:{c:"",t:""}};
   const ligne=(t,s,fin,id,cl)=>`<${id&&membre(id)?`button type="button" data-fiche="${id}"`:"span"} class="rr-p${cl||""}"><span class="rr-pt"><b>${esc(t)}</b><small>${esc(s)}</small></span>${fin||""}</${id&&membre(id)?"button":"span"}>`;
   return `<div class="page">${ariane()}
-    <div class="card rr mien"><div class="rr-h"><em class="ann-tag" style="--g:${coulGroupe(r.club)}">${esc(nom)}</em><small class="rr-ty">${esc(typeReu(r))}</small></div>
+    <div class="card rr mien"><div class="rr-h"><em class="ann-tag" style="--g:${coulGroupe(r.club,r.ville)}">${esc(nom)}</em><small class="rr-ty">${esc(typeReu(r))}</small></div>
       <b class="bri rr-d">${esc(dateReu(r.date,h))}</b>${r.theme?`<span class="rr-th">${esc(r.theme)}</span>`:""}
       <span class="rr-l">${esc([r.lieu||"Lieu à confirmer",r.ville].filter(Boolean).join(" · "))}</span>
       ${carte?`<a class="rr-voir" href="${esc(carte)}" target="_blank" rel="noopener">Itinéraire ›</a>`:""}
@@ -1060,8 +1060,14 @@ function carteMembre(m,i){
 function annAilleurs(){const mots=norm(S.q).split(/[^a-z0-9]+/i).map(norm).filter(Boolean);if(!mots.length||S.portee!=="region"||!S.maRegion||S.filtre!=="tous")return[];
   return S.annuaire.filter(m=>!m.moi&&m.region!==S.maRegion&&annMatch(m,mots))}
 /* v1.59 — le réseau rangé par groupe (volets) ou de A à Z ; chaque membre porte l'étiquette de couleur de son groupe. */
-const GRP_COUL=["#D81B3F","#2E7DB8","#2E9E68","#B8862E","#7A52B8","#B84E8C","#2E9A9E","#C4622D","#5B7FA3","#6E8B2E"];
-function coulGroupe(nom){let h=0;const t=String(nom||"");for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return GRP_COUL[h%GRP_COUL.length]}
+/*v1.154 : la couleur d'un groupe est celle de sa REGION, comme dans le CRM (memes couleurs fixes, palette pour une nouvelle region)*/
+const REG_FIXES=[["rabat","#D81B3F"],["sale","#D81B3F"],["kenitra","#D81B3F"],["casa","#3A5DA8"],["dar bouazza","#3A5DA8"],["bouskoura","#3A5DA8"],["marrakech","#C2501C"],["tanger","#1FA0A0"],["fes","#6B3FA0"],["agadir","#B8862A"],["meknes","#5A7A2E"],["oujda","#A8456B"]];
+const REG_PALETTE=["#2B8A6E","#6B3FA0","#B8862A","#A8456B","#5A7A2E","#2F6F9F","#8A5A2B","#4B4FA8","#1E9E8A","#9A3F7A"];
+function regNorm(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
+function coulRegion(reg){const n=regNorm(reg);if(!n||n==="autres")return "#8C8085";const f=REG_FIXES.find(x=>n.includes(x[0]));if(f)return f[1];let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return REG_PALETTE[h%REG_PALETTE.length]}
+function regionDe(club,ville){const A=(typeof S!=="undefined"&&S.annuaire)||[];let m=club&&A.find(x=>x.club===club&&x.region);if(m)return m.region;m=ville&&A.find(x=>x.region&&regNorm(x.ville)===regNorm(ville));if(m)return m.region;return ville||String(club||"").replace(/^CAP\s+/,"")}
+function coulGroupe(nom,ville){return coulRegion(regionDe(nom,ville))}
+function coulVilleRegion(v){return coulRegion(regionDe("",v))}
 function annTri(){let v=null;try{v=localStorage.getItem("cap-anntri")}catch(e){}return v==="az"?"az":"groupe"}
 function annGroupes(l,i0){const g=new Map();l.forEach(m=>{const k=m.club||"Sans groupe";(g.get(k)||g.set(k,[]).get(k)).push(m)});
   const reg=k=>(g.get(k)[0].region||""),ord=[...g.keys()].sort((a,b)=>(b===S.moi.club)-(a===S.moi.club)||(reg(b)===S.maRegion)-(reg(a)===S.maRegion)||reg(a).localeCompare(reg(b))||a.localeCompare(b));

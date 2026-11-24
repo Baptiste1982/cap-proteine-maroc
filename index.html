@@ -2928,8 +2928,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.151.0";
+const APP_VERSION="1.152.0";
 const CHANGELOG=[
+  {v:"1.152.0",date:"24 novembre 2026",notes:{"Modifié":["La couleur de région s’applique aussi en vue régionale : tous les groupes d’une région portent la même couleur, pour tous les comptes."]}},
   {v:"1.151.0",date:"24 novembre 2026",notes:{"Modifié":["Mon groupe : un responsable de région voit d’office tous les groupes de sa région, les siens en premier (repère « moi »). Trois choix : Mes groupes, Ma région, Tout le réseau.","Le sélecteur d’espace du haut liste aussi les autres groupes de ma région."]}},
   {v:"1.150.0",date:"24 novembre 2026",notes:{"Modifié":["En vue nationale, la bande de couleur d’un groupe est partout celle de sa région (groupes, membres, agenda, calendrier, demandes, fiches, calendrier en PDF). En vue régionale, elle reste celle de la ville, pour distinguer les villes entre elles.","Une pastille de la couleur de la région devant son nom : à traiter, membres par région, annuaire du réseau, suivi par étape, régions et villes, invitation à un événement."]}},
   {v:"1.149.0",date:"24 novembre 2026",notes:{"Ajouté":["Membres, vue par groupe : les groupes sont rangés par région, chaque région a sa couleur (bande à gauche de chaque groupe et intertitre avec le nombre de groupes et de membres). Une nouvelle région reçoit sa couleur toute seule."]}},
@@ -4552,7 +4553,7 @@ function vuePortee(){if(!DB)return null;const ag=tab==="agenda"&&SESSION&&SESSIO
 function avecVue(fn){const p=vuePortee();if(!p)return fn();const sv=DB,av=window._DBvrai;DB=p;if(!av)window._DBvrai=sv;try{return fn()}finally{DB=sv;window._DBvrai=av}}
 /* ---------- Accueil régional : cockpit + planning ---------- */
 const VILLE_TEINTE={Rabat:"#D81B3F","Salé":"#C8A24C",Kenitra:"#2E7D4F"};
-function vrTeinte(v){return VILLE_TEINTE[v]||villeColor(v)}
+function vrTeinte(v){return VILLE_TEINTE[v]||villeColorBase(v)}
 function vrMois(){const l=[];for(let i=-6;i<=3;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()+i,1);l.push({k:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),lab:MOIS[d.getMonth()],an:d.getFullYear(),auj:i===0,futur:i>0})}return l}
 function vrVille(v){if(typeof monPeut==="function"&&monPeut()){_mon.niv="ville";_mon.cle=v;go("monitoring")}else go("clubs")}
 /* v1.133 : planning de la région = calendrier à gauche, réunions du jour (ou du mois) à droite */
@@ -4790,8 +4791,8 @@ function regionCouleurs(){const V=window._DBvrai||DB,Z=V.zones||[],sig=Z.map(z=>
 function regionDeVille(ville){const V=window._DBvrai||DB,Z=V.zones||[],i=Z.findIndex(z=>(z.villes||[]).some(v=>mbNorm(v)===mbNorm(ville)));
   return i<0?{nom:"Autres villes",ordre:999,coul:"#8C8085"}:{nom:Z[i].nom,ordre:i,coul:regionCouleurs()[Z[i].id]}}
 function regionCouleur(ville){return regionDeVille(ville).coul}
-/*v1.150 : en vue nationale, la couleur d’un groupe est celle de sa RÉGION ; en vue régionale, celle de sa ville (pour distinguer les villes entre elles)*/
-function villeColor(v){try{if(v&&typeof vueMode==="function"&&vueMode()==="nat"){const r=regionDeVille(v);if(r.ordre<999||((window._DBvrai||DB).zones||[]).length)return r.coul}}catch(e){}return villeColorBase(v)}
+/*v1.152 : la couleur d un groupe est celle de sa REGION, en vue nationale comme en vue regionale ; seul le planning de la region (vrTeinte) reste par ville*/
+function villeColor(v){try{if(v){const r=regionDeVille(v);if(r.ordre<999||((window._DBvrai||DB).zones||[]).length)return r.coul}}catch(e){}return villeColorBase(v)}
 function regPuce(nomOuId){const V=window._DBvrai||DB,z=(V.zones||[]).find(z=>z.id===nomOuId||z.nom===nomOuId);return `<i class="rg-p" style="--rc:${z?regionCouleurs()[z.id]:"#8C8085"}"></i>`}
 function mbGroupes(l,cle,titre,pref,reg){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});const E=mbgEtat(),q=!!window._q4,R={};let ks=Object.keys(g);if(reg)ks.forEach(k=>R[k]=reg(k));
   ks.sort((a,b)=>(reg?R[a].ordre-R[b].ordre:0)||g[b].length-g[a].length||a.localeCompare(b,"fr"));let der=null;

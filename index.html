@@ -2801,6 +2801,14 @@ details.mbg{border:1px solid var(--line);border-radius:14px;margin-top:8px;overf
 #cn-q{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);font:15px Inter,sans-serif}
 /*v1.148 rapprochement du carnet*/
 .ca-ls{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}.ca-lk{font:600 11.5px Inter,sans-serif;border:1px solid var(--line);border-radius:99px;padding:2px 9px;background:transparent;color:var(--muted)}button.ca-lk{cursor:pointer}.ca-lk.q-mb{color:#3F7FD1;border-color:#3F7FD1}.ca-lk.q-cand{border-style:dashed}
+/*v1.149 régions en couleur*/
+.mbg-reg{display:flex;align-items:center;gap:10px;margin:18px 0 8px;padding:0 2px}.mbg-tout+.mbg-reg{margin-top:6px}
+.mbg-reg i{width:26px;height:10px;border-radius:99px;background:var(--rc);flex:none}
+.mbg-reg b{font:700 13px/1.2 "Bricolage Grotesque",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.mbg-reg em{font-style:normal;font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+details.mbg.rc{border-left:6px solid var(--rc)}
+details.mbg.rc>summary em{background:color-mix(in srgb,var(--rc) 16%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--rc) 45%,transparent)}
+@media(max-width:600px){.mbg-reg em{font-size:11px}}
 </style>
 </head>
 <body>
@@ -2911,8 +2919,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.148.0";
+const APP_VERSION="1.149.0";
 const CHANGELOG=[
+  {v:"1.149.0",date:"24 novembre 2026",notes:{"Ajouté":["Membres, vue par groupe : les groupes sont rangés par région, chaque région a sa couleur (bande à gauche de chaque groupe et intertitre avec le nombre de groupes et de membres). Une nouvelle région reçoit sa couleur toute seule."]}},
   {v:"1.148.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : chaque contact est rapproché de ce que le CRM connaît déjà (membre et son groupe, lead, invité à une réunion) par le mobile, l'e-mail ou le nom. Filtres « Déjà connus » et « Nouveaux pour le CRM ».","« En faire un lead » : un contact nouveau passe dans les leads en un toucher, sans doublon."]}},
   {v:"1.147.0",date:"24 novembre 2026",notes:{"Ajouté":["Carnet du national : les contacts que tu as saisis dans l'Annuaire du CRM national arrivent ici tout seuls, avec ton compte branché — à la connexion, au branchement du compte et chaque matin. Recherche, filtre par profil, appel, WhatsApp, e-mail, et invitation à l'événement du réseau en un toucher.","Le super admin voit le carnet de chaque compte branché."]}},
   {v:"1.146.0",date:"24 novembre 2026",notes:{"Ajouté":["Événement du réseau : « Inviter le réseau ». Un lien d'inscription par groupe (et un QR pour tous), le message à relayer par chaque animateur dans le WhatsApp de son groupe, le suivi des groupes prévenus et des inscrits.","Page d'inscription à l'événement, sans compte : la personne donne son nom et son groupe. L'heure et l'adresse peuvent être complétées plus tard, la page et le message se mettent à jour.","Ville de l'événement."]}},
@@ -4758,15 +4767,27 @@ function mbLigne(m,i){const c=club(m.clubId),tel=(m.infos||{}).m_tel||"";
 function mbgEtat(){return window._mbgOuv=window._mbgOuv||{}}
 function mbgNote(d){mbgEtat()[d.dataset.k]=d.open}
 function mbgTout(oui){document.querySelectorAll("#mb-res details.mbg").forEach(d=>{d.open=oui;mbgEtat()[d.dataset.k]=oui})}
-function mbGroupes(l,cle,titre,pref){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});const E=mbgEtat(),q=!!window._q4,ks=Object.keys(g).sort((a,b)=>g[b].length-g[a].length||a.localeCompare(b,"fr"));
-  return `<div class="mbg-tout"><button type="button" class="btn ghost mini" onclick="mbgTout(true)">Tout déplier</button><button type="button" class="btn ghost mini" onclick="mbgTout(false)">Tout replier</button></div>`+ks.map((k,n)=>{const id=pref+":"+k,o=q||(id in E?E[id]:ks.length===1);
-    return `<details class="mbg" data-k="${esc(id)}"${o?" open":""} ontoggle="mbgNote(this)"><summary class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></summary><div class="mbl-w"><table class="mbl mbl-g ${pref}"><tbody>${g[k].slice().sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(mbLigne).join("")}</tbody></table></div></details>`}).join("")}
+/*v1.149 couleur de région : fixe pour les régions connues, tirée du nom pour une nouvelle (sans reprendre une couleur déjà donnée)*/
+const REGION_FIXES=[["rabat","#D81B3F"],["casa","#3A5DA8"],["marrakech","#C2501C"],["tanger","#1FA0A0"],["fes","#6B3FA0"],["agadir","#B8862A"],["meknes","#5A7A2E"],["oujda","#A8456B"]];
+const REGION_PALETTE=["#2B8A6E","#6B3FA0","#B8862A","#A8456B","#5A7A2E","#2F6F9F","#8A5A2B","#4B4FA8","#1E9E8A","#9A3F7A"];
+function regionCouleurs(){const V=window._DBvrai||DB,Z=V.zones||[],sig=Z.map(z=>z.id+":"+z.nom).join("|");if(window._rcSig===sig&&window._rcMap)return window._rcMap;
+  const M={},pris={};Z.forEach(z=>{const n=mbNorm(z.nom+" "+(z.villes||[]).join(" ")),f=REGION_FIXES.find(x=>n.includes(x[0]));if(f&&!pris[f[1]]){M[z.id]=f[1];pris[f[1]]=1}});
+  Z.forEach(z=>{if(M[z.id])return;let h=0;for(const ch of mbNorm(z.nom))h=(h*31+ch.charCodeAt(0))>>>0;let c=null;for(let i=0;i<REGION_PALETTE.length;i++){const x=REGION_PALETTE[(h+i)%REGION_PALETTE.length];if(!pris[x]){c=x;break}}c=c||REGION_PALETTE[h%REGION_PALETTE.length];M[z.id]=c;pris[c]=1});
+  window._rcSig=sig;window._rcMap=M;return M}
+function regionDeVille(ville){const V=window._DBvrai||DB,Z=V.zones||[],i=Z.findIndex(z=>(z.villes||[]).some(v=>mbNorm(v)===mbNorm(ville)));
+  return i<0?{nom:"Autres villes",ordre:999,coul:"#8C8085"}:{nom:Z[i].nom,ordre:i,coul:regionCouleurs()[Z[i].id]}}
+function regionCouleur(ville){return regionDeVille(ville).coul}
+function mbGroupes(l,cle,titre,pref,reg){const g={};l.forEach(m=>{const k=cle(m)||"—";(g[k]=g[k]||[]).push(m)});const E=mbgEtat(),q=!!window._q4,R={};let ks=Object.keys(g);if(reg)ks.forEach(k=>R[k]=reg(k));
+  ks.sort((a,b)=>(reg?R[a].ordre-R[b].ordre:0)||g[b].length-g[a].length||a.localeCompare(b,"fr"));let der=null;
+  return `<div class="mbg-tout"><button type="button" class="btn ghost mini" onclick="mbgTout(true)">Tout déplier</button><button type="button" class="btn ghost mini" onclick="mbgTout(false)">Tout replier</button></div>`+ks.map((k,n)=>{const id=pref+":"+k,o=q||(id in E?E[id]:ks.length===1),r=R[k];let tete="";
+    if(r&&r.nom!==der){der=r.nom;const meme=ks.filter(x=>R[x].nom===r.nom),nb=meme.reduce((t,x)=>t+g[x].length,0);tete=`<div class="mbg-reg" style="--rc:${r.coul}"><i></i><b>${esc(r.nom)}</b><em>${meme.length} groupe${meme.length>1?"s":""} · ${nb} membre${nb>1?"s":""}</em></div>`}
+    return tete+`<details class="mbg${r?" rc":""}" data-k="${esc(id)}"${r?` style="--rc:${r.coul}"`:""}${o?" open":""} ontoggle="mbgNote(this)"><summary class="mbg-h"><b>${esc(titre(k,g[k]))}</b><em>${g[k].length}</em></summary><div class="mbl-w"><table class="mbl mbl-g ${pref}"><tbody>${g[k].slice().sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(mbLigne).join("")}</tbody></table></div></details>`}).join("")}
 function mbResultats(){
   const l=mbListe(),mode=mbMode();
   if(!l.length)return emptyState("Aucun membre",window._q4?"Aucun membre ne correspond à « "+esc(window._q4)+" ».":"Ajuste les filtres.");
   const n=`<div class="mb-n">${l.length} membre${l.length>1?"s":""}</div>`;
   if(mode==="liste")return n+`<div class="mbl-w"><table class="mbl"><thead><tr><th>Membre</th><th>Entreprise</th><th>Métier</th><th>Groupe</th><th>Téléphone</th><th>Espace membre</th></tr></thead><tbody>${l.map(mbLigne).join("")}</tbody></table></div>`;
-  if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")},"g");
+  if(mode==="groupes")return n+mbGroupes(l,m=>m.clubId,k=>{const c=club(k);return (c.nom||"Sans groupe").replace(/^CAP\s+/,"")+(c.ville?" · "+c.ville:"")},"g",k=>regionDeVille(club(k).ville));
   if(mode==="metiers")return n+mbGroupes(l,m=>(mbMetier(m)||"Métier non renseigné").split(" · ")[0],k=>k,"m");
   return n+`<div class="mb-grid">${l.map(mbCarte).join("")}</div>`;
 }

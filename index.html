@@ -2934,8 +2934,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.155.0";
+const APP_VERSION="1.156.0";
 const CHANGELOG=[
+  {v:"1.156.0",date:"25 novembre 2026",notes:{"Ajouté":["Paramètres → Administration : « Vérifier les signatures au national », pour relire tout de suite les contrats signés et les règlements."],"Modifié":["Les signatures sont lues au national chaque heure de 7 h à minuit (avant : jusqu’à 21 h)."]}},
   {v:"1.155.0",date:"24 novembre 2026",notes:{"Modifié":["Constellation : chaque région a sa couleur (lien vers le centre, rond et nom de la région, villes, orbites). Les groupes gardent leur couleur d’état."]}},
   {v:"1.154.0",date:"24 novembre 2026",notes:{"Modifié":["Espace membre : les étiquettes et les volets de groupes, les réunions du réseau et le calendrier en PDF prennent la couleur de la région, la même que dans le CRM."]}},
   {v:"1.153.0",date:"24 novembre 2026",notes:{"Modifié":["Planning de la région : les points du calendrier prennent eux aussi la couleur de la région."]}},
@@ -9955,7 +9956,7 @@ async function openParametres(){
       <div class="repli-g" role="radiogroup" aria-label="Affichage de la Synthèse">${[["classique","Classique"],["vivante","✨ Vivante"]].map(([k,l])=>`<button type="button" role="radio" aria-checked="${synthMode()===k}" class="${synthMode()===k?"on":""}" onclick="choisirSynth('${k}')">${l}</button>`).join("")}</div></div></div></details>
     ${presenceVoit()&&!sa?`<div class="set-sec">Équipe</div><div class="set-l">${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}</div>`:""}
     ${SESSION._voir?`<div class="set-sec">Aperçu</div><div class="set-l">${r("👁","Quitter l'aperçu","Tu vois le CRM comme "+esc(SESSION._voir.nom),"voirQuitter()")}</div>`:""}
-    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("📇","Carnet du national","Les contacts de l'Annuaire du CRM national, rapatriés avec chaque compte branché","openCarnetNat()")}${r("🔄","Actualiser les membres du national","Relire l'annuaire du CRM national et mettre à jour tous les groupes, sans attendre lundi","openVerifNat()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
+    ${sa?`<div class="set-sec">Personnel</div><div class="set-l">${r("💰","Mon rendement","Tes commissions sur les adhésions : privé, visible de toi seul","openRendement()")}</div><div class="set-sec">Administration</div><div class="set-l">${r("🧾","Journal","Qui a fait quoi et quand : par personne, par région, par type, avec le détail","openJournal()")}${r("👁","Voir comme…","Un animateur, un directeur, un membre : exactement ce qu'il voit, en lecture seule","openVoirComme()")}${r("🟢","Qui est connecté","Comptes en ligne et dernières connexions","openQuiConnecte()")}${r("📇","Carnet du national","Les contacts de l'Annuaire du CRM national, rapatriés avec chaque compte branché","openCarnetNat()")}${r("✍️","Vérifier les signatures au national","Relire tout de suite les contrats signés et les règlements, sans attendre le passage de l'heure","natVerifier()")}${r("🔄","Actualiser les membres du national","Relire l'annuaire du CRM national et mettre à jour tous les groupes, sans attendre lundi","openVerifNat()")}${r("🔐","Coffre des comptes du national","Identifiants du CRM national saisis par l'équipe, à redonner en cas d'oubli","openCoffreNat()")}${r("👥","Comptes et accès","Créer, modifier, réinitialiser","openAccounts()")}</div>`:""}
     <div class="set-sec">Documents</div>
     <div class="set-l">${r("📚","Documents du réseau","Kits, formulaires, présentations : à consulter et partager","closeSheet();docsOuvrir()")}</div>
     <div class="set-sec">Aide</div>
@@ -10068,7 +10069,7 @@ async function natMiroir(contratId){
   const v=z.querySelector(".nm-l.vise");if(v)v.scrollIntoView({block:"center"});
 }
 async function natVerifier(btn){
-  if(btn){btn.disabled=true;btn.textContent="⏳ Vérification au national…"}
+  if(btn){btn.disabled=true;btn.textContent="⏳ Vérification au national…"}else toast("Vérification au national en cours…","s");
   const {data:r,error}=await sb.functions.invoke("national-suivi",{body:{action:"verifier"}});
   let err=error?((await error.context?.json?.().catch(()=>null))?.error||error.message):r?.error;
   /* v1.136 : un contrat sorti de l'attente est cherché dans l'annuaire national des membres. */
@@ -10264,7 +10265,7 @@ function ouvrirLienVerifNat(){const q=new URLSearchParams(location.search);if(!q
 function openSignes(){
   const L=signesListe(),lib={contrat:"contrat signé",facture:"facture émise",paiement:"paiement reçu"};
   document.getElementById("sheet-content").innerHTML=`<h3>Contrats signés au national</h3>
-    <div class="sheet-sub">Ce que le CRM national affiche pour chaque contrat signé. Vérifié chaque heure, de 7 h à 21 h.</div>
+    <div class="sheet-sub">Ce que le CRM national affiche pour chaque contrat signé. Vérifié chaque heure, de 7 h à minuit.</div>
     ${L.length?`<div class="sg-l">${L.map(a=>{const n=a.national||{},g=natRegl(n),e=signeEcart(a),mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id),ed=mb&&canEditClubId(mb.clubId);
       return `<div class="sg-c ${e||!mb?"afaire":""}"><div class="sg-h"><b>${esc(adhNom(a))}</b><span>${esc(a.data.ent_nom||"")}</span></div>
         <div class="sg-k"><div><small>Groupe</small>${esc((adhGroupe(a)||"Sans groupe").replace(/^CAP\s+/,""))}${n.club_national?`<em>au national : ${esc(n.club_national)}</em>`:""}</div>

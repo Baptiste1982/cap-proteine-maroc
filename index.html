@@ -2934,8 +2934,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.156.0";
+const APP_VERSION="1.157.0";
 const CHANGELOG=[
+  {v:"1.157.0",date:"25 novembre 2026",notes:{"Ajouté":["Fiche réunion : bouton « Envoyer au groupe » — un message prêt pour le groupe WhatsApp de tes membres (date, lieu, lien d’inscription, kit de l’invité), modifiable et gardable comme modèle"]}},
   {v:"1.156.0",date:"25 novembre 2026",notes:{"Ajouté":["Paramètres → Administration : « Vérifier les signatures au national », pour relire tout de suite les contrats signés et les règlements."],"Modifié":["Les signatures sont lues au national chaque heure de 7 h à minuit (avant : jusqu’à 21 h)."]}},
   {v:"1.155.0",date:"24 novembre 2026",notes:{"Modifié":["Constellation : chaque région a sa couleur (lien vers le centre, rond et nom de la région, villes, orbites). Les groupes gardent leur couleur d’état."]}},
   {v:"1.154.0",date:"24 novembre 2026",notes:{"Modifié":["Espace membre : les étiquettes et les volets de groupes, les réunions du réseau et le calendrier en PDF prennent la couleur de la région, la même que dans le CRM."]}},
@@ -7350,7 +7351,7 @@ function natInvBloc(m){
     <div class="ni-row"><div class="ni-qr" data-niqr="${esc(natInvSuivi(m,"qr"))}" role="img" aria-label="QR code d'inscription"></div><div class="ni-l">
       <div class="nat-v">Lien d'inscription à envoyer :</div>
       <a class="ni-lien" href="${esc(natInvSuivi(m))}" target="_blank" rel="noopener">${esc(natInvSuivi(m).replace(/^https?:\/\//,""))}</a>
-      <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener" title="Ouvre le formulaire du national sans compter de clic">Ouvrir</a></div></div></div>
+      <div class="ni-act"><button class="btn mini" onclick="natInvWa('${m.id}')">Envoyer par WhatsApp</button><button class="btn mini" id="ni-grp" onclick="natInvWa('${m.id}','g')">Envoyer au groupe</button><button class="btn ghost mini" onclick="natInvCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(n.lien)}" target="_blank" rel="noopener" title="Ouvre le formulaire du national sans compter de clic">Ouvrir</a></div></div></div>
     ${per?`<div class="nat-err">Depuis l'envoi au national, ${per} ${per.includes(" et ")?"ont":"a"} changé ici.${su&&avenir?"":" Le directeur doit mettre l'invitation à jour."}</div>${su&&avenir?`<button class="btn" onclick="natInvCreer('${m.id}',this)">🔄 Mettre à jour au national</button>`:""}`:""}
     ${avenir?`<div class="ni-kit"><span><b>Kit de l'invité</b> · la page à envoyer avec l'invitation : le groupe, le lieu, le déroulé, puis « Je m'inscris »</span><span class="ni-act"><button class="btn ghost mini" onclick="natKitWa('${m.id}')">WhatsApp</button><button class="btn ghost mini" onclick="natKitCopier('${m.id}')">Copier le lien</button><a class="btn ghost mini" href="${esc(natKitLien(m,"vu"))}" target="_blank" rel="noopener">Voir</a></span></div>`:""}
     <div class="ni-clics" id="nic-${m.id}"></div>
@@ -7401,7 +7402,29 @@ async function natInvCreer(id,btn){const m=DB.reunions.find(x=>x.id===id);if(!m)
 /* Le QR du national exige une session chez eux : on le dessine ici à partir du lien d'inscription. */
 async function natInvQr(){const z=[...document.querySelectorAll("[data-niqr]:empty")];if(!z.length)return;
   try{const qrcode=await qrLib();z.forEach(el=>{const q=qrcode(0,"M");q.addData(el.dataset.niqr);q.make();el.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true})})}catch(e){z.forEach(el=>el.remove())}}
-function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const perso=(()=>{try{return !!localStorage.getItem(invModeleCle(m.format?"autre":m.type))}catch(e){return false}})();
+/* v1.157 : message pour le groupe WhatsApp des membres (WhatsApp ne permet pas de viser un groupe par un lien : on ouvre WhatsApp, on y choisit le groupe). */
+const INV_GROUPE=`Bonjour à tous,
+
+Notre prochaine réunion du groupe {groupe} : {jour} à {heure}
+{lieu}{adresse}
+
+Pensez à inviter un chef d'entreprise ou un indépendant de votre entourage. Il lui suffit de s'inscrire ici, cela prend une minute :
+{lien}
+
+Tout ce qu'il faut savoir avant de venir (le lieu, le déroulé) :
+{kit}
+
+Merci de me dire qui vous invitez. À très vite,
+{prenom}`;
+function invCleG(m){return window._invGrp?"cap-invtpl-groupe":invModeleCle(m.format?"autre":m.type)}
+function natInvWa(id,grp){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;if(!window._invGarde)window._invGrp=grp==="g";window._invGarde=false;const G=!!window._invGrp;const perso=(()=>{try{return !!localStorage.getItem(invCleG(m))}catch(e){return false}})();
+  if(G){const tplG=(()=>{try{return localStorage.getItem("cap-invtpl-groupe")}catch(e){return null}})()||(DB.reglages&&DB.reglages["invtpl-groupe"])||INV_GROUPE;
+    document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✉",title:"Message pour le groupe",sub:`Aux membres de ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}`})}
+    <p class="fh-note">Ce message part dans le groupe WhatsApp de tes membres : WhatsApp s'ouvre, tu y choisis le groupe, le texte est déjà écrit.</p>
+    <div class="field"><textarea id="inv-txt" rows="15" style="width:100%;font:inherit;line-height:1.45">${esc(invRemplir(tplG,m))}</textarea></div>
+    <div class="emb-2"><button class="btn" id="inv-grp-go" onclick="invEnvoyer()">Choisir le groupe dans WhatsApp</button><button class="btn ghost" onclick="invCopier()">Copier le message</button></div>
+    <div class="emb-2" style="margin-top:8px"><button class="btn ghost mini" onclick="invGarder('${id}')">Garder comme modèle pour mes groupes</button>${perso?`<button class="btn ghost mini" onclick="invOrigine('${id}')">Revenir au texte d'origine</button>`:""}</div>
+    <div class="sheet-actions"><button class="btn ghost" onclick="openMeeting('${id}')">Retour à la réunion</button></div>`;openSheet();return}
   document.getElementById("sheet-content").innerHTML=`${ficheHead({ini:"✉",title:"Message d'invitation",sub:`${esc((m.format?"réunion des membres":NAT_TYPE_REU[m.type])||"Réunion")} · ${esc((club(m.clubId).nom||"").replace(/^CAP\s+/,""))}`})}
     <p class="fh-note">Relis et ajuste le texte avant de l'envoyer. Le lien d'inscription du national est déjà dedans.</p>
     <div class="field"><textarea id="inv-txt" rows="16" style="width:100%;font:inherit;line-height:1.45">${esc(natInvMessage(m))}</textarea></div>
@@ -7411,14 +7434,14 @@ function natInvWa(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)retur
 function invTexte(){const t=document.getElementById("inv-txt");return t?t.value:""}
 function invEnvoyer(){window.open("https://wa.me/?text="+encodeURIComponent(invTexte()),"_blank","noopener")}
 async function invCopier(){const t=invTexte();try{await navigator.clipboard.writeText(t);toast("Message copié")}catch(e){prompt("Message :",t)}}
-function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{type}|{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{tel}|{prenom}",m).split("|"),k=["type","jour","heure","lieu","adresse","groupe","lien","tel","prenom"];
+function invGarder(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;let t=invTexte();const v=invRemplir("{kit}|{type}|{jour}|{heure}|{lieu}|{adresse}|{groupe}|{lien}|{tel}|{prenom}",m).split("|"),k=["kit","type","jour","heure","lieu","adresse","groupe","lien","tel","prenom"];
   k.forEach((x,i)=>{if(v[i]&&v[i].length>2)t=t.split(v[i]).join("{"+x+"}")});
   /* v1.22 : un numéro écrit à la main redevient {tel}, pour que chaque animateur signe avec le sien */
   const tc=String(leadMonTel()).replace(/\D/g,"").slice(-9);if(tc.length===9)t=t.replace(/(\+?212|0)[\s.\-]?\d(?:[\s.\-]?\d){8}/g,x=>x.replace(/\D/g,"").slice(-9)===tc?"{tel}":x);
-  const cle=invModeleCle(m.format?"autre":m.type);try{localStorage.setItem(cle,t)}catch(e){}
+  const cle=invCleG(m);try{localStorage.setItem(cle,t)}catch(e){}window._invGarde=true;
   if(SESSION&&SESSION.role==="superadmin"){DB.reglages=DB.reglages||{};DB.reglages[cle.replace("cap-","")]=t;sb.from("reglages").upsert({cle:cle.replace("cap-",""),valeur:t}).then(({error})=>error&&toast(rlsMsg(error),"e"));
     toast("Modèle gardé pour toute l'équipe : chacun l'envoie avec son prénom et son numéro")}else toast("Modèle gardé : la date, le lieu et le lien seront remplis à chaque réunion");natInvWa(id)}
-function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invModeleCle(m.format?"autre":m.type))}catch(e){}natInvWa(id)}
+function invOrigine(id){const m=DB.reunions.find(x=>x.id===id);if(!m)return;try{localStorage.removeItem(invCleG(m))}catch(e){}window._invGarde=true;natInvWa(id)}
 /* v1.78 : kit de l'invité — page publique invite.html (groupe, date, lieu, déroulé) ; son bouton « Je m'inscris » passe par i.html, donc le clic reste compté. */
 function natKitLien(m,src){const n=m&&m.nat;if(!n||!n.invitation_id)return"";return `${SITE_PUBLIC}/invite.html?n=${encodeURIComponent(n.invitation_id)}&s=${encodeURIComponent(src||natInvSource())}`}
 async function natKitCopier(id){const m=DB.reunions.find(x=>x.id===id);if(!m||!m.nat)return;const u=natKitLien(m);try{await navigator.clipboard.writeText(u);toast("Lien du kit de l'invité copié")}catch(e){prompt("Kit de l'invité :",u)}}

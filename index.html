@@ -2934,8 +2934,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.157.0";
+const APP_VERSION="1.158.0";
 const CHANGELOG=[
+  {v:"1.158.0",date:"26 novembre 2026",notes:{"Corrigé":["Une demande déjà envoyée au national ne reste plus en alerte « à traiter » : elle apparaît dans Envoi au national, en attente de signature","Personnes en ligne : le voyant se remet à jour au retour sur l’appli (téléphone, tablette) et ne retombe plus à 0"]}},
   {v:"1.157.0",date:"25 novembre 2026",notes:{"Ajouté":["Fiche réunion : bouton « Envoyer au groupe » — un message prêt pour le groupe WhatsApp de tes membres (date, lieu, lien d’inscription, kit de l’invité), modifiable et gardable comme modèle"]}},
   {v:"1.156.0",date:"25 novembre 2026",notes:{"Ajouté":["Paramètres → Administration : « Vérifier les signatures au national », pour relire tout de suite les contrats signés et les règlements."],"Modifié":["Les signatures sont lues au national chaque heure de 7 h à minuit (avant : jusqu’à 21 h)."]}},
   {v:"1.155.0",date:"24 novembre 2026",notes:{"Modifié":["Constellation : chaque région a sa couleur (lien vers le centre, rond et nom de la région, villes, orbites). Les groupes gardent leur couleur d’état."]}},
@@ -4879,20 +4880,22 @@ window.addEventListener("resize",()=>predFermer());
    ============================================================ */
 let _presT=null,_presVis=false,_presListe=[];
 function presenceVoit(){return !!SESSION&&["superadmin","directeur_national"].includes(SESSION.role)}
-function presencePing(){try{if(SESSION&&!SESSION._voir&&document.visibilityState==="visible")sb.rpc("cap_ping").then(()=>{},()=>{})}catch(e){}}
+function presencePing(){try{if(SESSION&&!SESSION._voir&&document.visibilityState==="visible")return sb.rpc("cap_ping").then(r=>!(r&&r.error),()=>false)}catch(e){}return Promise.resolve(true)}
+/* v1.158 : au retour sur l'appli (téléphone, tablette), le réseau met un instant à revenir : on se signale D'ABORD, on lit la liste ENSUITE, et on réessaie si l'un des deux échoue. */
+let _presN=0;async function presenceTour(){const moi=++_presN;for(const d of [0,1500,4000,9000]){if(d)await new Promise(z=>setTimeout(z,d));if(moi!==_presN||!SESSION||document.visibilityState!=="visible")return;const a=await presencePing(),b=await presenceMaj();if(a&&b!==false)return}}
 function presenceDemarrer(){
-  presencePing();presenceMaj();clearInterval(_presT);
-  _presT=setInterval(()=>{presencePing();presenceMaj();adhRafraichir()},60000);
-  if(!_presVis){_presVis=true;document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&SESSION){presencePing();presenceMaj();adhRafraichir()}})}
+  presenceTour();clearInterval(_presT);
+  _presT=setInterval(()=>{presenceTour();adhRafraichir()},60000);
+  if(!_presVis){_presVis=true;const rev=()=>{if(document.visibilityState==="visible"&&SESSION){presenceTour();adhRafraichir()}};document.addEventListener("visibilitychange",rev);window.addEventListener("pageshow",rev);window.addEventListener("online",rev)}
 }
 function presenceArreter(){clearInterval(_presT);_presT=null;_presListe=[];const p=document.getElementById("online-pill");if(p)p.classList.add("hidden")}
 function enLigne(u){return !!u.vu_le&&Date.now()-new Date(u.vu_le).getTime()<3*60000}
 async function presenceMaj(){
   const p=document.getElementById("online-pill");
   if(!presenceVoit()){if(p)p.classList.add("hidden");return}
-  let r;try{r=await sb.rpc("cap_qui_connecte")}catch(e){return}const {data,error}=r||{};if(error||!data){if(error)console.warn(error);return}
+  let r;try{r=await sb.rpc("cap_qui_connecte")}catch(e){return false}const {data,error}=r||{};if(error||!data){if(error)console.warn(error);return false}
   _presListe=data||[];
-  const n=_presListe.filter(enLigne).length;
+  const n=Math.max(_presListe.filter(enLigne).length,SESSION&&!SESSION._voir?1:0);
   if(p){p.innerHTML=`<i></i>${n}<span class="l"> en ligne</span>`;p.classList.remove("hidden")}
   const sc=document.getElementById("qui-co");if(sc)sc.innerHTML=quiConnecteHTML();
 }
@@ -8278,7 +8281,8 @@ function adhEtape(a){if(a.statut==="rejetee")return-1;return a.saisie_proteine_l
 function adhEnRetard(a){const e=adhEtape(a);return(e===1||e===2)&&adhJours(a.created_at)>ADH_DELAI_J}
 function adhSuivi(a){const e=adhEtape(a);if(e<0)return `<span class="rl-fact">Rejetée</span>`;
   return `<span class="adh-steps" title="Reçue → intégrée au groupe → saisie dans le CRM national">${[1,2,3].map(k=>`<i class="${k<=e?"on":""}"></i>`).join("")}</span>`}
-function adhAIntegrer(){return(DB.adhesions||[]).filter(a=>a.statut==="recue"||a.statut==="traitee")}
+/* v1.158 : une demande déjà envoyée au national (contrat créé) n'est plus « à traiter » : elle attend la signature, puis passe par « Contrats signés ». */
+function adhAIntegrer(){return(DB.adhesions||[]).filter(a=>(a.statut==="recue"||a.statut==="traitee")&&!(a.national||{}).contrat_id)}
 let _adhFiltre="todo";
 async function adhCharger(){const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});if(!error&&data)DB.adhesions=data;try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}}
 async function openAdhesions(f){const sh=document.getElementById("sheet");if(sh.classList.contains("open"))closeSheet();window._dmF=f==="retard"?"retard":"";window._dmQ="";
@@ -10106,7 +10110,7 @@ async function natVerifier(btn){
   toast("Vérifié au national : "+(m.join(" · ")||"rien de nouveau")+(r.erreurs?.length?" · ⚠ "+r.erreurs[0]:""),r.erreurs?.length?"w":"s");
   if(r.signes?.length)celebrer("✍️",r.signes.length>1?"Contrats signés":"Contrat signé",r.signes.map(x=>x.nom).join(", "),"",()=>{window._natCol="signe";dmChercher(window._dmQ||"")});
 }
-function natEtat(a){if(a.statut==="rejetee"||a.statut!=="integree")return null;const n=a.national||{};
+function natEtat(a){if(a.statut==="rejetee"||(a.statut!=="integree"&&!(a.national||{}).contrat_id))return null;const n=a.national||{};
   if(n.signe_le)return"signe";if(n.contrat_id||a.saisie_proteine_le)return"attente";return"envoyer"}
 function natCols(){
   const q=mbNorm(window._dmQ||"").split(/\s+/).filter(Boolean),ok=a=>q.every(w=>dmTexte(a).includes(w));
@@ -10121,7 +10125,7 @@ function natAEnvoyer(){return(DB.adhesions||[]).filter(a=>natEtat(a)==="envoyer"
 /* v1.143 : état général des demandes d'adhésion, étape par étape, par région puis par groupe.
    En vue nationale : tout le réseau, à affiner par région puis par groupe ; en vue régionale : les groupes de la région. */
 const ETP_COLS=[["📥","Reçue","Demande reçue, pas encore intégrée dans un groupe"],["🚀","À envoyer","Intégrée, contrat pas encore envoyé au national"],["✍️","À signer","Contrat envoyé, signature attendue"],["✅","Signé","Contrat signé, facture pas encore émise"],["🧾","Facturé","Facture émise, règlement attendu"],["💶","Réglé","Règlement complet : membre à part entière"]];
-function etpDe(a){const n=a.national||{};if(a.statut!=="integree")return 0;if(!n.contrat_id)return 1;if(!n.signe_le)return 2;
+function etpDe(a){const n=a.national||{};if(a.statut!=="integree"&&!n.contrat_id)return 0;if(!n.contrat_id)return 1;if(!n.signe_le)return 2;
   const g=natRegl(n),mb=a.membre_id&&DB.membres.find(m=>m.id===a.membre_id);if(g.etat==="complet"||(mb&&mb.paiement))return 5;return g.fact?4:3}
 function etpDonnees(){const A=(DB.adhesions||[]).filter(a=>a.statut!=="rejetee"),clubs=DB.clubs,par={};
   A.forEach(a=>{const c=adhClubId(a),k=c&&clubs.some(x=>x.id===c)?c:"sans";(par[k]=par[k]||[]).push(a)});

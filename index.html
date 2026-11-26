@@ -2824,6 +2824,10 @@ details.mbg.rc>summary em{background:color-mix(in srgb,var(--rc) 16%,transparent
 .cst-reg.rc .cst-rc{fill:color-mix(in srgb,var(--rc) 38%,transparent);stroke:var(--rc);stroke-width:2.2}.cst-reg.rc.lit .cst-rc{fill:color-mix(in srgb,var(--rc) 62%,transparent)}
 .cst-reg.rc .cst-rt{fill:color-mix(in srgb,var(--rc) 45%,#fff)}
 .cst-sub.rc .cst-subl{stroke:color-mix(in srgb,var(--rc) 70%,#fff 15%);opacity:.8}.cst-sub.rc .cst-subc{stroke:color-mix(in srgb,var(--rc) 75%,#fff)}.cst-sub.rc .cst-subt{fill:color-mix(in srgb,var(--rc) 35%,#fff)}
+/*v1.159 thèmes en verre : ce qui flotte par-dessus la page (menus, tiroir, suggestions, bulle) est opaque */
+html.th-verre{--pop:#1B1E26}html.th-bordeaux{--pop:#26121A}html.th-verreclair{--pop:#FBF9F9}
+html[class*="th-verre"] :is(.esp-menu,.pred,.tiroir-p,.tuto-bulle,.celeb-c),html.th-bordeaux :is(.esp-menu,.pred,.tiroir-p,.tuto-bulle,.celeb-c){background:var(--pop);-webkit-backdrop-filter:none;backdrop-filter:none}
+@media(max-width:899px){html[class*="th-verre"] .sheet,html.th-bordeaux .sheet{background:var(--pop)}}
 </style>
 </head>
 <body>
@@ -2934,8 +2938,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.158.0";
+const APP_VERSION="1.159.0";
 const CHANGELOG=[
+  {v:"1.159.0",date:"26 novembre 2026",notes:{"Corrigé":["Thèmes Verre, Verre clair et Bordeaux : le menu des espaces, le menu du téléphone, les suggestions de recherche et les fiches ne sont plus transparents"]}},
   {v:"1.158.0",date:"26 novembre 2026",notes:{"Corrigé":["Une demande déjà envoyée au national ne reste plus en alerte « à traiter » : elle apparaît dans Envoi au national, en attente de signature","Personnes en ligne : le voyant se remet à jour au retour sur l’appli (téléphone, tablette) et ne retombe plus à 0"]}},
   {v:"1.157.0",date:"25 novembre 2026",notes:{"Ajouté":["Fiche réunion : bouton « Envoyer au groupe » — un message prêt pour le groupe WhatsApp de tes membres (date, lieu, lien d’inscription, kit de l’invité), modifiable et gardable comme modèle"]}},
   {v:"1.156.0",date:"25 novembre 2026",notes:{"Ajouté":["Paramètres → Administration : « Vérifier les signatures au national », pour relire tout de suite les contrats signés et les règlements."],"Modifié":["Les signatures sont lues au national chaque heure de 7 h à minuit (avant : jusqu’à 21 h)."]}},

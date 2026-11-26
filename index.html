@@ -2886,7 +2886,7 @@ html[class*="th-verre"] :is(.esp-menu,.pred,.tiroir-p,.tuto-bulle,.celeb-c),html
   <button data-tab="agenda" data-rub="age" onclick="go('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda<span class="nav-cv" aria-hidden="true"></span></button>
   <div class="nav-sous" data-rub="age"><div><div class="nav-sx" data-sx="age"></div></div></div>
   <div class="nav-sec">Développer</div>
-  <button data-tab="demandes" data-rub="adh" class="nav-dem" onclick="go('demandes')" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="i-env" d="M8 3h8v7l-4 2.5L8 10z"/><path d="M3 13l2.5-6H8M16 7h2.5L21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>Adhésions<span class="nav-cv" aria-hidden="true"></span></button>
+  <button data-tab="demandes" data-rub="adh" class="nav-dem" onclick="navDem('pipe')" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="i-env" d="M8 3h8v7l-4 2.5L8 10z"/><path d="M3 13l2.5-6H8M16 7h2.5L21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>Adhésions<span class="nav-cv" aria-hidden="true"></span></button>
   <div class="nav-sous" data-rub="adh"><div><div class="nav-sx" data-sx="adh"></div></div></div>
   <button class="nav-rub" data-rub="res" onclick="go('clubs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>Réseau<span class="nav-cv" aria-hidden="true"></span></button>
   <div class="nav-sous" data-rub="res"><div>
@@ -2938,8 +2938,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.159.0";
+const APP_VERSION="1.160.0";
 const CHANGELOG=[
+  {v:"1.160.0",date:"26 novembre 2026",notes:{"Corrigé":["Cliquer sur les demandes d’adhésion (cloche, accueil, menu Adhésions) ouvre toujours les demandes, et plus le dernier sous-onglet consulté comme les leads"]}},
   {v:"1.159.0",date:"26 novembre 2026",notes:{"Corrigé":["Thèmes Verre, Verre clair et Bordeaux : le menu des espaces, le menu du téléphone, les suggestions de recherche et les fiches ne sont plus transparents"]}},
   {v:"1.158.0",date:"26 novembre 2026",notes:{"Corrigé":["Une demande déjà envoyée au national ne reste plus en alerte « à traiter » : elle apparaît dans Envoi au national, en attente de signature","Personnes en ligne : le voyant se remet à jour au retour sur l’appli (téléphone, tablette) et ne retombe plus à 0"]}},
   {v:"1.157.0",date:"25 novembre 2026",notes:{"Ajouté":["Fiche réunion : bouton « Envoyer au groupe » — un message prêt pour le groupe WhatsApp de tes membres (date, lieu, lien d’inscription, kit de l’invité), modifiable et gardable comme modèle"]}},
@@ -4633,7 +4634,7 @@ function viewRegion(){
   const todo=[
     sansDate.length&&peut&&[`📅 Planifier les réunions de ${sansDate.length} groupe${sansDate.length>1?"s":""}`,`openPlanSerie()`],
     sansBil.length&&peut&&[`📊 ${sansBil.length} bilan${sansBil.length>1?"s":""} à saisir`,`openBilan('${sansBil.sort((a,b)=>a.date.localeCompare(b.date))[0].id}')`],
-    dem.length&&[`📥 ${dem.length} demande${dem.length>1?"s":""} d'adhésion à traiter`,`go('demandes')`],
+    dem.length&&[`📥 ${dem.length} demande${dem.length>1?"s":""} d'adhésion à traiter`,`openDemandes()`],
     incomp.length&&[`📂 ${incomp.length} dossier${incomp.length>1?"s":""} membre incomplet${incomp.length>1?"s":""}`,`go('membres')`],
     renouv.length&&[`🔄 ${renouv.length} renouvellement${renouv.length>1?"s":""} à venir`,`openRenouvellements()`]
   ].filter(Boolean);
@@ -8290,7 +8291,7 @@ function adhSuivi(a){const e=adhEtape(a);if(e<0)return `<span class="rl-fact">Re
 function adhAIntegrer(){return(DB.adhesions||[]).filter(a=>(a.statut==="recue"||a.statut==="traitee")&&!(a.national||{}).contrat_id)}
 let _adhFiltre="todo";
 async function adhCharger(){const {data,error}=await sb.from("adhesions").select("*").order("created_at",{ascending:false});if(!error&&data)DB.adhesions=data;try{localStorage.setItem("cap-adh-vu",new Date().toISOString())}catch(e){}}
-async function openAdhesions(f){const sh=document.getElementById("sheet");if(sh.classList.contains("open"))closeSheet();window._dmF=f==="retard"?"retard":"";window._dmQ="";
+async function openAdhesions(f){const sh=document.getElementById("sheet");if(sh.classList.contains("open"))closeSheet();window._dmF=f==="retard"?"retard":"";window._dmQ="";window._dmVue="pipe";/* v1.160 : « les demandes » ouvre toujours les demandes, jamais le dernier sous-onglet consulté (leads, envoi au national…) */
   if(f==="todo"||f==="saisie")window._dmCol=f;if(tab==="demandes")render();else go("demandes");await adhCharger();if(tab==="demandes")render()}
 /* À la connexion : prévient s'il est arrivé des adhésions depuis la dernière visite de la liste. */
 function adhAnnonce(){

@@ -2955,8 +2955,9 @@ const STATUTS={planifiee:"Planifiée",confirmee:"Confirmée",realisee:"Réalisé
 const GUEST_STATUTS=["À confirmer","Intéressé","Non intéressé","À intégrer","Membre"];
 
 /* ---- Version & notes de mise à jour ---- */
-const APP_VERSION="1.162.0";
+const APP_VERSION="1.162.1";
 const CHANGELOG=[
+  {v:"1.162.1",date:"26 novembre 2026",notes:{"Modifié":["Mon groupe : un membre arrivé d'un autre groupe peut être rangé dans « Contrat signé · il reste le règlement »."]}},
   {v:"1.162.0",date:"26 novembre 2026",notes:{"Modifié":["Mon groupe → Membres : sous les membres, un bloc « Contrat signé · il reste le règlement » ; à droite, seulement les contrats en cours de signature"]}},
   {v:"1.161.0",date:"26 novembre 2026",notes:{"Modifié":["Mon groupe → Membres : à droite, les demandes d’adhésion en cours du groupe avec leur étape ; les métiers représentés et recherchés passent dans des volets sous la liste des membres"]}},
   {v:"1.160.0",date:"26 novembre 2026",notes:{"Corrigé":["Cliquer sur les demandes d’adhésion (cloche, accueil, menu Adhésions) ouvre toujours les demandes, et plus le dernier sous-onglet consulté comme les leads"]}},
@@ -5157,7 +5158,7 @@ function grpMembres(c,D){
   const ligneM=(m,i,tr)=>`<div class="rl-row${tr?" gtr":""}" style="--vc:${villeColor(c.ville)};--i:${Math.min(i,14)}"><button class="rl-h" onclick="memberSheet('${c.id}','${m.id}')">
       <span class="rl-emb round sm">${esc(initiales(m.nom))}</span><span class="rl-t"><b>${esc(m.nom)}${tr?"":etapePill(m)}</b><small>${esc([mbMetier(m)||"Métier non renseigné",mbEntreprise(m)].filter(Boolean).join(" · "))}</small>${tr?`<small class="gpo-e">${esc(grpReste(mbAdhesion(m)))}</small>`:""}</span>
       <span class="rl-ind">${dots4(m)}${m.inscrit?`<span class="rl-fact g">espace membre</span>`:""}</span><span class="rl-chev">›</span></button></div>`;
-  const enTr=m=>{const e=mbEtape(m);return e.suivi&&!e.plein&&e.n>=2};
+  const enTr=m=>{if(m.infos&&m.infos.reglement_attendu&&!m.paiement)return true;const e=mbEtape(m);return e.suivi&&!e.plein&&e.n>=2};
   const pleins=D.membres.filter(m=>!enTr(m)),trans=D.membres.filter(enTr);
   const sansFiche=grpPostulations(c.id).filter(a=>etpDe(a)>=3&&etpDe(a)<5&&!(a.membre_id&&DB.membres.find(m=>m.id===a.membre_id)));
   const list=(pleins.length?`<div class="rl">${pleins.map((m,i)=>ligneM(m,i,false)).join("")}</div>`:(trans.length||sansFiche.length?"":`<p class="fh-empty">Aucun membre pour l'instant.</p>`))
